@@ -1,0 +1,10 @@
+/**
+     * Initialize the class.
+     * @constructor
+     * @returns {void}
+     * @since 1.0.0
+     * @version 1.0.0
+     * @package ExtraProductDataForWooCommerce/JS
+     * @license GPL-2.0+
+     * @link https://www.triopsi.dev
+     */

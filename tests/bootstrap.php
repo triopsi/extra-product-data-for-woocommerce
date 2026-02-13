@@ -1,0 +1,57 @@
+<?php
+/**
+ * PHPUnit bootstrap file.
+ *
+ * @package Extra_Product_Data_For_Woocommerce
+ */
+
+// Include the Composer autoloader.
+require dirname( __DIR__ ) . '/vendor/autoload.php';
+
+$_tests_dir = getenv( 'WP_TESTS_DIR' );
+
+if ( ! $_tests_dir ) {
+	$_tests_dir = rtrim( sys_get_temp_dir(), '/\\' ) . '/wordpress-tests-lib';
+}
+
+// Forward custom PHPUnit Polyfills configuration to PHPUnit bootstrap file.
+$_phpunit_polyfills_path = getenv( 'WP_TESTS_PHPUNIT_POLYFILLS_PATH' );
+if ( false !== $_phpunit_polyfills_path ) {
+	define( 'WP_TESTS_PHPUNIT_POLYFILLS_PATH', $_phpunit_polyfills_path );
+}
+
+if ( ! file_exists( "{$_tests_dir}/includes/functions.php" ) ) {
+	echo "Could not find {$_tests_dir}/includes/functions.php, have you run bin/install-wp-tests.sh ?" . PHP_EOL; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
+	exit( 1 );
+}
+
+// Give access to tests_add_filter() function.
+require_once "{$_tests_dir}/includes/functions.php";
+
+/**
+ * Manually load the plugin being tested.
+ */
+function _manually_load_plugin() {
+	require dirname( __DIR__ ) . '/extra-product-data-for-woocommerce.php';
+	require dirname( __DIR__ ) . '/../woocommerce/woocommerce.php';
+}
+
+tests_add_filter( 'muplugins_loaded', '_manually_load_plugin' );
+
+// Start up the WP testing environment.
+require "{$_tests_dir}/includes/bootstrap.php";
+
+// Load plugin autoloader.
+// require dirname( __DIR__ ) . '/src/classes/class-autoloader.php';
+// Triopsi\Exprdawc\Autoloader::setup();
+
+// $wc_tests_framework_base_dir = dirname( __DIR__ ) . '/../woocommerce/tests/framework/';
+// require_once( $wc_tests_framework_base_dir . 'class-wc-mock-session-handler.php' );
+// require_once( $wc_tests_framework_base_dir . 'class-wc-unit-test-case.php' );
+// require_once( $wc_tests_framework_base_dir . 'helpers/class-wc-helper-product.php'  );
+// require_once( $wc_tests_framework_base_dir . 'helpers/class-wc-helper-coupon.php'  );
+// require_once( $wc_tests_framework_base_dir . 'helpers/class-wc-helper-fee.php'  );
+// require_once( $wc_tests_framework_base_dir . 'helpers/class-wc-helper-shipping.php'  );
+// require_once( $wc_tests_framework_base_dir . 'helpers/class-wc-helper-customer.php'  );
+// require_once( $wc_tests_framework_base_dir . 'helpers/class-wc-helper-order.php'  );
+// require_once( 'class-wc-booking-product-test-helper.php' );

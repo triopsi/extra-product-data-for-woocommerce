@@ -1,0 +1,343 @@
+/*
+* Admin Backend Styles
+* Plugin: Extra Product Data for WooCommerce
+* Author: Triopsi
+*/
+#extra-product-data {
+  padding: 10px 10px;
+}
+
+table.exprdawc_attribute_table td {
+  vertical-align: middle !important;
+}
+table.exprdawc_attribute_table td.exprdawc_attribute_require_checkbox label {
+  padding-top: 15px;
+}
+
+/*
+Out Table Styles
+*/
+table.exprdawc_field_table {
+  margin-top: 25px;
+  width: 100%;
+  border-collapse: collapse;
+}
+table.exprdawc_field_table th {
+  background-color: #f1f1f1;
+  font-weight: bold;
+  padding: 10px;
+  text-align: left;
+}
+table.exprdawc_field_table tr:nth-child(even) {
+  background-color: #f9f9f9;
+}
+table.exprdawc_field_table tr.exprdawc_fields_wrapper {
+  border-bottom: 1px solid #ddd;
+}
+table.exprdawc_field_table tr.exprdawc_fields_wrapper:hover {
+  background-color: #f1f1f1;
+}
+table.exprdawc_field_table tr.exprdawc_fields_wrapper:last-child {
+  border-bottom: none;
+}
+table.exprdawc_field_table td {
+  padding: 0px;
+}
+table.exprdawc_field_table tfoot tr {
+  background-color: #f5f5f5;
+  border: 1px solid #ccc;
+}
+table.exprdawc_field_table tfoot td {
+  padding: 10px;
+  text-align: center;
+  vertical-align: middle;
+}
+table.exprdawc_field_table tfoot td.exprdawc_add_field_col {
+  text-align: left;
+}
+table.exprdawc_field_table tfoot td.exprdawc_export_col {
+  text-align: right;
+}
+table.exprdawc_field_table tfoot .button {
+  padding: 5px;
+  line-height: 13px;
+}
+
+/*
+In Table Styles
+*/
+table.exprdawc_fields_table {
+  width: 100%;
+  border-collapse: collapse;
+}
+table.exprdawc_fields_table tr {
+  border: 0px;
+}
+table.exprdawc_fields_table tbody td {
+  vertical-align: middle;
+  padding: 10px;
+  text-align: left;
+  width: auto;
+  white-space: nowrap;
+}
+table.exprdawc_fields_table tbody td input[type=text],
+table.exprdawc_fields_table tbody td input[type=number],
+table.exprdawc_fields_table tbody td textarea {
+  width: 100%;
+  padding: 5px;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  box-sizing: border-box;
+}
+table.exprdawc_fields_table tbody td select {
+  width: 100%;
+  padding: 5px;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  box-sizing: border-box;
+  text-overflow: ellipsis;
+}
+table.exprdawc_fields_table tbody td button.add_rule,
+table.exprdawc_fields_table tbody td button.exprdawc_remove_custom_field,
+table.exprdawc_fields_table tbody td button.exprdawc_copy_custom_field,
+table.exprdawc_fields_table tbody td button.remove_rule {
+  padding: 5px;
+  line-height: 13px;
+}
+table.exprdawc_fields_table tbody td.move i {
+  cursor: move;
+}
+table.exprdawc_fields_table tbody td.cl-arr i {
+  cursor: pointer;
+}
+
+table.exprdawc_settings_table {
+  width: 100%;
+}
+table.exprdawc_settings_table label.exprdawc_label {
+  float: none;
+  padding: 0px;
+  margin: 5px 0px;
+  text-align: left;
+  display: flex;
+  width: auto;
+  align-items: center;
+}
+table.exprdawc_settings_table label.exprdawc_label .checkbox {
+  margin-right: 5px !important;
+}
+table.exprdawc_settings_table td {
+  vertical-align: middle;
+  padding: 10px;
+}
+
+table.exprdawc_options_table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-top: 10px;
+  border: 1px solid #ccc;
+}
+table.exprdawc_options_table th,
+table.exprdawc_options_table td {
+  padding: 10px;
+  text-align: left;
+  border-bottom: 1px solid #ddd;
+}
+table.exprdawc_options_table th {
+  background-color: #f1f1f1;
+}
+table.exprdawc_options_table tr:hover {
+  background-color: #f9f9f9;
+}
+table.exprdawc_options_table .button {
+  padding: 5px 10px;
+  border: none;
+  border-radius: 4px;
+  background-color: #0073aa;
+  color: #fff;
+  cursor: pointer;
+}
+table.exprdawc_options_table .button:hover {
+  background-color: #005a87;
+  color: #fff;
+}
+
+.exprdawc_attribute h3 .sort {
+  width: 17px;
+  height: 26px;
+  cursor: move;
+  float: right;
+  font-size: 15px;
+  font-weight: 400;
+  margin-right: 0.5em;
+  text-align: center;
+  vertical-align: middle;
+}
+.exprdawc_attribute h3 .sort::before {
+  content: "\f333";
+  font-family: "Dashicons";
+  text-align: center;
+  line-height: 28px;
+  color: #999;
+  display: block;
+  width: 17px;
+  float: left;
+  height: 100%;
+}
+.exprdawc_attribute h3 .sort:hover::before {
+  color: #777;
+}
+.exprdawc_attribute h3:hover .sort, .exprdawc_attribute.ui-sortable-helper .sort {
+  visibility: visible;
+}
+.exprdawc_attribute.wc-metabox.postbox {
+  border-top: 0px;
+  border-left: 0px;
+  border-right: 0px;
+}
+
+.exprdawc_panel {
+  display: block;
+}
+.exprdawc_panel p.description {
+  margin: 0;
+}
+.exprdawc_panel h2 {
+  font-size: 1.5em !important;
+  padding: 0px 0px 10px 0px !important;
+}
+.exprdawc_panel .wc-metabox {
+  background: #fff;
+  border-bottom: 1px solid #eee;
+  margin: 0 !important;
+}
+.exprdawc_panel .wc-metabox.exprdawc_attribute h3 {
+  cursor: pointer;
+  padding: 0.5em 0.75em 0.5em 1em !important;
+}
+.exprdawc_panel .wc-metabox.exprdawc_attribute h3 a.delete,
+.exprdawc_panel .wc-metabox.exprdawc_attribute h3 a.edit,
+.exprdawc_panel .wc-metabox.exprdawc_attribute h3 .sort {
+  margin-top: 0.25em;
+}
+
+#woocommerce-product-data ul.wc-tabs li.custom_fields_options a::before,
+#woocommerce-coupon-data ul.wc-tabs li.custom_fields_options a::before,
+.woocommerce ul.wc-tabs li.custom_fields_options a::before {
+  font-family: "Dashicons";
+  content: "\f163";
+}
+
+.exprdawc_conditional_logic_table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-bottom: 20px;
+}
+.exprdawc_conditional_logic_table th,
+.exprdawc_conditional_logic_table td {
+  padding: 10px;
+  border: 1px solid #ddd;
+  text-align: left;
+}
+.exprdawc_conditional_logic_table th {
+  background-color: #f9f9f9;
+  font-weight: bold;
+}
+.exprdawc_conditional_logic_table .exprdawc_label {
+  display: block;
+  margin-bottom: 5px;
+  font-weight: bold;
+}
+.exprdawc_conditional_logic_table .exprdawc_input {
+  width: 100%;
+  padding: 5px;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  box-sizing: border-box;
+}
+.exprdawc_conditional_logic_table .exprdawc_checkbox {
+  width: auto;
+}
+.exprdawc_conditional_logic_table .exprdawc_textarea {
+  width: 100%;
+  padding: 8px;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+}
+.exprdawc_conditional_logic_table .exprdawc_no_entry_message {
+  color: #a00;
+  font-weight: bold;
+}
+.exprdawc_conditional_logic_table h2 {
+  text-align: left;
+  text-transform: uppercase;
+}
+.exprdawc_conditional_logic_table .exprdawc_rule_group {
+  margin-bottom: 10px;
+  padding: 10px;
+  border: 1px solid #ddd;
+  background-color: #f9f9f9;
+  border-radius: 4px;
+}
+.exprdawc_conditional_logic_table .exprdawc_rule_group .exprdawc_rule {
+  display: flex;
+  align-items: center;
+  margin-bottom: 10px;
+}
+.exprdawc_conditional_logic_table .exprdawc_rule_group .exprdawc_rule .exprdawc_input {
+  margin-right: 10px;
+}
+.exprdawc_conditional_logic_table .exprdawc_rule_group .exprdawc_rule .button {
+  margin-left: 10px;
+}
+.exprdawc_conditional_logic_table .exprdawc_rule_group .add_rule_group {
+  margin-top: 10px;
+}
+
+.exprdawc_no_entry_message {
+  padding-top: 75px;
+  margin: 10px 0 0;
+  position: relative;
+  text-align: center;
+  display: block;
+  padding-bottom: 1em;
+}
+.exprdawc_no_entry_message::before {
+  font-family: "Dashicons";
+  content: "\f163";
+  font-size: 70px;
+  color: #eee;
+  position: absolute;
+  top: 0px;
+  left: 50%;
+  transform: translateX(-50%);
+}
+
+a.exprdawc-export,
+a.exprdawc-import {
+  -webkit-text-decoration: underline dotted;
+          text-decoration: underline dotted;
+  font-size: small;
+  color: #0073aa;
+  margin: 0 5px;
+}
+a.exprdawc-export::before,
+a.exprdawc-import::before {
+  font-family: "Dashicons";
+  margin-right: 5px;
+  position: relative;
+}
+a.exprdawc-export:hover,
+a.exprdawc-import:hover {
+  color: #005a87;
+  -webkit-text-decoration: underline dotted;
+          text-decoration: underline dotted;
+}
+
+a.exprdawc-export::before {
+  content: "\f346";
+}
+
+a.exprdawc-import::before {
+  content: "\f342";
+}

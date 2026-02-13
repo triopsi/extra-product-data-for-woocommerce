@@ -1,0 +1,36 @@
+/*
+* Form styles
+* Plugin: Extra Product Data for WooCommerce
+* Author: Triopsi
+*/
+.exprdawc-label {
+    font-weight: bold;
+    display: block;
+}
+
+.exprdawc-input-wrapper .input-text {
+    width: 100%;
+    max-width: none;
+    padding: 5px;
+    vertical-align: middle;
+    margin: 2px 0 0;
+}
+
+.exprdawc-field-input-yes-no,
+.exprdawc-field-wrapper-yes-no select{
+    width: 100%;
+    max-width: none;
+    padding: 5px;
+    vertical-align: middle;
+    margin: 2px 0 0;
+    text-overflow: ellipsis;
+}
+
+.exprdawc-description {
+    font-style: italic;
+    font-size: smaller;
+}
+
+.exprdawc-field-wrapper {
+    margin-bottom: 15px;
+}

@@ -1,0 +1,52 @@
+# Exclude development and build files from distribution
+.git
+.github
+.gitignore
+.distignore
+node_modules
+.npm
+.eslintrc.js
+.editorconfig
+.DS_Store
+Thumbs.db
+.env
+.devcontainer
+*.bak
+
+# Source files (only include compiled build)
+src
+
+# Development files
+package.json
+package-lock.json
+composer.json
+composer.lock
+phpcs.xml.dist
+phpunit.xml.dist
+webpack.config.js
+tsconfig.json
+
+# Documentation
+LOCALIZATION.md
+gutenber-editor-screenshot.png
+screenshot-1.png
+
+# Testing
+tests
+bin
+
+# Composer
+vendor
+composer.phar
+composer-setup.php
+.composer
+
+.phpcs.xml.dist
+.vscode
+release
+utils
+
+# Docs
+docs
+
+phpcs-report.xml

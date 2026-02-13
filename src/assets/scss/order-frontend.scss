@@ -1,0 +1,20 @@
+.exprdawc-order-item-fields {
+    background-color: #f9f9f9; // Heller Hintergrund, um sich abzuheben
+    border: 1px solid #ddd; // Leichter Rand
+    border-radius: 4px; // Abgerundete Ecken
+    padding: 15px; // Innenabstand
+    margin-top: 10px; // Abstand nach oben
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1); // Leichter Schatten für einen modernen Look
+
+    .exprdawc-input {
+        padding: 10px; // Innenabstand
+        margin-bottom: 10px; // Abstand nach unten
+        border: 1px solid #ccc; // Leichter Rand
+        border-radius: 4px; // Abgerundete Ecken
+        box-sizing: border-box; // Box-Sizing
+    }
+
+    button{
+        width: 100%;
+    }
+}

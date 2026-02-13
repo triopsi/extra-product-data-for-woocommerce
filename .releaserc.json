@@ -1,0 +1,75 @@
+{
+    "plugins": [
+        "@semantic-release/commit-analyzer",
+        "@semantic-release/release-notes-generator",
+        [
+            "@semantic-release/exec",
+            {
+                "prepareCmd": "sed -i 's/^Version:.*$/Version: ${nextRelease.version}/' extra-product-data-for-woocommerce.php"
+            }
+        ],
+        [
+            "@semantic-release/exec",
+            {
+                "prepareCmd": "sed -i 's/^| Stable tag |.*$/| Stable tag | ${nextRelease.version} |/' README.md"
+            }
+        ],
+        [
+            "@semantic-release/exec",
+            {
+            "prepareCmd": "sed -i \"s/\\$version = '.*';/\\$version = '${nextRelease.version}';/g\" src/constants.php"
+            }
+        ],
+
+        [
+            "@semantic-release/exec",
+            {
+                "prepareCmd": "sed -i 's/^Stable tag:.*$/Stable tag: ${nextRelease.version}/' readme.txt"
+            }
+        ],
+        [
+            "@semantic-release/exec",
+            {
+                "prepareCmd": "find . -name '.DS_Store' -type f -delete"
+            }
+        ],
+        [
+            "@semantic-release/exec",
+            {
+                "prepareCmd": "zip -r extra-product-data-for-woocommerce.zip . -x @.buildignore"
+            }
+        ],
+        [
+            "@semantic-release/changelog",
+            {
+                "changelogFile": "CHANGELOG.md"
+            }
+        ],
+        [
+            "@semantic-release/git",
+            {
+                "assets": [
+                    "CHANGELOG.md",
+                    "extra-product-data-for-woocommerce.php",
+                    "readme.txt",
+                    "README.md"
+                ]
+            }
+        ],
+        [
+            "@semantic-release/gitlab",
+            {
+                "assets": [
+                    {
+                        "path": "extra-product-data-for-woocommerce.zip",
+                        "label": "extra-product-data-for-woocommerce.zip"
+                    },
+                    {
+                        "path": "CHANGELOG.md",
+                        "label": "Changelog"
+                    }
+                ]
+            }
+        ]
+    ]
+}
