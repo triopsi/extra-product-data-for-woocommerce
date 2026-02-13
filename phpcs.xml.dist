@@ -4,7 +4,6 @@
 
 	<file>extra-product-data-for-woocommerce.php</file>
 	<file>src</file>
-	<file>tests</file>
 	<exclude-pattern>node_modules/</exclude-pattern>
 	<exclude-pattern>vendor/</exclude-pattern>
 	<exclude-pattern>test/</exclude-pattern>
