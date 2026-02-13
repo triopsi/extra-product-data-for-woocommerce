@@ -21,8 +21,8 @@ Project:             | Woocommerce Extra Product Data
 | Tags |  WooCommerce Product Addons, WooCommerce product options, WooCommerce custom fields, WooCommerce product fields  |
 | Requires at least |  5.0 |
 | Tested up to |  6.x |
-| Requires PHP |  8.2 |
-| Stable tag | 1.7.11 |
+| Requires PHP |  > 8.2 |
+| Stable tag | 1.8.1 |
 | License |  GPLv2 or later |
 | License URI |  https://www.gnu.org/licenses/gpl-2.0.html |
 | Wordpress Plugin Site | https://wordpress.org/plugins/extra-product-data-for-woocommerce/ |
