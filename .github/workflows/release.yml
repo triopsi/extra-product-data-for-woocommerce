@@ -1,3 +1,5 @@
+# This workflow handles the release process for the plugin, including deploying to the WordPress.org repository and creating a GitHub release with the generated zip file as an asset.
+# It is triggered when a new release is published on GitHub. The workflow checks out the code, verifies that the version in the code matches the release tag, deploys the plugin to the WordPress.org repository, and then creates a GitHub release with the generated zip file as an asset.
 name: Release to Wordpress.org
 on:
   release:
