@@ -88,7 +88,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 							</td>
 							<td class="exprdawc_attribute_placeholder_text">
 								<label class="exprdawc_label" for="exprdawc_text_placeholder_text_<?php echo esc_html( $index ); ?>"><?php esc_html_e( 'Placeholder Text', 'extra-product-data-for-woocommerce' ); ?></label>
-								<input type="text" id="exprdawc_text_placeholder_text_<?php echo esc_html( $index ); ?>" class="exprdawc_input exprdawc_textinput exprdawc_placeholder" name="extra_product_fields[<?php echo esc_html( $index ); ?>][placeholder_text]" value="<?php echo esc_attr( $field['placeholder_text'] ?? '' ); ?>" placeholder="<?php esc_html_e( 'Placeholder Text', 'extra-product-data-for-woocommerce' ); ?>" <?php echo in_array( $field['type'], array( 'radio', 'checkbox' ) ) ? 'disabled' : ''; ?> />
+								<input type="text" id="exprdawc_text_placeholder_text_<?php echo esc_html( $index ); ?>" class="exprdawc_input exprdawc_textinput exprdawc_placeholder" name="extra_product_fields[<?php echo esc_html( $index ); ?>][placeholder_text]" value="<?php echo esc_attr( $field['placeholder_text'] ?? '' ); ?>" placeholder="<?php esc_html_e( 'Placeholder Text', 'extra-product-data-for-woocommerce' ); ?>" <?php echo in_array( $field['type'], array( 'radio', 'checkbox' ), true ) ? 'disabled' : ''; ?> />
 							</td>
 							<td class="exprdawc_attribute_help_text">
 								<label class="exprdawc_label" for="exprdawc_text_help_text_<?php echo esc_html( $index ); ?>"><?php esc_html_e( 'Help Text', 'extra-product-data-for-woocommerce' ); ?></label>
@@ -147,7 +147,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 				<hr>
 
 				<!-- Price Adjustment -->
-				<table class="exprdawc_settings_table exprdawc_price_adjustment_table" style="display:<?php echo ( $field['adjust_price'] ?? false ) && ! in_array( $field['type'], array( 'checkbox', 'radio', 'select' ) ) ? 'table' : 'none'; ?>">
+				<table class="exprdawc_settings_table exprdawc_price_adjustment_table" style="display:<?php echo ( $field['adjust_price'] ?? false ) && ! in_array( $field['type'], array( 'checkbox', 'radio', 'select' ), true ) ? 'table' : 'none'; ?>">
 					<tbody>
 						<tr>
 							<td>
