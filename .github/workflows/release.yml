@@ -1,45 +1,36 @@
-name: Build and Release
-
+name: Release to Wordpress.org
 on:
-    push:
-        tags:
-            - 'v*.*.*'
-    workflow_dispatch:
+  release:
+    types: [published]
 
 permissions:
-    contents: write
+  contents: write
 
 jobs:
-    build:
-        runs-on: ubuntu-latest
-
-        steps:
-            - name: Checkout code
-              uses: actions/checkout@v4
-
-            - name: Setup Node.js
-              uses: actions/setup-node@v4
-              with:
-                  node-version: '20'
-                  cache: 'npm'
-
-            - name: Install dependencies
-              run: npm ci
-
-            - name: Build plugin
-              run: npm run build
-
-            - name: Create plugin archive
-              run: |
-                  mkdir -p release
-                  rsync -av --exclude-from='.distignore' . release/hide-block-on-mobile/
-                  cd release
-                  zip -r hide-block-on-mobile.zip hide-block-on-mobile/
-
-            - name: Create Release and Upload Asset
-              uses: softprops/action-gh-release@v2
-              with:
-                  files: release/hide-block-on-mobile.zip
-                  generate_release_notes: true
-              env:
-                  GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+  deploy_to_wp_repository:
+    if: github.repository == 'triopsi/extra-product-data-for-woocommerce'
+    name: Deploy to WP.org
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - name: Verify version matches release tag
+        run: utils/scripts/check-version.sh
+      - name: WordPress Plugin Deploy
+        id: deploy
+        uses: tinify/action-wordpress-plugin-deploy@stable
+        with:
+          generate-zip: true
+        env:
+          SLUG: extra-product-data-for-woocommerce
+          SVN_USERNAME: ${{ secrets.SVN_USERNAME }}
+          SVN_PASSWORD: ${{ secrets.SVN_PASSWORD }}
+      - name: Create Release and Upload Asset
+        uses: softprops/action-gh-release@v2
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          files: ${{ github.workspace }}/extra-product-data-for-woocommerce.zip
+          generate_release_notes: true

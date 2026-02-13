@@ -3,7 +3,6 @@
 .github
 .gitignore
 .distignore
-node_modules
 .npm
 .eslintrc.js
 .editorconfig
@@ -13,40 +12,48 @@ Thumbs.db
 .devcontainer
 *.bak
 
-# Source files (only include compiled build)
-src
-
 # Development files
-package.json
-package-lock.json
 composer.json
 composer.lock
 phpcs.xml.dist
 phpunit.xml.dist
 webpack.config.js
 tsconfig.json
+debug.log
 
-# Documentation
-LOCALIZATION.md
-gutenber-editor-screenshot.png
-screenshot-1.png
+# Node/NPM
+node_modules
+package.json
+package-lock.json
 
-# Testing
-tests
-bin
-
-# Composer
-vendor
+# PHP Composer
+/vendor
 composer.phar
 composer-setup.php
 .composer
+composer.json
+composer.lock
 
+# Tests & reports
+tests
+bin
+playwright.config.ts
+phpunit.xml
+phpcs.xml
+phpcs.xml.dist
+playwright-report
+test-results
 .phpcs.xml.dist
-.vscode
 release
 utils
 
+# Editors
+.vscode
+
 # Docs
 docs
-
 phpcs-report.xml
+
+# CI/config files
+.wp-env.json
+/.wordpress-org
