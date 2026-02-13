@@ -1,6 +1,7 @@
 <p align="center">
   <img src="src/assets/logos/banner-772x250.png" alt="Logo" />
 </p>
+
 # Woocommerce Extra Product Data
 
 - [Woocommerce Extra Product Data](#woocommerce-extra-product-data)
