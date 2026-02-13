@@ -15,5 +15,8 @@
 	<arg name="extensions" value="php" />
 	<arg name="parallel" value="8" />
 
-	<rule ref="WordPress"></rule>
+	<rule ref="WordPress">
+		<exclude name="PSR12.Files.FileHeader" />
+		<exclude name="PSR12.Files.OpenTag" />
+	</rule>
 </ruleset>

@@ -1,17 +1,19 @@
 <?php
-/*
-Plugin Name: Extra Product Data for WooCommerce
-Description: Adds customizable input fields per product in WooCommerce, allowing users to enter extra details on the frontend.
-Version: 1.7.11
-Author: Triopsi
-Author URI: https://triopsi.dev
-License: GPLv2 or later
-License URI: https://www.gnu.org/licenses/gpl-2.0.html
-Text Domain: extra-product-data-for-woocommerce
-WC requires at least: 3.9
-WC tested up to: 9.4
-Requires Plugins: woocommerce
-*/
+/**
+ * Plugin Name: Extra Product Data for WooCommerce
+ * Description: Adds customizable input fields per product in WooCommerce, allowing users to enter extra details on the frontend .
+ * Version: 1.7.11
+ * Author: Triopsi
+ * Author URI: https:// triopsi.dev
+ * License: GPLv2 or later
+ * License URI: https:// www.gnu.org/licenses/gpl-2.0.html
+ * Text Domain: extra - product - data - for - woocommerce
+ * WC requires at least: 3.9
+ * WC tested up to: 9.4
+ * Requires Plugins: woocommerce
+ *
+ * @package ExtraProductDataForWooCommerce
+ */
 
 use function Triopsi\Exprdawc\tr_is_woocommerce_active;
 use Triopsi\Exprdawc\Exprdawc_Main;

@@ -25,6 +25,6 @@
  */
 
 if ( ! defined( 'ABSPATH' ) ) {
-    exit;
+	exit;
 }
 echo '<div id="' . esc_attr( $field_args['id'] ) . '-wrapper-field" class="' . esc_attr( implode( ' ', $field_args['wrapper_class'] ) ) . '">';

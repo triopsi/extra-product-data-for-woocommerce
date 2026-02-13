@@ -34,10 +34,10 @@ echo '<textarea
     class="' . esc_attr( implode( ' ', $field_args['input_class'] ) ) . '"
     id="' . esc_attr( $field_args['id'] ) . '"
     placeholder="' . esc_attr( $field_args['placeholder'] ) . '" ' .
-    implode( ' ', $custom_attributes ) . '>' . 
-    esc_textarea( $field_args['value'] ) . 
-    '</textarea>';
+	implode( ' ', $custom_attributes ) . '>' .
+	esc_textarea( $field_args['value'] ) .
+	'</textarea>';
 if ( ! empty( $field_args['description'] ) ) {
-    echo '<span id="' . esc_attr( $field_args['id'] ) . '-description" class="' . esc_attr( implode( ' ', $field_args['description_class'] ) ) . '">' . esc_html( $field_args['description'] ) . '</span>';
+	echo '<span id="' . esc_attr( $field_args['id'] ) . '-description" class="' . esc_attr( implode( ' ', $field_args['description_class'] ) ) . '">' . esc_html( $field_args['description'] ) . '</span>';
 }
 echo '</span>';

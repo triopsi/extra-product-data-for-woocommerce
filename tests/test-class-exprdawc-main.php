@@ -43,7 +43,7 @@ class Test_Exprdawc_Main extends WP_UnitTestCase {
 	public function test_register_autoloader() {
 		// Use reflection to access the protected method
 		$reflection = new ReflectionClass( $this->instance );
-		$method = $reflection->getMethod( 'register_autoloader' );
+		$method     = $reflection->getMethod( 'register_autoloader' );
 		$method->setAccessible( true );
 		$method->invoke( $this->instance );
 
@@ -83,19 +83,19 @@ class Test_Exprdawc_Main extends WP_UnitTestCase {
 		set_current_screen( 'dashboard' );
 		$this->instance->exprdawc_only_admin_enqueue_scripts();
 		// Add assertions to verify scripts and styles are enqueued.
-        $this->assertTrue( wp_style_is( 'exprdawc-backend-css', 'enqueued' ) );
-        $this->assertTrue( wp_style_is( 'form-css', 'enqueued' ) );
+		$this->assertTrue( wp_style_is( 'exprdawc-backend-css', 'enqueued' ) );
+		$this->assertTrue( wp_style_is( 'form-css', 'enqueued' ) );
 	}
 
-    /**
-     * Test exprdawc_plugin_action_links method.
-     */
-    public function test_exprdawc_plugin_action_links() {
-        $links = array();
-        $modified_links = $this->instance->exprdawc_plugin_action_links( $links );
+	/**
+	 * Test exprdawc_plugin_action_links method.
+	 */
+	public function test_exprdawc_plugin_action_links() {
+		$links          = array();
+		$modified_links = $this->instance->exprdawc_plugin_action_links( $links );
 
-        $expected_link = '<a href="' . admin_url( 'admin.php?page=wc-settings&tab=products&section=extra_product_data' ) . '">' . __( 'Settings', 'extra-product-data-for-woocommerce' ) . '</a>';
+		$expected_link = '<a href="' . admin_url( 'admin.php?page=wc-settings&tab=products&section=extra_product_data' ) . '">' . __( 'Settings', 'extra-product-data-for-woocommerce' ) . '</a>';
 
-        $this->assertContains( $expected_link, $modified_links );
-    }
+		$this->assertContains( $expected_link, $modified_links );
+	}
 }

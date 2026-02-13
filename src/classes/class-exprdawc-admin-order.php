@@ -100,7 +100,7 @@ class Exprdawc_Admin_Order extends Exprdawc_Base_Order_Class {
 			return;
 		}
 
-		if( ! self::$order->has_status( OrderUtil::remove_status_prefix( $max_order_status ) )){
+		if ( ! self::$order->has_status( OrderUtil::remove_status_prefix( $max_order_status ) ) ) {
 			return;
 		}
 

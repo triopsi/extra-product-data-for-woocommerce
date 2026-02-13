@@ -39,7 +39,7 @@ if ( isset( $field_args['options'] ) && is_array( $field_args['options'] ) ) {
 		// if option have adjustable price than add price to the label
 		$price_adjustment = array();
 		if ( isset( $option['price_adjustment_value'] ) && $field_args['adjust_price'] ) {
-			$plus_minus = $option['price_adjustment_value'] != 0 ? ($option['price_adjustment_value'] > 0 ? '+' : '-') : '';
+			$plus_minus    = $option['price_adjustment_value'] != 0 ? ( $option['price_adjustment_value'] > 0 ? '+' : '-' ) : '';
 			$option_label .= ' (' . $plus_minus . wc_price( $option['price_adjustment_value'] ) . ')';
 			// Add custom data attribute to the input field and type
 			$price_adjustment[] = 'data-price-adjustment="' . esc_attr( $option['price_adjustment_value'] ) . '"';

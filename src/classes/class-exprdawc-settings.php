@@ -70,7 +70,7 @@ class Exprdawc_Settings {
 	public function add_settings( $settings, $current_section ) {
 		if ( 'extra_product_data' === $current_section ) {
 			$order_statuses = wc_get_order_statuses();
-			$settings = array(
+			$settings       = array(
 				array(
 					'title' => __( 'Extra Product Data Settings', 'extra-product-data-for-woocommerce' ),
 					'type'  => 'title',
@@ -101,19 +101,19 @@ class Exprdawc_Settings {
 					'type'     => 'checkbox',
 				),
 				array(
-                    'title'   => __( 'Max Order Status for Editing', 'extra-product-data-for-woocommerce' ),
-                    'desc'    => __( 'Select the maximum order status up to which user inputs can be edited.', 'extra-product-data-for-woocommerce' ),
-                    'id'      => 'extra_product_data_max_order_status',
-                    'default' => 'wc-processing',
-                    'type'    => 'select',
-                    'options' => $order_statuses,
-                ),
+					'title'   => __( 'Max Order Status for Editing', 'extra-product-data-for-woocommerce' ),
+					'desc'    => __( 'Select the maximum order status up to which user inputs can be edited.', 'extra-product-data-for-woocommerce' ),
+					'id'      => 'extra_product_data_max_order_status',
+					'default' => 'wc-processing',
+					'type'    => 'select',
+					'options' => $order_statuses,
+				),
 				array(
-					'title'    => __( 'Custom Add to CartText', 'extra-product-data-for-woocommerce' ),
-					'desc'     => __( 'Enter custom text for the "Add to cart" button if the product has extra product data fields. If not specified, the WooCommerce default will be used.', 'extra-product-data-for-woocommerce' ),
-					'id'       => 'exprdawc_custom_add_to_cart_text',
-					'default'  => '',
-					'type'     => 'text',
+					'title'   => __( 'Custom Add to CartText', 'extra-product-data-for-woocommerce' ),
+					'desc'    => __( 'Enter custom text for the "Add to cart" button if the product has extra product data fields. If not specified, the WooCommerce default will be used.', 'extra-product-data-for-woocommerce' ),
+					'id'      => 'exprdawc_custom_add_to_cart_text',
+					'default' => '',
+					'type'    => 'text',
 				),
 				array(
 					'type' => 'sectionend',

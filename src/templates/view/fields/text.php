@@ -25,7 +25,7 @@
  */
 
 if ( ! defined( 'ABSPATH' ) ) {
-    exit;
+	exit;
 }
 echo '<label for="' . esc_attr( $field_args['id'] ) . '" class="' . esc_attr( implode( ' ', $field_args['label_class'] ) ) . '">' . esc_html( $field_args['label'] ) . $required_string . '</label>';
 echo '<span class="' . esc_attr( implode( ' ', $field_args['input_wrapper_class'] ) ) . '">';
@@ -38,6 +38,6 @@ echo '<input type="' . esc_attr( $field_args['type'] ) . '"
     ' . implode( ' ', $custom_attributes ) . ' />';
 
 if ( ! empty( $field_args['description'] ) ) {
-    echo '<span id="' . esc_attr( $field_args['id'] ) . '-description" class="' . esc_attr( implode( ' ', $field_args['description_class'] ) ) . '">' . esc_html( $field_args['description'] ) . '</span>';
+	echo '<span id="' . esc_attr( $field_args['id'] ) . '-description" class="' . esc_attr( implode( ' ', $field_args['description_class'] ) ) . '">' . esc_html( $field_args['description'] ) . '</span>';
 }
 echo '</span>';
