@@ -1,0 +1,19 @@
+# on commit to master will update the assets/readme
+name: Plugin asset/readme update
+on:
+  push:
+    branches:
+      - main
+jobs:
+  trunk:
+    if: github.repository == 'triopsi/extra-product-data-for-woocommerce'
+    name: Push to trunk
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v4
+    - name: Plugin asset/readme update
+      uses: tinify/action-wordpress-plugin-asset-update@stable
+      env:
+        SLUG: tiny-compress-images
+        SVN_PASSWORD: ${{ secrets.SVN_PASSWORD }}
+        SVN_USERNAME: ${{ secrets.SVN_USERNAME }}

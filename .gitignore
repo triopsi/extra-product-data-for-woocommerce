@@ -49,8 +49,6 @@
 # 20140407 Initially Published
 #
 # -----------------------------------------------------------------
-utils/
-
 # ignore all files starting with . or ~
 .*
 ~*
