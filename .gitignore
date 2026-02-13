@@ -113,6 +113,9 @@ Thumbs.db
 *.pem
 *.env
 
+# Ignore bakup files
+*.bak
+
 # --------------------------------------------------------
 # BEGIN Explictly Allowed Files (i.e. do NOT ignore these)
 # --------------------------------------------------------

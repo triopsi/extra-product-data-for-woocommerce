@@ -4,7 +4,7 @@ Tags: WooCommerce Product Addons, WooCommerce product options, WooCommerce custo
 Requires at least: 5.0
 Tested up to: 6.7
 Requires PHP: 8.2
-Stable tag: 1.7.11
+Stable tag: 1.8.0
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
@@ -153,3 +153,9 @@ Yes, the plugin has been tested with the latest WordPress release and PHP 8.2.
 
 = 1.7.11 (05.02.2025) =
 * Bug fix: the product can only be purchased once
+
+= 1.8.0 (13.02.2026) =
+* Bugfix: Radio buttons/checkboxes could not be created
+* Feat: Colors and usability slightly adjusted according to WooCommerce
+* Chore: Refactor the code, clean it up, and move it to GitHub.
+* Documentation: Updated Readme and Changelog for 1.8.0
