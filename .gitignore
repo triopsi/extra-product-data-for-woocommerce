@@ -134,3 +134,5 @@ tmp/*
 !.distignore
 CHANGELOG.md
 !.github
+!.wordpress-org
+*.afdesign
