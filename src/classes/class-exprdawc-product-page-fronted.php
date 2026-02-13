@@ -273,7 +273,7 @@ class Exprdawc_Product_Page_Fronted {
 			// Check if the product can only be purchased once.
 			if ( $product->get_sold_individually() ) {
 				foreach ( WC()->cart->get_cart() as $cart_item ) {
-					if ( $cart_item['product_id'] == $product_id ) {
+					if ( $cart_item['product_id'] === $product_id ) {
 						wc_add_notice( __( 'This product can only be purchased once.', 'extra-product-data-for-woocommerce' ), 'error' );
 						return false;
 					}
@@ -456,28 +456,28 @@ class Exprdawc_Product_Page_Fronted {
 							$total_adjustment = 0;
 							foreach ( $input_field_array['options'] as $option ) {
 								if ( is_array( $field_value ) && in_array( $option['value'], $field_value, true ) ) {
-									if ( $option['price_adjustment_type'] === 'fixed' ) {
+									if ( 'fixed' === $option['price_adjustment_type'] ) {
 										$total_adjustment += $option['price_adjustment_value'];
-									} elseif ( $option['price_adjustment_type'] === 'percent' ) {
+									} elseif ( 'percent' === $option['price_adjustment_type'] ) {
 										$total_adjustment += ( $input_field_array['price_adjustment_value'] / 100 ) * $option['price_adjustment_value'];
 									}
 								} elseif ( $option['value'] === $field_value ) {
-									if ( $option['price_adjustment_type'] === 'fixed' ) {
+									if ( 'fixed' === $option['price_adjustment_type'] ) {
 										$total_adjustment = $option['price_adjustment_value'];
-									} elseif ( $option['price_adjustment_type'] === 'percent' ) {
+									} elseif ( 'percent' === $option['price_adjustment_type'] ) {
 										$total_adjustment = ( $input_field_array['price_adjustment_value'] / 100 ) * $option['price_adjustment_value'];
 									}
 									break;
 								}
 							}
-							if ( $total_adjustment !== 0 ) {
-								$plus_minus            = $total_adjustment > 0 ? '+' : '-';
+							if ( 0 !== $total_adjustment ) {
+								$plus_minus            = 0 < $total_adjustment ? '+' : '-';
 								$user_input_value_cart = $user_input_value . ' (' . $plus_minus . wc_price( $total_adjustment ) . ')';
 							}
-						} elseif ( $input_field_array['price_adjustment_type'] === 'fixed' ) {
-								$plus_minus            = $input_field_array['price_adjustment_value'] > 0 ? '+' : '-';
+						} elseif ( 'fixed' === $input_field_array['price_adjustment_type'] ) {
+								$plus_minus            = 0 < $input_field_array['price_adjustment_value'] ? '+' : '-';
 								$user_input_value_cart = $user_input_value . ' (' . $plus_minus . wc_price( $input_field_array['price_adjustment_value'] ) . ')';
-						} elseif ( $input_field_array['price_adjustment_type'] === 'percent' ) {
+						} elseif ( 'percent' === $input_field_array['price_adjustment_type'] ) {
 							$user_input_value_cart = $user_input_value . ' (+' . wc_price( $input_field_array['price_adjustment_value'] ) . '%)';
 						}
 					}

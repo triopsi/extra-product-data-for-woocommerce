@@ -178,7 +178,7 @@ class Exprdawc_Helper {
 			$field_args['custom_attributes']['data-price-adjustment-type'] = $field_args['price_adjustment_type'];
 			$field_args['custom_attributes']['data-price-adjustment']      = $field_args['price_adjustment_value'];
 			// Add Price in $required_string.
-			$plus_minus = 0 !== $field_args['price_adjustment_value'] ? ( 0 < $field_args['price_adjustment_value'] ? '+' : '-' ) : '';
+			$plus_minus       = 0 !== $field_args['price_adjustment_value'] ? ( 0 < $field_args['price_adjustment_value'] ? '+' : '-' ) : '';
 			$required_string .= ' (' . $plus_minus . wc_price( $field_args['price_adjustment_value'] ) . ')';
 		}
 
