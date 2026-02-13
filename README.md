@@ -1,5 +1,5 @@
 <p align="center">
-  <img src="src/assets/logos/banner-772x250.png" alt="Logo" />
+  <img src=".wordpress-org/banner-772x250.png" alt="Logo" />
 </p>
 
 # Woocommerce Extra Product Data
@@ -63,18 +63,18 @@ Yes, the plugin is designed to be extended, allowing developers to modify the fi
 Yes, the plugin has been tested with the latest WordPress release and PHP > 8.2 .
 
 <p align="center">
-  <img src="src/assets/logos/screenshot-1.png" alt="Screenshot" />
-  <img src="src/assets/logos/screenshot-2.png" alt="Screenshot" />
-  <img src="src/assets/logos/screenshot-3.png" alt="Screenshot" />
-  <img src="src/assets/logos/screenshot-4.png" alt="Screenshot" />
-  <img src="src/assets/logos/screenshot-5.png" alt="Screenshot" />
-  <img src="src/assets/logos/screenshot-6.png" alt="Screenshot" />
-  <img src="src/assets/logos/screenshot-7.png" alt="Screenshot" />
-  <img src="src/assets/logos/screenshot-8.png" alt="Screenshot" />
-  <img src="src/assets/logos/screenshot-9.png" alt="Screenshot" />
-  <img src="src/assets/logos/screenshot-10.png" alt="Screenshot" />
-  <img src="src/assets/logos/screenshot-11.png" alt="Screenshot" />
-  <img src="src/assets/logos/screenshot-12.png" alt="Screenshot" />
-  <img src="src/assets/logos/screenshot-13.png" alt="Screenshot" />
-  <img src="src/assets/logos/screenshot-14.png" alt="Screenshot" />
+  <img src=".wordpress-org/screenshot-1.png" alt="Screenshot" />
+  <img src=".wordpress-org/screenshot-2.png" alt="Screenshot" />
+  <img src=".wordpress-org/screenshot-3.png" alt="Screenshot" />
+  <img src=".wordpress-org/screenshot-4.png" alt="Screenshot" />
+  <img src=".wordpress-org/screenshot-5.png" alt="Screenshot" />
+  <img src=".wordpress-org/screenshot-6.png" alt="Screenshot" />
+  <img src=".wordpress-org/screenshot-7.png" alt="Screenshot" />
+  <img src=".wordpress-org/screenshot-8.png" alt="Screenshot" />
+  <img src=".wordpress-org/screenshot-9.png" alt="Screenshot" />
+  <img src=".wordpress-org/screenshot-10.png" alt="Screenshot" />
+  <img src=".wordpress-org/screenshot-11.png" alt="Screenshot" />
+  <img src=".wordpress-org/screenshot-12.png" alt="Screenshot" />
+  <img src=".wordpress-org/screenshot-13.png" alt="Screenshot" />
+  <img src=".wordpress-org/screenshot-14.png" alt="Screenshot" />
 </p>

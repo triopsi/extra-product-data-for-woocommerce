@@ -2,7 +2,7 @@
     "name": "triopsi/extra-product-data-for-woocommerce",
     "homepage": "https://triopsi.com",
     "type": "project",
-    "version": "1.8.0",
+    "version": "1.8.1",
     "autoload": {
         "psr-4": {
             "Triopsi\\Exprdawc\\": "src/classes/"
