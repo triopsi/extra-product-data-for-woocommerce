@@ -28,7 +28,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 	exit;
 }
 ?>
-<input type="hidden" id="exprdawc_export_string" name="exprdawc_export_string" value="<?php echo $custom_fields ? wc_esc_json( json_encode( $custom_fields ) ) : ''; ?>" />
+<input type="hidden" id="exprdawc_export_string" name="exprdawc_export_string" value="<?php echo $custom_fields ? wc_esc_json( json_encode( $custom_fields ) ) : ''; // phpcs:ignore ?>" />
 <div id="extra-product-data" class="panel woocommerce_options_panel exprdawc_panel_wrapper">
 	<div class="toolbar toolbar-top">
 		

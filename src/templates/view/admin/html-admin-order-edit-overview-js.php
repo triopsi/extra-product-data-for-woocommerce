@@ -8,6 +8,7 @@
  * @author Daniel Drevermann <info@triopsi.com>
  * @copyright Copyright (c) 2024, IT-Dienstleistungen Drevermann
  */
+
 if ( ! defined( 'ABSPATH' ) ) {
 	exit;
 }

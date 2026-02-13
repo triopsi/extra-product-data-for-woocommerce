@@ -23,7 +23,7 @@
  *
  * This file is part of the development of WordPress plugins.
  */
-
+// phpcs:ignoreFile
 if ( ! defined( 'ABSPATH' ) ) {
 	exit;
 }
@@ -36,15 +36,15 @@ if ( isset( $field_args['options'] ) && is_array( $field_args['options'] ) ) {
 		$checked      = in_array( $option_value, (array) explode( ', ', $field_args['value'] ) ) ? 'checked' : '';
 		$id           = $field_args['id'] . '-' . str_replace( array( ' ', '_' ), '-', $option_value );
 
-		// if option have adjustable price than add price to the label
+		// if option have adjustable price than add price to the label.
 		$price_adjustment = array();
 		if ( isset( $option['price_adjustment_value'] ) && $field_args['adjust_price'] ) {
 			$plus_minus    = $option['price_adjustment_value'] != 0 ? ( $option['price_adjustment_value'] > 0 ? '+' : '-' ) : '';
 			$option_label .= ' (' . $plus_minus . wc_price( $option['price_adjustment_value'] ) . ')';
-			// Add custom data attribute to the input field and type
+			// Add custom data attribute to the input field and type.
 			$price_adjustment[] = 'data-price-adjustment="' . esc_attr( $option['price_adjustment_value'] ) . '"';
 			$price_adjustment[] = 'data-price-adjustment-type="' . esc_attr( $option['price_adjustment_type'] ) . '"';
-			// add data label to the input field
+			// add data label to the input field.
 			$price_adjustment[] = 'data-label="' . esc_attr( $option_label ) . '"';
 		}
 

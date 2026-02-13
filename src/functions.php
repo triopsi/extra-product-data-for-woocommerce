@@ -40,7 +40,7 @@ if ( ! function_exists( 'tr_is_woocommerce_active' ) ) {
 		if ( class_exists( 'WooCommerce' ) ) {
 			return true;
 		}
-		if ( in_array( 'woocommerce/woocommerce.php', apply_filters( 'active_plugins', get_option( 'active_plugins' ) ) ) ) {
+		if ( in_array( 'woocommerce/woocommerce.php', apply_filters( 'active_plugins', get_option( 'active_plugins' ) ), true ) ) {
 			return true;
 		}
 		if ( is_multisite() ) {
