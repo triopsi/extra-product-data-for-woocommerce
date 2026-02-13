@@ -163,3 +163,6 @@ Yes, the plugin has been tested with the latest WordPress release and PHP 8.2.
 
 = 1.8.1 (13.02.2026) =
 * Chore: Change Readme
+
+= 1.8.2 (13.02.2026) =
+* Fix: Required input name with full stops
