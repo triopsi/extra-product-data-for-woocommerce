@@ -282,7 +282,7 @@ class Exprdawc_Product_Page_Fronted {
 			foreach ( $custom_fields as $index_num => $input_field_array ) {
 
 				// Actual label lowercase and without spaces and _ are -.
-				$index = strtolower( str_replace( array( ' ', '-' ), '_', $input_field_array['label'] ) );
+				$index = esc_attr( strtolower( str_replace( array( ' ', '-' ), '_', sanitize_title( $input_field_array['label'] ) ) ) );
 
 				// Get the field value from the $_POST array.
 				$field_value = isset( $_POST['exprdawc_custom_field_input'][ $index ] ) ? $_POST['exprdawc_custom_field_input'][ $index ] : ''; // phpcs:ignore
@@ -408,7 +408,7 @@ class Exprdawc_Product_Page_Fronted {
 			foreach ( $custom_fields as $index_num => $input_field_array ) {
 
 				// Actual label lowercase and without spaces and _ are -.
-				$index = strtolower( str_replace( array( ' ', '-' ), '_', $input_field_array['label'] ) );
+				$index = esc_attr( strtolower( str_replace( array( ' ', '-' ), '_', sanitize_title( $input_field_array['label'] ) ) ) );
 
 				// Get the field value from the $_POST array.
 				$field_value = isset( $_POST['exprdawc_custom_field_input'][ $index ] ) ? $_POST['exprdawc_custom_field_input'][ $index ] : ''; // phpcs:ignore
