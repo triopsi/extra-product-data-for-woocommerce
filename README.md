@@ -25,6 +25,7 @@ Project:             | Woocommerce Extra Product Data
 | Stable tag | 1.7.11 |
 | License |  GPLv2 or later |
 | License URI |  https://www.gnu.org/licenses/gpl-2.0.html |
+| Wordpress Plugin Site | https://wordpress.org/plugins/extra-product-data-for-woocommerce/ |
 
 A WooCommerce plugin that collects additional user data for products and displays it in the order summary.
 
