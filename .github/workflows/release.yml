@@ -27,7 +27,6 @@ jobs:
           SLUG: extra-product-data-for-woocommerce
           SVN_USERNAME: ${{ secrets.SVN_USERNAME }}
           SVN_PASSWORD: ${{ secrets.SVN_PASSWORD }}
-          dry-run: true
       - name: Create Release and Upload Asset
         uses: softprops/action-gh-release@v2
         env:
