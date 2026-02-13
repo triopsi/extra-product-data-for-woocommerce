@@ -132,7 +132,7 @@ class Exprdawc_Product_Page_Fronted {
 			return $text;
 		}
 
-		if ( in_array( $product->get_type(), array( 'grouped', 'external' ) ) ) {
+		if ( in_array( $product->get_type(), array( 'grouped', 'external' ), true ) ) {
 			return $text;
 		}
 
@@ -167,7 +167,7 @@ class Exprdawc_Product_Page_Fronted {
 			return $url;
 		}
 
-		if ( ! is_single( $product->get_id() ) && in_array( $product->get_type(), array( 'subscription', 'simple' ) ) ) {
+		if ( ! is_single( $product->get_id() ) && in_array( $product->get_type(), array( 'subscription', 'simple' ), true ) ) {
 			if ( Exprdawc_Helper::check_required_fields( $product->get_id() ) ) {
 				$url = get_permalink( $product->get_id() );
 			}
@@ -238,7 +238,7 @@ class Exprdawc_Product_Page_Fronted {
 			echo '</div>';
 
 			// Add a div container for adjusted prices on the product page.
-			echo '<div class="exprdawc-price-adjustment" data-product-type="' . $product->get_type() . '" data-product-name="' . esc_attr( $product->get_name() ) . '" data-product-base-price="' . esc_attr( wc_get_price_to_display( $product ) ) . '"></div>';
+			echo '<div class="exprdawc-price-adjustment" data-product-type="' . esc_attr( $product->get_type() ) . '" data-product-name="' . esc_attr( $product->get_name() ) . '" data-product-base-price="' . esc_attr( wc_get_price_to_display( $product ) ) . '"></div>';
 		}
 	}
 
@@ -254,7 +254,7 @@ class Exprdawc_Product_Page_Fronted {
 	 * @param int  $quantity The quantity of the product being added to the cart.
 	 * @return bool Whether the validation has passed.
 	 */
-	public function exprdawc_validate_custom_fields( $passed, $product_id, $quantity ) {
+	public function exprdawc_validate_custom_fields( $passed, $product_id, $quantity ) { // phpcs:ignore
 
 		// if $_Post not have the exprdawc_custom_field_input array then return true.
 		if ( ! isset( $_POST['exprdawc_custom_field_input'] ) ) { // phpcs:ignore
@@ -324,7 +324,7 @@ class Exprdawc_Product_Page_Fronted {
 						}
 						break;
 					case 'yes-no':
-						if ( ! empty( $field_value ) && ! in_array( $field_value, array( 'yes', 'no' ) ) ) {
+						if ( ! empty( $field_value ) && ! in_array( $field_value, array( 'yes', 'no' ), true ) ) {
 							/* translators: %s: field label */
 							wc_add_notice( sprintf( esc_html__( '%s must be either "Yes" or "No".', 'extra-product-data-for-woocommerce' ), $input_field_array['label'] ), 'error' );
 							$passed = false;
@@ -377,13 +377,17 @@ class Exprdawc_Product_Page_Fronted {
 	}
 
 	/**
-	 * This function is responsible for saving custom fields in the cart.
+	 * Saves extra product data in the cart item data.
 	 *
-	 * @param array $cart_item_data The cart item data.
-	 * @param int   $product_id The product ID.
-	 * @return array
+	 * This function is responsible for saving the extra product data in the cart item data when a product is added to the cart. It checks for the presence of custom fields and their values in the $_POST data, sanitizes the input, and then adds it to the cart item data array under the key 'extra_user_data'.
+	 *
+	 * @param array $cart_item_data The existing cart item data.
+	 * @param int   $product_id The ID of the product being added to the cart.
+	 * @param int   $variation_id The ID of the variation being added to the cart (if applicable).
+	 * @param int   $quantity The quantity of the product being added to the cart.
+	 * @return array The modified cart item data with extra product data included.
 	 */
-	public function exprdawc_save_extra_product_data_in_cart( $cart_item_data, $product_id, $variation_id, $quantity ) {
+	public function exprdawc_save_extra_product_data_in_cart( $cart_item_data, $product_id, $variation_id, $quantity ) { // phpcs:ignore
 		// Check if nonce is set and valid.
 		if ( isset( $_POST['exprdawc_nonce'] ) ) {
 			$post_nonce = sanitize_text_field( wp_unslash( $_POST['exprdawc_nonce'] ) );
@@ -519,7 +523,7 @@ class Exprdawc_Product_Page_Fronted {
 
 				foreach ( $cart_item['extra_user_data'] as $user_data ) {
 					$show_empty_fields = get_option( 'exprdawc_show_empty_fields', 'yes' );
-					if ( empty( $user_data['value'] ) && $show_empty_fields !== 'yes' ) {
+					if ( true === empty( $user_data['value'] ) && 'yes' !== $show_empty_fields ) {
 						continue;
 					}
 					$item_data[] = array(
@@ -606,7 +610,7 @@ class Exprdawc_Product_Page_Fronted {
 	 * @param WC_Order              $order The order object.
 	 * @return void
 	 */
-	public function exprdawc_add_extra_product_data_to_order( $item, $cart_item_key, $values, $order ) {
+	public function exprdawc_add_extra_product_data_to_order( $item, $cart_item_key, $values, $order ) { // phpcs:ignore
 
 		if ( empty( $values['extra_user_data'] ) ) {
 			return;

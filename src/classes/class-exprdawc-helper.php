@@ -109,7 +109,7 @@ class Exprdawc_Helper {
 
 		// Generate Contotoinal Rules in json format.
 		if ( isset( $field_args['conditional_rules'] ) && $field_args['conditional_logic'] ) {
-			$field_args['data']['conditional_rules'] = json_encode( $field_args['conditional_rules'] );
+			$field_args['data']['conditional_rules'] = wp_json_encode( $field_args['conditional_rules'] );
 		}
 
 		// Set the wrapper class. With type and required class.
@@ -148,13 +148,13 @@ class Exprdawc_Helper {
 		}
 
 		// Add 'input-text' class to text fields for WC 2.4 compatibility. For text, date, url, email, tel, number, textarea, select, multiselect fields.
-		if ( in_array( $field_args['type'], array( 'text', 'date', 'url', 'email', 'tel', 'number', 'textarea', 'select', 'multiselect' ) ) ) {
+		if ( in_array( $field_args['type'], array( 'text', 'date', 'url', 'email', 'tel', 'number', 'textarea', 'select', 'multiselect' ), true ) ) {
 			$field_args['input_class'][] = 'input-text';
 		}
 
 		// Set the value of the field. If empty than look on field_arg default value.
 		$selected_key = 'attribute_' . str_replace( '-', '_', sanitize_title( $label_id ) );
-		if ( isset( $_REQUEST[ $selected_key ] ) ) {
+		if ( isset( $_REQUEST[ $selected_key ] ) ) { // phpcs:ignore
 			$value = wc_clean( wp_unslash( $_REQUEST[ $selected_key ] ) ); // phpcs:ignore
 		}
 		$field_args['value'] = $value ? $value : $field_args['default'];
@@ -173,12 +173,12 @@ class Exprdawc_Helper {
 			$field_args['input_class'][] = 'exprdawc-price-adjustment-field';
 		}
 
-		if ( $field_args['adjust_price'] && ! in_array( $field_args['type'], array( 'checkbox', 'radio', 'select' ) ) ) {
+		if ( $field_args['adjust_price'] && ! in_array( $field_args['type'], array( 'checkbox', 'radio', 'select' ), true ) ) {
 			$field_args['input_class'][]                                   = 'exprdawc-price-adjustment-field';
 			$field_args['custom_attributes']['data-price-adjustment-type'] = $field_args['price_adjustment_type'];
 			$field_args['custom_attributes']['data-price-adjustment']      = $field_args['price_adjustment_value'];
 			// Add Price in $required_string.
-			$plus_minus       = $field_args['price_adjustment_value'] != 0 ? ( $field_args['price_adjustment_value'] > 0 ? '+' : '-' ) : '';
+			$plus_minus = 0 !== $field_args['price_adjustment_value'] ? ( 0 < $field_args['price_adjustment_value'] ? '+' : '-' ) : '';
 			$required_string .= ' (' . $plus_minus . wc_price( $field_args['price_adjustment_value'] ) . ')';
 		}
 

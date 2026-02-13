@@ -82,7 +82,7 @@ class Autoloader {
 		$file       = self::$default_path . $class_name . '.php';
 		// if the file exists, require it.
 		if ( ! file_exists( $file ) ) {
-			error_log( "Autoloader: File not found for class \"$class_name\" at path \"$file\"." );
+			error_log( "Autoloader: File not found for class \"$class_name\" at path \"$file\"." ); // phpcs:ignore
 			return;
 		}
 		if ( file_exists( $file ) ) {
