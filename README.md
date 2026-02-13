@@ -3,12 +3,20 @@
 </p>
 
 # Woocommerce Extra Product Data
+![WordPress Plugin Version](https://img.shields.io/wordpress/plugin/v/extra-product-data-for-woocommerce)
+![WordPress Plugin Downloads](https://img.shields.io/wordpress/plugin/dt/extra-product-data-for-woocommerce)
+![WordPress Tested](https://img.shields.io/wordpress/plugin/tested/extra-product-data-for-woocommerce)
+![License](https://img.shields.io/github/license/triopsi/extra-product-data-for-woocommerce)
+![Issues](https://img.shields.io/github/issues/triopsi/extra-product-data-for-woocommerce)
+![GitHub Release](https://img.shields.io/github/v/release/triopsi/extra-product-data-for-woocommerce)
+![GitHub Actions](https://img.shields.io/github/actions/workflow/status/triopsi/extra-product-data-for-woocommerce/release.yml)
 
 - [Woocommerce Extra Product Data](#woocommerce-extra-product-data)
   - [General Infos](#general-infos)
   - [Description](#description)
   - [Features](#features)
   - [Installation](#installation)
+  - [Support](#support)
 - [Frequently Asked Questions](#frequently-asked-questions)
 - [Can the fields be customized?](#can-the-fields-be-customized)
 - [Is the plugin compatible with the latest WordPress version?](#is-the-plugin-compatible-with-the-latest-wordpress-version)
@@ -54,6 +62,15 @@ The plugin was developed by @triopsi using the latest stable PHP version (8.2) a
 2. Activate the plugin through the 'Plugins' screen in WordPress.
 3. Go to any WooCommerce product page to see the additional input fields.
 
+## Support
+
+This repository is used for development and issue tracking.
+
+If you need help using the plugin, please use the WordPress.org support forum:
+
+https://wordpress.org/support/plugin/extra-product-data-for-woocommerce/
+
+Bug reports and feature requests are welcome here on GitHub.
 # Frequently Asked Questions 
 
 # Can the fields be customized? 

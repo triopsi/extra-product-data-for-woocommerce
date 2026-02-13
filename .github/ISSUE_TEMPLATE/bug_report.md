@@ -1,43 +1,39 @@
 ---
-name: Bug report
-about: Report a bug in Extra Product Data for WooCommerce
+name: Bug Report
+about: Report a reproducible bug
 title: "[Bug] "
 labels: bug
-assignees: ''
 ---
 
-## Describe the bug
-A clear and concise description of what the bug is.
+## Bug Description
+Describe the problem clearly.
 
-## Steps to reproduce
-Steps to reproduce the behavior:
+## Steps to Reproduce
+1.
+2.
+3.
 
-1. Go to '...'
-2. Click on '...'
-3. Enter '...'
-4. See error
+## Expected Behavior
+What should happen?
 
-## Expected behavior
-What did you expect to happen?
-
-## Screenshots
-If applicable, add screenshots to help explain your problem.
+## Actual Behavior
+What actually happens?
 
 ## Environment
-Please complete the following information:
 
 - Plugin version:
 - WooCommerce version:
 - WordPress version:
 - PHP version:
-- Browser (if frontend issue):
+- Theme:
+- Active plugins (important):
 
-## Additional context
-Add any other context about the problem here.
+## Screenshots
+If applicable.
 
-## Debug information (optional but helpful)
-If available:
+## Checklist
+Before submitting, please confirm:
 
-- Console errors:
-- PHP error log:
-- Debug.log entries:
+- [ ] I tested with the latest plugin version
+- [ ] I disabled other plugins to rule out conflicts
+- [ ] I tested with a default theme (Storefront)
