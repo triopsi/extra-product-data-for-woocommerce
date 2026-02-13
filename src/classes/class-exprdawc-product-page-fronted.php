@@ -570,24 +570,24 @@ class Exprdawc_Product_Page_Fronted {
 							foreach ( $user_data['field_raw']['options'] as $option ) {
 								$cart_value = explode( ', ', $user_data['value'] );
 								if ( is_array( $cart_value ) && in_array( $option['value'], $cart_value, true ) ) {
-									if ( $option['price_adjustment_type'] === 'fixed' ) {
+									if ( 'fixed' === $option['price_adjustment_type'] ) {
 										$total_adjustment += $option['price_adjustment_value'];
-									} elseif ( $option['price_adjustment_type'] === 'percent' ) {
+									} elseif ( 'percent' === $option['price_adjustment_type'] ) {
 										$total_adjustment += ( $cart_item['data']->get_price() / 100 ) * $option['price_adjustment_value'];
 									}
 								} elseif ( $option['value'] === $user_data['value'] ) {
-									if ( $option['price_adjustment_type'] === 'fixed' ) {
+									if ( 'fixed' === $option['price_adjustment_type'] ) {
 										$total_adjustment = $option['price_adjustment_value'];
-									} elseif ( $option['price_adjustment_type'] === 'percent' ) {
+									} elseif ( 'percent' === $option['price_adjustment_type'] ) {
 										$total_adjustment = ( $cart_item['data']->get_price() / 100 ) * $option['price_adjustment_value'];
 									}
 									break;
 								}
 							}
 							$price_adjustment = $total_adjustment;
-						} elseif ( $user_data['field_raw']['price_adjustment_type'] === 'fixed' ) {
-								$price_adjustment = $user_data['field_raw']['price_adjustment_value'];
-						} elseif ( $user_data['field_raw']['price_adjustment_type'] === 'percent' ) {
+						} elseif ( 'fixed' === $user_data['field_raw']['price_adjustment_type'] ) {
+							$price_adjustment = $user_data['field_raw']['price_adjustment_value'];
+						} elseif ( 'percent' === $user_data['field_raw']['price_adjustment_type'] ) {
 							$price_adjustment = ( $cart_item['data']->get_price() / 100 ) * $user_data['field_raw']['price_adjustment_value'];
 						}
 					}
