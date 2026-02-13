@@ -79,7 +79,7 @@ class Exprdawc_Admin_Order extends Exprdawc_Base_Order_Class {
 	 *
 	 * Although the order object can be retrieved via 'WC_Order_Item::get_order', we've seen a significant performance hit when using that method.
 	 *
-	 * @param  WC_Order $order
+	 * @param  WC_Order $order WC Order.
 	 */
 	public static function set_order( $order ) {
 		self::$order = $order;
@@ -88,9 +88,9 @@ class Exprdawc_Admin_Order extends Exprdawc_Base_Order_Class {
 	/**
 	 * Display "Configure/Edit" button next to configurable addons in the edit-order screen.
 	 *
-	 * @param  int           $item_id
-	 * @param  WC_Order_Item $item
-	 * @param  WC_Product    $product
+	 * @param  int           $item_id   ID of the order item.
+	 * @param  WC_Order_Item $item      Order item object.
+	 * @param  WC_Product    $product   Product object associated with the order item.
 	 * @return void
 	 */
 	public function display_edit_button( $item_id, $item, $product ) {
@@ -155,7 +155,7 @@ class Exprdawc_Admin_Order extends Exprdawc_Base_Order_Class {
 	/**
 	 * Check if the current screen is one of the given screens.
 	 *
-	 * @param  string|array $screen
+	 * @param  string|array $screen Screen ID or array of screen IDs to check against.
 	 * @return bool
 	 */
 	public function is_current_screen( $screen ) {
@@ -190,7 +190,6 @@ class Exprdawc_Admin_Order extends Exprdawc_Base_Order_Class {
 		}
 
 		// Get the product data.
-		/** @disregard */
 		$product = $item->get_product();
 		if ( $product->is_type( 'variation' ) ) {
 			$product = wc_get_product( $product->get_parent_id() );
@@ -236,19 +235,17 @@ class Exprdawc_Admin_Order extends Exprdawc_Base_Order_Class {
 		// Check permissions and nonce.
 		check_ajax_referer( 'wc_exprdawc_edit_exprdawc', 'security' );
 
-		// Process Data Save
+		// Process Data Save.
 		$order_id = $this->process_save_order();
 
 		// Generate the updated HTML for the order items and notes.
 		ob_start();
 		$order = wc_get_order( $order_id );
-		/** @disregard */
 		include WC_ABSPATH . 'includes/admin/meta-boxes/views/html-order-items.php';
 		$html = ob_get_clean();
 
 		ob_start();
 		$notes = wc_get_order_notes( array( 'order_id' => $order_id ) );
-		/** @disregard */
 		include WC_ABSPATH . 'includes/admin/meta-boxes/views/html-order-notes.php';
 		$notes_html = ob_get_clean();
 

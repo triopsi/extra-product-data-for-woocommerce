@@ -50,11 +50,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 class Exprdawc_Product_Page_Fronted {
 
 	/**
-	 * This function calculates the factorial of a given number.
-	 *
-	 * @param int $number The number for which the factorial is to be calculated.
-	 * @return int The factorial of the given number.
-	 * @throws InvalidArgumentException If the provided number is less than 0.
+	 * Constructor for the class.
 	 */
 	public function __construct() {
 
@@ -229,7 +225,7 @@ class Exprdawc_Product_Page_Fronted {
 	 *
 	 * @return void
 	 */
-	function exprdawc_display_custom_fields_on_product_page() {
+	public function exprdawc_display_custom_fields_on_product_page() {
 		global $product;
 		$custom_fields = $product->get_meta( '_extra_product_fields', true );
 
@@ -258,10 +254,10 @@ class Exprdawc_Product_Page_Fronted {
 	 * @param int  $quantity The quantity of the product being added to the cart.
 	 * @return bool Whether the validation has passed.
 	 */
-	function exprdawc_validate_custom_fields( $passed, $product_id, $quantity ) {
+	public function exprdawc_validate_custom_fields( $passed, $product_id, $quantity ) {
 
-		// if $_Post not have the exprdawc_custom_field_input array then return true
-		if ( ! isset( $_POST['exprdawc_custom_field_input'] ) ) {
+		// if $_Post not have the exprdawc_custom_field_input array then return true.
+		if ( ! isset( $_POST['exprdawc_custom_field_input'] ) ) { // phpcs:ignore
 			return $passed;
 		}
 
@@ -288,10 +284,10 @@ class Exprdawc_Product_Page_Fronted {
 				// Actual label lowercase and without spaces and _ are -.
 				$index = strtolower( str_replace( array( ' ', '-' ), '_', $input_field_array['label'] ) );
 
-				// Get the field value from the $_POST array
-				$field_value = isset( $_POST['exprdawc_custom_field_input'][ $index ] ) ? $_POST['exprdawc_custom_field_input'][ $index ] : '';
+				// Get the field value from the $_POST array.
+				$field_value = isset( $_POST['exprdawc_custom_field_input'][ $index ] ) ? $_POST['exprdawc_custom_field_input'][ $index ] : ''; // phpcs:ignore
 
-				// Handle different field types
+				// Handle different field types.
 				if ( is_array( $field_value ) ) {
 					$field_value = array_map( 'sanitize_text_field', $field_value );
 				} else {
@@ -304,7 +300,7 @@ class Exprdawc_Product_Page_Fronted {
 					$passed = false;
 				}
 
-				// Additional validation based on field type
+				// Additional validation based on field type.
 				switch ( $input_field_array['type'] ) {
 					case 'email':
 						if ( ! empty( $field_value ) && ! is_email( $field_value ) ) {
@@ -372,9 +368,9 @@ class Exprdawc_Product_Page_Fronted {
 	 * @param object $product The product.
 	 * @return bool
 	 */
-	function exprdawc_check_product_support( $supports, $feature, $product ) {
+	public function exprdawc_check_product_support( $supports, $feature, $product ) {
 		// Check if the product supports the feature.
-		if ( $feature === 'ajax_add_to_cart' && Exprdawc_Helper::check_required_fields( $product->get_id() ) ) {
+		if ( 'ajax_add_to_cart' === $feature && Exprdawc_Helper::check_required_fields( $product->get_id() ) ) {
 			$supports = false;
 		}
 		return $supports;
@@ -387,7 +383,7 @@ class Exprdawc_Product_Page_Fronted {
 	 * @param int   $product_id The product ID.
 	 * @return array
 	 */
-	function exprdawc_save_extra_product_data_in_cart( $cart_item_data, $product_id, $variation_id, $quantity ) {
+	public function exprdawc_save_extra_product_data_in_cart( $cart_item_data, $product_id, $variation_id, $quantity ) {
 		// Check if nonce is set and valid.
 		if ( isset( $_POST['exprdawc_nonce'] ) ) {
 			$post_nonce = sanitize_text_field( wp_unslash( $_POST['exprdawc_nonce'] ) );
@@ -410,8 +406,8 @@ class Exprdawc_Product_Page_Fronted {
 				// Actual label lowercase and without spaces and _ are -.
 				$index = strtolower( str_replace( array( ' ', '-' ), '_', $input_field_array['label'] ) );
 
-				// Get the field value from the $_POST array
-				$field_value = isset( $_POST['exprdawc_custom_field_input'][ $index ] ) ? $_POST['exprdawc_custom_field_input'][ $index ] : '';
+				// Get the field value from the $_POST array.
+				$field_value = isset( $_POST['exprdawc_custom_field_input'][ $index ] ) ? $_POST['exprdawc_custom_field_input'][ $index ] : ''; // phpcs:ignore
 
 				if ( isset( $field_value ) ) {
 					switch ( $input_field_array['type'] ) {
@@ -448,7 +444,7 @@ class Exprdawc_Product_Page_Fronted {
 							break;
 					}
 
-					// Create a value only for cart. (Extra price are in the value of price)
+					// Create a value only for cart. (Extra price are in the value of price).
 					$user_input_value_cart = $user_input_value;
 
 					if ( $input_field_array['adjust_price'] ) {
@@ -504,9 +500,8 @@ class Exprdawc_Product_Page_Fronted {
 	 *
 	 * @param array $item_data The item data.
 	 * @param array $cart_item The cart item.
-	 * @return void
 	 */
-	function exprdawc_display_fields_on_cart_and_checkout( $item_data, $cart_item ) {
+	public function exprdawc_display_fields_on_cart_and_checkout( $item_data, $cart_item ) {
 
 		if ( ! isset( $cart_item['extra_user_data'] ) ) {
 			return $item_data;
@@ -611,7 +606,7 @@ class Exprdawc_Product_Page_Fronted {
 	 * @param WC_Order              $order The order object.
 	 * @return void
 	 */
-	function exprdawc_add_extra_product_data_to_order( $item, $cart_item_key, $values, $order ) {
+	public function exprdawc_add_extra_product_data_to_order( $item, $cart_item_key, $values, $order ) {
 
 		if ( empty( $values['extra_user_data'] ) ) {
 			return;

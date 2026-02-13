@@ -39,13 +39,14 @@ if ( ! defined( 'ABSPATH' ) ) {
 class Exprdawc_Helper {
 
 	/**
-	 * Generate the input field for the custom fields.
+	 * This function is responsible for generating the input field.
 	 *
-	 * @param int    $index The index of the field.
-	 * @param string $field_id The ID of the field.
-	 * @param string $field_id_raw The raw ID of the field.
-	 * @param array  $field_args The array of the field.
-	 * @param array  $actual_value_array The actual value of the field.
+	 * @param array  $field The field arguments.
+	 * @param string $value The field value.
+	 * @param bool   $skip_required_check Whether to skip the required check or not.
+	 * @param bool   $cart_page Whether the field is rendered on the cart page or not.
+	 *
+	 * @return void
 	 */
 	public static function generate_input_field( $field, $value = '', $skip_required_check = false, $cart_page = false ) {
 
@@ -154,11 +155,11 @@ class Exprdawc_Helper {
 		// Set the value of the field. If empty than look on field_arg default value.
 		$selected_key = 'attribute_' . str_replace( '-', '_', sanitize_title( $label_id ) );
 		if ( isset( $_REQUEST[ $selected_key ] ) ) {
-			$value = wc_clean( wp_unslash( $_REQUEST[ $selected_key ] ) );
+			$value = wc_clean( wp_unslash( $_REQUEST[ $selected_key ] ) ); // phpcs:ignore
 		}
 		$field_args['value'] = $value ? $value : $field_args['default'];
 
-		// Set the required attribute
+		// Set the required attribute.
 		$required_string = '';
 		if ( $field_args['required'] && ! $skip_required_check ) {
 			$field_args['custom_attributes']['required'] = 'required';
@@ -167,7 +168,7 @@ class Exprdawc_Helper {
 			$required_string = '&nbsp;<span class="optional">(' . esc_html__( 'Optional', 'extra-product-data-for-woocommerce' ) . ')</span>';
 		}
 
-		// Set a adjusted price hint if the field is a price adjustment field
+		// Set a adjusted price hint if the field is a price adjustment field.
 		if ( $field_args['adjust_price'] ) {
 			$field_args['input_class'][] = 'exprdawc-price-adjustment-field';
 		}
@@ -176,12 +177,12 @@ class Exprdawc_Helper {
 			$field_args['input_class'][]                                   = 'exprdawc-price-adjustment-field';
 			$field_args['custom_attributes']['data-price-adjustment-type'] = $field_args['price_adjustment_type'];
 			$field_args['custom_attributes']['data-price-adjustment']      = $field_args['price_adjustment_value'];
-			// Add Price in $required_string
+			// Add Price in $required_string.
 			$plus_minus       = $field_args['price_adjustment_value'] != 0 ? ( $field_args['price_adjustment_value'] > 0 ? '+' : '-' ) : '';
 			$required_string .= ' (' . $plus_minus . wc_price( $field_args['price_adjustment_value'] ) . ')';
 		}
 
-		// Set type specific classes and attributes
+		// Set type specific classes and attributes.
 		switch ( $field_args['type'] ) {
 			case 'long_text':
 			case 'textarea':
@@ -204,7 +205,7 @@ class Exprdawc_Helper {
 				break;
 		}
 
-		// Set the custom attributes
+		// Set the custom attributes. Remove empty custom attributes and attributes with empty values.
 		$field_args['custom_attributes'] = array_filter( (array) $field_args['custom_attributes'], 'strlen' );
 
 		if ( $field_args['maxlength'] ) {
@@ -267,12 +268,11 @@ class Exprdawc_Helper {
 	}
 
 	/**
-	 * This function is responsible for checking if the product supports the feature.
+	 * Check if the product have required fields.
 	 *
-	 * @param bool   $supports The supports.
-	 * @param string $feature The feature.
-	 * @param object $product The product.
-	 * @return bool
+	 * @param int $product_id The product ID.
+	 *
+	 * @return bool True if the product have required fields, false otherwise.
 	 */
 	public static function check_required_fields( $product_id ) {
 		$product = wc_get_product( $product_id );

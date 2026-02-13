@@ -52,7 +52,7 @@ class Exprdawc_Product_Page_Backend {
 		// Save custom fields.
 		add_action( 'woocommerce_process_product_meta', array( $this, 'exprdawc_save_extra_product_fields' ) );
 
-		// Add Scripts in head and footer
+		// Add Scripts in head and footer.
 		add_action( 'admin_enqueue_scripts', array( $this, 'exprdawc_show_general_tab' ) );
 
 		// Import custom fields.
@@ -222,19 +222,19 @@ class Exprdawc_Product_Page_Backend {
 	public function exprdawc_save_extra_product_fields( $post_id ) {
 
 		// Check if extra product fields are set.
-		if ( isset( $_POST['extra_product_fields'] ) ) {
+		if ( isset( $_POST['extra_product_fields'] ) ) { // phpcs:ignore
 
 			// Get the product.
 			$product = wc_get_product( $post_id );
 
-			// UNSLASH: Remove slashes from the input data
-			$extra_product_fields = wp_unslash( $_POST['extra_product_fields'] ); // Sanitized below.
+			// UNSLASH: Remove slashes from the input data. Sanitized below.
+			$extra_product_fields = wp_unslash( $_POST['extra_product_fields'] ); // phpcs:ignore
 
-			// SANITIZE: Clean the input data
+			// SANITIZE: Clean the input data.
 			$custom_fields = array_map(
 				function ( $field ) {
 
-					// SANITIZE: Clean the input data
+					// SANITIZE: Clean the input data.
 					$label                  = sanitize_text_field( $field['label'] );
 					$type                   = sanitize_text_field( $field['type'] );
 					$required               = isset( $field['required'] ) ? 1 : 0;
@@ -249,7 +249,7 @@ class Exprdawc_Product_Page_Backend {
 					$price_adjustment_type  = sanitize_text_field( $field['price_adjustment_type'] );
 					$price_adjustment_value = sanitize_text_field( $field['price_adjustment_value'] );
 
-					// Conditional Logic
+					// Conditional Logic.
 					if ( isset( $field['conditional_rules'] ) ) {
 						foreach ( $field['conditional_rules'] as $rule_group ) {
 							foreach ( $rule_group as $rule ) {
@@ -264,7 +264,7 @@ class Exprdawc_Product_Page_Backend {
 						$conditional_logic       = 0;
 					}
 
-					// For Checbox, Radio and Select
+					// For Checbox, Radio and Select.
 					$options = array();
 					if ( isset( $field['options'] ) && is_array( $field['options'] ) ) {
 						foreach ( $field['options'] as $key => $option ) {
@@ -280,15 +280,15 @@ class Exprdawc_Product_Page_Backend {
 
 					$default = isset( $field['default'] ) ? sanitize_text_field( $field['default'] ) : '';
 
-					// For Text
+					// For Text.
 					$minlength = isset( $field['minlength'] ) ? absint( $field['minlength'] ) : 0;
 					$maxlength = isset( $field['maxlength'] ) ? absint( $field['maxlength'] ) : 0;
 
-					// For Textarea
+					// For Textarea.
 					$rows = isset( $field['rows'] ) ? absint( $field['rows'] ) : 0;
 					$cols = isset( $field['cols'] ) ? absint( $field['cols'] ) : 0;
 
-					// VALIDATE: Ensure the data meets the required criteria
+					// VALIDATE: Ensure the data meets the required criteria.
 					if ( empty( $label ) || ! is_string( $label ) ) {
 						return;
 					}
@@ -327,22 +327,22 @@ class Exprdawc_Product_Page_Backend {
 				$extra_product_fields
 			);
 
-			// Remove any empty values
+			// Remove any empty values.
 			$custom_fields = array_filter( $custom_fields );
 
-			// Save the custom fields to the product
+			// Save the custom fields to the product.
 			$product->update_meta_data( '_extra_product_fields', $custom_fields );
 
 		} else {
-			// Get the product
+			// Get the product.
 			$product = wc_get_product( $post_id );
 
-			// Delete the custom fields from the product
+			// Delete the custom fields from the product.
 			$product->delete_meta_data( '_extra_product_fields' );
 
 		}
 
-		// Save the product
+		// Save the product.
 		$product->save();
 	}
 
@@ -354,19 +354,19 @@ class Exprdawc_Product_Page_Backend {
 	 */
 	public function exprdawc_import_custom_fields() {
 
-		// SECURITY: Check if the request is valid
+		// SECURITY: Check if the request is valid.
 		check_ajax_referer( 'edit_exprdawc_nonce', 'security' );
 
-		// VALIDATE: Ensure the product ID is set
-		if ( ! current_user_can( 'edit_product', $_POST['product_id'] ) ) {
+		// VALIDATE: Ensure the product ID is set.
+		if ( ! current_user_can( 'edit_product', $_POST['product_id'] ) ) { // phpcs:ignore
 			wp_send_json_error( 'You do not have permission to edit this product.' );
 		}
 
-		// VALIDATE: Ensure the product ID is valid
-		$product_id = intval( $_POST['product_id'] );
+		// VALIDATE: Ensure the product ID is valid.
+		$product_id = intval( $_POST['product_id'] ); // phpcs:ignore
 
-		// VALIDATE: Ensure the product ID is valid
-		if ( $product_id === 0 ) {
+		// VALIDATE: Ensure the product ID is valid.
+		if ( 0 === $product_id ) {
 			wp_send_json_error( 'Invalid product ID.' );
 		}
 
@@ -376,21 +376,21 @@ class Exprdawc_Product_Page_Backend {
 			wp_send_json_error( 'Invalid product ID.' );
 		}
 
-		// UNSLASH: Remove slashes from the input data
-		$export_string = wp_unslash( $_POST['export_string'] );
+		// UNSLASH: Remove slashes from the input data.
+		$export_string = wp_unslash( $_POST['export_string'] ); // phpcs:ignore
 
-		// SANITIZE: Clean the input data
+		// SANITIZE: Clean the input data.
 		$custom_fields = json_decode( $export_string, true );
 
-		// Validate JSON string
+		// Validate JSON string.
 		if ( json_last_error() !== JSON_ERROR_NONE ) {
 			wp_send_json_error( 'Invalid JSON string.' );
 		}
 
-		// Save the sanitized and validated data
+		// Save the sanitized and validated data.
 		$product->update_meta_data( '_extra_product_fields', $custom_fields );
 
-		// Save the product
+		// Save the product.
 		$product->save();
 
 		// Return success message.

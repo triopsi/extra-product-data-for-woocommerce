@@ -178,7 +178,6 @@ class Exprdawc_User_Order extends Exprdawc_Base_Order_Class {
 		}
 
 		// Get the product data.
-		/** @disregard */
 		$product = $item->get_product();
 		if ( $product->is_type( 'variation' ) ) {
 			$product = wc_get_product( $product->get_parent_id() );
@@ -214,8 +213,8 @@ class Exprdawc_User_Order extends Exprdawc_Base_Order_Class {
 			// Actual label lowercase and without spaces and _ are -.
 			$index = strtolower( str_replace( array( ' ', '-' ), '_', $input_field_array['label'] ) );
 
-			// Get the field value from the $_POST array
-			$field_value = isset( $_POST['exprdawc_custom_field_input'][ $index ] ) ? $_POST['exprdawc_custom_field_input'][ $index ] : '';
+			// Get the field value from the $_POST array.
+			$field_value = isset( $_POST['exprdawc_custom_field_input'][ $index ] ) ? $_POST['exprdawc_custom_field_input'][ $index ] : ''; // phpcs:ignore
 
 			$item_meta_data = array_column( $item_meta_data, null, 'label' );
 			$item_meta_data = array_combine(
@@ -232,7 +231,7 @@ class Exprdawc_User_Order extends Exprdawc_Base_Order_Class {
 
 			// Validate the input.
 			if ( ! empty( $field_value ) ) {
-				// Handle different field types
+				// Handle different field types.
 				if ( is_array( $field_value ) ) {
 					$field_value = array_map( 'sanitize_text_field', $field_value );
 				} else {
@@ -248,21 +247,25 @@ class Exprdawc_User_Order extends Exprdawc_Base_Order_Class {
 			switch ( $input_field_array['type'] ) {
 				case 'email':
 					if ( ! empty( $field_value ) && ! is_email( $field_value ) ) {
+						/* translators: %s is the field label. */
 						wp_send_json_error( array( 'message' => sprintf( __( '%s is not a valid email address.', 'extra-product-data-for-woocommerce' ), $input_field_array['label'] ) ) );
 					}
 					break;
 				case 'number':
 					if ( ! empty( $field_value ) && ! is_numeric( $field_value ) ) {
+						/* translators: %s is the field label. */
 						wp_send_json_error( array( 'message' => sprintf( __( '%s must be a number.', 'extra-product-data-for-woocommerce' ), $input_field_array['label'] ) ) );
 					}
 					break;
 				case 'date':
 					if ( ! empty( $field_value ) && ! strtotime( $field_value ) ) {
+						/* translators: %s is the field label. */
 						wp_send_json_error( array( 'message' => sprintf( __( '%s is not a valid date.', 'extra-product-data-for-woocommerce' ), $input_field_array['label'] ) ) );
 					}
 					break;
 				case 'yes-no':
 					if ( ! empty( $field_value ) && ! in_array( $field_value, array( 'yes', 'no' ), true ) ) {
+						/* translators: %s is the field label. */
 						wp_send_json_error( array( 'message' => sprintf( __( '%s must be either "Yes" or "No".', 'extra-product-data-for-woocommerce' ), $input_field_array['label'] ) ) );
 					}
 					break;
@@ -270,6 +273,7 @@ class Exprdawc_User_Order extends Exprdawc_Base_Order_Class {
 					$array_colum = array_column( $input_field_array['options'], 'value' );
 					$intersect   = array_intersect( (array) $field_value, $array_colum );
 					if ( ! empty( $field_value ) && empty( $intersect ) ) {
+						/* translators: %s is the field label. */
 						wp_send_json_error( array( 'message' => sprintf( __( '%s is not a valid option.', 'extra-product-data-for-woocommerce' ), $input_field_array['label'] ) ) );
 					}
 					break;
@@ -277,6 +281,7 @@ class Exprdawc_User_Order extends Exprdawc_Base_Order_Class {
 					$array_colum = array_column( $input_field_array['options'], 'value' );
 					$intersect   = array_intersect( (array) $field_value, $array_colum );
 					if ( ! empty( $field_value ) && empty( $intersect ) ) {
+						/* translators: %s is the field label. */
 						wp_send_json_error( array( 'message' => sprintf( __( '%s is not a valid option.', 'extra-product-data-for-woocommerce' ), $input_field_array['label'] ) ) );
 					}
 					break;
@@ -284,6 +289,7 @@ class Exprdawc_User_Order extends Exprdawc_Base_Order_Class {
 					$array_colum = array_column( $input_field_array['options'], 'value' );
 					$intersect   = array_intersect( (array) $field_value, $array_colum );
 					if ( ! empty( $field_value ) && empty( $intersect ) ) {
+						/* translators: %s is the field label. */
 						wp_send_json_error( array( 'message' => sprintf( __( '%s is not a valid option.', 'extra-product-data-for-woocommerce' ), $input_field_array['label'] ) ) );
 					}
 					break;
@@ -301,9 +307,11 @@ class Exprdawc_User_Order extends Exprdawc_Base_Order_Class {
 				$field_value_str = implode( ', ', $field_value );
 				$old_value_str   = is_array( $old_value ) ? implode( ', ', $old_value ) : $old_value;
 				if ( $field_value_str !== $old_value_str ) {
+					/* translators: %1$s is the field label, %2$s is the old value, %3$s is the new value. */
 					$order->add_order_note( sprintf( __( '%1$s changed from "%2$s" to "%3$s".', 'extra-product-data-for-woocommerce' ), $input_field_array['label'], $old_value_str, $field_value_str ) );
 				}
 			} elseif ( $field_value !== $old_value ) {
+					/* translators: %1$s is the field label, %2$s is the old value, %3$s is the new value. */
 					$order->add_order_note( sprintf( __( '%1$s changed from "%2$s" to "%3$s".', 'extra-product-data-for-woocommerce' ), $input_field_array['label'], $old_value, $field_value ) );
 			}
 
@@ -351,11 +359,6 @@ class Exprdawc_User_Order extends Exprdawc_Base_Order_Class {
 
 				$item['total'] = $new_price * $item->get_quantity();
 
-				/** @disregard */
-				// $item->set_subtotal( $new_price * $item->get_quantity() );
-				// /** @disregard */
-				// $item->set_total( $new_price * $item->get_quantity() );
-
 				$extra_costs += $price_adjustment;
 			}
 
@@ -372,7 +375,7 @@ class Exprdawc_User_Order extends Exprdawc_Base_Order_Class {
 		// Recalculate the order totals.
 		$new_order_price = $order->calculate_totals();
 
-		// Save Order
+		// Save Order.
 		$order->save();
 
 		$response = array(
@@ -390,7 +393,7 @@ class Exprdawc_User_Order extends Exprdawc_Base_Order_Class {
 		// Check permissions and nonce.
 		check_ajax_referer( 'exprdawc_save_order_item_meta', 'security' );
 
-		// Process Data Save
+		// Process Data Save.
 		$this->process_save_order();
 
 		wp_send_json_success(

@@ -90,11 +90,11 @@ class Autoloader {
 		}
 	}
 
-
 	/**
-	 * Default setup routine. Register a function as `__autoload()` implementation.
+	 * Setup the autoloader.
 	 *
-	 * @return void
+	 * @param string $default_path Default path for autoloader.
+	 * @param string $default_namespace Default namespace for autoloader.
 	 */
 	public static function setup( $default_path = '', $default_namespace = '' ) {
 

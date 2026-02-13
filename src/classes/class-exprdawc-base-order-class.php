@@ -51,8 +51,8 @@ class Exprdawc_Base_Order_Class {
 	protected function process_save_order() {
 
 		// Get the necessary parameters.
-		$item_id  = isset( $_POST['item_id'] ) ? intval( $_POST['item_id'] ) : 0;
-		$order_id = isset( $_POST['order_id'] ) ? intval( $_POST['order_id'] ) : 0;
+		$item_id  = isset( $_POST['item_id'] ) ? intval( $_POST['item_id'] ) : 0;// phpcs:ignore
+		$order_id = isset( $_POST['order_id'] ) ? intval( $_POST['order_id'] ) : 0;// phpcs:ignore
 
 		if ( ! $item_id || ! $order_id ) {
 			wp_send_json_error( array( 'message' => __( 'Invalid order or item ID.', 'extra-product-data-for-woocommerce' ) ) );
@@ -97,9 +97,7 @@ class Exprdawc_Base_Order_Class {
 		// Calculate new price adjustments and update the item.
 		$new_price = $this->calculate_new_price( $item );
 
-		/** @disregard */
 		$item->set_subtotal( $new_price * $item->get_quantity() );
-		/** @disregard */
 		$item->set_total( $new_price * $item->get_quantity() );
 
 		// Save the item.
@@ -117,7 +115,6 @@ class Exprdawc_Base_Order_Class {
 	 * @param WC_Order_Item $item  The order item object.
 	 */
 	protected function save_new_meta_data( $order, $item ) {
-		/** @disregard */
 		$product = $item->get_product();
 		if ( $product->is_type( 'variation' ) ) {
 			$product = wc_get_product( $product->get_parent_id() );
@@ -145,9 +142,9 @@ class Exprdawc_Base_Order_Class {
 			$field_meta = array();
 			foreach ( $custom_fields as $field ) {
 
-				// Get the field value from the $_POST array
-				$field_value = isset( $_POST['exprdawc_custom_field_input'][ strtolower( str_replace( array( ' ', '-' ), '_', $field['label'] ) ) ] )
-				? $_POST['exprdawc_custom_field_input'][ strtolower( str_replace( array( ' ', '-' ), '_', $field['label'] ) ) ]
+				// Get the field value from the $_POST array.
+				$field_value = isset( $_POST['exprdawc_custom_field_input'][ strtolower( str_replace( array( ' ', '-' ), '_', $field['label'] ) ) ] ) // phpcs:ignore
+				? $_POST['exprdawc_custom_field_input'][ strtolower( str_replace( array( ' ', '-' ), '_', $field['label'] ) ) ] // phpcs:ignore
 				: '';
 
 				// Sanitize the input.
@@ -164,6 +161,7 @@ class Exprdawc_Base_Order_Class {
 
 				// Validate the input.
 				if ( ! empty( $field['required'] ) && empty( $field_value ) ) {
+					/* translators: %s is the field label. */
 					wp_send_json_error( array( 'message' => sprintf( __( '%s is a required field.', 'extra-product-data-for-woocommerce' ), $field['label'] ) ) );
 				}
 
@@ -171,21 +169,25 @@ class Exprdawc_Base_Order_Class {
 				switch ( $field['type'] ) {
 					case 'email':
 						if ( ! empty( $field_value ) && ! is_email( $field_value ) ) {
+							/* translators: %s is the field value. */
 							wp_send_json_error( array( 'message' => sprintf( __( '%s is not a valid email address.', 'extra-product-data-for-woocommerce' ), $field['label'] ) ) );
 						}
 						break;
 					case 'number':
 						if ( ! empty( $field_value ) && ! is_numeric( $field_value ) ) {
+							/* translators: %s is the field value. */
 							wp_send_json_error( array( 'message' => sprintf( __( '%s must be a number.', 'extra-product-data-for-woocommerce' ), $field['label'] ) ) );
 						}
 						break;
 					case 'date':
 						if ( ! empty( $field_value ) && ! strtotime( $field_value ) ) {
+							/* translators: %s is the field value. */
 							wp_send_json_error( array( 'message' => sprintf( __( '%s is not a valid date.', 'extra-product-data-for-woocommerce' ), $field['label'] ) ) );
 						}
 						break;
 					case 'yes-no':
 						if ( ! empty( $field_value ) && ! in_array( $field_value, array( 'yes', 'no' ), true ) ) {
+							/* translators: %s is the field value. */
 							wp_send_json_error( array( 'message' => sprintf( __( '%s must be either "Yes" or "No".', 'extra-product-data-for-woocommerce' ), $field['label'] ) ) );
 						}
 						break;
@@ -193,6 +195,7 @@ class Exprdawc_Base_Order_Class {
 						$array_colum = array_column( $field['options'], 'value' );
 						$intersect   = array_intersect( (array) $field_value, $array_colum );
 						if ( ! empty( $field_value ) && empty( $intersect ) ) {
+							/* translators: %s is the field label. */
 							wp_send_json_error( array( 'message' => sprintf( __( '%s is not a valid option.', 'extra-product-data-for-woocommerce' ), $field['label'] ) ) );
 						}
 						break;
@@ -200,6 +203,7 @@ class Exprdawc_Base_Order_Class {
 						$array_colum = array_column( $field['options'], 'value' );
 						$intersect   = array_intersect( (array) $field_value, $array_colum );
 						if ( ! empty( $field_value ) && empty( $intersect ) ) {
+							/* translators: %s is the field label. */
 							wp_send_json_error( array( 'message' => sprintf( __( '%s is not a valid option.', 'extra-product-data-for-woocommerce' ), $field['label'] ) ) );
 						}
 						break;
@@ -207,6 +211,7 @@ class Exprdawc_Base_Order_Class {
 						$array_colum = array_column( $field['options'], 'value' );
 						$intersect   = array_intersect( (array) $field_value, $array_colum );
 						if ( ! empty( $field_value ) && empty( $intersect ) ) {
+							/* translators: %s is the field label. */
 							wp_send_json_error( array( 'message' => sprintf( __( '%s is not a valid option.', 'extra-product-data-for-woocommerce' ), $field['label'] ) ) );
 						}
 						break;
@@ -224,9 +229,11 @@ class Exprdawc_Base_Order_Class {
 					$field_value_str = implode( ', ', $field_value );
 					$old_value_str   = is_array( $old_value ) ? implode( ', ', $old_value ) : $old_value;
 					if ( $field_value_str !== $old_value_str ) {
+						/* translators: %1$s is the field label, %2$s is the old value, %3$s is the new value. */
 						$order->add_order_note( sprintf( __( '%1$s changed from "%2$s" to "%3$s".', 'extra-product-data-for-woocommerce' ), $field['label'], $old_value_str, $field_value_str ) );
 					}
 				} elseif ( $field_value !== $old_value ) {
+						/* translators: %1$s is the field label, %2$s is the old value, %3$s is the new value. */
 						$order->add_order_note( sprintf( __( '%1$s changed from "%2$s" to "%3$s".', 'extra-product-data-for-woocommerce' ), $field['label'], $old_value, $field_value ) );
 				}
 
@@ -257,7 +264,6 @@ class Exprdawc_Base_Order_Class {
 	 * @return float The new price for the item.
 	 */
 	protected function calculate_new_price( $item ) {
-		/** @disregard */
 		$product = $item->get_product();
 		if ( $product->is_type( 'variation' ) ) {
 			$product = wc_get_product( $product->get_parent_id() );
@@ -268,9 +274,9 @@ class Exprdawc_Base_Order_Class {
 
 		if ( ! empty( $custom_fields ) ) {
 			foreach ( $custom_fields as $field ) {
-				// Get the field value from the $_POST array
-				$field_value = isset( $_POST['exprdawc_custom_field_input'][ strtolower( str_replace( array( ' ', '-' ), '_', $field['label'] ) ) ] )
-				? $_POST['exprdawc_custom_field_input'][ strtolower( str_replace( array( ' ', '-' ), '_', $field['label'] ) ) ]
+				// Get the field value from the $_POST array.
+				$field_value = isset( $_POST['exprdawc_custom_field_input'][ strtolower( str_replace( array( ' ', '-' ), '_', $field['label'] ) ) ] ) // phpcs:ignore
+				? $_POST['exprdawc_custom_field_input'][ strtolower( str_replace( array( ' ', '-' ), '_', $field['label'] ) ) ] // phpcs:ignore
 				: '';
 
 				// Sanitize the input.
@@ -298,9 +304,9 @@ class Exprdawc_Base_Order_Class {
 	 * @return float Adjustment value.
 	 */
 	protected function get_adjustment_value( $field, $product ) {
-		if ( $field['price_adjustment_type'] === 'fixed' ) {
+		if ( 'fixed' === $field['price_adjustment_type'] ) {
 			return floatval( $field['price_adjustment_value'] );
-		} elseif ( $field['price_adjustment_type'] === 'percent' ) {
+		} elseif ( 'percent' === $field['price_adjustment_type'] ) {
 			return ( $product->get_price() / 100 ) * floatval( $field['price_adjustment_value'] );
 		}
 		return 0;
