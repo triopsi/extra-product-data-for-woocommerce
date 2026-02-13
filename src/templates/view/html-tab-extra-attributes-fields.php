@@ -337,7 +337,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 											<input type="number" class="exprdawc_input exprdawc_price_adjustment_value" name="extra_product_fields[<?php echo esc_html( $index ); ?>][options][<?php echo esc_html( $option_index ); ?>][price_adjustment_value]" placeholder="0.00" value="<?php echo esc_attr( $option['price_adjustment_value'] ?? '' ); ?>" step="0.01" />
 										</td>
 										<td class="field_option_table_action_td">
-											<button type="button" class="button remove_option"><i class="dashicons dashicons-trash"></i></button>
+											<button type="button" class="button remove_option"><?php esc_html_e( 'Remove', 'extra-product-data-for-woocommerce' ); ?></button>
 										</td>
 									</tr>
 								<?php endif; ?>

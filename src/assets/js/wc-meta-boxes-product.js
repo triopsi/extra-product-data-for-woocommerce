@@ -26,7 +26,11 @@ jQuery(function ($) {
          * @link https://www.triopsi.dev
          */
         constructor() {
+
+            const $fields = $('#exprdawc_field_body').find('tr.exprdawc_attribute');
+            this.fieldIndex = $fields.length;
             this.fieldIndex = $('#exprdawc_field_body tr.exprdawc_attribute').length;
+
             this.isDirty = false;
 
             this.init();
@@ -47,6 +51,8 @@ jQuery(function ($) {
             $('#exprdawc_add_custom_field').on('click', this.addCustomField.bind(this));
             $(document).on('click', '.exprdawc_remove_custom_field', this.removeCustomField.bind(this));
             $(document).on('change', '.exprdawc_attribute_type', this.toggleOptions.bind(this));
+            $(document).on('click', '.exprdawc_attribute_type', this.openOptionsTable.bind(this));
+            $(document).on('click', '.exprdawc_attribute_input_name', this.openOptionsTable.bind(this));
             $(document).on('click', '.toggle-options', this.toggleOptionsTable.bind(this));
             $(document).on('click', '.add_option', this.addOption.bind(this));
             $(document).on('click', '.remove_option', this.removeOption.bind(this));
@@ -60,6 +66,7 @@ jQuery(function ($) {
             $(document).on('change', '.exprdawc_conditional_operator', this.toggleConditionalValueField.bind(this));
             $(document).on('change', '.exprdawc_conditional_logic_field', this.toggleConditionalTable.bind(this));
             $(document).on('click', '.exprdawc_adjust_price_field', this.togglePriceAdjustmentTable.bind(this));
+            $(document).on('change keyup', '.field_option_table_value_td input', this.syncOptionValueToDefault.bind(this));
             $(document).on('click', '.exprdawc_copy_custom_field', this.exprdawc_copy_custom_field.bind(this));
             $(document).on('change keyup', 'input.field_name', this.updateConditionalFieldOptions.bind(this));
 
@@ -456,12 +463,34 @@ jQuery(function ($) {
         }
 
         /**
+         * Open options table (always expand).
+         * @param {*} e
+         */
+        openOptionsTable(e) {
+            const $target = $(e.currentTarget);
+            const $row = $target.closest('tr.exprdawc_attribute');
+            const $optionsRow = $row.next('.exprdawc_options');
+            const $icon = $row.find('.toggle-options');
+
+            $optionsRow.show();
+            $icon.removeClass('dashicons-arrow-up').addClass('dashicons-arrow-down');
+        }
+
+        /**
          * Add an option.
          * @param {*} e 
          */
         addOption(e) {
             this.setDirty();
             const $optionsTable = $(e.currentTarget).closest('.exprdawc_options_table');
+            const actual_index = $optionsTable.closest('.exprdawc_fields_table').data('index')
+
+            // Guard: if actual_index is undefined or null, log and inform the user.
+            if (typeof actual_index === 'undefined' || actual_index === null) {
+                console.error('exprdawc: actual_index is undefined or null', $optionsTable);
+                return;
+            }
+
             const optionIndex = $optionsTable.find('tbody tr').length;
             const fieldType = $optionsTable.closest('.exprdawc_fields_table').find('.exprdawc_attribute_type').val();
             const isPriceAdjustmentEnabled = $optionsTable.closest('.exprdawc_options').find('.exprdawc_adjust_price_field').is(':checked');
@@ -470,14 +499,14 @@ jQuery(function ($) {
             if (isPriceAdjustmentEnabled) {
                 priceAdjustmentColumns = `
                     <td class="field_price_adjustment_type_${optionIndex} field_price_adjustment_type">
-                    <select name="extra_product_fields[${this.fieldIndex}][options][${optionIndex}][price_adjustment_type]" class="exprdawc_input exprdawc_price_adjustment_type">
+                    <select name="extra_product_fields[${actual_index}][options][${optionIndex}][price_adjustment_type]" class="exprdawc_input exprdawc_price_adjustment_type">
                         <option value="fixed">${exprdawc_admin_meta_boxes.fixed}</option>
                         <option value="quantity">${exprdawc_admin_meta_boxes.quantity}</option>
                         <option value="percentage">${exprdawc_admin_meta_boxes.percentage}</option>
                     </select>
                     </td>
                     <td class="field_price_adjustment_value_${optionIndex} field_price_adjustment_value">
-                        <input type="number" name="extra_product_fields[${this.fieldIndex}][options][${optionIndex}][price_adjustment_value]" class="exprdawc_input exprdawc_price_adjustment_value" step="0.01" placeholder="0.00" value="0" />
+                        <input type="number" name="extra_product_fields[${actual_index}][options][${optionIndex}][price_adjustment_value]" class="exprdawc_input exprdawc_price_adjustment_value" step="0.01" placeholder="0.00" value="0" />
                     </td>
                 `;
             }
@@ -488,13 +517,13 @@ jQuery(function ($) {
                     <tr>
                     <td class="move"><i class="dashicons dashicons-move"></i></td>
                     <td class="field_option_table_label_td">
-                        <input type="text" name="extra_product_fields[${this.fieldIndex}][options][${optionIndex}][label]" placeholder="${exprdawc_admin_meta_boxes.option_label_placeholder}" />
+                        <input type="text" name="extra_product_fields[${actual_index}][options][${optionIndex}][label]" placeholder="${exprdawc_admin_meta_boxes.option_label_placeholder}" />
                     </td>
                     <td class="field_option_table_value_td">
-                        <input type="text" name="extra_product_fields[${this.fieldIndex}][options][${optionIndex}][value]" placeholder="${exprdawc_admin_meta_boxes.option_value_placeholder}" />
+                        <input type="text" name="extra_product_fields[${actual_index}][options][${optionIndex}][value]" placeholder="${exprdawc_admin_meta_boxes.option_value_placeholder}" />
                     </td>
                     <td class="field_option_table_selected_td">
-                        <input type="radio" name="extra_product_fields[${this.fieldIndex}][default]" value="${optionIndex}" />
+                        <input type="radio" name="extra_product_fields[${actual_index}][default]" value="${optionIndex}" />
                     </td>
                     ${priceAdjustmentColumns}
                     <td class="field_option_table_action_td">
@@ -509,13 +538,13 @@ jQuery(function ($) {
                     <tr>
                     <td class="move"><i class="dashicons dashicons-move"></i></td>
                     <td class="field_option_table_label_td">
-                        <input type="text" name="extra_product_fields[${this.fieldIndex}][options][${optionIndex}][label]" placeholder="${exprdawc_admin_meta_boxes.option_label_placeholder}" />
+                        <input type="text" name="extra_product_fields[${actual_index}][options][${optionIndex}][label]" placeholder="${exprdawc_admin_meta_boxes.option_label_placeholder}" />
                     </td>
                     <td class="field_option_table_value_td">
-                        <input type="text" name="extra_product_fields[${this.fieldIndex}][options][${optionIndex}][value]" placeholder="${exprdawc_admin_meta_boxes.option_value_placeholder}" />
+                        <input type="text" name="extra_product_fields[${actual_index}][options][${optionIndex}][value]" placeholder="${exprdawc_admin_meta_boxes.option_value_placeholder}" />
                     </td>
                     <td class="field_option_table_selected_td">
-                        <input type="checkbox" name="extra_product_fields[${this.fieldIndex}][options][${optionIndex}][default]" value="1" />
+                        <input type="checkbox" name="extra_product_fields[${actual_index}][options][${optionIndex}][default]" value="1" />
                     </td>
                     ${priceAdjustmentColumns}
                     <td class="field_option_table_action_td">
@@ -554,6 +583,42 @@ jQuery(function ($) {
                 $noEntryMessage.show();
             } else {
                 $noEntryMessage.hide();
+            }
+        }
+
+        /**
+         * Sync option value to the default input value for radio/select types.
+         * When an option's value input changes, the corresponding default input's value
+         * (the radio input in case of radio/select) will be updated to match.
+         * @param {*} e
+         */
+        syncOptionValueToDefault(e) {
+            const $input = $(e.currentTarget);
+            const $row = $input.closest('tr');
+            const $optionsTable = $input.closest('.exprdawc_options_table');
+            const optionIndex = $optionsTable.find('tbody tr').index($row);
+            const actualIndex = $optionsTable.closest('.exprdawc_fields_table').data('index');
+
+            if (typeof actualIndex === 'undefined' || actualIndex === null) {
+                console.error('exprdawc: actualIndex is undefined or null', $optionsTable);
+                return;
+            }
+
+            const newValue = $input.val();
+            const fieldType = $optionsTable.closest('.exprdawc_fields_table').find('.exprdawc_attribute_type').val();
+
+            // For radio/select types the default is a single value input (radio)
+            if (fieldType === 'radio' || fieldType === 'select') {
+                const $targetRadio = $optionsTable.find('tbody tr').eq(optionIndex).find('input[type="radio"]');
+                if ($targetRadio.length) {
+                    $targetRadio.val(newValue);
+                } else {
+                    // Fallback: try to find radios by name pattern and set the matching index
+                    const $radios = $optionsTable.find('input[type="radio"][name^="extra_product_fields"]');
+                    if ($radios.length > optionIndex) {
+                        $radios.eq(optionIndex).val(newValue);
+                    }
+                }
             }
         }
 

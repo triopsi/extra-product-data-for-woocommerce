@@ -41,6 +41,8 @@ jQuery(function ($) {
      */
     function ExprdawcMetaBoxesProduct() {
       _classCallCheck(this, ExprdawcMetaBoxesProduct);
+      var $fields = $('#exprdawc_field_body').find('tr.exprdawc_attribute');
+      this.fieldIndex = $fields.length;
       this.fieldIndex = $('#exprdawc_field_body tr.exprdawc_attribute').length;
       this.isDirty = false;
       this.init();
@@ -65,6 +67,8 @@ jQuery(function ($) {
         $('#exprdawc_add_custom_field').on('click', this.addCustomField.bind(this));
         $(document).on('click', '.exprdawc_remove_custom_field', this.removeCustomField.bind(this));
         $(document).on('change', '.exprdawc_attribute_type', this.toggleOptions.bind(this));
+        $(document).on('click', '.exprdawc_attribute_type', this.openOptionsTable.bind(this));
+        $(document).on('click', '.exprdawc_attribute_input_name', this.openOptionsTable.bind(this));
         $(document).on('click', '.toggle-options', this.toggleOptionsTable.bind(this));
         $(document).on('click', '.add_option', this.addOption.bind(this));
         $(document).on('click', '.remove_option', this.removeOption.bind(this));
@@ -78,6 +82,7 @@ jQuery(function ($) {
         $(document).on('change', '.exprdawc_conditional_operator', this.toggleConditionalValueField.bind(this));
         $(document).on('change', '.exprdawc_conditional_logic_field', this.toggleConditionalTable.bind(this));
         $(document).on('click', '.exprdawc_adjust_price_field', this.togglePriceAdjustmentTable.bind(this));
+        $(document).on('change keyup', '.field_option_table_value_td input', this.syncOptionValueToDefault.bind(this));
         $(document).on('click', '.exprdawc_copy_custom_field', this.exprdawc_copy_custom_field.bind(this));
         $(document).on('change keyup', 'input.field_name', this.updateConditionalFieldOptions.bind(this));
 
@@ -224,6 +229,21 @@ jQuery(function ($) {
       }
 
       /**
+       * Open options table (always expand).
+       * @param {*} e
+       */
+    }, {
+      key: "openOptionsTable",
+      value: function openOptionsTable(e) {
+        var $target = $(e.currentTarget);
+        var $row = $target.closest('tr.exprdawc_attribute');
+        var $optionsRow = $row.next('.exprdawc_options');
+        var $icon = $row.find('.toggle-options');
+        $optionsRow.show();
+        $icon.removeClass('dashicons-arrow-up').addClass('dashicons-arrow-down');
+      }
+
+      /**
        * Add an option.
        * @param {*} e 
        */
@@ -232,17 +252,24 @@ jQuery(function ($) {
       value: function addOption(e) {
         this.setDirty();
         var $optionsTable = $(e.currentTarget).closest('.exprdawc_options_table');
+        var actual_index = $optionsTable.closest('.exprdawc_fields_table').data('index');
+
+        // Guard: if actual_index is undefined or null, log and inform the user.
+        if (typeof actual_index === 'undefined' || actual_index === null) {
+          console.error('exprdawc: actual_index is undefined or null', $optionsTable);
+          return;
+        }
         var optionIndex = $optionsTable.find('tbody tr').length;
         var fieldType = $optionsTable.closest('.exprdawc_fields_table').find('.exprdawc_attribute_type').val();
         var isPriceAdjustmentEnabled = $optionsTable.closest('.exprdawc_options').find('.exprdawc_adjust_price_field').is(':checked');
         var priceAdjustmentColumns = '';
         if (isPriceAdjustmentEnabled) {
-          priceAdjustmentColumns = "\n                    <td class=\"field_price_adjustment_type_".concat(optionIndex, " field_price_adjustment_type\">\n                    <select name=\"extra_product_fields[").concat(this.fieldIndex, "][options][").concat(optionIndex, "][price_adjustment_type]\" class=\"exprdawc_input exprdawc_price_adjustment_type\">\n                        <option value=\"fixed\">").concat(exprdawc_admin_meta_boxes.fixed, "</option>\n                        <option value=\"quantity\">").concat(exprdawc_admin_meta_boxes.quantity, "</option>\n                        <option value=\"percentage\">").concat(exprdawc_admin_meta_boxes.percentage, "</option>\n                    </select>\n                    </td>\n                    <td class=\"field_price_adjustment_value_").concat(optionIndex, " field_price_adjustment_value\">\n                        <input type=\"number\" name=\"extra_product_fields[").concat(this.fieldIndex, "][options][").concat(optionIndex, "][price_adjustment_value]\" class=\"exprdawc_input exprdawc_price_adjustment_value\" step=\"0.01\" placeholder=\"0.00\" value=\"0\" />\n                    </td>\n                ");
+          priceAdjustmentColumns = "\n                    <td class=\"field_price_adjustment_type_".concat(optionIndex, " field_price_adjustment_type\">\n                    <select name=\"extra_product_fields[").concat(actual_index, "][options][").concat(optionIndex, "][price_adjustment_type]\" class=\"exprdawc_input exprdawc_price_adjustment_type\">\n                        <option value=\"fixed\">").concat(exprdawc_admin_meta_boxes.fixed, "</option>\n                        <option value=\"quantity\">").concat(exprdawc_admin_meta_boxes.quantity, "</option>\n                        <option value=\"percentage\">").concat(exprdawc_admin_meta_boxes.percentage, "</option>\n                    </select>\n                    </td>\n                    <td class=\"field_price_adjustment_value_").concat(optionIndex, " field_price_adjustment_value\">\n                        <input type=\"number\" name=\"extra_product_fields[").concat(actual_index, "][options][").concat(optionIndex, "][price_adjustment_value]\" class=\"exprdawc_input exprdawc_price_adjustment_value\" step=\"0.01\" placeholder=\"0.00\" value=\"0\" />\n                    </td>\n                ");
         }
         if (fieldType === 'radio' || fieldType === 'select') {
-          $optionsTable.find('tbody').append("\n                    <tr>\n                    <td class=\"move\"><i class=\"dashicons dashicons-move\"></i></td>\n                    <td class=\"field_option_table_label_td\">\n                        <input type=\"text\" name=\"extra_product_fields[".concat(this.fieldIndex, "][options][").concat(optionIndex, "][label]\" placeholder=\"").concat(exprdawc_admin_meta_boxes.option_label_placeholder, "\" />\n                    </td>\n                    <td class=\"field_option_table_value_td\">\n                        <input type=\"text\" name=\"extra_product_fields[").concat(this.fieldIndex, "][options][").concat(optionIndex, "][value]\" placeholder=\"").concat(exprdawc_admin_meta_boxes.option_value_placeholder, "\" />\n                    </td>\n                    <td class=\"field_option_table_selected_td\">\n                        <input type=\"radio\" name=\"extra_product_fields[").concat(this.fieldIndex, "][default]\" value=\"").concat(optionIndex, "\" />\n                    </td>\n                    ").concat(priceAdjustmentColumns, "\n                    <td class=\"field_option_table_action_td\">\n                        <button type=\"button\" class=\"button remove_option\">").concat(exprdawc_admin_meta_boxes.remove, "</button>\n                    </td>\n                    </tr>\n                    "));
+          $optionsTable.find('tbody').append("\n                    <tr>\n                    <td class=\"move\"><i class=\"dashicons dashicons-move\"></i></td>\n                    <td class=\"field_option_table_label_td\">\n                        <input type=\"text\" name=\"extra_product_fields[".concat(actual_index, "][options][").concat(optionIndex, "][label]\" placeholder=\"").concat(exprdawc_admin_meta_boxes.option_label_placeholder, "\" />\n                    </td>\n                    <td class=\"field_option_table_value_td\">\n                        <input type=\"text\" name=\"extra_product_fields[").concat(actual_index, "][options][").concat(optionIndex, "][value]\" placeholder=\"").concat(exprdawc_admin_meta_boxes.option_value_placeholder, "\" />\n                    </td>\n                    <td class=\"field_option_table_selected_td\">\n                        <input type=\"radio\" name=\"extra_product_fields[").concat(actual_index, "][default]\" value=\"").concat(optionIndex, "\" />\n                    </td>\n                    ").concat(priceAdjustmentColumns, "\n                    <td class=\"field_option_table_action_td\">\n                        <button type=\"button\" class=\"button remove_option\">").concat(exprdawc_admin_meta_boxes.remove, "</button>\n                    </td>\n                    </tr>\n                    "));
         } else {
-          $optionsTable.find('tbody').append("\n                    <tr>\n                    <td class=\"move\"><i class=\"dashicons dashicons-move\"></i></td>\n                    <td class=\"field_option_table_label_td\">\n                        <input type=\"text\" name=\"extra_product_fields[".concat(this.fieldIndex, "][options][").concat(optionIndex, "][label]\" placeholder=\"").concat(exprdawc_admin_meta_boxes.option_label_placeholder, "\" />\n                    </td>\n                    <td class=\"field_option_table_value_td\">\n                        <input type=\"text\" name=\"extra_product_fields[").concat(this.fieldIndex, "][options][").concat(optionIndex, "][value]\" placeholder=\"").concat(exprdawc_admin_meta_boxes.option_value_placeholder, "\" />\n                    </td>\n                    <td class=\"field_option_table_selected_td\">\n                        <input type=\"checkbox\" name=\"extra_product_fields[").concat(this.fieldIndex, "][options][").concat(optionIndex, "][default]\" value=\"1\" />\n                    </td>\n                    ").concat(priceAdjustmentColumns, "\n                    <td class=\"field_option_table_action_td\">\n                        <button type=\"button\" class=\"button remove_option\">").concat(exprdawc_admin_meta_boxes.remove, "</button>\n                    </td>\n                    </tr>\n                    "));
+          $optionsTable.find('tbody').append("\n                    <tr>\n                    <td class=\"move\"><i class=\"dashicons dashicons-move\"></i></td>\n                    <td class=\"field_option_table_label_td\">\n                        <input type=\"text\" name=\"extra_product_fields[".concat(actual_index, "][options][").concat(optionIndex, "][label]\" placeholder=\"").concat(exprdawc_admin_meta_boxes.option_label_placeholder, "\" />\n                    </td>\n                    <td class=\"field_option_table_value_td\">\n                        <input type=\"text\" name=\"extra_product_fields[").concat(actual_index, "][options][").concat(optionIndex, "][value]\" placeholder=\"").concat(exprdawc_admin_meta_boxes.option_value_placeholder, "\" />\n                    </td>\n                    <td class=\"field_option_table_selected_td\">\n                        <input type=\"checkbox\" name=\"extra_product_fields[").concat(actual_index, "][options][").concat(optionIndex, "][default]\" value=\"1\" />\n                    </td>\n                    ").concat(priceAdjustmentColumns, "\n                    <td class=\"field_option_table_action_td\">\n                        <button type=\"button\" class=\"button remove_option\">").concat(exprdawc_admin_meta_boxes.remove, "</button>\n                    </td>\n                    </tr>\n                    "));
         }
         this.checkOptions($optionsTable.closest('.exprdawc_options'));
       }
@@ -276,6 +303,42 @@ jQuery(function ($) {
           $noEntryMessage.show();
         } else {
           $noEntryMessage.hide();
+        }
+      }
+
+      /**
+       * Sync option value to the default input value for radio/select types.
+       * When an option's value input changes, the corresponding default input's value
+       * (the radio input in case of radio/select) will be updated to match.
+       * @param {*} e
+       */
+    }, {
+      key: "syncOptionValueToDefault",
+      value: function syncOptionValueToDefault(e) {
+        var $input = $(e.currentTarget);
+        var $row = $input.closest('tr');
+        var $optionsTable = $input.closest('.exprdawc_options_table');
+        var optionIndex = $optionsTable.find('tbody tr').index($row);
+        var actualIndex = $optionsTable.closest('.exprdawc_fields_table').data('index');
+        if (typeof actualIndex === 'undefined' || actualIndex === null) {
+          console.error('exprdawc: actualIndex is undefined or null', $optionsTable);
+          return;
+        }
+        var newValue = $input.val();
+        var fieldType = $optionsTable.closest('.exprdawc_fields_table').find('.exprdawc_attribute_type').val();
+
+        // For radio/select types the default is a single value input (radio)
+        if (fieldType === 'radio' || fieldType === 'select') {
+          var $targetRadio = $optionsTable.find('tbody tr').eq(optionIndex).find('input[type="radio"]');
+          if ($targetRadio.length) {
+            $targetRadio.val(newValue);
+          } else {
+            // Fallback: try to find radios by name pattern and set the matching index
+            var $radios = $optionsTable.find('input[type="radio"][name^="extra_product_fields"]');
+            if ($radios.length > optionIndex) {
+              $radios.eq(optionIndex).val(newValue);
+            }
+          }
         }
       }
 

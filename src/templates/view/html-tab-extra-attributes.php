@@ -35,9 +35,6 @@ if ( ! defined( 'ABSPATH' ) ) {
 	</div>
 	<div class="exprdawc_panel">
 		<h2><?php esc_html_e( 'Extra Attributes', 'extra-product-data-for-woocommerce' ); ?></h2>
-		<p class="description">
-			<?php esc_html_e( 'The fields you create here will be displayed in the product overview. You can use them to provide additional information about your products, such as material, dimensions, or any other relevant details.', 'extra-product-data-for-woocommerce' ); ?>
-		</p>
 		<div class="exprdawc_attributes">
 			<div class="exprdawc_no_entry_message">
 				<p>
