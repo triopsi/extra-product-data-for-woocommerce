@@ -4,7 +4,7 @@ Tags: WooCommerce Product Addons, WooCommerce product options, WooCommerce custo
 Requires at least: 5.0
 Tested up to: 6.7
 Requires PHP: 8.2
-Stable tag: 1.8.0
+Stable tag: 1.8.1
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
@@ -160,3 +160,6 @@ Yes, the plugin has been tested with the latest WordPress release and PHP 8.2.
 * Chore: Refactor the code, clean it up, and move it to GitHub.
 * Documentation: Updated Readme and Changelog for 1.8.0
 * Chore: New logo and banner for the WordPress plugin page
+
+= 1.8.1 (13.02.2026) =
+* Chore: Change Readme
