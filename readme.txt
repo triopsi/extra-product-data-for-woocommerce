@@ -159,3 +159,4 @@ Yes, the plugin has been tested with the latest WordPress release and PHP 8.2.
 * Feat: Colors and usability slightly adjusted according to WooCommerce
 * Chore: Refactor the code, clean it up, and move it to GitHub.
 * Documentation: Updated Readme and Changelog for 1.8.0
+* Chore: New logo and banner for the WordPress plugin page
