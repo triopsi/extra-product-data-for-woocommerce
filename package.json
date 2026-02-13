@@ -1,6 +1,6 @@
 {
   "name": "extra-product-data-for-woocommerce",
-  "version": "1.0.1",
+  "version": "1.7.11",
   "description": "Its a Wordpress plugin. Adds customizable input fields per product in WooCommerce.",
   "main": "index.js",
   "scripts": {
