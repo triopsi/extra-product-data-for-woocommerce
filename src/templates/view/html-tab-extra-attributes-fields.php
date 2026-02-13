@@ -23,6 +23,7 @@
  *
  * This file is part of the development of WordPress plugins.
  */
+
 if ( ! defined( 'ABSPATH' ) ) {
 	exit;
 }
