@@ -1,13 +1,39 @@
 ---
-name: Bug report
-about: Create a report to help us improve
-title: ''
-labels: ''
-assignees: ''
-
+name: Bug Report
+about: Report a reproducible bug
+title: "[Bug] "
+labels: bug
 ---
 
-**Warning:** GitHub isn't a place to post your support requests. Any support requests posted here will be closed without explanation. If you do it more than once, you will get blocked automatically.
+## Bug Description
+Describe the problem clearly.
 
-**Describe the bug**
-A clear and concise description of what the bug is.
+## Steps to Reproduce
+1.
+2.
+3.
+
+## Expected Behavior
+What should happen?
+
+## Actual Behavior
+What actually happens?
+
+## Environment
+
+- Plugin version:
+- WooCommerce version:
+- WordPress version:
+- PHP version:
+- Theme:
+- Active plugins (important):
+
+## Screenshots
+If applicable.
+
+## Checklist
+Before submitting, please confirm:
+
+- [ ] I tested with the latest plugin version
+- [ ] I disabled other plugins to rule out conflicts
+- [ ] I tested with a default theme (Storefront)
