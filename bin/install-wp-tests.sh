@@ -202,6 +202,6 @@ install_db() {
 }
 
 install_wp
-install_woocommerce
+# install_woocommerce
 install_test_suite
 install_db
