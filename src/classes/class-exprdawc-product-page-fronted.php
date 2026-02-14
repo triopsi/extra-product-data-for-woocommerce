@@ -520,7 +520,6 @@ class Exprdawc_Product_Page_Fronted {
 
 		if ( ! empty( $custom_fields ) ) {
 			if ( ( is_cart() && get_option( 'exprdawc_show_in_cart', 'yes' ) === 'yes' ) || ( is_checkout() && get_option( 'exprdawc_show_in_checkout', 'yes' ) === 'yes' ) ) {
-
 				foreach ( $cart_item['extra_user_data'] as $user_data ) {
 					$show_empty_fields = get_option( 'exprdawc_show_empty_fields', 'yes' );
 					if ( true === empty( $user_data['value'] ) && 'yes' !== $show_empty_fields ) {
@@ -531,7 +530,6 @@ class Exprdawc_Product_Page_Fronted {
 						'value'   => wc_clean( $user_data['value_cart'] ),
 						'display' => wc_clean( $user_data['value_cart'] ),
 					);
-
 				}
 			}
 		}
