@@ -37,30 +37,20 @@ if ( ! file_exists( "{$_tests_dir}/includes/functions.php" ) ) {
 
 // Give access to tests_add_filter() function.
 require_once "{$_tests_dir}/includes/functions.php";
-require_once "{$_tests_dir}/includes/capabilities.php";
-require_once "{$_tests_dir}/includes/pluggable.php";
+
+// require_once WP_CORE_DIR . '/includes/capabilities.php';
+require_once WP_CORE_DIR . '/wp-includes/pluggable.php';
 
 /**
  * Manually load the plugin being tested.
  */
 function _manually_load_plugin() {
-	// Load WooCommerce first.
+
+    // Load WooCommerce first.
 	$woocommerce_plugin = WP_CORE_DIR . '/wp-content/plugins/woocommerce/woocommerce.php';
 
 	if ( file_exists( $woocommerce_plugin ) ) {
-
 		require_once $woocommerce_plugin;
-		// Create WooCommerce database tables.
-		global $wpdb;
-		$wpdb->suppress_errors = false;
-		$wpdb->show_errors     = true;
-
-		try {
-			WC_Install::install();
-		} catch ( Exception $e ) {
-			echo "Error installing WooCommerce: " . $e->getMessage() . PHP_EOL;
-		}
-
 	} else {
 		echo "Warning: WooCommerce plugin not found at: {$woocommerce_plugin}" . PHP_EOL;
 		echo "Tests will run with WooCommerce mocks instead." . PHP_EOL;
