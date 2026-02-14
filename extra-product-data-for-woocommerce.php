@@ -7,7 +7,7 @@
  * Author URI: https:// triopsi.dev
  * License: GPLv2 or later
  * License URI: https:// www.gnu.org/licenses/gpl-2.0.html
- * Text Domain: extra - product - data - for - woocommerce
+ * Text Domain: extra-product-data-for-woocommerce
  * WC requires at least: 3.9
  * WC tested up to: 9.4
  * Requires Plugins: woocommerce
@@ -15,12 +15,12 @@
  * @package ExtraProductDataForWooCommerce
  */
 
-use function Triopsi\Exprdawc\tr_is_woocommerce_active;
-use Triopsi\Exprdawc\Exprdawc_Main;
-
 if ( ! defined( 'ABSPATH' ) ) {
 	exit; // Exit if accessed directly.
 }
+
+use function Triopsi\Exprdawc\tr_is_woocommerce_active;
+use Triopsi\Exprdawc\Exprdawc_Main;
 
 // Include constants.
 require_once __DIR__ . '/src/constants.php';
@@ -51,7 +51,6 @@ add_action(
 	function () {
 		if ( class_exists( \Automattic\WooCommerce\Utilities\FeaturesUtil::class ) ) {
 			\Automattic\WooCommerce\Utilities\FeaturesUtil::declare_compatibility( 'custom_order_tables', __FILE__, true );
-
 		}
 	}
 );

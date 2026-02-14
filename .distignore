@@ -57,3 +57,10 @@ phpcs-report.xml
 # CI/config files
 .wp-env.json
 /.wordpress-org
+
+# ignore test coverage and test artifacts
+/coverage-html
+coverage.xml
+.phpunit.result.cache
+/tests/_output
+reports/

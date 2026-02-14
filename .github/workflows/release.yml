@@ -19,7 +19,7 @@ jobs:
         with:
           fetch-depth: 0
       - name: Verify version matches release tag
-        run: utils/scripts/check-version.sh
+        run: bin/check-version.sh
       - name: WordPress Plugin Deploy
         id: deploy
         uses: tinify/action-wordpress-plugin-deploy@stable

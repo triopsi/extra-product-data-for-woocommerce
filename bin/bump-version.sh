@@ -119,6 +119,37 @@ README="$ROOT_DIR/readme.txt"
 if [ -f "$README" ]; then
   # Replace the Stable tag line with the new version
   sed -E -i.bak "s/^(Stable tag:[[:space:]]*).*/\1$new_version/" "$README"
+  
+  # Add new changelog entry with current date (DD.MM.YYYY format)
+  current_date=$(date '+%d.%m.%Y')
+  changelog_entry="= $new_version ($current_date) ="
+  
+  # Check if changelog entry already exists
+  if ! grep -q "^= $new_version" "$README"; then
+    # Find the line number after "== Changelog ==" and insert new entry
+    # Insert after the first existing version entry (after the Changelog header)
+    awk -v entry="$changelog_entry" '
+      /^== Changelog ==/ { 
+        print $0
+        # Print empty line
+        print ""
+        # Print new version entry
+        print entry
+        # Add placeholder for changes
+        print "* Changes will be documented here"
+        in_changelog=1
+        next
+      }
+      { print }
+    ' "$README" > "$README.tmp" && mv "$README.tmp" "$README"
+  fi
+fi
+
+# update README.md stable tag if present
+README_MD="$ROOT_DIR/README.md"
+if [ -f "$README_MD" ]; then
+  # Replace the Stable tag line in the markdown table with the new version
+  sed -E -i.bak "s/^(\| Stable tag \|[[:space:]]*).*/\1$new_version |/" "$README_MD"
 fi
 
 echo "Bumped version: $current_version -> $new_version"

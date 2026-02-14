@@ -147,7 +147,6 @@ class Exprdawc_Main {
 
 			// User Order.
 			new Exprdawc_User_Order();
-
 		}
 	}
 

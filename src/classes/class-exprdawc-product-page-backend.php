@@ -332,14 +332,12 @@ class Exprdawc_Product_Page_Backend {
 
 			// Save the custom fields to the product.
 			$product->update_meta_data( '_extra_product_fields', $custom_fields );
-
 		} else {
 			// Get the product.
 			$product = wc_get_product( $post_id );
 
 			// Delete the custom fields from the product.
 			$product->delete_meta_data( '_extra_product_fields' );
-
 		}
 
 		// Save the product.

@@ -16,7 +16,6 @@ README.md
 VERSION
 webpack.mix.js
 .DS_Store
-# DEV or not
 vendor/*
 node_modules/*
 src/assets/*
@@ -32,3 +31,5 @@ tmp/*
 bin/*
 phpunit.xml
 .afdesign
+.phpunit.result.cache
+reports/

@@ -87,6 +87,12 @@ Thumbs.db
 *.sql
 *.sqlite
 
+# ignore test coverage and test artifacts
+/coverage-html
+coverage.xml
+.phpunit.result.cache
+/tests/_output
+
 # ignore compiled files
 *.com
 *.class
@@ -136,3 +142,4 @@ CHANGELOG.md
 !.github
 !.wordpress-org
 *.afdesign
+reports/
