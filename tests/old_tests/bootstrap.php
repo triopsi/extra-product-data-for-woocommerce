@@ -5,17 +5,8 @@
  * @package Extra_Product_Data_For_Woocommerce
  */
 
-define( 'TESTS_PLUGIN_DIR', dirname( __DIR__ ) );
-define( 'UNIT_TESTS_DATA_PLUGIN_DIR', TESTS_PLUGIN_DIR . '/tests/Data/' );
-
-// Define WP_CORE_DIR if not already defined.
-if ( ! defined( 'WP_CORE_DIR' ) ) {
-	$_wp_core_dir = getenv( 'WP_CORE_DIR' );
-	if ( ! $_wp_core_dir ) {
-		$_wp_core_dir = rtrim( sys_get_temp_dir(), '/\\' ) . '/wordpress';
-	}
-	define( 'WP_CORE_DIR', $_wp_core_dir );
-}
+// Include the Composer autoloader.
+require dirname( __DIR__ ) . '/vendor/autoload.php';
 
 $_tests_dir = getenv( 'WP_TESTS_DIR' );
 
@@ -42,9 +33,25 @@ require_once "{$_tests_dir}/includes/functions.php";
  */
 function _manually_load_plugin() {
 	require dirname( __DIR__ ) . '/extra-product-data-for-woocommerce.php';
+	require dirname( __DIR__ ) . '/../woocommerce/woocommerce.php';
 }
 
 tests_add_filter( 'muplugins_loaded', '_manually_load_plugin' );
 
 // Start up the WP testing environment.
 require "{$_tests_dir}/includes/bootstrap.php";
+
+// Load plugin autoloader.
+// require dirname( __DIR__ ) . '/src/classes/class-autoloader.php';
+// Triopsi\Exprdawc\Autoloader::setup();
+
+// $wc_tests_framework_base_dir = dirname( __DIR__ ) . '/../woocommerce/tests/framework/';
+// require_once( $wc_tests_framework_base_dir . 'class-wc-mock-session-handler.php' );
+// require_once( $wc_tests_framework_base_dir . 'class-wc-unit-test-case.php' );
+// require_once( $wc_tests_framework_base_dir . 'helpers/class-wc-helper-product.php'  );
+// require_once( $wc_tests_framework_base_dir . 'helpers/class-wc-helper-coupon.php'  );
+// require_once( $wc_tests_framework_base_dir . 'helpers/class-wc-helper-fee.php'  );
+// require_once( $wc_tests_framework_base_dir . 'helpers/class-wc-helper-shipping.php'  );
+// require_once( $wc_tests_framework_base_dir . 'helpers/class-wc-helper-customer.php'  );
+// require_once( $wc_tests_framework_base_dir . 'helpers/class-wc-helper-order.php'  );
+// require_once( 'class-wc-booking-product-test-helper.php' );
