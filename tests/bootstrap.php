@@ -4,7 +4,6 @@
  *
  * @package Extra_Product_Data_For_Woocommerce
  */
-// phpcs:ignoreFile
 
 define( 'TESTS_PLUGIN_DIR', dirname( __DIR__ ) );
 define( 'UNIT_TESTS_DATA_PLUGIN_DIR', TESTS_PLUGIN_DIR . '/tests/Data/' );

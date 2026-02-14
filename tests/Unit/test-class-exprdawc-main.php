@@ -5,7 +5,7 @@
  * @package Extra_Product_Data_For_WooCommerce
  */
 
-require_once dirname( __DIR__ ) . '/src/classes/class-exprdawc-main.php';
+require_once dirname( __DIR__ ) . '/../src/classes/class-exprdawc-main.php';
 
 use Triopsi\Exprdawc\Exprdawc_Main;
 
