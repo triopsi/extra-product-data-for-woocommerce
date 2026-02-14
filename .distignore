@@ -63,3 +63,4 @@ phpcs-report.xml
 coverage.xml
 .phpunit.result.cache
 /tests/_output
+reports/

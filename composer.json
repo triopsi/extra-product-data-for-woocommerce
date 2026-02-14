@@ -16,6 +16,7 @@
   ],
   "scripts": {
     "test": "phpunit",
+    "test-cov": "XDEBUG_MODE=coverage phpunit --coverage-html=reports/coverage --coverage-clover=reports/clover.xml",
     "test-install": "bash bin/install-wp-tests.sh wordpress_test root 'root' db latest"
   },
   "config": {
@@ -27,9 +28,10 @@
     "wp-coding-standards/wpcs": "^3.0",
     "squizlabs/php_codesniffer": "^3.13.5",
     "dealerdirect/phpcodesniffer-composer-installer": "1.0.0",
-    "phpunit/phpunit": "^9.6",
     "yoast/phpunit-polyfills": "^1.0",
     "phpcompatibility/phpcompatibility-wp": "*",
-    "wp-phpunit/wp-phpunit": "^6.3"
+    "wp-phpunit/wp-phpunit": "^6.3",
+    "phpunit/php-code-coverage": "^9.2",
+    "phpunit/phpunit": "^9.6"
   }
 }

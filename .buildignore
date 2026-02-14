@@ -32,3 +32,4 @@ bin/*
 phpunit.xml
 .afdesign
 .phpunit.result.cache
+reports/
