@@ -51,11 +51,7 @@ function _manually_load_plugin() {
 		global $wpdb;
 		$wpdb->suppress_errors = false;
 		$wpdb->show_errors     = true;
-
-		// Force table creation.
-		delete_option( 'woocommerce_db_version' );
-		delete_transient( 'wc_installing' );
-		WC_Install::install();
+		WC_Install::install_core();
 	} else {
 		echo "Warning: WooCommerce plugin not found at: {$woocommerce_plugin}" . PHP_EOL;
 		echo "Tests will run with WooCommerce mocks instead." . PHP_EOL;
