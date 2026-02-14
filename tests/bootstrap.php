@@ -51,7 +51,13 @@ function _manually_load_plugin() {
 		global $wpdb;
 		$wpdb->suppress_errors = false;
 		$wpdb->show_errors     = true;
-		WC_Install::install_core();
+
+		try {
+			WC_Install::install();
+		} catch ( Exception $e ) {
+			echo "Error installing WooCommerce: " . $e->getMessage() . PHP_EOL;
+		}
+		
 	} else {
 		echo "Warning: WooCommerce plugin not found at: {$woocommerce_plugin}" . PHP_EOL;
 		echo "Tests will run with WooCommerce mocks instead." . PHP_EOL;
