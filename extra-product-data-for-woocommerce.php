@@ -15,12 +15,12 @@
  * @package ExtraProductDataForWooCommerce
  */
 
-use function Triopsi\Exprdawc\tr_is_woocommerce_active;
-use Triopsi\Exprdawc\Exprdawc_Main;
-
 if ( ! defined( 'ABSPATH' ) ) {
 	exit; // Exit if accessed directly.
 }
+
+use function Triopsi\Exprdawc\tr_is_woocommerce_active;
+use Triopsi\Exprdawc\Exprdawc_Main;
 
 // Include constants.
 require_once __DIR__ . '/src/constants.php';
