@@ -64,6 +64,18 @@ else
 fi
 set -ex
 
+# Installs WooCommerce plugin in the test environment
+install_woocommerce() {
+	local PLUGIN_DIR="$WP_CORE_DIR/wp-content/plugins"
+	mkdir -p "$PLUGIN_DIR"
+	WOOCOMMERCE_URL="https://downloads.wordpress.org/plugin/woocommerce.zip"
+	download "$WOOCOMMERCE_URL" "$TMPDIR/woocommerce.zip"
+	unzip -q "$TMPDIR/woocommerce.zip" -d "$TMPDIR/"
+	rm -rf "$PLUGIN_DIR/woocommerce"
+	mv "$TMPDIR/woocommerce" "$PLUGIN_DIR/woocommerce"
+	echo "WooCommerce plugin installed successfully."
+}
+
 install_wp() {
 
 	if [ -d $WP_CORE_DIR ]; then
@@ -190,5 +202,6 @@ install_db() {
 }
 
 install_wp
+install_woocommerce
 install_test_suite
 install_db
