@@ -47,24 +47,15 @@ function _manually_load_plugin() {
 
 	if ( file_exists( $woocommerce_plugin ) ) {
 		require_once $woocommerce_plugin;
+		// Create WooCommerce database tables.
+		global $wpdb;
+		$wpdb->suppress_errors = false;
+		$wpdb->show_errors     = true;
 
-		// Initialize WooCommerce and install tables.
-		add_action( 'init', function() {
-			// Ensure WooCommerce tables are installed.
-			if ( class_exists( 'WC_Install' ) ) {
-				WC_Install::install();
-
-				// Create WooCommerce database tables.
-				global $wpdb;
-				$wpdb->suppress_errors = false;
-				$wpdb->show_errors     = true;
-
-				// Force table creation.
-				delete_option( 'woocommerce_db_version' );
-				delete_transient( 'wc_installing' );
-				WC_Install::install();
-			}
-		}, 1 );
+		// Force table creation.
+		delete_option( 'woocommerce_db_version' );
+		delete_transient( 'wc_installing' );
+		// WC_Install::install();
 	} else {
 		echo "Warning: WooCommerce plugin not found at: {$woocommerce_plugin}" . PHP_EOL;
 		echo "Tests will run with WooCommerce mocks instead." . PHP_EOL;
