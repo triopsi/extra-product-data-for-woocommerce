@@ -15,8 +15,8 @@
     }
   ],
   "scripts": {
-    "test": "phpunit",
-    "test-cov": "XDEBUG_MODE=coverage phpunit --coverage-html=reports/coverage --coverage-clover=reports/clover.xml",
+    "test": "phpunit --testdox",
+    "test-cov": "XDEBUG_MODE=coverage phpunit --coverage-html=reports/coverage --coverage-clover=reports/clover.xml --testdox",
     "test-install": "bash bin/install-wp-tests.sh wordpress_test root 'root' db latest"
   },
   "config": {
