@@ -10,12 +10,20 @@ require_once dirname( __DIR__ ) . '/../src/classes/class-exprdawc-helper.php';
 use Triopsi\Exprdawc\Exprdawc_Helper;
 
 /**
- * Test class for Exprdawc_Helper.
+ * Class Test_Exprdawc_Helper
+ *
+ * PHPUnit tests for Exprdawc_Helper class.
+ *
+ * @package Extra_Product_Data_For_WooCommerce\Tests\Unit
  */
 class Test_Exprdawc_Helper extends WP_UnitTestCase {
 
 	/**
-	 * Test generate_input_field method.
+	 * Tests generate_input_field with various fields.
+	 *
+	 * Expects the generated fields to match the HTML output in the comparison file.
+	 *
+	 * @covers Exprdawc_Helper::generate_input_field
 	 */
 	public function test_generate_input_field() {
 		$json_export_string = '{
