@@ -16,8 +16,6 @@ use Triopsi\Exprdawc\Exprdawc_Base_Order_Class;
 class Test_Exprdawc_Base_Order_Class extends TestCase {
 	/**
 	 * Tests if get_adjustment_value returns the correct value for 'fixed'.
-	 *
-	 * @covers Exprdawc_Base_Order_Class::get_adjustment_value
 	 */
 	public function test_get_adjustment_value_fixed() {
 		$base_order = $this->getMockForAbstractClass( Exprdawc_Base_Order_Class::class );

@@ -16,8 +16,6 @@ use Triopsi\Exprdawc\Exprdawc_Product_Page_Backend;
 class Test_Exprdawc_Product_Page_Backend extends TestCase {
 	/**
 	 * Tests if the Exprdawc_Product_Page_Backend class can be instantiated.
-	 *
-	 * @covers Exprdawc_Product_Page_Backend::__construct
 	 */
 	public function test_can_instantiate() {
 		$product_page_backend = new Exprdawc_Product_Page_Backend();
@@ -26,8 +24,6 @@ class Test_Exprdawc_Product_Page_Backend extends TestCase {
 
 	/**
 	 * Tests if exprdawc_add_custom_product_tab adds a tab with the key 'custom_fields'.
-	 *
-	 * @covers Exprdawc_Product_Page_Backend::exprdawc_add_custom_product_tab
 	 */
 	public function test_exprdawc_add_custom_product_tab_adds_tab() {
 		$product_page_backend = new Exprdawc_Product_Page_Backend();

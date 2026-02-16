@@ -16,8 +16,6 @@ use Triopsi\Exprdawc\Exprdawc_Settings;
 class Test_Exprdawc_Settings extends TestCase {
 	/**
 	 * Tests if add_settings_section adds a new section key.
-	 *
-	 * @covers Exprdawc_Settings::add_settings_section
 	 */
 	public function test_add_settings_section_adds_section() {
 		$exprdawc_settings = new Exprdawc_Settings();
@@ -28,8 +26,6 @@ class Test_Exprdawc_Settings extends TestCase {
 
 	/**
 	 * Tests if add_settings returns an array.
-	 *
-	 * @covers Exprdawc_Settings::add_settings
 	 */
 	public function test_add_settings_returns_array() {
 		$exprdawc_settings = new Exprdawc_Settings();

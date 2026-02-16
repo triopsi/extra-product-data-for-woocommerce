@@ -16,8 +16,6 @@ use Triopsi\Exprdawc\Exprdawc_Admin_Order;
 class Test_Exprdawc_Admin_Order extends TestCase {
 	/**
 	 * Tests if the Exprdawc_Admin_Order class can be instantiated.
-	 *
-	 * @covers Exprdawc_Admin_Order::__construct
 	 */
 	public function test_can_instantiate() {
 		$admin_order = new Exprdawc_Admin_Order();

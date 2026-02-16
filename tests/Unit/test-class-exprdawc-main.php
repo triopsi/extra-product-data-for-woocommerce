@@ -35,8 +35,6 @@ class Test_Exprdawc_Main extends WP_UnitTestCase {
 
 	/**
 	 * Tests if the singleton instance is returned correctly.
-	 *
-	 * @covers Exprdawc_Main::get_instance
 	 */
 	public function test_singleton_instance() {
 		$this->assertInstanceOf( Exprdawc_Main::class, $this->exprdawc_main_instance );
@@ -45,11 +43,9 @@ class Test_Exprdawc_Main extends WP_UnitTestCase {
 
 	/**
 	 * Tests if the autoloader is registered correctly.
-	 *
-	 * @covers Exprdawc_Main::register_autoloader
 	 */
 	public function test_register_autoloader() {
-		// Use reflection to access the protected method
+		// Use reflection to access the protected method.
 		$reflection = new ReflectionClass( $this->exprdawc_main_instance );
 		$method     = $reflection->getMethod( 'register_autoloader' );
 		$method->setAccessible( true );
@@ -60,8 +56,6 @@ class Test_Exprdawc_Main extends WP_UnitTestCase {
 
 	/**
 	 * Tests if the components can be loaded.
-	 *
-	 * @covers Exprdawc_Main::load_components
 	 */
 	public function test_load_components() {
 		$this->exprdawc_main_instance->load_components();
