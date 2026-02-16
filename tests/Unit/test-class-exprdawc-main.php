@@ -1,9 +1,5 @@
 <?php
-/**
- * Class Test_Exprdawc_Main
- *
- * @package Extra_Product_Data_For_WooCommerce
- */
+declare( strict_types=1 );
 
 require_once dirname( __DIR__ ) . '/../src/classes/class-exprdawc-main.php';
 

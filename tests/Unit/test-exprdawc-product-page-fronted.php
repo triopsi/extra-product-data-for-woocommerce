@@ -1,7 +1,5 @@
 <?php
-/**
- * PHPUnit tests for Exprdawc_Product_Page_Fronted class
- */
+declare( strict_types=1 );
 
 use PHPUnit\Framework\TestCase;
 use Triopsi\Exprdawc\Exprdawc_Product_Page_Fronted;

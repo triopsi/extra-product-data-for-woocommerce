@@ -142,7 +142,7 @@ class Exprdawc_Main {
 			// Admin Order Edit Page.
 			$this->exprdawc_admin_order_edit = new Exprdawc_Admin_Order();
 
-			// Settings.
+			// Add Settings in the WooCommerce Settings Page.
 			$this->exprdawc_settings = new Exprdawc_Settings();
 
 			// User Order.

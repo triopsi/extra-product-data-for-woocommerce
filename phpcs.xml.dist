@@ -1,0 +1,58 @@
+<?xml version="1.0"?>
+<ruleset name="Coding Style Checks">
+	<description>Dev Coding Style PHP_CodeSniffer ruleset.</description>
+
+	<!-- CLI behavior -->
+	<arg value="sp"/> <!-- Show sniff and progress -->
+	<arg name="basepath" value="./"/><!-- Strip the file paths down to the relevant bit -->
+	<arg name="colors"/>
+	<arg name="extensions" value="php"/>
+	<arg name="parallel" value="8"/><!-- Enables parallel processing when available for faster results. -->
+
+	<!-- Rules: Check PHP version compatibility -->
+	<!-- https://github.com/PHPCompatibility/PHPCompatibility#sniffing-your-code-for-compatibility-with-specific-php-versions -->
+	<!-- https://github.com/PHPCompatibility/PHPCompatibilityWP -->
+	<!-- Compatibility -->
+	<rule ref="PHPCompatibilityWP"/>
+
+	<!-- WP + PHP versions -->
+	<config name="minimum_supported_wp_version" value="5.6"/>
+	<config name="testVersion" value="7.4-"/>
+
+	<!-- Rules -->
+	<rule ref="WordPress">
+		<!--All PHP files contain a single class with a comment so a file comment is redundant -->
+		<exclude name="Squiz.Commenting.FileComment.Missing"/>
+	</rule>
+
+	<!-- I18n Set the appropriate text domain. -->
+	<rule ref="WordPress.WP.I18n">
+		<properties>
+			<property name="text_domain" type="array">
+				<element value="extra-product-data-for-woocommerce"/>
+			</property>
+		</properties>
+	</rule>
+
+	<!-- Add manage_woocommerce to accepted user capabilities -->
+	<rule ref="WordPress.WP.Capabilities">
+		<properties>
+			<property name="custom_capabilities" type="array">
+				<element value="manage_woocommerce"/>
+			</property>
+		</properties>
+	</rule>
+
+	<rule ref="WordPress.WhiteSpace.ControlStructureSpacing">
+		<properties>
+			<property name="blank_line_check" value="true"/>
+		</properties>
+	</rule>
+
+	<!-- What to scan -->
+	<file>.</file>
+	<file>src</file>
+	<exclude-pattern>/vendor/*</exclude-pattern>
+	<exclude-pattern>/tests/*</exclude-pattern>
+	<exclude-pattern>/node_modules/*</exclude-pattern>
+</ruleset>

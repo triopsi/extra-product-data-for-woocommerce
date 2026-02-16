@@ -1,7 +1,5 @@
 <?php
-/**
- * PHPUnit tests for Exprdawc_Admin_Order class
- */
+declare( strict_types=1 );
 
 use PHPUnit\Framework\TestCase;
 use Triopsi\Exprdawc\Exprdawc_Admin_Order;

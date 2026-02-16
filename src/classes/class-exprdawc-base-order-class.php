@@ -79,7 +79,7 @@ class Exprdawc_Base_Order_Class {
 		}
 
 		// Check if the order status is allowed for editing.
-		if ( ! current_user_can( 'manage_woocommerce' ) ) { // phpcs:ignore
+		if ( ! current_user_can( 'manage_woocommerce' ) ) {
 			$max_order_status = get_option( 'extra_product_data_max_order_status', 'processing' );
 			if ( ! $order->has_status( OrderUtil::remove_status_prefix( $max_order_status ) ) ) {
 				wp_send_json_error( array( 'message' => __( 'You do not have permission to edit this order.', 'extra-product-data-for-woocommerce' ) ) );

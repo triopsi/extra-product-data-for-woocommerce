@@ -1,19 +1,16 @@
 <?php
-/**
- * PHPUnit tests for Exprdawc_Settings class
- */
+declare( strict_types=1 );
 
-use PHPUnit\Framework\TestCase;
 use Triopsi\Exprdawc\Exprdawc_Settings;
 
 /**
- * Class Test_Exprdawc_Settings
+ * Class TestExprdawcEettings
  *
  * PHPUnit tests for Exprdawc_Settings class.
  *
  * @package Extra_Product_Data_For_WooCommerce\Tests\Unit
  */
-class Test_Exprdawc_Settings extends TestCase {
+class TestExprdawcSettings extends WP_UnitTestCase {
 	/**
 	 * Tests if add_settings_section adds a new section key.
 	 */
