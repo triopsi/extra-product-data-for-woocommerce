@@ -15,7 +15,7 @@ use Triopsi\Exprdawc\Exprdawc_User_Order;
  *
  * @package Extra_Product_Data_For_WooCommerce\Tests\Unit
  */
-class Test_Exprdawc_User_Order extends WP_UnitTestCase {
+class TestExprdawcUserOrder extends WP_UnitTestCase {
 
 
 	/**
