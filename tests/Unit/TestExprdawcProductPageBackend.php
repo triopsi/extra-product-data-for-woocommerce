@@ -524,13 +524,9 @@ class TestExprdawcProductPageBackend extends WP_UnitTestCase {
 		} catch ( Exception $e ) { // phpcs:ignore
 			// WP Die expected.
 		}
-
-		$output = ob_get_clean();
-		var_dump( $output );
-		$product = wc_get_product( $product_id );
-		var_dump( $product );
+		ob_get_clean();
+		$product      = wc_get_product( $product_id );
 		$saved_fields = $product->get_meta( '_extra_product_fields', true );
-		var_dump( $saved_fields );
 
 		$this->assertIsArray( $saved_fields );
 		$this->assertCount( 1, $saved_fields );
