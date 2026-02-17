@@ -21,7 +21,7 @@ class Test_Exprdawc_Base_Order_Class extends TestCase {
 			'price_adjustment_type'  => 'fixed',
 			'price_adjustment_value' => '5.5',
 		);
-		$product    = $this->createMock( stdClass::class ); // Dummy, not used for 'fixed'
+		$product    = $this->createMock( stdClass::class ); // Dummy, not used for 'fixed'.
 		$method     = new \ReflectionMethod( $base_order, 'get_adjustment_value' );
 		$method->setAccessible( true );
 		$result = $method->invoke( $base_order, $field, $product );

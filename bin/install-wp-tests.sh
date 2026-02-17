@@ -1,4 +1,5 @@
 #!/usr/bin/env bash
+set +e
 
 if [ $# -lt 3 ]; then
 	echo "usage: $0 <db-name> <db-user> <db-pass> [db-host] [wp-version] [skip-database-creation]"
@@ -205,3 +206,4 @@ install_wp
 install_woocommerce
 install_test_suite
 install_db
+echo "WordPress test environment successfully set up."
