@@ -496,6 +496,11 @@ class TestExprdawcProductPageBackend extends WP_UnitTestCase {
 
 		// Set current user capabilities FIRST.
 		$user_id = $this->factory()->user->create( array( 'role' => 'administrator' ) );
+		$user    = get_user_by( 'id', $user_id );
+		$user->add_cap( 'edit_products' );
+		$user->add_cap( 'edit_published_products' );
+		$user->add_cap( 'edit_others_products' );
+		$user->add_cap( 'edit_private_products' );
 		wp_set_current_user( $user_id );
 
 		$custom_fields = array(
@@ -519,7 +524,7 @@ class TestExprdawcProductPageBackend extends WP_UnitTestCase {
 		} catch ( Exception $e ) { // phpcs:ignore
 			// WP Die expected.
 		}
-		
+
 		$output = ob_get_clean();
 		var_dump( $output );
 		$product = wc_get_product( $product_id );
@@ -556,6 +561,11 @@ class TestExprdawcProductPageBackend extends WP_UnitTestCase {
 
 		// Set current user capabilities.
 		$user_id = $this->factory()->user->create( array( 'role' => 'administrator' ) );
+		$user    = get_user_by( 'id', $user_id );
+		$user->add_cap( 'edit_products' );
+		$user->add_cap( 'edit_published_products' );
+		$user->add_cap( 'edit_others_products' );
+		$user->add_cap( 'edit_private_products' );
 		wp_set_current_user( $user_id );
 
 		$_POST['product_id']    = $product_id;
