@@ -82,3 +82,27 @@ tests_add_filter( 'setup_theme', '_install_woocommerce' );
 
 // Start up the WP testing environment.
 require "{$_tests_dir}/includes/bootstrap.php";
+
+
+// Make wp_die() throw instead of exiting PHP (prevents PHPUnit from stopping).
+tests_add_filter(
+	'wp_die_handler',
+	function () {
+		return function ( $message = '' ) {
+			throw new RuntimeException(
+				is_string( $message ) ? $message : 'wp_die called' // phpcs:ignore
+			);
+		};
+	}
+);
+
+tests_add_filter(
+	'wp_die_ajax_handler',
+	function () {
+		return function ( $message = '' ) {
+			throw new RuntimeException(
+				is_string( $message ) ? $message : 'wp_die (ajax) called' // phpcs:ignore
+			);
+		};
+	}
+);

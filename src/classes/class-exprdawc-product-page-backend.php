@@ -46,17 +46,19 @@ class Exprdawc_Product_Page_Backend {
 	public function __construct() {
 
 		// Add custom tab in product edit page.
-		add_filter( 'woocommerce_product_data_tabs', array( $this, 'exprdawc_add_custom_product_tab' ) );
-		add_action( 'woocommerce_product_data_panels', array( $this, 'exprdawc_add_custom_product_fields' ) );
+		if ( is_admin() ) {
+			add_filter( 'woocommerce_product_data_tabs', array( $this, 'exprdawc_add_custom_product_tab' ) );
+			add_action( 'woocommerce_product_data_panels', array( $this, 'exprdawc_add_custom_product_fields' ) );
 
-		// Save custom fields.
-		add_action( 'woocommerce_process_product_meta', array( $this, 'exprdawc_save_extra_product_fields' ) );
+			// Save custom fields.
+			add_action( 'woocommerce_process_product_meta', array( $this, 'exprdawc_save_extra_product_fields' ) );
 
-		// Add Scripts in head and footer.
-		add_action( 'admin_enqueue_scripts', array( $this, 'exprdawc_show_general_tab' ) );
+			// Add Scripts in head and footer.
+			add_action( 'admin_enqueue_scripts', array( $this, 'exprdawc_show_general_tab' ) );
 
-		// Import custom fields.
-		add_action( 'wp_ajax_exprdawc_import_custom_fields', array( $this, 'exprdawc_import_custom_fields' ) );
+			// Import custom fields.
+			add_action( 'wp_ajax_exprdawc_import_custom_fields', array( $this, 'exprdawc_import_custom_fields' ) );
+		}
 	}
 
 	/**
@@ -76,18 +78,66 @@ class Exprdawc_Product_Page_Backend {
 	}
 
 	/**
-	 * Add custom fields to the product edit page.
+	 * Add custom product fields to the product edit page.
 	 *
-	 * This function is responsible for adding custom fields to the product edit page
-	 * in the WooCommerce admin interface. It ensures that the fields are displayed
-	 * correctly and can be used to store additional product data.
+	 * This function is hooked to the 'woocommerce_product_data_panels' action and is responsible for
+	 * rendering the HTML for the custom product fields panel in the product edit page.
 	 */
-	public function exprdawc_add_custom_product_fields() {
+	public function exprdawc_add_custom_product_fields(): void {
 		global $post;
-		$product       = wc_get_product( $post );
-		$custom_fields = $product->get_meta( '_extra_product_fields', true );
-		include EXPRDAWC_TEMPLATES . 'html-tab-extra-attributes.php';
+		$post_id = ( $post instanceof \WP_Post ) ? (int) $post->ID : 0;
+		if ( $post_id <= 0 ) {
+			return;
+		}
+
+		echo $this->get_custom_product_fields_panel_html( $post_id ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
 	}
+
+	/**
+	 * Get the HTML for the custom product fields panel.
+	 *
+	 * @param int $product_id The ID of the product for which to get the panel HTML.
+	 * @return string The HTML for the custom product fields panel.
+	 */
+	public function get_custom_product_fields_panel_html( int $product_id ): string {
+		$product = wc_get_product( $product_id );
+		if ( ! $product ) {
+			return '';
+		}
+
+		$custom_fields = $product->get_meta( '_extra_product_fields', true );
+		if ( ! is_array( $custom_fields ) ) {
+			$custom_fields = array();
+		}
+
+		ob_start();
+		$this->render_template(
+			'html-tab-extra-attributes.php',
+			array(
+				'product'       => $product,
+				'custom_fields' => $custom_fields,
+				'product_id'    => $product_id,
+			)
+		);
+		return (string) ob_get_clean();
+	}
+
+	/**
+	 * Render a template file with the given variables.
+	 *
+	 * @param string $template The template file to render, relative to the templates directory.
+	 * @param array  $args     An associative array of variables to pass to the template.
+	 */
+	protected function render_template( string $template, array $args = array() ): void {
+		$path = trailingslashit( EXPRDAWC_TEMPLATES ) . ltrim( $template, '/' );
+
+		if ( ! file_exists( $path ) ) {
+			return;
+		}
+
+		load_template( $path, true, $args );
+	}
+
 
 	/**
 	 * Enqueue scripts for the general tab.

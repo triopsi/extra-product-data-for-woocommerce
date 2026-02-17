@@ -112,6 +112,65 @@ class TestExprdawcProductPageBackend extends WP_UnitTestCase {
 		$this->assertCount( 2, $result, 'Result should contain 2 tabs.' );
 	}
 
+
+	/**
+	 * Tests that exprdawc_add_custom_product_fields renders the custom fields template.
+	 *
+	 * Expects: The template output contains the custom field label.
+	 *
+	 * @covers Triopsi\Exprdawc\Exprdawc_Product_Page_Backend::exprdawc_add_custom_product_fields
+	 */
+	public function test_exprdawc_add_custom_product_fields_renders_template() {
+
+		// Create Product.
+		$product = new WC_Product_Simple();
+		$product->set_name( 'Test Product' );
+		$product->set_regular_price( '10' );
+		$product->save();
+
+		$product_id = $product->get_id();
+
+		// Set custom fields meta for the product.
+		$custom_fields = array(
+			array(
+				'label'            => 'Select Field',
+				'type'             => 'select',
+				'required'         => 1,
+				'placeholder_text' => 'Choose an option',
+				'help_text'        => 'Select one option',
+				'options'          => array(
+					array(
+						'label' => 'Option A',
+						'value' => 'a',
+					),
+					array(
+						'label' => 'Option B',
+						'value' => 'b',
+					),
+				),
+			),
+		);
+
+		$product->update_meta_data( '_extra_product_fields', $custom_fields );
+		$product->save();
+
+		// Simulate global $post (as in admin).
+		global $post;
+		$post = get_post( $product_id );
+
+		// Capture output.
+		ob_start();
+
+		$this->product_page_backend->exprdawc_add_custom_product_fields();
+
+		$output = ob_get_clean();
+
+		$this->assertNotEmpty( $output, 'Template should render output.' );
+		$this->assertStringContainsString( 'Test Field', $output );
+
+		wp_delete_post( $product_id, true );
+	}
+
 	/**
 	 * Tests that exprdawc_show_general_tab enqueues the required script.
 	 *
@@ -351,13 +410,13 @@ class TestExprdawcProductPageBackend extends WP_UnitTestCase {
 		$_REQUEST['security'] = $_POST['security']; // @phpcs:ignore
 
 		$_POST['action'] = 'exprdawc_import_custom_fields';
-
+		ob_start();
 		try {
 			$this->product_page_backend->exprdawc_import_custom_fields();
 		} catch ( Exception $e ) {
 			// wp_send_json_success() -> wp_die(); expected.
 		}
-
+		ob_end_clean();
 		$product      = wc_get_product( $product_id );
 		$saved_fields = $product->get_meta( '_extra_product_fields', true );
 
