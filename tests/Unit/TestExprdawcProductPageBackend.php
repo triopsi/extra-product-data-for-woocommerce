@@ -520,8 +520,10 @@ class TestExprdawcProductPageBackend extends WP_UnitTestCase {
 			// WP Die expected.
 		}
 		ob_end_clean();
-		$product      = wc_get_product( $product_id );
+		$product = wc_get_product( $product_id );
+		var_dump( $product );
 		$saved_fields = $product->get_meta( '_extra_product_fields', true );
+		var_dump( $saved_fields );
 
 		$this->assertIsArray( $saved_fields );
 		$this->assertCount( 1, $saved_fields );
