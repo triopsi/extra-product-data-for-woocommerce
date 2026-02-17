@@ -519,7 +519,9 @@ class TestExprdawcProductPageBackend extends WP_UnitTestCase {
 		} catch ( Exception $e ) { // phpcs:ignore
 			// WP Die expected.
 		}
-		ob_end_clean();
+		
+		$output = ob_get_clean();
+		var_dump( $output );
 		$product = wc_get_product( $product_id );
 		var_dump( $product );
 		$saved_fields = $product->get_meta( '_extra_product_fields', true );
