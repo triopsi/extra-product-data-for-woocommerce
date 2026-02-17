@@ -13,14 +13,14 @@ use Triopsi\Exprdawc\Exprdawc_Product_Page_Backend;
 class TestExprdawcProductPageBackend extends WP_UnitTestCase {
 
 	/**
-	 * Instance of the class being tested.
+	 * Instance of the class being tested
 	 *
 	 * @var Exprdawc_Product_Page_Backend
 	 */
 	private $product_page_backend;
 
 	/**
-	 * Sets up the test environment before each test.
+	 * Sets up the test environment before each test
 	 *
 	 * Expects: Instance of the class is created for testing.
 	 *
@@ -56,6 +56,97 @@ class TestExprdawcProductPageBackend extends WP_UnitTestCase {
 			$this->product_page_backend,
 			'Instance should be of type Exprdawc_Product_Page_Backend.'
 		);
+	}
+
+	/**
+	 * Tests that constructor registers hooks when in admin context.
+	 *
+	 * Expects: All filters and actions are registered when is_admin() returns true.
+	 *
+	 * @covers Triopsi\Exprdawc\Exprdawc_Product_Page_Backend::__construct
+	 */
+	public function test_constructor_registers_hooks_in_admin_context() {
+		global $wp_filter;
+
+		// Simulate admin context.
+		set_current_screen( 'edit-post' );
+
+		// Create new instance in admin context.
+		$backend = new Exprdawc_Product_Page_Backend();
+
+		// Check filter is registered.
+		$this->assertTrue(
+			has_filter( 'woocommerce_product_data_tabs', array( $backend, 'exprdawc_add_custom_product_tab' ) ) !== false,
+			'Filter woocommerce_product_data_tabs should be registered.'
+		);
+
+		// Check actions are registered.
+		$this->assertTrue(
+			has_action( 'woocommerce_product_data_panels', array( $backend, 'exprdawc_add_custom_product_fields' ) ) !== false,
+			'Action woocommerce_product_data_panels should be registered.'
+		);
+
+		$this->assertTrue(
+			has_action( 'woocommerce_process_product_meta', array( $backend, 'exprdawc_save_extra_product_fields' ) ) !== false,
+			'Action woocommerce_process_product_meta should be registered.'
+		);
+
+		$this->assertTrue(
+			has_action( 'admin_enqueue_scripts', array( $backend, 'exprdawc_show_general_tab' ) ) !== false,
+			'Action admin_enqueue_scripts should be registered.'
+		);
+
+		$this->assertTrue(
+			has_action( 'wp_ajax_exprdawc_import_custom_fields', array( $backend, 'exprdawc_import_custom_fields' ) ) !== false,
+			'Action wp_ajax_exprdawc_import_custom_fields should be registered.'
+		);
+	}
+
+	/**
+	 * Tests that constructor does not register hooks when not in admin context
+	 *
+	 * Expects: No filters or actions are registered when is_admin() returns false.
+	 *
+	 * @covers Triopsi\Exprdawc\Exprdawc_Product_Page_Backend::__construct
+	 */
+	public function test_constructor_does_not_register_hooks_in_frontend_context() {
+		// Remove admin screen (simulate frontend).
+		set_current_screen( 'front' );
+
+		// Store current filter/action state.
+		global $wp_filter;
+		$filters_before = array();
+		$actions_before = array();
+
+		$hooks_to_check = array(
+			'woocommerce_product_data_tabs',
+			'woocommerce_product_data_panels',
+			'woocommerce_process_product_meta',
+			'admin_enqueue_scripts',
+			'wp_ajax_exprdawc_import_custom_fields',
+		);
+
+		foreach ( $hooks_to_check as $hook ) {
+			if ( isset( $wp_filter[ $hook ] ) ) {
+				$filters_before[ $hook ] = count( $wp_filter[ $hook ]->callbacks );
+			} else {
+				$filters_before[ $hook ] = 0;
+			}
+		}
+
+		// Create new instance in frontend context.
+		$backend = new Exprdawc_Product_Page_Backend();
+
+		// Verify hooks were not added.
+		foreach ( $hooks_to_check as $hook ) {
+			$count_after = isset( $wp_filter[ $hook ] ) ? count( $wp_filter[ $hook ]->callbacks ) : 0;
+
+			$this->assertEquals(
+				$filters_before[ $hook ],
+				$count_after,
+				"Hook {$hook} should not have new callbacks in frontend context."
+			);
+		}
 	}
 
 	/**
@@ -112,13 +203,10 @@ class TestExprdawcProductPageBackend extends WP_UnitTestCase {
 		$this->assertCount( 2, $result, 'Result should contain 2 tabs.' );
 	}
 
-
 	/**
 	 * Tests that exprdawc_add_custom_product_fields renders the custom fields template.
 	 *
 	 * Expects: The template output contains the custom field label.
-	 *
-	 * @covers Triopsi\Exprdawc\Exprdawc_Product_Page_Backend::exprdawc_add_custom_product_fields
 	 */
 	public function test_exprdawc_add_custom_product_fields_renders_template() {
 
@@ -428,8 +516,8 @@ class TestExprdawcProductPageBackend extends WP_UnitTestCase {
 		ob_start();
 		try {
 			$this->product_page_backend->exprdawc_import_custom_fields();
-		} catch ( Exception $e ) {
-			// wp_send_json_success() -> wp_die(); expected.
+		} catch ( Exception $e ) { // phpcs:ignore
+			// WP Die expected.
 		}
 		ob_end_clean();
 		$product      = wc_get_product( $product_id );
@@ -479,8 +567,8 @@ class TestExprdawcProductPageBackend extends WP_UnitTestCase {
 		ob_start();
 		try {
 			$this->product_page_backend->exprdawc_import_custom_fields();
-		} catch ( Exception $e ) {
-			// wp_send_json_error calls wp_die() - expected.
+		} catch ( Exception $e ) { // phpcs:ignore
+			// Error expected.
 		}
 		restore_error_handler();
 		$output = ob_get_clean();
