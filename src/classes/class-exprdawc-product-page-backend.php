@@ -111,7 +111,7 @@ class Exprdawc_Product_Page_Backend {
 		}
 
 		ob_start();
-		$this->render_template(
+		Exprdawc_Helper::render_template(
 			'html-tab-extra-attributes.php',
 			array(
 				'product'       => $product,
@@ -121,23 +121,6 @@ class Exprdawc_Product_Page_Backend {
 		);
 		return (string) ob_get_clean();
 	}
-
-	/**
-	 * Render a template file with the given variables.
-	 *
-	 * @param string $template The template file to render, relative to the templates directory.
-	 * @param array  $args     An associative array of variables to pass to the template.
-	 */
-	protected function render_template( string $template, array $args = array() ): void {
-		$path = trailingslashit( EXPRDAWC_TEMPLATES ) . ltrim( $template, '/' );
-
-		if ( ! file_exists( $path ) ) {
-			return;
-		}
-
-		load_template( $path, true, $args );
-	}
-
 
 	/**
 	 * Enqueue scripts for the general tab.

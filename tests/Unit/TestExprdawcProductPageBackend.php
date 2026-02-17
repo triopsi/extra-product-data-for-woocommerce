@@ -133,19 +133,34 @@ class TestExprdawcProductPageBackend extends WP_UnitTestCase {
 		// Set custom fields meta for the product.
 		$custom_fields = array(
 			array(
-				'label'            => 'Select Field',
-				'type'             => 'select',
-				'required'         => 1,
-				'placeholder_text' => 'Choose an option',
-				'help_text'        => 'Select one option',
-				'options'          => array(
+				'label'                  => 'Select Field',
+				'type'                   => 'select',
+				'required'               => 1,
+				'placeholder_text'       => 'Choose an option',
+				'help_text'              => 'Select one option',
+				'autocomplete'           => '',
+				'autofocus'              => false,
+				'index'                  => 0,
+				'price_adjustment_type'  => '',
+				'price_adjustment_value' => '',
+				'conditional_logic'      => 0,
+				'conditional_rules'      => array(),
+				'editable'               => true,
+				'adjust_price'           => false,
+				'options'                => array(
 					array(
-						'label' => 'Option A',
-						'value' => 'a',
+						'label'                  => 'Option A',
+						'value'                  => 'a',
+						'price_adjustment_type'  => '',
+						'price_adjustment_value' => '',
+						'default'                => 0,
 					),
 					array(
-						'label' => 'Option B',
-						'value' => 'b',
+						'label'                  => 'Option B',
+						'value'                  => 'b',
+						'price_adjustment_type'  => '',
+						'price_adjustment_value' => '',
+						'default'                => 0,
 					),
 				),
 			),
@@ -166,7 +181,7 @@ class TestExprdawcProductPageBackend extends WP_UnitTestCase {
 		$output = ob_get_clean();
 
 		$this->assertNotEmpty( $output, 'Template should render output.' );
-		$this->assertStringContainsString( 'Test Field', $output );
+		$this->assertStringContainsString( 'Select Field', $output );
 
 		wp_delete_post( $product_id, true );
 	}
