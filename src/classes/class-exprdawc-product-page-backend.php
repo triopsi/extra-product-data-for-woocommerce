@@ -135,6 +135,7 @@ class Exprdawc_Product_Page_Backend {
 			array(
 				'edit_exprdawc_nonce'                  => wp_create_nonce( 'edit_exprdawc_nonce' ),
 				'label_placeholder'                    => esc_html__( 'Name of the label', 'extra-product-data-for-woocommerce' ),
+				'columns'                              => esc_html__( 'Columns', 'extra-product-data-for-woocommerce' ),
 				'short_text'                           => esc_html__( 'Short Text', 'extra-product-data-for-woocommerce' ),
 				'long_text'                            => esc_html__( 'Long Text', 'extra-product-data-for-woocommerce' ),
 				'email'                                => esc_html__( 'Email', 'extra-product-data-for-woocommerce' ),

@@ -340,7 +340,7 @@ jQuery(function ($) {
                                     </tbody>
                                 </table>
 
-                                <!-- Text Option/Settings for radio, checkboxes and slects -->
+                                <!-- Text Option/Settings for radio, checkboxes and selects -->
                                 <table class="exprdawc_settings_table exprdawc_text_table" style="display:none;">
                                     <tbody>
                                         <tr>
@@ -423,11 +423,12 @@ jQuery(function ($) {
         toggleOptions(e) {
             this.setDirty();
             const $row = $(e.currentTarget).closest('tr');
+            const $type = $(e.currentTarget).val();
             const $optionsRow = $row.next('.exprdawc_options');
             const $optionsTable = $optionsRow.find('.exprdawc_options_table');
             const $placeholderText = $optionsRow.find('.exprdawc_placeholder');
 
-            if ($(e.currentTarget).val() === 'radio' || $(e.currentTarget).val() === 'checkbox') {
+            if ($type === 'radio' || $type === 'checkbox' || $type === 'select') {
                 $placeholderText.prop('disabled', true);
                 $optionsTable.show();
                 // Hide Placeholder.

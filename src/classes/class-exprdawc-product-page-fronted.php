@@ -262,16 +262,6 @@ class Exprdawc_Product_Page_Fronted {
 		$custom_fields = $product->get_meta( '_extra_product_fields', true );
 
 		if ( ! empty( $custom_fields ) ) {
-
-			// Check if the product can only be purchased once.
-			if ( $product->get_sold_individually() ) {
-				foreach ( WC()->cart->get_cart() as $cart_item ) {
-					if ( $cart_item['product_id'] === $product_id ) {
-						wc_add_notice( __( 'This product can only be purchased once.', 'extra-product-data-for-woocommerce' ), 'error' );
-						return false;
-					}
-				}
-			}
 			foreach ( $custom_fields as $index_num => $input_field_array ) {
 
 				// Actual label lowercase and without spaces and _ are -.

@@ -552,7 +552,6 @@ class TestClassExprdawcProductPageFronted extends WP_UnitTestCase {
 		$wc_product->delete( true );
 	}
 
-
 	/**
 	 * Test exprdawc_validate_custom_fields validates required fields.
 	 *
@@ -767,6 +766,663 @@ class TestClassExprdawcProductPageFronted extends WP_UnitTestCase {
 
 		$result = $this->instance->exprdawc_validate_custom_fields( true, $this->product_id, 1 );
 		$this->assertFalse( $result );
+	}
+
+	/**
+	 * Test exprdawc_validate_custom_fields validates radio field.
+	 *
+	 * Test Goal:
+	 * Verifies that radio field validation fails when an invalid option is selected.
+	 *
+	 * Expected Result:
+	 * - Validation returns FALSE
+	 * - WooCommerce error notice is added ("is not a valid option")
+	 * - Product cannot be added to cart
+	 *
+	 * Test Conditions:
+	 * - Product with a radio field with options A and B
+	 * - POST data contains invalid value "Bam" (not in options)
+	 */
+	public function test_exprdawc_validate_custom_fields_invalid_radio() {
+		// Add custom fields with radio field.
+		$custom_fields = array(
+			0 =>
+				array(
+					'label'                  => 'Radio Test.:',
+					'type'                   => 'radio',
+					'required'               => 1,
+					'conditional_logic'      => 0,
+					'placeholder_text'       => '',
+					'help_text'              => '',
+					'options'                =>
+					array(
+						0 =>
+							array(
+								'label'                  => 'Option A',
+								'value'                  => 'A',
+								'price_adjustment_type'  => 'fixed',
+								'price_adjustment_value' => '',
+								'default'                => 0,
+							),
+						1 =>
+							array(
+								'label'                  => 'Option B',
+								'value'                  => 'B',
+								'price_adjustment_type'  => 'fixed',
+								'price_adjustment_value' => '',
+								'default'                => 0,
+							),
+					),
+					'default'                => 'B',
+					'minlength'              => 0,
+					'maxlength'              => 255,
+					'rows'                   => 2,
+					'cols'                   => 5,
+					'autocomplete'           => 'on',
+					'autofocus'              => false,
+					'conditional_rules'      =>
+					array(
+						0 =>
+						array(
+							0 =>
+							array(
+								'field'    => '',
+								'operator' => 'field_is_empty',
+								'value'    => '',
+							),
+						),
+					),
+					'index'                  => 3,
+					'editable'               => false,
+					'adjust_price'           => false,
+					'price_adjustment_type'  => 'fixed',
+					'price_adjustment_value' => '0',
+				),
+		);
+		$this->product->update_meta_data( '_extra_product_fields', $custom_fields );
+		$this->product->save();
+
+		// Set up $_POST data with invalid radio option.
+		$_POST['exprdawc_custom_field_input'] = array(
+			'radio_test' =>
+				array(
+					99 => 'Bam',
+				),
+		);
+
+		$result = $this->instance->exprdawc_validate_custom_fields( true, $this->product_id, 1 );
+		$this->assertFalse( $result );
+	}
+
+
+	/**
+	 * Test exprdawc_validate_custom_fields validates radio field.
+	 *
+	 * Test Goal:
+	 * Verifies that radio field validation succeeds when a valid option is selected.
+	 *
+	 * Expected Result:
+	 * - Validation returns TRUE
+	 * - No WooCommerce error notice is added
+	 * - Product can be added to cart
+	 *
+	 * Test Conditions:
+	 * - Product with a radio field with options A and B
+	 * - POST data contains valid value "A" (in options)
+	 */
+	public function test_exprdawc_validate_custom_fields_valid_radio() {
+		// Add custom fields with radio field.
+		$custom_fields = array(
+			0 =>
+				array(
+					'label'                  => 'Radio Test.:',
+					'type'                   => 'radio',
+					'required'               => 1,
+					'conditional_logic'      => 0,
+					'placeholder_text'       => '',
+					'help_text'              => '',
+					'options'                =>
+					array(
+						0 =>
+							array(
+								'label'                  => 'Option A',
+								'value'                  => 'A',
+								'price_adjustment_type'  => 'fixed',
+								'price_adjustment_value' => '',
+								'default'                => 0,
+							),
+						1 =>
+							array(
+								'label'                  => 'Option B',
+								'value'                  => 'B',
+								'price_adjustment_type'  => 'fixed',
+								'price_adjustment_value' => '',
+								'default'                => 0,
+							),
+					),
+					'default'                => 'B',
+					'minlength'              => 0,
+					'maxlength'              => 255,
+					'rows'                   => 2,
+					'cols'                   => 5,
+					'autocomplete'           => 'on',
+					'autofocus'              => false,
+					'conditional_rules'      =>
+					array(
+						0 =>
+						array(
+							0 =>
+							array(
+								'field'    => '',
+								'operator' => 'field_is_empty',
+								'value'    => '',
+							),
+						),
+					),
+					'index'                  => 3,
+					'editable'               => false,
+					'adjust_price'           => false,
+					'price_adjustment_type'  => 'fixed',
+					'price_adjustment_value' => '0',
+				),
+		);
+		$this->product->update_meta_data( '_extra_product_fields', $custom_fields );
+		$this->product->save();
+
+		// Set up $_POST data with valid radio option.
+		$_POST['exprdawc_custom_field_input'] = array(
+			'radio_test' =>
+				array(
+					0 => 'A',
+				),
+		);
+
+		$result = $this->instance->exprdawc_validate_custom_fields( true, $this->product_id, 1 );
+		$this->assertTrue( $result );
+	}
+
+	/**
+	 * Test exprdawc_validate_custom_fields validates checkbox field.
+	 *
+	 * Test Goal:
+	 * Verifies that checkbox field validation fails when an invalid option is selected.
+	 *
+	 * Expected Result:
+	 * - Validation returns FALSE
+	 * - WooCommerce error notice is added ("is not a valid option")
+	 * - Product cannot be added to cart
+	 *
+	 * Test Conditions:
+	 * - Product with a checkbox field with options A and B
+	 * - POST data contains invalid value "Bam" (not in options)
+	 */
+	public function test_exprdawc_validate_custom_fields_invalid_checkbox() {
+		// Add custom fields with checkbox field.
+		$custom_fields = array(
+			0 =>
+				array(
+					'label'                  => 'Checkbox Test.:',
+					'type'                   => 'checkbox',
+					'required'               => 1,
+					'conditional_logic'      => 0,
+					'placeholder_text'       => '',
+					'help_text'              => '',
+					'options'                =>
+					array(
+						0 =>
+							array(
+								'label'                  => 'Option A',
+								'value'                  => 'A',
+								'price_adjustment_type'  => 'fixed',
+								'price_adjustment_value' => '',
+								'default'                => 0,
+							),
+						1 =>
+							array(
+								'label'                  => 'Option B',
+								'value'                  => 'B',
+								'price_adjustment_type'  => 'fixed',
+								'price_adjustment_value' => '',
+								'default'                => 0,
+							),
+					),
+					'default'                => 'B',
+					'minlength'              => 0,
+					'maxlength'              => 255,
+					'rows'                   => 2,
+					'cols'                   => 5,
+					'autocomplete'           => 'on',
+					'autofocus'              => false,
+					'conditional_rules'      =>
+					array(
+						0 =>
+						array(
+							0 =>
+							array(
+								'field'    => '',
+								'operator' => 'field_is_empty',
+								'value'    => '',
+							),
+						),
+					),
+					'index'                  => 3,
+					'editable'               => false,
+					'adjust_price'           => false,
+					'price_adjustment_type'  => 'fixed',
+					'price_adjustment_value' => '0',
+				),
+		);
+		$this->product->update_meta_data( '_extra_product_fields', $custom_fields );
+		$this->product->save();
+
+		// Set up $_POST data with invalid checkbox option.
+		$_POST['exprdawc_custom_field_input'] = array(
+			'checkbox_test' =>
+				array(
+					99 => 'Bam',
+				),
+		);
+
+		$result = $this->instance->exprdawc_validate_custom_fields( true, $this->product_id, 1 );
+		$this->assertFalse( $result );
+	}
+
+	/**
+	 * Test exprdawc_validate_custom_fields validates checkbox field.
+	 *
+	 * Test Goal:
+	 * Verifies that checkbox field validation succeeds when a valid option is selected.
+	 *
+	 * Expected Result:
+	 * - Validation returns TRUE
+	 * - WooCommerce error notice is not added
+	 * - Product can be added to cart
+	 *
+	 * Test Conditions:
+	 * - Product with a checkbox field with options A and B
+	 * - POST data contains valid value "A" (in options)
+	 */
+	public function test_exprdawc_validate_custom_fields_valid_checkbox() {
+		// Add custom fields with checkbox field.
+		$custom_fields = array(
+			0 =>
+				array(
+					'label'                  => 'Checkbox Test.:',
+					'type'                   => 'checkbox',
+					'required'               => 1,
+					'conditional_logic'      => 0,
+					'placeholder_text'       => '',
+					'help_text'              => '',
+					'options'                =>
+					array(
+						0 =>
+							array(
+								'label'                  => 'Option A',
+								'value'                  => 'A',
+								'price_adjustment_type'  => 'fixed',
+								'price_adjustment_value' => '',
+								'default'                => 0,
+							),
+						1 =>
+							array(
+								'label'                  => 'Option B',
+								'value'                  => 'B',
+								'price_adjustment_type'  => 'fixed',
+								'price_adjustment_value' => '',
+								'default'                => 0,
+							),
+					),
+					'default'                => 'B',
+					'minlength'              => 0,
+					'maxlength'              => 255,
+					'rows'                   => 2,
+					'cols'                   => 5,
+					'autocomplete'           => 'on',
+					'autofocus'              => false,
+					'conditional_rules'      =>
+					array(
+						0 =>
+						array(
+							0 =>
+							array(
+								'field'    => '',
+								'operator' => 'field_is_empty',
+								'value'    => '',
+							),
+						),
+					),
+					'index'                  => 3,
+					'editable'               => false,
+					'adjust_price'           => false,
+					'price_adjustment_type'  => 'fixed',
+					'price_adjustment_value' => '0',
+				),
+		);
+		$this->product->update_meta_data( '_extra_product_fields', $custom_fields );
+		$this->product->save();
+
+		// Set up $_POST data with valid checkbox option.
+		$_POST['exprdawc_custom_field_input'] = array(
+			'checkbox_test' =>
+				array(
+					0 => 'A',
+				),
+		);
+
+		$result = $this->instance->exprdawc_validate_custom_fields( true, $this->product_id, 1 );
+		$this->assertTrue( $result );
+	}
+
+	/**
+	 * Test exprdawc_validate_custom_fields validates yes-no field.
+	 *
+	 * Test Goal:
+	 * Verifies that yes-no field validation fails when an invalid option is selected.
+	 *
+	 * Expected Result:
+	 * - Validation returns FALSE
+	 * - WooCommerce error notice is added ("is not a valid option")
+	 * - Product cannot be added to cart
+	 *
+	 * Test Conditions:
+	 * - Product with a yes-no field
+	 * - POST data contains invalid value "Bam" (not in options)
+	 */
+	public function test_exprdawc_validate_custom_fields_invalid_yes_no() {
+		// Add custom fields with yes-no field.
+		$custom_fields = array(
+			0 =>
+				array(
+					'label'                  => 'Yes No',
+					'type'                   => 'yes-no',
+					'required'               => 1,
+					'conditional_logic'      => 0,
+					'placeholder_text'       => '',
+					'help_text'              => '',
+					'options'                => array(),
+					'default'                => '',
+					'minlength'              => 0,
+					'maxlength'              => 255,
+					'rows'                   => 2,
+					'cols'                   => 5,
+					'autocomplete'           => 'on',
+					'autofocus'              => false,
+					'conditional_rules'      =>
+						array(
+							0 =>
+							array(
+								0 =>
+								array(
+									'field'    => '',
+									'operator' => 'field_is_empty',
+									'value'    => '',
+								),
+							),
+						),
+					'index'                  => 0,
+					'editable'               => false,
+					'adjust_price'           => false,
+					'price_adjustment_type'  => 'fixed',
+					'price_adjustment_value' => '0',
+				),
+		);
+		$this->product->update_meta_data( '_extra_product_fields', $custom_fields );
+		$this->product->save();
+
+		// Set up $_POST data with invalid yes-no option.
+		$_POST['exprdawc_custom_field_input'] = array(
+			'yes_no' => 'blub',
+		);
+
+		$result = $this->instance->exprdawc_validate_custom_fields( true, $this->product_id, 1 );
+		$this->assertFalse( $result );
+	}
+
+	/**
+	 * Test exprdawc_validate_custom_fields validates yes-no field.
+	 *
+	 * Test Goal:
+	 * Verifies that yes-no field validation succeeds when a valid option is selected.
+	 *
+	 * Expected Result:
+	 * - Validation returns TRUE
+	 * - WooCommerce error notice is not added
+	 * - Product can be added to cart
+	 *
+	 * Test Conditions:
+	 * - Product with a yes-no field
+	 * - POST data contains valid value "yes" (in options)
+	 */
+	public function test_exprdawc_validate_custom_fields_valid_yes_no() {
+		// Add custom fields with yes-no field.
+		$custom_fields = array(
+			0 =>
+				array(
+					'label'                  => 'Yes No',
+					'type'                   => 'yes-no',
+					'required'               => 1,
+					'conditional_logic'      => 0,
+					'placeholder_text'       => '',
+					'help_text'              => '',
+					'options'                => array(),
+					'default'                => '',
+					'minlength'              => 0,
+					'maxlength'              => 255,
+					'rows'                   => 2,
+					'cols'                   => 5,
+					'autocomplete'           => 'on',
+					'autofocus'              => false,
+					'conditional_rules'      =>
+						array(
+							0 =>
+							array(
+								0 =>
+								array(
+									'field'    => '',
+									'operator' => 'field_is_empty',
+									'value'    => '',
+								),
+							),
+						),
+					'index'                  => 0,
+					'editable'               => false,
+					'adjust_price'           => false,
+					'price_adjustment_type'  => 'fixed',
+					'price_adjustment_value' => '0',
+				),
+		);
+		$this->product->update_meta_data( '_extra_product_fields', $custom_fields );
+		$this->product->save();
+
+		// Set up $_POST data with valid yes-no option.
+		$_POST['exprdawc_custom_field_input'] = array(
+			'yes_no' => 'yes',
+		);
+
+		$result = $this->instance->exprdawc_validate_custom_fields( true, $this->product_id, 1 );
+		$this->assertTrue( $result );
+	}
+
+	/**
+	 * Test exprdawc_validate_custom_fields validates select field.
+	 *
+	 * Test Goal:
+	 * Verifies that select field validation fails when an invalid option is selected.
+	 *
+	 * Expected Result:
+	 * - Validation returns FALSE
+	 * - WooCommerce error notice is added ("is not a valid option")
+	 * - Product cannot be added to cart
+	 *
+	 * Test Conditions:
+	 * - Product with a select field
+	 * - POST data contains invalid value "Bam" (not in options)
+	 */
+	public function test_exprdawc_validate_custom_fields_invalid_select() {
+		// Add custom fields with select field.
+		$custom_fields = array(
+			0 =>
+				array(
+					'label'                  => 'Select Field',
+					'type'                   => 'select',
+					'required'               => 1,
+					'conditional_logic'      => 0,
+					'placeholder_text'       => '',
+					'help_text'              => '',
+					'options'                =>
+					array(
+						0 =>
+						array(
+							'label'                  => 'Option A',
+							'value'                  => 'A',
+							'price_adjustment_type'  => 'fixed',
+							'price_adjustment_value' => '',
+							'default'                => 0,
+						),
+						1 =>
+						array(
+							'label'                  => 'Option B',
+							'value'                  => 'B',
+							'price_adjustment_type'  => 'fixed',
+							'price_adjustment_value' => '',
+							'default'                => 0,
+						),
+						2 =>
+						array(
+							'label'                  => 'Option C',
+							'value'                  => 'C',
+							'price_adjustment_type'  => 'fixed',
+							'price_adjustment_value' => '',
+							'default'                => 0,
+						),
+					),
+					'default'                => '',
+					'minlength'              => 0,
+					'maxlength'              => 255,
+					'rows'                   => 2,
+					'cols'                   => 5,
+					'autocomplete'           => 'on',
+					'autofocus'              => false,
+					'conditional_rules'      =>
+						array(
+							0 =>
+							array(
+								0 =>
+								array(
+									'field'    => '',
+									'operator' => 'field_is_empty',
+									'value'    => '',
+								),
+							),
+						),
+					'index'                  => 0,
+					'editable'               => false,
+					'adjust_price'           => false,
+					'price_adjustment_type'  => 'fixed',
+					'price_adjustment_value' => '0',
+				),
+		);
+		$this->product->update_meta_data( '_extra_product_fields', $custom_fields );
+		$this->product->save();
+
+		// Set up $_POST data with invalid select option.
+		$_POST['exprdawc_custom_field_input'] = array(
+			'select_field' => 'Bam',
+		);
+
+		$result = $this->instance->exprdawc_validate_custom_fields( true, $this->product_id, 1 );
+		$this->assertFalse( $result );
+	}
+
+	/**
+	 * Test exprdawc_validate_custom_fields validates select field.
+	 *
+	 * Test Goal:
+	 * Verifies that select field validation succeeds when a valid option is selected.
+	 *
+	 * Expected Result:
+	 * - Validation returns TRUE
+	 * - No WooCommerce error notice is added
+	 * - Product can be added to cart
+	 *
+	 * Test Conditions:
+	 * - Product with a select field
+	 * - POST data contains valid value "B" (in options)
+	 */
+	public function test_exprdawc_validate_custom_fields_valid_select() {
+		// Add custom fields with select field.
+		$custom_fields = array(
+			0 =>
+				array(
+					'label'                  => 'Select Field',
+					'type'                   => 'select',
+					'required'               => 1,
+					'conditional_logic'      => 0,
+					'placeholder_text'       => '',
+					'help_text'              => '',
+					'options'                =>
+					array(
+						0 =>
+						array(
+							'label'                  => 'Option A',
+							'value'                  => 'A',
+							'price_adjustment_type'  => 'fixed',
+							'price_adjustment_value' => '',
+							'default'                => 0,
+						),
+						1 =>
+						array(
+							'label'                  => 'Option B',
+							'value'                  => 'B',
+							'price_adjustment_type'  => 'fixed',
+							'price_adjustment_value' => '',
+							'default'                => 0,
+						),
+						2 =>
+						array(
+							'label'                  => 'Option C',
+							'value'                  => 'C',
+							'price_adjustment_type'  => 'fixed',
+							'price_adjustment_value' => '',
+							'default'                => 0,
+						),
+					),
+					'default'                => '',
+					'minlength'              => 0,
+					'maxlength'              => 255,
+					'rows'                   => 2,
+					'cols'                   => 5,
+					'autocomplete'           => 'on',
+					'autofocus'              => false,
+					'conditional_rules'      =>
+						array(
+							0 =>
+							array(
+								0 =>
+								array(
+									'field'    => '',
+									'operator' => 'field_is_empty',
+									'value'    => '',
+								),
+							),
+						),
+					'index'                  => 0,
+					'editable'               => false,
+					'adjust_price'           => false,
+					'price_adjustment_type'  => 'fixed',
+					'price_adjustment_value' => '0',
+				),
+		);
+		$this->product->update_meta_data( '_extra_product_fields', $custom_fields );
+		$this->product->save();
+
+		// Set up $_POST data with valid select option.
+		$_POST['exprdawc_custom_field_input'] = array(
+			'select_field' => 'B',
+		);
+
+		$result = $this->instance->exprdawc_validate_custom_fields( true, $this->product_id, 1 );
+		$this->assertTrue( $result );
 	}
 
 	/**
