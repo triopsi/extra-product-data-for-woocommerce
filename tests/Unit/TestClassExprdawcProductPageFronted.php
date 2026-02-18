@@ -1069,7 +1069,7 @@ class TestClassExprdawcProductPageFronted extends WP_UnitTestCase {
 		$this->assertIsArray( $result );
 
 		// Clean up.
-		wp_reset_query();
+		wp_reset_postdata();
 		delete_option( 'exprdawc_show_in_cart' );
 	}
 
@@ -1131,7 +1131,7 @@ class TestClassExprdawcProductPageFronted extends WP_UnitTestCase {
 		$this->assertIsArray( $result );
 
 		// Clean up.
-		wp_reset_query();
+		wp_reset_postdata();
 		delete_option( 'exprdawc_show_in_cart' );
 		delete_option( 'exprdawc_show_empty_fields' );
 	}

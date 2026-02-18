@@ -25,6 +25,7 @@
  */
 
 namespace Triopsi\Exprdawc;
+
 use Automattic\WooCommerce\Enums\ProductType;
 
 if ( ! defined( 'ABSPATH' ) ) {
