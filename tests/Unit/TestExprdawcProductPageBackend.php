@@ -47,8 +47,6 @@ class TestExprdawcProductPageBackend extends WP_UnitTestCase {
 	 * Tests that the Exprdawc_Product_Page_Backend class can be instantiated.
 	 *
 	 * Expects: The created object is an instance of Exprdawc_Product_Page_Backend.
-	 *
-	 * @covers Triopsi\Exprdawc\Exprdawc_Product_Page_Backend::__construct
 	 */
 	public function test_can_instantiate() {
 		$this->assertInstanceOf(
@@ -62,8 +60,6 @@ class TestExprdawcProductPageBackend extends WP_UnitTestCase {
 	 * Tests that constructor registers hooks when in admin context.
 	 *
 	 * Expects: All filters and actions are registered when is_admin() returns true.
-	 *
-	 * @covers Triopsi\Exprdawc\Exprdawc_Product_Page_Backend::__construct
 	 */
 	public function test_constructor_registers_hooks_in_admin_context() {
 		global $wp_filter;
@@ -106,8 +102,6 @@ class TestExprdawcProductPageBackend extends WP_UnitTestCase {
 	 * Tests that constructor does not register hooks when not in admin context
 	 *
 	 * Expects: No filters or actions are registered when is_admin() returns false.
-	 *
-	 * @covers Triopsi\Exprdawc\Exprdawc_Product_Page_Backend::__construct
 	 */
 	public function test_constructor_does_not_register_hooks_in_frontend_context() {
 		// Remove admin screen (simulate frontend).
@@ -153,8 +147,6 @@ class TestExprdawcProductPageBackend extends WP_UnitTestCase {
 	 * Tests that exprdawc_add_custom_product_tab adds a tab with the key 'custom_fields'.
 	 *
 	 * Expects: The returned array contains a 'custom_fields' key with proper structure.
-	 *
-	 * @covers Triopsi\Exprdawc\Exprdawc_Product_Page_Backend::exprdawc_add_custom_product_tab
 	 */
 	public function test_exprdawc_add_custom_product_tab_adds_tab() {
 		$tabs   = array();
@@ -167,8 +159,6 @@ class TestExprdawcProductPageBackend extends WP_UnitTestCase {
 	 * Tests that exprdawc_add_custom_product_tab returns correct tab structure.
 	 *
 	 * Expects: The custom_fields tab has label, target, and class properties.
-	 *
-	 * @covers Triopsi\Exprdawc\Exprdawc_Product_Page_Backend::exprdawc_add_custom_product_tab
 	 */
 	public function test_exprdawc_add_custom_product_tab_structure() {
 		$tabs   = array();
@@ -185,8 +175,6 @@ class TestExprdawcProductPageBackend extends WP_UnitTestCase {
 	 * Tests that exprdawc_add_custom_product_tab preserves existing tabs.
 	 *
 	 * Expects: Original tabs remain in the array along with the new custom_fields tab.
-	 *
-	 * @covers Triopsi\Exprdawc\Exprdawc_Product_Page_Backend::exprdawc_add_custom_product_tab
 	 */
 	public function test_exprdawc_add_custom_product_tab_preserves_existing_tabs() {
 		$tabs = array(
@@ -278,8 +266,6 @@ class TestExprdawcProductPageBackend extends WP_UnitTestCase {
 	 * Tests that exprdawc_show_general_tab enqueues the required script.
 	 *
 	 * Expects: The script 'exprdawc-wc-meta-boxes-js' is registered after the method is called.
-	 *
-	 * @covers Triopsi\Exprdawc\Exprdawc_Product_Page_Backend::exprdawc_show_general_tab
 	 */
 	public function test_exprdawc_show_general_tab_enqueues_script() {
 		$this->product_page_backend->exprdawc_show_general_tab();
@@ -295,8 +281,6 @@ class TestExprdawcProductPageBackend extends WP_UnitTestCase {
 	 * Tests that exprdawc_show_general_tab localizes script with correct data.
 	 *
 	 * Expects: The script has localization data including edit_exprdawc_nonce and other strings.
-	 *
-	 * @covers Triopsi\Exprdawc\Exprdawc_Product_Page_Backend::exprdawc_show_general_tab
 	 */
 	public function test_exprdawc_show_general_tab_localizes_script() {
 		$this->product_page_backend->exprdawc_show_general_tab();
@@ -313,8 +297,6 @@ class TestExprdawcProductPageBackend extends WP_UnitTestCase {
 	 * Tests that exprdawc_save_extra_product_fields saves custom fields to product meta.
 	 *
 	 * Expects: Custom fields are saved as product meta data '_extra_product_fields'.
-	 *
-	 * @covers Triopsi\Exprdawc\Exprdawc_Product_Page_Backend::exprdawc_save_extra_product_fields
 	 */
 	public function test_exprdawc_save_extra_product_fields_saves_data() {
 		$product = new WC_Product_Simple();
@@ -355,8 +337,6 @@ class TestExprdawcProductPageBackend extends WP_UnitTestCase {
 	 * Tests that exprdawc_save_extra_product_fields sanitizes field data correctly.
 	 *
 	 * Expects: HTML tags and malicious content are stripped from field values.
-	 *
-	 * @covers Triopsi\Exprdawc\Exprdawc_Product_Page_Backend::exprdawc_save_extra_product_fields
 	 */
 	public function test_exprdawc_save_extra_product_fields_sanitizes_data() {
 		$product = new WC_Product_Simple();
@@ -395,8 +375,6 @@ class TestExprdawcProductPageBackend extends WP_UnitTestCase {
 	 * Tests that exprdawc_save_extra_product_fields handles options array correctly.
 	 *
 	 * Expects: Options for select/radio/checkbox fields are saved with proper structure.
-	 *
-	 * @covers Triopsi\Exprdawc\Exprdawc_Product_Page_Backend::exprdawc_save_extra_product_fields
 	 */
 	public function test_exprdawc_save_extra_product_fields_with_options() {
 		$product = new WC_Product_Simple();
@@ -448,8 +426,6 @@ class TestExprdawcProductPageBackend extends WP_UnitTestCase {
 	 * Tests that exprdawc_save_extra_product_fields deletes meta when no fields are provided.
 	 *
 	 * Expects: Product meta '_extra_product_fields' is deleted when POST data is empty.
-	 *
-	 * @covers Triopsi\Exprdawc\Exprdawc_Product_Page_Backend::exprdawc_save_extra_product_fields
 	 */
 	public function test_exprdawc_save_extra_product_fields_deletes_meta_when_empty() {
 		$product = new WC_Product_Simple();
@@ -481,7 +457,6 @@ class TestExprdawcProductPageBackend extends WP_UnitTestCase {
 	 * Expects: JSON string is decoded and saved as product meta data.
 	 *
 	 * @group ajax
-	 * @covers Triopsi\Exprdawc\Exprdawc_Product_Page_Backend::exprdawc_import_custom_fields
 	 */
 	public function test_exprdawc_import_custom_fields_with_valid_json() {
 		$product = new WC_Product_Simple();
@@ -542,7 +517,6 @@ class TestExprdawcProductPageBackend extends WP_UnitTestCase {
 	 * Expects: Error response is sent when JSON is malformed.
 	 *
 	 * @group ajax
-	 * @covers Triopsi\Exprdawc\Exprdawc_Product_Page_Backend::exprdawc_import_custom_fields
 	 */
 	public function test_exprdawc_import_custom_fields_with_invalid_json() {
 		$product = new WC_Product_Simple();
@@ -597,7 +571,6 @@ class TestExprdawcProductPageBackend extends WP_UnitTestCase {
 	 * Expects: Function fails when security nonce is invalid.
 	 *
 	 * @group ajax
-	 * @covers Triopsi\Exprdawc\Exprdawc_Product_Page_Backend::exprdawc_import_custom_fields
 	 */
 	public function test_exprdawc_import_custom_fields_requires_valid_nonce() {
 		$this->markTestSkipped( 'Not run' );
@@ -625,8 +598,6 @@ class TestExprdawcProductPageBackend extends WP_UnitTestCase {
 	 * Tests that exprdawc_save_extra_product_fields handles conditional logic rules.
 	 *
 	 * Expects: Conditional rules are saved correctly with field, operator, and value.
-	 *
-	 * @covers Triopsi\Exprdawc\Exprdawc_Product_Page_Backend::exprdawc_save_extra_product_fields
 	 */
 	public function test_exprdawc_save_extra_product_fields_with_conditional_logic() {
 		$product = new WC_Product_Simple();

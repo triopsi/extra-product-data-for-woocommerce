@@ -47,8 +47,6 @@ class TestExprdawcUserOrder extends WP_UnitTestCase {
 	 * Tests that the Exprdawc_User_Order class can be instantiated.
 	 *
 	 * Expects: The created object is an instance of Exprdawc_User_Order.
-	 *
-	 * @covers Triopsi\Exprdawc\Exprdawc_User_Order::__construct
 	 */
 	public function test_can_instantiate() {
 		$this->assertInstanceOf(
@@ -62,8 +60,6 @@ class TestExprdawcUserOrder extends WP_UnitTestCase {
 	 * Tests that constructor registers required hooks.
 	 *
 	 * Expects: All three hooks are successfully registered.
-	 *
-	 * @covers Triopsi\Exprdawc\Exprdawc_User_Order::__construct
 	 */
 	public function test_constructor_registers_hooks() {
 		$this->assertTrue(
@@ -86,8 +82,6 @@ class TestExprdawcUserOrder extends WP_UnitTestCase {
 	 * Tests that enqueue_scripts enqueues on account page.
 	 *
 	 * Expects: Method runs without error when account page check is true.
-	 *
-	 * @covers Triopsi\Exprdawc\Exprdawc_User_Order::enqueue_scripts
 	 */
 	public function test_enqueue_scripts_on_account_page() {
 		// Mock the is_account_page function if not defined.
@@ -108,8 +102,6 @@ class TestExprdawcUserOrder extends WP_UnitTestCase {
 	 * Tests that enqueue_scripts does not enqueue on non-account page.
 	 *
 	 * Expects: No scripts are enqueued when not on account page.
-	 *
-	 * @covers Triopsi\Exprdawc\Exprdawc_User_Order::enqueue_scripts
 	 */
 	public function test_enqueue_scripts_not_on_account_page() {
 		$test_user_order = new Exprdawc_User_Order();
@@ -127,8 +119,6 @@ class TestExprdawcUserOrder extends WP_UnitTestCase {
 	 * Tests that enqueue_scripts localizes the script with required data.
 	 *
 	 * Expects: Localization object contains ajax_url, nonce, and messages.
-	 *
-	 * @covers Triopsi\Exprdawc\Exprdawc_User_Order::enqueue_scripts
 	 */
 	public function test_enqueue_scripts_localizes_data() {
 		// Verify method can run with localization.
@@ -150,8 +140,6 @@ class TestExprdawcUserOrder extends WP_UnitTestCase {
 	 * Tests that add_edit_button_to_order_item returns early without custom fields.
 	 *
 	 * Expects: No output when product has no custom fields.
-	 *
-	 * @covers Triopsi\Exprdawc\Exprdawc_User_Order::add_edit_button_to_order_item
 	 */
 	public function test_add_edit_button_no_custom_fields() {
 		// Create product without custom fields.
@@ -184,8 +172,6 @@ class TestExprdawcUserOrder extends WP_UnitTestCase {
 	 * Tests add_edit_button_to_order_item with no user inputs.
 	 *
 	 * Expects: No button rendered when custom fields exist but no user data is saved.
-	 *
-	 * @covers Triopsi\Exprdawc\Exprdawc_User_Order::add_edit_button_to_order_item
 	 */
 	public function test_add_edit_button_no_user_inputs() {
 		// Create product with custom fields.
@@ -234,8 +220,6 @@ class TestExprdawcUserOrder extends WP_UnitTestCase {
 	 * Tests add_edit_button_to_order_item renders button with user inputs on view-order.
 	 *
 	 * Expects: Method can be called with order item meta data without errors.
-	 *
-	 * @covers Triopsi\Exprdawc\Exprdawc_User_Order::add_edit_button_to_order_item
 	 */
 	public function test_add_edit_button_renders_with_user_inputs() {
 		// Create product with custom fields.
@@ -283,8 +267,6 @@ class TestExprdawcUserOrder extends WP_UnitTestCase {
 	 * Tests add_edit_button_to_order_item does not render on non-view-order page.
 	 *
 	 * Expects: No edit button or form is rendered when not on view-order endpoint.
-	 *
-	 * @covers Triopsi\Exprdawc\Exprdawc_User_Order::add_edit_button_to_order_item
 	 */
 	public function test_add_edit_button_not_on_view_order() {
 		// Create product with custom fields.
@@ -334,8 +316,6 @@ class TestExprdawcUserOrder extends WP_UnitTestCase {
 	 * Tests add_edit_button_to_order_item respects maximum order status.
 	 *
 	 * Expects: Edit button is not shown if order status exceeds max allowed status.
-	 *
-	 * @covers Triopsi\Exprdawc\Exprdawc_User_Order::add_edit_button_to_order_item
 	 */
 	public function test_add_edit_button_respects_max_order_status() {
 		// Create product with custom fields.
@@ -389,8 +369,6 @@ class TestExprdawcUserOrder extends WP_UnitTestCase {
 	 * Tests that add_edit_button_to_order_item handles variable products.
 	 *
 	 * Expects: Parent product is used when item is a variation without errors.
-	 *
-	 * @covers Triopsi\Exprdawc\Exprdawc_User_Order::add_edit_button_to_order_item
 	 */
 	public function test_add_edit_button_with_variable_product() {
 		// Create parent product with custom fields.
@@ -445,7 +423,6 @@ class TestExprdawcUserOrder extends WP_UnitTestCase {
 	 *
 	 * Expects: Method is properly hooked to wp_ajax action.
 	 *
-	 * @covers Triopsi\Exprdawc\Exprdawc_User_Order::save_order_item_meta
 	 * @group ajax
 	 */
 	public function test_save_order_item_meta_ajax_registered() {

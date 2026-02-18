@@ -6,13 +6,13 @@ require_once dirname( __DIR__ ) . '/../src/classes/class-exprdawc-helper.php';
 use Triopsi\Exprdawc\Exprdawc_Helper;
 
 /**
- * Class Test_Exprdawc_Helper
+ * Class TestClassExprdawcHelper
  *
  * PHPUnit tests for Exprdawc_Helper class.
  *
  * @package Extra_Product_Data_For_WooCommerce\Tests\Unit
  */
-class Test_Exprdawc_Helper extends WP_UnitTestCase {
+class TestClassExprdawcHelper extends WP_UnitTestCase {
 
 	/**
 	 * Tests generate_input_field with various fields.

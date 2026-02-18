@@ -33,3 +33,4 @@ phpunit.xml
 .afdesign
 .phpunit.result.cache
 reports/
+vite.config.js

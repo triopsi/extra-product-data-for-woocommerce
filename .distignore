@@ -64,3 +64,4 @@ coverage.xml
 .phpunit.result.cache
 /tests/_output
 reports/
+vite.config.js

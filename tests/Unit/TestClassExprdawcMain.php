@@ -6,13 +6,13 @@ require_once dirname( __DIR__ ) . '/../src/classes/class-exprdawc-main.php';
 use Triopsi\Exprdawc\Exprdawc_Main;
 
 /**
- * Class Test_Exprdawc_Main
+ * Class TestClassExprdawcMain
  *
  * PHPUnit tests for Exprdawc_Main class.
  *
  * @package Extra_Product_Data_For_WooCommerce\Tests\Unit
  */
-class Test_Exprdawc_Main extends WP_UnitTestCase {
+class TestClassExprdawcMain extends WP_UnitTestCase {
 
 	/**
 	 * Instance of the main class.

@@ -5,13 +5,13 @@ use PHPUnit\Framework\TestCase;
 use Triopsi\Exprdawc\Exprdawc_Admin_Order;
 
 /**
- * Class Test_Exprdawc_Admin_Order
+ * Class TestExprdawcAdminOrder
  *
  * PHPUnit tests for Exprdawc_Admin_Order class.
  *
  * @package Extra_Product_Data_For_WooCommerce\Tests\Unit
  */
-class Test_Exprdawc_Admin_Order extends TestCase {
+class TestExprdawcAdminOrder extends TestCase {
 	/**
 	 * Tests if the Exprdawc_Admin_Order class can be instantiated.
 	 */

@@ -5,13 +5,13 @@ use PHPUnit\Framework\TestCase;
 use Triopsi\Exprdawc\Exprdawc_Base_Order_Class;
 
 /**
- * Class Test_Exprdawc_Base_Order_Class
+ * Class TestExprdawcBaseOrderClass
  *
  * PHPUnit tests for Exprdawc_Base_Order_Class class.
  *
  * @package Extra_Product_Data_For_WooCommerce\Tests\Unit
  */
-class Test_Exprdawc_Base_Order_Class extends TestCase {
+class TestExprdawcBaseOrderClass extends TestCase {
 	/**
 	 * Tests if get_adjustment_value returns the correct value for 'fixed'.
 	 */
