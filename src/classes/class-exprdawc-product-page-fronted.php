@@ -88,7 +88,7 @@ class Exprdawc_Product_Page_Fronted {
 	 * @param WC_Product $product The WooCommerce product object.
 	 * @return bool Whether the product has options.
 	 */
-	public function exprdawc_has_options( $has_options, $product ) {
+	public function exprdawc_has_options( bool $has_options, WC_Product $product ): bool {
 		if ( Exprdawc_Helper::check_required_fields( $product ) ) {
 			$has_options = true;
 		}
@@ -160,7 +160,7 @@ class Exprdawc_Product_Page_Fronted {
 	 * @param WC_Product $product The WooCommerce product object.
 	 * @return string The modified URL of the add-to-cart button.
 	 */
-	public function exprdawc_change_add_to_cart_url( string $url, WC_Product $product ) {
+	public function exprdawc_change_add_to_cart_url( string $url, WC_Product $product ): string {
 		if ( ! is_single( $product->get_id() ) && in_array( $product->get_type(), array( ProductType::SIMPLE, ProductType::VARIATION ), true ) ) {
 			if ( Exprdawc_Helper::check_required_fields( $product->get_id() ) ) {
 				$url = get_permalink( $product->get_id() );
@@ -177,7 +177,7 @@ class Exprdawc_Product_Page_Fronted {
 	 *
 	 * @return void
 	 */
-	public function exprdawc_add_frontend_styles_scripts() {
+	public function exprdawc_add_frontend_styles_scripts(): void {
 		if ( is_product() ) {
 			wp_enqueue_style( 'form-css', EXPRDAWC_ASSETS_CSS . 'forms.css', array(), '1.0.0', 'all' );
 
@@ -218,7 +218,7 @@ class Exprdawc_Product_Page_Fronted {
 	 *
 	 * @return void
 	 */
-	public function exprdawc_display_custom_fields_on_product_page() {
+	public function exprdawc_display_custom_fields_on_product_page(): void {
 		global $product;
 		$custom_fields = $product->get_meta( '_extra_product_fields', true );
 
@@ -247,100 +247,251 @@ class Exprdawc_Product_Page_Fronted {
 	 * @param int  $quantity The quantity of the product being added to the cart.
 	 * @return bool Whether the validation has passed.
 	 */
-	public function exprdawc_validate_custom_fields( $passed, $product_id, $quantity ) { // phpcs:ignore
+	public function exprdawc_validate_custom_fields( bool $passed, int $product_id, int $quantity ): bool { // phpcs:ignore
 
-		// if $_Post not have the exprdawc_custom_field_input array then return true.
+		// Validate input parameters.
+		if ( ! is_bool( $passed ) || ! is_numeric( $product_id ) || ! is_numeric( $quantity ) ) {
+			return $passed;
+		}
+
+		// If $_POST doesn't have the exprdawc_custom_field_input array, validation passes.
 		if ( ! isset( $_POST['exprdawc_custom_field_input'] ) ) { // phpcs:ignore
 			return $passed;
 		}
 
+		// Get the product safely.
 		$product = wc_get_product( $product_id );
-		if ( ! $product ) {
+		if ( ! $product instanceof WC_Product ) {
 			return $passed;
 		}
 
+		// Retrieve custom fields metadata.
 		$custom_fields = $product->get_meta( '_extra_product_fields', true );
+		if ( ! is_array( $custom_fields ) || empty( $custom_fields ) ) {
+			return $passed;
+		}
 
-		if ( ! empty( $custom_fields ) ) {
-			foreach ( $custom_fields as $index_num => $input_field_array ) {
+		// Validate each custom field.
+		foreach ( $custom_fields as $input_field_array ) {
 
-				// Actual label lowercase and without spaces and _ are -.
-				$index = esc_attr( strtolower( str_replace( array( ' ', '-' ), '_', sanitize_title( $input_field_array['label'] ) ) ) );
+			// Validate field array structure.
+			if ( ! is_array( $input_field_array ) || empty( $input_field_array['label'] ) ) {
+				continue;
+			}
 
-				// Get the field value from the $_POST array.
-				$field_value = isset( $_POST['exprdawc_custom_field_input'][ $index ] ) ? $_POST['exprdawc_custom_field_input'][ $index ] : ''; // phpcs:ignore
+			$field_label = sanitize_text_field( $input_field_array['label'] );
+			$field_type  = isset( $input_field_array['type'] ) ? sanitize_text_field( $input_field_array['type'] ) : 'text';
+			$is_required = ! empty( $input_field_array['required'] );
 
-				// Handle different field types.
-				if ( is_array( $field_value ) ) {
-					$field_value = array_map( 'sanitize_text_field', $field_value );
-				} else {
-					$field_value = sanitize_text_field( $field_value );
-				}
+			// Get field index and value from POST data.
+			$field_data  = $this->get_field_index_and_value( $input_field_array );
+			$field_value = $field_data['value'];
 
-				if ( ! empty( $input_field_array['required'] ) && empty( $field_value ) ) {
-					/* translators: %s: field label */
-					wc_add_notice( sprintf( esc_html__( '%s is a required field.', 'extra-product-data-for-woocommerce' ), $input_field_array['label'] ), 'error' );
-					$passed = false;
-				}
+			// Sanitize field value based on type.
+			$field_value = $this->sanitize_field_value( $field_value, $field_type );
 
-				// Additional validation based on field type.
-				switch ( $input_field_array['type'] ) {
-					case 'email':
-						if ( ! empty( $field_value ) && ! is_email( $field_value ) ) {
-							/* translators: %s: field label */
-							wc_add_notice( sprintf( esc_html__( '%s is not a valid email address.', 'extra-product-data-for-woocommerce' ), $input_field_array['label'] ), 'error' );
-							$passed = false;
-						}
-						break;
-					case 'number':
-						if ( ! empty( $field_value ) && ! is_numeric( $field_value ) ) {
-							/* translators: %s: field label */
-							wc_add_notice( sprintf( esc_html__( '%s must be a number.', 'extra-product-data-for-woocommerce' ), $input_field_array['label'] ), 'error' );
-							$passed = false;
-						}
-						break;
-					case 'date':
-						if ( ! empty( $field_value ) && ! strtotime( $field_value ) ) {
-							/* translators: %s: field label */
-							wc_add_notice( sprintf( esc_html__( '%s is not a valid date.', 'extra-product-data-for-woocommerce' ), $input_field_array['label'] ), 'error' );
-							$passed = false;
-						}
-						break;
-					case 'yes-no':
-						if ( ! empty( $field_value ) && ! in_array( $field_value, array( 'yes', 'no' ), true ) ) {
-							/* translators: %s: field label */
-							wc_add_notice( sprintf( esc_html__( '%s must be either "Yes" or "No".', 'extra-product-data-for-woocommerce' ), $input_field_array['label'] ), 'error' );
-							$passed = false;
-						}
-						break;
-					case 'radio':
-						$array_colum = array_column( $input_field_array['options'], 'value' );
-						$intersect   = array_intersect( (array) $field_value, $array_colum );
-						if ( ! empty( $field_value ) && empty( $intersect ) ) {
-							wc_add_notice( esc_html__( 'Invalid option selected for radio button.', 'extra-product-data-for-woocommerce' ), 'error' );
-							$passed = false;
-						}
-						break;
-					case 'checkbox':
-						$array_colum = array_column( $input_field_array['options'], 'value' );
-						$intersect   = array_intersect( (array) $field_value, $array_colum );
-						if ( ! empty( $field_value ) && empty( $intersect ) ) {
-							wc_add_notice( esc_html__( 'Invalid option selected for checkbox.', 'extra-product-data-for-woocommerce' ), 'error' );
-							$passed = false;
-						}
-						break;
-					case 'select':
-						$array_colum = array_column( $input_field_array['options'], 'value' );
-						$intersect   = array_intersect( (array) $field_value, $array_colum );
-						if ( ! empty( $field_value ) && empty( $intersect ) ) {
-							wc_add_notice( esc_html__( 'Invalid option selected for select field.', 'extra-product-data-for-woocommerce' ), 'error' );
-							$passed = false;
-						}
-						break;
-				}
+			// Validate required fields.
+			if ( $is_required && empty( $field_value ) ) {
+				/* translators: %s: field label */
+				wc_add_notice(
+					sprintf(
+						/* translators: %s: field label */
+						esc_html__( '%s is a required field.', 'extra-product-data-for-woocommerce' ),
+						esc_html( $field_label )
+					),
+					'error'
+				);
+				$passed = false;
+				continue;
+			}
+
+			// Skip validation if field is empty and not required.
+			if ( empty( $field_value ) ) {
+				continue;
+			}
+
+			// Perform type-specific validation.
+			$validation_result = $this->validate_field_by_type( $field_value, $field_type, $input_field_array );
+			if ( ! $validation_result['valid'] ) {
+				wc_add_notice( $validation_result['message'], 'error' );
+				$passed = false;
 			}
 		}
+
 		return $passed;
+	}
+
+	/**
+	 * Sanitizes a field value based on its type.
+	 *
+	 * @param mixed  $field_value The raw field value.
+	 * @param string $field_type The field type.
+	 * @return mixed The sanitized field value.
+	 */
+	private function sanitize_field_value( $field_value, string $field_type ) {
+		// Handle array values (checkboxes, multi-select).
+		if ( is_array( $field_value ) ) {
+			return array_map(
+				function ( $value ) {
+					return sanitize_text_field( wp_unslash( $value ) );
+				},
+				$field_value
+			);
+		}
+
+		// Handle string values.
+		if ( ! is_string( $field_value ) && ! is_numeric( $field_value ) ) {
+			return '';
+		}
+
+		// Basic sanitization for all field types.
+		$sanitized = sanitize_text_field( wp_unslash( $field_value ) );
+
+		return $sanitized;
+	}
+
+	/**
+	 * Validates a field value based on its type.
+	 *
+	 * @param mixed  $field_value The sanitized field value.
+	 * @param string $field_type The field type.
+	 * @param array  $input_field_array The field configuration array.
+	 * @return array An array with 'valid' boolean and 'message' string.
+	 */
+	private function validate_field_by_type( $field_value, string $field_type, array $input_field_array ): array {
+		$field_label = sanitize_text_field( $input_field_array['label'] );
+
+		switch ( $field_type ) {
+			case 'email':
+				if ( ! is_email( $field_value ) ) {
+					return array(
+						'valid'   => false,
+						'message' => sprintf(
+							/* translators: %s: field label */
+							esc_html__( '%s is not a valid email address.', 'extra-product-data-for-woocommerce' ),
+							esc_html( $field_label )
+						),
+					);
+				}
+				break;
+
+			case 'number':
+				if ( ! is_numeric( $field_value ) ) {
+					return array(
+						'valid'   => false,
+						'message' => sprintf(
+							/* translators: %s: field label */
+							esc_html__( '%s must be a number.', 'extra-product-data-for-woocommerce' ),
+							esc_html( $field_label )
+						),
+					);
+				}
+				break;
+
+			case 'date':
+				if ( ! strtotime( $field_value ) ) {
+					return array(
+						'valid'   => false,
+						'message' => sprintf(
+							/* translators: %s: field label */
+							esc_html__( '%s is not a valid date.', 'extra-product-data-for-woocommerce' ),
+							esc_html( $field_label )
+						),
+					);
+				}
+				break;
+
+			case 'yes-no':
+				if ( ! in_array( $field_value, array( 'yes', 'no' ), true ) ) {
+					return array(
+						'valid'   => false,
+						'message' => sprintf(
+							/* translators: %s: field label */
+							esc_html__( '%s must be either "Yes" or "No".', 'extra-product-data-for-woocommerce' ),
+							esc_html( $field_label )
+						),
+					);
+				}
+				break;
+
+			case 'radio':
+				if ( ! $this->validate_option_selection( $field_value, $input_field_array ) ) {
+					return array(
+						'valid'   => false,
+						'message' => esc_html__( 'Invalid option selected for radio button.', 'extra-product-data-for-woocommerce' ),
+					);
+				}
+				break;
+
+			case 'checkbox':
+				if ( ! $this->validate_option_selection( $field_value, $input_field_array ) ) {
+					return array(
+						'valid'   => false,
+						'message' => esc_html__( 'Invalid option selected for checkbox.', 'extra-product-data-for-woocommerce' ),
+					);
+				}
+				break;
+
+			case 'select':
+				if ( ! $this->validate_option_selection( $field_value, $input_field_array ) ) {
+					return array(
+						'valid'   => false,
+						'message' => esc_html__( 'Invalid option selected for select field.', 'extra-product-data-for-woocommerce' ),
+					);
+				}
+				break;
+		}
+
+		return array( 'valid' => true );
+	}
+
+	/**
+	 * Validates that selected options exist in the field's available options.
+	 *
+	 * @param mixed $field_value The field value (string or array).
+	 * @param array $input_field_array The field configuration array.
+	 * @return bool True if valid, false otherwise.
+	 */
+	private function validate_option_selection( $field_value, array $input_field_array ): bool {
+		if ( ! isset( $input_field_array['options'] ) || ! is_array( $input_field_array['options'] ) ) {
+			return false;
+		}
+
+		$valid_options = array_column( $input_field_array['options'], 'value' );
+		if ( empty( $valid_options ) ) {
+			return false;
+		}
+
+		// Convert field value to array for consistent comparison.
+		$field_values = (array) $field_value;
+		$field_values = array_map( 'sanitize_text_field', $field_values );
+
+		// Check if all selected values are in the valid options.
+		$intersect = array_intersect( $field_values, $valid_options );
+
+		return ! empty( $intersect ) && count( $intersect ) === count( $field_values );
+	}
+
+	/**
+	 * Gets the field index and value from POST data.
+	 *
+	 * Generates the field index from the label and retrieves the corresponding value from POST data.
+	 * This centralizes the logic to avoid code duplication.
+	 *
+	 * @param array $input_field_array The field configuration array.
+	 * @return array An array with 'index' and 'value' keys.
+	 */
+	private function get_field_index_and_value( array $input_field_array ): array {
+		// Actual label lowercase and without spaces and _ are -.
+		$index = esc_attr( strtolower( str_replace( array( ' ', '-' ), '_', sanitize_title( $input_field_array['label'] ) ) ) );
+
+		// Get the field value from the $_POST array.
+		$field_value = isset( $_POST['exprdawc_custom_field_input'][ $index ] ) ? $_POST['exprdawc_custom_field_input'][ $index ] : ''; // phpcs:ignore
+
+		return array(
+			'index' => $index,
+			'value' => $field_value,
+		);
 	}
 
 	/**
@@ -351,7 +502,7 @@ class Exprdawc_Product_Page_Fronted {
 	 * @param object $product The product.
 	 * @return bool
 	 */
-	public function exprdawc_check_product_support( $supports, $feature, $product ) {
+	public function exprdawc_check_product_support( bool $supports, string $feature, WC_Product $product ): bool {
 		// Check if the product supports the feature.
 		if ( 'ajax_add_to_cart' === $feature && Exprdawc_Helper::check_required_fields( $product->get_id() ) ) {
 			$supports = false;
@@ -370,7 +521,7 @@ class Exprdawc_Product_Page_Fronted {
 	 * @param int   $quantity The quantity of the product being added to the cart.
 	 * @return array The modified cart item data with extra product data included.
 	 */
-	public function exprdawc_save_extra_product_data_in_cart( $cart_item_data, $product_id, $variation_id, $quantity ) { // phpcs:ignore
+	public function exprdawc_save_extra_product_data_in_cart( array $cart_item_data, int $product_id, int $variation_id, int $quantity ): array { // phpcs:ignore
 		// Check if nonce is set and valid.
 		if ( isset( $_POST['exprdawc_nonce'] ) ) {
 			$post_nonce = sanitize_text_field( wp_unslash( $_POST['exprdawc_nonce'] ) );
@@ -390,11 +541,10 @@ class Exprdawc_Product_Page_Fronted {
 		if ( ! empty( $custom_fields ) ) {
 			foreach ( $custom_fields as $index_num => $input_field_array ) {
 
-				// Actual label lowercase and without spaces and _ are -.
-				$index = esc_attr( strtolower( str_replace( array( ' ', '-' ), '_', sanitize_title( $input_field_array['label'] ) ) ) );
-
-				// Get the field value from the $_POST array.
-				$field_value = isset( $_POST['exprdawc_custom_field_input'][ $index ] ) ? $_POST['exprdawc_custom_field_input'][ $index ] : ''; // phpcs:ignore
+				// Get field index and value from POST data.
+				$field_data  = $this->get_field_index_and_value( $input_field_array );
+				$index       = $field_data['index'];
+				$field_value = $field_data['value'];
 
 				if ( isset( $field_value ) ) {
 					switch ( $input_field_array['type'] ) {
@@ -488,7 +638,7 @@ class Exprdawc_Product_Page_Fronted {
 	 * @param array $item_data The item data.
 	 * @param array $cart_item The cart item.
 	 */
-	public function exprdawc_display_fields_on_cart_and_checkout( $item_data, $cart_item ) {
+	public function exprdawc_display_fields_on_cart_and_checkout( array $item_data, array $cart_item ): array {
 
 		if ( ! isset( $cart_item['extra_user_data'] ) ) {
 			return $item_data;
@@ -525,7 +675,7 @@ class Exprdawc_Product_Page_Fronted {
 	 * @param object $cart_object The cart object.
 	 * @return void
 	 */
-	public function exprdawc_adjust_cart_item_pricing( $cart_object ) {
+	public function exprdawc_adjust_cart_item_pricing( object $cart_object ): void {
 		if ( is_admin() && ! defined( 'DOING_AJAX' ) ) {
 			return;
 		}
@@ -591,7 +741,7 @@ class Exprdawc_Product_Page_Fronted {
 	 * @param WC_Order              $order The order object.
 	 * @return void
 	 */
-	public function exprdawc_add_extra_product_data_to_order( $item, $cart_item_key, $values, $order ) { // phpcs:ignore
+	public function exprdawc_add_extra_product_data_to_order( object $item, string $cart_item_key, array $values, object $order ): void { // phpcs:ignore
 
 		if ( empty( $values['extra_user_data'] ) ) {
 			return;
