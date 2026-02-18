@@ -24,7 +24,11 @@
  * This file is part of the development of WordPress plugins.
  */
 
+declare( strict_types=1 );
 namespace Triopsi\Exprdawc;
+
+use Automattic\WooCommerce\Enums\ProductType;
+use WC_Product;
 
 if ( ! defined( 'ABSPATH' ) ) {
 	exit;
@@ -61,10 +65,8 @@ class Exprdawc_Product_Page_Fronted {
 
 		// Change the add-to-cart button text and URL.
 		add_filter( 'woocommerce_product_has_options', array( $this, 'exprdawc_has_options' ), 15, 2 );
-		add_filter( 'add_to_cart_text', array( $this, 'exprdawc_change_add_to_cart_button_text' ), 15 );
 		add_filter( 'woocommerce_product_add_to_cart_text', array( $this, 'exprdawc_change_add_to_cart_button_text' ), 10, 2 );
 		add_filter( 'woocommerce_product_add_to_cart_url', array( $this, 'exprdawc_change_add_to_cart_url' ), 10, 2 );
-		add_filter( 'woocommerce_add_to_cart_url', array( $this, 'exprdawc_change_add_to_cart_url' ), 10, 1 );
 
 		// Prevent purchase at grouped level.
 		add_filter( 'woocommerce_is_purchasable', array( $this, 'exprdawc_prevent_purchase_at_grouped_level' ), 10, 2 );
@@ -96,14 +98,14 @@ class Exprdawc_Product_Page_Fronted {
 	/**
 	 * Prevents purchase at grouped level.
 	 *
-	 * Don't let products in the group with custom extra data fields be added to cart when viewing grouped products.
+	 * Don't let products in the group with custom extra data fields and have required fields be added to cart when viewing grouped products.
 	 *
 	 * @param bool       $purchasable Whether the product is purchasable.
 	 * @param WC_Product $product The WooCommerce product object.
 	 * @return bool Whether the product is purchasable.
 	 */
-	public function exprdawc_prevent_purchase_at_grouped_level( $purchasable, $product ) {
-		if ( 'grouped' === $product->get_type() ) {
+	public function exprdawc_prevent_purchase_at_grouped_level( bool $purchasable, WC_Product $product ): bool {
+		if ( ProductType::GROUPED === $product->get_type() ) {
 			$grouped_products = $product->get_children();
 			foreach ( $grouped_products as $grouped_product_id ) {
 				if ( Exprdawc_Helper::check_required_fields( $grouped_product_id ) ) {
@@ -126,20 +128,19 @@ class Exprdawc_Product_Page_Fronted {
 	 * @param WC_Product $product The WooCommerce product object.
 	 * @return string The modified text of the add-to-cart button.
 	 */
-	public function exprdawc_change_add_to_cart_button_text( $text, $product ) {
+	public function exprdawc_change_add_to_cart_button_text( string $text, WC_Product $product ): string {
 
 		if ( ! $product->is_in_stock() ) {
 			return $text;
 		}
 
-		if ( in_array( $product->get_type(), array( 'grouped', 'external' ), true ) ) {
+		if ( ! in_array( $product->get_type(), array( ProductType::SIMPLE, ProductType::VARIATION ), true ) ) {
 			return $text;
 		}
 
 		$custom_fields = $product->get_meta( '_extra_product_fields', true );
-
 		if ( ! empty( $custom_fields ) ) {
-			$text_from_settings = get_option( 'exprdawc_custom_add_to_cart_text' );
+			$text_from_settings = get_option( 'exprdawc_custom_add_to_cart_text', __( 'Configure Product', 'extra-product-data-for-woocommerce' ) );
 			if ( ! empty( $text_from_settings ) ) {
 				return $text_from_settings;
 			}
@@ -148,10 +149,10 @@ class Exprdawc_Product_Page_Fronted {
 	}
 
 	/**
-	 * Changes the URL of the add-to-cart button based on the product type.
+	 * Changes the URL of the add-to-cart button based on the product type and have required fields.
 	 *
 	 * This function changes the URL of the add-to-cart button based on the product type.
-	 * The URL is changed only if the product is not of type 'grouped' or 'external'.
+	 * The URL is changed only if the product is not of type 'simple' or 'variation'.
 	 * The URL is also changed if custom fields are associated with the product and the product
 	 * is not being viewed on the single product page.
 	 *
@@ -159,20 +160,12 @@ class Exprdawc_Product_Page_Fronted {
 	 * @param WC_Product $product The WooCommerce product object.
 	 * @return string The modified URL of the add-to-cart button.
 	 */
-	public function exprdawc_change_add_to_cart_url( $url, $product = null ) {
-		if ( null === $product ) {
-			global $product;
-		}
-		if ( ! is_a( $product, 'WC_Product' ) ) {
-			return $url;
-		}
-
-		if ( ! is_single( $product->get_id() ) && in_array( $product->get_type(), array( 'subscription', 'simple' ), true ) ) {
+	public function exprdawc_change_add_to_cart_url( string $url, WC_Product $product ): string|false {
+		if ( ! is_single( $product->get_id() ) && in_array( $product->get_type(), array( ProductType::SIMPLE, ProductType::VARIATION ), true ) ) {
 			if ( Exprdawc_Helper::check_required_fields( $product->get_id() ) ) {
 				$url = get_permalink( $product->get_id() );
 			}
 		}
-
 		return $url;
 	}
 

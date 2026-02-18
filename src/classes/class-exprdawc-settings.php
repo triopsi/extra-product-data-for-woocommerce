@@ -110,9 +110,9 @@ class Exprdawc_Settings {
 				),
 				array(
 					'title'   => __( 'Custom Add to CartText', 'extra-product-data-for-woocommerce' ),
-					'desc'    => __( 'Enter custom text for the "Add to cart" button if the product has extra product data fields. If not specified, the WooCommerce default will be used.', 'extra-product-data-for-woocommerce' ),
+					'desc'    => __( 'Enter custom text for the "Add to cart" button if the product has extra product data fields.', 'extra-product-data-for-woocommerce' ),
 					'id'      => 'exprdawc_custom_add_to_cart_text',
-					'default' => '',
+					'default' => __( 'Configure Product', 'extra-product-data-for-woocommerce' ),
 					'type'    => 'text',
 				),
 				array(

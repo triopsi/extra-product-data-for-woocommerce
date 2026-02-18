@@ -25,6 +25,7 @@
  */
 
 namespace Triopsi\Exprdawc;
+use Automattic\WooCommerce\Enums\ProductType;
 
 if ( ! defined( 'ABSPATH' ) ) {
 	exit; // Exit if accessed directly.
@@ -268,7 +269,9 @@ class Exprdawc_Helper {
 	}
 
 	/**
-	 * Check if the product have required fields.
+	 * Check if the product have required fields in _extra_product_fields meta.
+	 * If the product is a variation, check the parent product.
+	 * Return true if the product have required fields, false otherwise.
 	 *
 	 * @param int $product_id The product ID.
 	 *
@@ -276,7 +279,7 @@ class Exprdawc_Helper {
 	 */
 	public static function check_required_fields( $product_id ) {
 		$product = wc_get_product( $product_id );
-		if ( $product->is_type( 'variation' ) ) {
+		if ( $product->is_type( ProductType::VARIATION ) ) {
 			$product = wc_get_product( $product->get_parent_id() );
 		}
 		if ( ! $product ) {

@@ -62,7 +62,6 @@ class TestExprdawcProductPageBackend extends WP_UnitTestCase {
 	 * Expects: All filters and actions are registered when is_admin() returns true.
 	 */
 	public function test_constructor_registers_hooks_in_admin_context() {
-		global $wp_filter;
 
 		// Simulate admin context.
 		set_current_screen( 'edit-post' );
@@ -110,7 +109,6 @@ class TestExprdawcProductPageBackend extends WP_UnitTestCase {
 		// Store current filter/action state.
 		global $wp_filter;
 		$filters_before = array();
-		$actions_before = array();
 
 		$hooks_to_check = array(
 			'woocommerce_product_data_tabs',
