@@ -292,7 +292,6 @@ class Exprdawc_Product_Page_Fronted {
 
 			// Validate required fields.
 			if ( $is_required && empty( $field_value ) ) {
-				/* translators: %s: field label */
 				wc_add_notice(
 					sprintf(
 						/* translators: %s: field label */
@@ -494,6 +493,81 @@ class Exprdawc_Product_Page_Fronted {
 	}
 
 	/**
+	 * Calculates the price adjustment for a custom field.
+	 *
+	 * @param array $field_config The field configuration array.
+	 * @param mixed $field_value The field value (string or array).
+	 * @param float $base_price The base price for percentage calculations.
+	 * @return float The calculated price adjustment.
+	 */
+	private function calculate_price_adjustment( array $field_config, $field_value, float $base_price = 0.0 ): float {
+		if ( empty( $field_config['adjust_price'] ) ) {
+			return 0.0;
+		}
+
+		$price_adjustment = 0.0;
+
+		// Handle option-based fields (checkbox, radio, select).
+		if ( in_array( $field_config['type'], array( 'checkbox', 'radio', 'select' ), true ) ) {
+			if ( empty( $field_config['options'] ) || ! is_array( $field_config['options'] ) ) {
+				return 0.0;
+			}
+
+			// Convert field value to array for consistent handling.
+			$field_values = is_array( $field_value ) ? $field_value : explode( ', ', (string) $field_value );
+
+			foreach ( $field_config['options'] as $option ) {
+				if ( in_array( $option['value'], $field_values, true ) ) {
+					if ( 'fixed' === $option['price_adjustment_type'] ) {
+						$price_adjustment += $option['price_adjustment_value'];
+					} elseif ( 'percent' === $option['price_adjustment_type'] ) {
+						$price_adjustment += ( $base_price / 100 ) * $option['price_adjustment_value'];
+					}
+				}
+			}
+		} else { // phpcs:ignore
+			// Handle non-option fields.
+			if ( 'fixed' === $field_config['price_adjustment_type'] ) {
+				$price_adjustment = $field_config['price_adjustment_value'];
+			} elseif ( 'percent' === $field_config['price_adjustment_type'] ) {
+				$price_adjustment = ( $base_price / 100 ) * $field_config['price_adjustment_value'];
+			}
+		}
+
+		return $price_adjustment;
+	}
+
+	/**
+	 * Formats the cart display value with price adjustment.
+	 *
+	 * @param mixed $user_input_value The original user input value (string, float, or int).
+	 * @param float $price_adjustment The calculated price adjustment.
+	 * @param array $field_config The field configuration array.
+	 * @return string The formatted cart display value.
+	 */
+	private function format_cart_value_with_price( $user_input_value, float $price_adjustment, array $field_config ): string {
+		// Convert input value to string for display.
+		$user_input_value = (string) $user_input_value;
+
+		if ( 0.0 === $price_adjustment ) {
+			return $user_input_value;
+		}
+
+		// For option-based or fixed price adjustments.
+		if ( in_array( $field_config['type'], array( 'checkbox', 'radio', 'select' ), true ) || 'fixed' === $field_config['price_adjustment_type'] ) {
+			$plus_minus = 0 < $price_adjustment ? '+' : '-';
+			return $user_input_value . ' (' . $plus_minus . wc_price( abs( $price_adjustment ) ) . ')';
+		}
+
+		// For percentage adjustments.
+		if ( 'percent' === $field_config['price_adjustment_type'] ) {
+			return $user_input_value . ' (+' . wc_price( $field_config['price_adjustment_value'] ) . '%)';
+		}
+
+		return $user_input_value;
+	}
+
+	/**
 	 * This function is responsible for checking if the product supports the feature.
 	 *
 	 * @param bool   $supports The supports.
@@ -581,38 +655,8 @@ class Exprdawc_Product_Page_Fronted {
 					}
 
 					// Create a value only for cart. (Extra price are in the value of price).
-					$user_input_value_cart = $user_input_value;
-
-					if ( $input_field_array['adjust_price'] ) {
-						if ( in_array( $input_field_array['type'], array( 'checkbox', 'radio', 'select' ), true ) ) {
-							$total_adjustment = 0;
-							foreach ( $input_field_array['options'] as $option ) {
-								if ( is_array( $field_value ) && in_array( $option['value'], $field_value, true ) ) {
-									if ( 'fixed' === $option['price_adjustment_type'] ) {
-										$total_adjustment += $option['price_adjustment_value'];
-									} elseif ( 'percent' === $option['price_adjustment_type'] ) {
-										$total_adjustment += ( $input_field_array['price_adjustment_value'] / 100 ) * $option['price_adjustment_value'];
-									}
-								} elseif ( $option['value'] === $field_value ) {
-									if ( 'fixed' === $option['price_adjustment_type'] ) {
-										$total_adjustment = $option['price_adjustment_value'];
-									} elseif ( 'percent' === $option['price_adjustment_type'] ) {
-										$total_adjustment = ( $input_field_array['price_adjustment_value'] / 100 ) * $option['price_adjustment_value'];
-									}
-									break;
-								}
-							}
-							if ( 0 !== $total_adjustment ) {
-								$plus_minus            = 0 < $total_adjustment ? '+' : '-';
-								$user_input_value_cart = $user_input_value . ' (' . $plus_minus . wc_price( $total_adjustment ) . ')';
-							}
-						} elseif ( 'fixed' === $input_field_array['price_adjustment_type'] ) {
-								$plus_minus            = 0 < $input_field_array['price_adjustment_value'] ? '+' : '-';
-								$user_input_value_cart = $user_input_value . ' (' . $plus_minus . wc_price( $input_field_array['price_adjustment_value'] ) . ')';
-						} elseif ( 'percent' === $input_field_array['price_adjustment_type'] ) {
-							$user_input_value_cart = $user_input_value . ' (+' . wc_price( $input_field_array['price_adjustment_value'] ) . '%)';
-						}
-					}
+					$price_adjustment      = $this->calculate_price_adjustment( $input_field_array, $field_value, 0.0 );
+					$user_input_value_cart = $this->format_cart_value_with_price( $user_input_value, $price_adjustment, $input_field_array );
 
 					// Save the user input in the cart item data.
 					$cart_item_data_user_inputs[] = array(
@@ -690,38 +734,14 @@ class Exprdawc_Product_Page_Fronted {
 		foreach ( $cart_object->get_cart() as $cart_item_key => $cart_item ) {
 			if ( isset( $cart_item['extra_user_data'] ) ) {
 				foreach ( $cart_item['extra_user_data'] as $user_data ) {
-					$price_adjustment = 0;
-					if ( ( empty( $user_data['value'] ) ) ) {
+					if ( empty( $user_data['value'] ) ) {
 						continue;
 					}
-					if ( $user_data['field_raw']['adjust_price'] ) {
-						if ( in_array( $user_data['field_raw']['type'], array( 'checkbox', 'radio', 'select' ), true ) ) {
-							$total_adjustment = 0;
-							foreach ( $user_data['field_raw']['options'] as $option ) {
-								$cart_value = explode( ', ', $user_data['value'] );
-								if ( is_array( $cart_value ) && in_array( $option['value'], $cart_value, true ) ) {
-									if ( 'fixed' === $option['price_adjustment_type'] ) {
-										$total_adjustment += $option['price_adjustment_value'];
-									} elseif ( 'percent' === $option['price_adjustment_type'] ) {
-										$total_adjustment += ( $cart_item['data']->get_price() / 100 ) * $option['price_adjustment_value'];
-									}
-								} elseif ( $option['value'] === $user_data['value'] ) {
-									if ( 'fixed' === $option['price_adjustment_type'] ) {
-										$total_adjustment = $option['price_adjustment_value'];
-									} elseif ( 'percent' === $option['price_adjustment_type'] ) {
-										$total_adjustment = ( $cart_item['data']->get_price() / 100 ) * $option['price_adjustment_value'];
-									}
-									break;
-								}
-							}
-							$price_adjustment = $total_adjustment;
-						} elseif ( 'fixed' === $user_data['field_raw']['price_adjustment_type'] ) {
-							$price_adjustment = $user_data['field_raw']['price_adjustment_value'];
-						} elseif ( 'percent' === $user_data['field_raw']['price_adjustment_type'] ) {
-							$price_adjustment = ( $cart_item['data']->get_price() / 100 ) * $user_data['field_raw']['price_adjustment_value'];
-						}
-					}
-					$cart_item['data']->set_price( $cart_item['data']->get_price() + $price_adjustment );
+
+					$base_price       = (float) $cart_item['data']->get_price();
+					$price_adjustment = $this->calculate_price_adjustment( $user_data['field_raw'], $user_data['value'], $base_price );
+
+					$cart_item['data']->set_price( $base_price + $price_adjustment );
 				}
 			}
 		}
