@@ -86,7 +86,6 @@ class TestClassExprdawcProductPageFronted extends WP_UnitTestCase {
 		wp_dequeue_script( 'exprdawc-frontend-js' );
 		wp_deregister_script( 'exprdawc-frontend-js' );
 
-		// localized data entfernen (WP speichert das als "data" am Script-Handle)
 		wp_scripts()->add_data( 'exprdawc-frontend-js', 'data', '' );
 	}
 
@@ -398,7 +397,7 @@ class TestClassExprdawcProductPageFronted extends WP_UnitTestCase {
 	 * - Visiting a non-product page (e.g., home page)
 	 * - Calling the method to enqueue assets
 	 */
-	public function testFrontendAssetsNotEnqueuedWhenNotProductPage(): void {
+	public function test_frontend_assets_not_enqueued_when_not_product_page(): void {
 		$this->reset_enqueue_state();
 
 		// Visit a normal page (Home).
@@ -429,7 +428,7 @@ class TestClassExprdawcProductPageFronted extends WP_UnitTestCase {
 	 * - Visiting a product page
 	 * - Calling the method to enqueue assets
 	 */
-	public function testFrontendAssetsEnqueuedOnProductPage(): void {
+	public function test_frontend_assets_enqueued_on_product_page(): void {
 		$this->reset_enqueue_state();
 
 		// Create a simple product for testing.
@@ -463,6 +462,94 @@ class TestClassExprdawcProductPageFronted extends WP_UnitTestCase {
 		$this->assertStringContainsString( '"total"', $data );
 
 		$product->delete( true );
+	}
+
+	/**
+	 * Test exprdawc_display_custom_fields_on_product_page outputs nothing when no fields.
+	 *
+	 * Test Goal:
+	 * Verifies that the method does not output any HTML when the product has no custom fields.
+	 *
+	 * Expected Result:
+	 * - No output is generated (empty string)
+	 *
+	 * Test Conditions:
+	 * - Product without custom fields
+	 * - Calling the method to display custom fields
+	 */
+	public function test_display_custom_fields_outputs_nothing_when_no_fields(): void {
+		$wc_product = new WC_Product_Simple();
+		$wc_product->set_name( 'Test Product' );
+		$wc_product->set_regular_price( '10' );
+		$wc_product->save();
+
+		global $product;
+		$product = $wc_product;
+
+		ob_start();
+		$this->instance->exprdawc_display_custom_fields_on_product_page();
+		$output = ob_get_clean();
+
+		$this->assertSame( '', trim( $output ), 'No fields => no output expected.' );
+
+		$wc_product->delete( true );
+	}
+
+	/**
+	 * Test exprdawc_display_custom_fields_on_product_page outputs wrapper, nonce, and price div when fields exist.
+	 *
+	 * Test Goal:
+	 * Verifies that the method outputs the correct HTML structure when custom fields are present.
+	 *
+	 * Expected Result:
+	 * - Output contains a wrapper div with class "exprdawc-extra-fields"
+	 * - Output contains a nonce field with name "exprdawc_nonce"
+	 * - Output contains a price adjustment div with correct data attributes
+	 *
+	 * Test Conditions:
+	 * - Product with one required text field
+	 * - Calling the method to display custom fields
+	 */
+	public function test_display_custom_fields_outputs_wrapper_nonce_and_price_div_when_fields_exist(): void {
+		$wc_product = new WC_Product_Simple();
+		$wc_product->set_name( 'Test Product' );
+		$wc_product->set_regular_price( '10' );
+		$wc_product->save();
+
+		// Add custom fields with one field to generate output.
+		$fields = array(
+			array(
+				'label'    => 'My Field',
+				'type'     => 'text',
+				'required' => true,
+			),
+		);
+		$wc_product->update_meta_data( '_extra_product_fields', $fields );
+		$wc_product->save();
+
+		// Set global $product (as WooCommerce does).
+		global $product;
+		$product = $wc_product;
+
+		ob_start();
+		$this->instance->exprdawc_display_custom_fields_on_product_page();
+		$output = ob_get_clean();
+
+		// Wrapper.
+		$this->assertStringContainsString( 'class="exprdawc-extra-fields"', $output );
+
+		// Nonce field (contains "exprdawc_nonce").
+		$this->assertStringContainsString( 'name="exprdawc_nonce"', $output );
+
+		// Price adjustment container + data attributes.
+		$this->assertStringContainsString( 'class="exprdawc-price-adjustment"', $output );
+		$this->assertStringContainsString( 'data-product-type="simple"', $output );
+		$this->assertStringContainsString( 'data-product-name="Test Product"', $output );
+
+		// Base price is dynamically formatted; we only check that the attribute exists.
+		$this->assertMatchesRegularExpression( '/data-product-base-price="[^"]+"/', $output );
+
+		$wc_product->delete( true );
 	}
 
 

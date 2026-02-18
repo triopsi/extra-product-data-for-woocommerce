@@ -160,7 +160,7 @@ class Exprdawc_Product_Page_Fronted {
 	 * @param WC_Product $product The WooCommerce product object.
 	 * @return string The modified URL of the add-to-cart button.
 	 */
-	public function exprdawc_change_add_to_cart_url( string $url, WC_Product $product ): mixed {
+	public function exprdawc_change_add_to_cart_url( string $url, WC_Product $product ) {
 		if ( ! is_single( $product->get_id() ) && in_array( $product->get_type(), array( ProductType::SIMPLE, ProductType::VARIATION ), true ) ) {
 			if ( Exprdawc_Helper::check_required_fields( $product->get_id() ) ) {
 				$url = get_permalink( $product->get_id() );
