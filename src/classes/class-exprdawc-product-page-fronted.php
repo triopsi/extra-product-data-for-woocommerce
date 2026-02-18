@@ -288,7 +288,7 @@ class Exprdawc_Product_Page_Fronted {
 			$field_value = $field_data['value'];
 
 			// Sanitize field value based on type.
-			$field_value = $this->sanitize_field_value( $field_value, $field_type );
+			$field_value = $this->sanitize_field_value( $field_value );
 
 			// Validate required fields.
 			if ( $is_required && empty( $field_value ) ) {
@@ -324,11 +324,10 @@ class Exprdawc_Product_Page_Fronted {
 	/**
 	 * Sanitizes a field value based on its type.
 	 *
-	 * @param mixed  $field_value The raw field value.
-	 * @param string $field_type The field type.
+	 * @param mixed $field_value The raw field value.
 	 * @return mixed The sanitized field value.
 	 */
-	private function sanitize_field_value( $field_value, string $field_type ) {
+	private function sanitize_field_value( $field_value ) {
 		// Handle array values (checkboxes, multi-select).
 		if ( is_array( $field_value ) ) {
 			return array_map(
@@ -502,7 +501,7 @@ class Exprdawc_Product_Page_Fronted {
 	 * @param object $product The product.
 	 * @return bool
 	 */
-	public function exprdawc_check_product_support( bool $supports, string $feature, WC_Product $product ): bool {
+	public function exprdawc_check_product_support( bool $supports, string $feature, WC_Product $product ): bool { // phpcs:ignore
 		// Check if the product supports the feature.
 		if ( 'ajax_add_to_cart' === $feature && Exprdawc_Helper::check_required_fields( $product->get_id() ) ) {
 			$supports = false;
