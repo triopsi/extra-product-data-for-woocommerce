@@ -42,6 +42,7 @@ jQuery(function ($) {
         init() {
             this.bindEvents();
             this.noEntryContent();
+            this.bindFormValidation();
         }
 
         /**
@@ -1012,7 +1013,13 @@ jQuery(function ($) {
                 if ($input.is('select.exprdawc_conditional_field') && $input.val()) {
                     $input.find('option:last').prop('selected', true);
                 }
+
+                // Remove validation error classes
+                $input.removeClass('exprdawc-invalid-field');
             });
+
+            // Remove validation error class from the row
+            $clone.removeClass('exprdawc-validation-error');
 
             // Append the cloned row to the table
             $row.after($clone);
@@ -1063,6 +1070,79 @@ jQuery(function ($) {
                     }
                 });
             });
+        }
+
+        /**
+         * Bindet das Form-Validierungs-Event zur WordPress Post-Form.
+         * Prüft, ob alle exprdawc_attributes einen gefüllten Label haben, bevor gespeichert wird.
+         */
+        bindFormValidation() {
+            // Prüfe Form-Submit auf der WordPress Post-Edit-Seite
+            $('#post').on('submit', (e) => {
+                if (!this.validateFields()) {
+                    e.preventDefault();
+                    e.stopPropagation();
+                    return false;
+                }
+            });
+
+            // Prüfe auch auf Schnellspeicher-Button und Veröffentlichungs-Buttons
+            $('#publish, #save-post').on('click', (e) => {
+                if (!this.validateFields()) {
+                    e.preventDefault();
+                    e.stopPropagation();
+                    return false;
+                }
+            });
+        }
+
+        /**
+         * Validiert alle exprdawc_attributes.
+         * Prüft, dass jedes Feld einen non-empty Label hat.
+         * 
+         * @returns {boolean} true wenn Validierung erfolgreich, false wenn Fehler
+         */
+        validateFields() {
+            const $fields = $('#exprdawc_field_body').find('tr.exprdawc_fields_wrapper');
+
+            if ($fields.length === 0) {
+                // Keine Felder vorhanden - das ist ok
+                return true;
+            }
+
+            let hasErrors = false;
+            const errorFields = [];
+
+            $fields.each((index, element) => {
+                const $row = $(element);
+                const $labelInput = $row.find('input.exprdawc_label');
+                const labelValue = $labelInput.val().trim();
+
+                if (labelValue === '') {
+                    hasErrors = true;
+                    errorFields.push(index + 1); // 1-basiert für Benutzerlesbarkeit
+
+                    // Visuell markieren des fehlerhaften Feldes
+                    $row.addClass('exprdawc-validation-error');
+                    $labelInput.addClass('exprdawc-invalid-field');
+                } else {
+                    // Fehlermarkierung entfernen wenn Feld ok ist
+                    $row.removeClass('exprdawc-validation-error');
+                    $labelInput.removeClass('exprdawc-invalid-field');
+                }
+            });
+
+            if (hasErrors) {
+                const fieldCount = errorFields.length;
+                const fieldNumbersText = errorFields.join(', ');
+                const hasMultipleErrors = fieldCount > 1;
+                console.log(exprdawc_admin_meta_boxes.validation_warning)
+                const warningMessage = exprdawc_admin_meta_boxes.validation_warning;
+                alert(warningMessage);
+                return false;
+            }
+
+            return true;
         }
 
     }

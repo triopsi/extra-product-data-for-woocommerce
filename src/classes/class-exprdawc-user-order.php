@@ -59,7 +59,7 @@ class Exprdawc_User_Order extends Exprdawc_Base_Order_Class {
 		if ( is_account_page() ) {
 			wp_enqueue_style( 'form-css', EXPRDAWC_ASSETS_CSS . 'forms.css', array(), '1.0.0', 'all' );
 			wp_enqueue_style( 'order-frontend-css', EXPRDAWC_ASSETS_CSS . 'order-frontend.css', array(), '1.0.0', 'all' );
-			wp_enqueue_script( 'exprdawc-user-order', EXPRDAWC_ASSETS_JS . 'wc-user-order.js', array( 'jquery' ), '1.0.0', true );
+			wp_enqueue_script( 'exprdawc-user-order', EXPRDAWC_ASSETS_JS . 'wc-user-order.min.js', array( 'jquery' ), '1.0.0', true );
 			wp_localize_script(
 				'exprdawc-user-order',
 				'exprdawc_user_order',

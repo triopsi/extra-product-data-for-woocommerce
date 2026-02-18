@@ -127,7 +127,7 @@ class Exprdawc_Admin_Order extends Exprdawc_Base_Order_Class {
 	 */
 	public function js_meta_boxes_enqueue() {
 		if ( ! $this->is_current_screen( array( 'product' ) ) ) {
-			wp_enqueue_script( 'woocommerce_exprdawc-admin-order-panel', EXPRDAWC_ASSETS_JS . 'wc-meta-boxes-order.js', array( 'wc-admin-order-meta-boxes', 'jquery-ui-datepicker', 'jquery' ), '1.0.0', true );
+			wp_enqueue_script( 'woocommerce_exprdawc-admin-order-panel', EXPRDAWC_ASSETS_JS . 'wc-meta-boxes-order.min.js', array( 'wc-admin-order-meta-boxes', 'jquery-ui-datepicker', 'jquery' ), '1.0.0', true );
 			wp_localize_script(
 				'woocommerce_exprdawc-admin-order-panel',
 				'wc_exprdawc_admin_order_params',

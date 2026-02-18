@@ -95,7 +95,7 @@ class Exprdawc_Product_Page_Backend {
 	 * @return void
 	 */
 	public function exprdawc_show_general_tab() {
-		wp_enqueue_script( 'exprdawc-wc-meta-boxes-js', EXPRDAWC_ASSETS_JS . 'wc-meta-boxes-product.js', array( 'jquery', 'jquery-ui-sortable' ), '1.0.0', true );
+		wp_enqueue_script( 'exprdawc-wc-meta-boxes-js', EXPRDAWC_ASSETS_JS . 'wc-meta-boxes-product.min.js', array( 'jquery', 'jquery-ui-sortable' ), '1.0.0', true );
 		wp_localize_script(
 			'exprdawc-wc-meta-boxes-js',
 			'exprdawc_admin_meta_boxes',
@@ -202,6 +202,7 @@ class Exprdawc_Product_Page_Backend {
 				'enable_editable'                      => esc_html__( 'User can edit the field afterwards', 'extra-product-data-for-woocommerce' ),
 				'enable_price_adjustment'              => esc_html__( 'Enable price adjustment', 'extra-product-data-for-woocommerce' ),
 				'price_adjustment_type'                => esc_html__( 'Price Adjustment Type', 'extra-product-data-for-woocommerce' ),
+				'validation_warning'                   => esc_html__( 'Warning! No label text (Labels) was found. Please fill all fields with label text before saving.', 'extra-product-data-for-woocommerce' ),
 				'price_adjustment_value'               => esc_html__( 'Price Adjustment Value', 'extra-product-data-for-woocommerce' ),
 				'fixed'                                => esc_html__( 'Fixed Price', 'extra-product-data-for-woocommerce' ),
 				'percentage'                           => esc_html__( 'Percentage Price', 'extra-product-data-for-woocommerce' ),
