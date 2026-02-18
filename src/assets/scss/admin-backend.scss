@@ -422,3 +422,45 @@ a.exprdawc-export::before {
 a.exprdawc-import::before {
     content: "\f342";
 }
+
+/**
+ * Validation Error Styles
+ * Markiert Felder mit Validierungsfehlern
+ */
+tr.exprdawc-validation-error {
+    background-color: #fee !important;
+    box-shadow: inset 0 0 0 1px #f00 !important;
+    
+    .exprdawc_fields_table {
+        border: 1px solid #f00;
+    }
+}
+
+input.exprdawc-invalid-field {
+    border-color: #d63638 !important;
+    background-color: #ffe8e8 !important;
+    box-shadow: inset 0 0 0 1px #d63638 !important;
+    
+    &:focus {
+        border-color: #d63638 !important;
+        background-color: #fff !important;
+        box-shadow: 0 0 0 3px rgba(214, 54, 56, 0.1) !important;
+    }
+}
+
+/**
+ * Scrolle zum ersten Fehler bei Validierung
+ * Hilft dem Nutzer das Problem schnell zu finden
+ */
+.exprdawc-validation-error:first-of-type {
+    animation: pulse-error 0.5s ease-in-out 2;
+}
+
+@keyframes pulse-error {
+    0%, 100% {
+        background-color: #fee;
+    }
+    50% {
+        background-color: #ffcccc;
+    }
+}

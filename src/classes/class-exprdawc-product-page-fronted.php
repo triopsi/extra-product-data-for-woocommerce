@@ -189,10 +189,10 @@ class Exprdawc_Product_Page_Fronted {
 			wp_enqueue_style( 'form-css', EXPRDAWC_ASSETS_CSS . 'forms.css', array(), '1.0.0', 'all' );
 
 			// Enqueue the wc-conditional-rules-js script.
-			wp_enqueue_script( 'wc-conditional-rules-js', EXPRDAWC_ASSETS_JS . 'wc-conditional-rules-js.js', array( 'jquery' ), '1.0.0', true );
+			wp_enqueue_script( 'wc-conditional-rules-js', EXPRDAWC_ASSETS_JS . 'wc-conditional-rules-js.min.js', array( 'jquery' ), '1.0.0', true );
 
 			// Enqueue the exprdawc-frontend-js script.
-			wp_enqueue_script( 'exprdawc-frontend-js', EXPRDAWC_ASSETS_JS . 'wc-product-frontend.js', array( 'jquery' ), '1.0.0', true );
+			wp_enqueue_script( 'exprdawc-frontend-js', EXPRDAWC_ASSETS_JS . 'wc-product-frontend.min.js', array( 'jquery' ), '1.0.0', true );
 			wp_localize_script(
 				'exprdawc-frontend-js',
 				'exprdawc_frontend_settings',
