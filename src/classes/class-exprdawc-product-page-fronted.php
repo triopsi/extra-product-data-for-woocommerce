@@ -719,18 +719,23 @@ class Exprdawc_Product_Page_Fronted {
 	 * @return void
 	 */
 	public function exprdawc_adjust_cart_item_pricing( object $cart_object ): void {
+
+		// Avoid running this function in the admin area or during AJAX requests to prevent unintended consequences.
 		if ( is_admin() && ! defined( 'DOING_AJAX' ) ) {
 			return;
 		}
 
+		// Additionally, check if we're in an AJAX request but not in the admin area, to allow price adjustments during AJAX calls on the frontend.
 		if ( is_admin() && defined( 'DOING_AJAX' ) && ! is_ajax() ) {
 			return;
 		}
 
+		// Prevent infinite loops by ensuring this function only runs once per cart calculation.
 		if ( did_action( 'woocommerce_before_calculate_totals' ) >= 2 ) {
 			return;
 		}
 
+		// Loop through each cart item and adjust the price based on the extra user data.
 		foreach ( $cart_object->get_cart() as $cart_item_key => $cart_item ) {
 			if ( isset( $cart_item['extra_user_data'] ) ) {
 				foreach ( $cart_item['extra_user_data'] as $user_data ) {
@@ -741,6 +746,7 @@ class Exprdawc_Product_Page_Fronted {
 					$base_price       = (float) $cart_item['data']->get_price();
 					$price_adjustment = $this->calculate_price_adjustment( $user_data['field_raw'], $user_data['value'], $base_price );
 
+					// Adjust the cart item price by adding the price adjustment to the base price.
 					$cart_item['data']->set_price( $base_price + $price_adjustment );
 				}
 			}
