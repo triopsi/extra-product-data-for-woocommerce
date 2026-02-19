@@ -48,13 +48,6 @@ class TestExprdawcAdminOrder extends WP_UnitTestCase {
 	private $order;
 
 	/**
-	 * Last AJAX response.
-	 *
-	 * @var string
-	 */
-	protected $_last_response; // phpcs:ignore
-
-	/**
 	 * Sets up the test environment before each test.
 	 *
 	 * @return void
@@ -477,10 +470,10 @@ class TestExprdawcAdminOrder extends WP_UnitTestCase {
 		} catch ( RuntimeException $e ) { // phpcs:ignore
 			// Expected.
 		}
-		$this->_last_response = ob_get_clean();
+		$output = ob_get_clean();
 
-		$this->assertNotEmpty( $this->_last_response, 'Response should not be empty' );
-		$response = json_decode( $this->_last_response, true );
+		$this->assertNotEmpty( $output, 'Response should not be empty' );
+		$response = json_decode( $output, true );
 		$this->assertIsArray( $response, 'Response should be valid JSON' );
 
 		$this->assertTrue( $response['success'] );
@@ -533,9 +526,9 @@ class TestExprdawcAdminOrder extends WP_UnitTestCase {
 		} catch ( RuntimeException $e ) { // phpcs:ignore
 			// Expected.
 		}
-		$this->_last_response = ob_get_clean();
+		$output = ob_get_clean();
 
-		$response = json_decode( $this->_last_response, true );
+		$response = json_decode( $output, true );
 		$this->assertFalse( $response['success'] );
 
 		// Cleanup.
@@ -575,9 +568,9 @@ class TestExprdawcAdminOrder extends WP_UnitTestCase {
 		} catch ( RuntimeException $e ) { // phpcs:ignore
 			// Expected.
 		}
-		$this->_last_response = ob_get_clean();
+		$output = ob_get_clean();
 
-		$response = json_decode( $this->_last_response, true );
+		$response = json_decode( $output, true );
 
 		$this->assertTrue( $response['success'] );
 		$this->assertArrayHasKey( 'html', $response['data'] );
