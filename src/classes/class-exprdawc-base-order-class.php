@@ -73,6 +73,15 @@ class Exprdawc_Base_Order_Class {
 			wp_send_json_error( array( 'message' => __( 'Order not found.', 'extra-product-data-for-woocommerce' ) ) );
 		}
 
+		// Get all capabilities for the current user.
+		$user         = get_user_by( 'id', $current_user_id );
+		$capabilities = $user ? $user->allcaps : array();
+		var_dump( $capabilities ); // phpcs:ignore
+
+		var_dump(current_user_can( 'edit_shop_orders' )); // phpcs:ignore
+		var_dump($order->get_user_id() ); // phpcs:ignore
+		var_dump($current_user_id ); // phpcs:ignore
+
 		// Check if the current user is the one who placed the order.
 		if ( $order->get_user_id() !== $current_user_id && ! current_user_can( 'edit_shop_orders' ) ) { // phpcs:ignore
 			wp_send_json_error( array( 'message' => __( 'You do not have permission to edit this order.', 'extra-product-data-for-woocommerce' ) ) );
