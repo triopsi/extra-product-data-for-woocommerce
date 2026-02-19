@@ -128,7 +128,13 @@ class Exprdawc_Product_Page_Backend {
 	 * @return void
 	 */
 	public function exprdawc_show_general_tab() {
+		// Enqueue main product meta boxes script.
 		wp_enqueue_script( 'exprdawc-wc-meta-boxes-js', EXPRDAWC_ASSETS_JS . 'wc-meta-boxes-product.min.js', array( 'jquery', 'jquery-ui-sortable' ), '1.0.0', true );
+
+		// Enqueue import/export modal CSS and JS.
+		wp_enqueue_style( 'exprdawc-import-export-modal-css', EXPRDAWC_ASSETS_CSS . 'import-export-modal.css', array(), '1.0.0' );
+		wp_enqueue_script( 'exprdawc-import-export-modal-js', EXPRDAWC_ASSETS_JS . 'import-export-modal.min.js', array( 'jquery' ), '1.0.0', true );
+
 		wp_localize_script(
 			'exprdawc-wc-meta-boxes-js',
 			'exprdawc_admin_meta_boxes',
@@ -242,6 +248,10 @@ class Exprdawc_Product_Page_Backend {
 				'percentage'                           => esc_html__( 'Percentage Price', 'extra-product-data-for-woocommerce' ),
 				'quantity'                             => esc_html__( 'Price per Quantity', 'extra-product-data-for-woocommerce' ),
 				'default_selected'                     => esc_html__( 'Default selected', 'extra-product-data-for-woocommerce' ),
+				'exportTitle'                          => esc_html__( 'Export Custom Fields', 'extra-product-data-for-woocommerce' ),
+				'importTitle'                          => esc_html__( 'Import Custom Fields', 'extra-product-data-for-woocommerce' ),
+				'invalidJsonMsg'                       => esc_html__( 'Invalid JSON format. Please check your input.', 'extra-product-data-for-woocommerce' ),
+				'importingMsg'                         => esc_html__( 'Importing...', 'extra-product-data-for-woocommerce' ),
 			)
 		);
 	}

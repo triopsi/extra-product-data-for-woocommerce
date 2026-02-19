@@ -29,6 +29,12 @@ if ( ! defined( 'ABSPATH' ) ) {
 }
 ?>
 <input type="hidden" id="exprdawc_export_string" name="exprdawc_export_string" value="<?php echo $args['custom_fields'] ? wc_esc_json( json_encode( $args['custom_fields'] ) ) : ''; // phpcs:ignore ?>" />
+
+<?php
+// Include the import/export modal template.
+require EXPRDAWC_TEMPLATES . 'modal-import-export.php';
+?>
+
 <div id="extra-product-data" class="panel woocommerce_options_panel exprdawc_panel_wrapper">
 	<div class="toolbar toolbar-top">
 		

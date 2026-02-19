@@ -57,8 +57,6 @@ jQuery(function ($) {
             $(document).on('click', '.toggle-options', this.toggleOptionsTable.bind(this));
             $(document).on('click', '.add_option', this.addOption.bind(this));
             $(document).on('click', '.remove_option', this.removeOption.bind(this));
-            $(document).on('click', 'a.exprdawc-export', this.exportContent.bind(this));
-            $(document).on('click', 'a.exprdawc-import', this.importContent.bind(this));
             $(document).on('change', '.exprdawc_input', this.setDirty.bind(this));
             $(document).on('change', '.exprdawc_autocomplete_field', this.checkAutocompleteField.bind(this));
             $(document).on('click', '.add_rule_group', this.addRuleGroup.bind(this));
@@ -629,66 +627,6 @@ jQuery(function ($) {
          * @param {*} e 
          * @returns 
          */
-        exportContent(e) {
-            e.preventDefault();
-            // Update all field indices
-            this.updateFieldIndices();
-            if (this.isDirty) {
-                alert(`${exprdawc_admin_meta_boxes.pleaseSaveBeforeExportMsg}`);
-                return;
-            }
-            const $exportString = $('#exprdawc_export_string');
-            const exportContent = $exportString.val();
-            if (!exportContent) {
-                alert(`${exprdawc_admin_meta_boxes.emptyExportMsg}`);
-                return;
-            }
-            navigator.clipboard.writeText(exportContent).then(function () {
-                alert(`${exprdawc_admin_meta_boxes.copySuccessMsg}`);
-            }, function (err) {
-                console.error('Could not copy text: ', err);
-                alert(`${exprdawc_admin_meta_boxes.copyErrorMsg}`);
-            });
-        }
-
-        /**
-         * Import content.
-         * @param {*} e 
-         * @returns 
-         */
-        importContent(e) {
-            e.preventDefault();
-            const exportString = prompt(exprdawc_admin_meta_boxes.enterExportString);
-            if (exportString) {
-                const sureImportQuestion = confirm(exprdawc_admin_meta_boxes.sureImportQuestion);
-                if (!sureImportQuestion) {
-                    return;
-                }
-                const productId = $('#post_ID').val();
-                $.ajax({
-                    url: ajaxurl,
-                    method: 'POST',
-                    data: {
-                        action: 'exprdawc_import_custom_fields',
-                        product_id: productId,
-                        export_string: exportString,
-                        security: exprdawc_admin_meta_boxes.edit_exprdawc_nonce
-                    },
-                    success: function (response) {
-                        if (response.success) {
-                            alert(exprdawc_admin_meta_boxes.importSuccessMsg);
-                            location.reload();
-                        } else {
-                            alert(exprdawc_admin_meta_boxes.importErrorMsg);
-                        }
-                    },
-                    error: function () {
-                        alert(exprdawc_admin_meta_boxes.importErrorMsg);
-                    },
-                });
-            }
-        }
-
         /**
          * Set dirty.
          */
