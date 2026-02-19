@@ -564,35 +564,6 @@ class TestExprdawcProductPageBackend extends WP_UnitTestCase {
 	}
 
 	/**
-	 * Tests that exprdawc_import_custom_fields requires valid nonce.
-	 *
-	 * Expects: Function fails when security nonce is invalid.
-	 *
-	 * @group ajax
-	 */
-	public function test_exprdawc_import_custom_fields_requires_valid_nonce() {
-		$this->markTestSkipped( 'Not run' );
-		$product = new WC_Product_Simple();
-		$product->set_name( 'Test Product' );
-		$product->set_regular_price( '10' );
-		$product->save();
-		$product_id = $product->get_id();
-
-		$_POST['product_id']    = $product_id;
-		$_POST['export_string'] = wp_json_encode( array() );
-		$_POST['security']      = 'invalid_nonce';
-		$_POST['action']        = 'exprdawc_import_custom_fields';
-
-		// Expect nonce check to fail.
-		$this->expectException( 'WPAjaxDieStopException' );
-		$this->product_page_backend->exprdawc_import_custom_fields();
-
-		// Clean up.
-		unset( $_POST['product_id'], $_POST['export_string'], $_POST['security'], $_POST['action'] );
-		$product->delete();
-	}
-
-	/**
 	 * Tests that exprdawc_save_extra_product_fields handles conditional logic rules.
 	 *
 	 * Expects: Conditional rules are saved correctly with field, operator, and value.
