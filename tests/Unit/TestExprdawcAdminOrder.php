@@ -544,10 +544,6 @@ class TestExprdawcAdminOrder extends WP_UnitTestCase {
 	 */
 	public function test_save_edit_modal_form_updates_item() {
 
-		// Set up an administrator user for AJAX tests.
-		$user_id = $this->factory()->user->create( array( 'role' => 'administrator' ) );
-		wp_set_current_user( $user_id );
-
 		$items   = $this->order->get_items();
 		$item    = reset( $items );
 		$item_id = $item->get_id();
