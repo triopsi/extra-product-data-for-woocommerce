@@ -91,6 +91,7 @@ class TestExprdawcAdminOrder extends WP_UnitTestCase {
 		// Create test order.
 		$this->order_id = wc_create_order()->get_id();
 		$this->order    = wc_get_order( $this->order_id );
+		$this->order->set_customer_id( $user_id );
 		$this->order->add_product( $this->product, 1 );
 		$this->order->set_status( 'pending' );
 		$this->order->save();

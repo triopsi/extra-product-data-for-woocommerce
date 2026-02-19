@@ -538,8 +538,10 @@ class TestExprdawcUserOrder extends WP_UnitTestCase {
 		$product->save();
 
 		$order_id = wc_create_order()->get_id();
-		$order    = wc_get_order( $order_id );
-		$item_id  = $order->add_product( $product, 1 );
+
+		$order = wc_get_order( $order_id );
+		$order->set_customer_id( $user_id );
+		$item_id = $order->add_product( $product, 1 );
 		$order->save();
 
 		$items = $order->get_items();
