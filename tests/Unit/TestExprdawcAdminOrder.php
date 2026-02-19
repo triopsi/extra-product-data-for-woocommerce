@@ -57,6 +57,10 @@ class TestExprdawcAdminOrder extends WP_UnitTestCase {
 
 		// Set up an administrator user for AJAX tests.
 		$user_id = $this->factory()->user->create( array( 'role' => 'administrator' ) );
+		$user    = get_user_by( 'id', $user_id );
+
+		// Add capability. This is needed for the permission check in the AJAX handler.
+		$user->add_cap( 'edit_shop_orders' );
 		wp_set_current_user( $user_id );
 
 		// Create test product with custom fields.
@@ -569,7 +573,6 @@ class TestExprdawcAdminOrder extends WP_UnitTestCase {
 			// Expected.
 		}
 		$output = ob_get_clean();
-		var_dump( $output ); // phpcs:ignore
 
 		$response = json_decode( $output, true );
 
