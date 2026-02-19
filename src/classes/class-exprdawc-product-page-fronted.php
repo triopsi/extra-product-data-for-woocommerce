@@ -473,27 +473,25 @@ class Exprdawc_Product_Page_Fronted {
 	/**
 	 * Gets the field index and value from POST data.
 	 *
-	 * Generates the field index from the label and retrieves the corresponding value from POST data.
-	 * This centralizes the logic to avoid code duplication.
+	 * Delegates to Exprdawc_Helper for normalized field handling.
 	 *
 	 * @param array $input_field_array The field configuration array.
 	 * @return array An array with 'index' and 'value' keys.
 	 */
 	private function get_field_index_and_value( array $input_field_array ): array {
-		// Actual label lowercase and without spaces and _ are -.
-		$index = esc_attr( strtolower( str_replace( array( ' ', '-' ), '_', sanitize_title( $input_field_array['label'] ) ) ) );
-
-		// Get the field value from the $_POST array.
-		$field_value = isset( $_POST['exprdawc_custom_field_input'][ $index ] ) ? $_POST['exprdawc_custom_field_input'][ $index ] : ''; // phpcs:ignore
+		$index = Exprdawc_Helper::get_field_index_from_label( $input_field_array['label'] );
+		$value = Exprdawc_Helper::get_field_value_from_post( $index );
 
 		return array(
 			'index' => $index,
-			'value' => $field_value,
+			'value' => $value,
 		);
 	}
 
 	/**
 	 * Calculates the price adjustment for a custom field.
+	 *
+	 * Delegates to Exprdawc_Order_Helper for consistent calculation logic.
 	 *
 	 * @param array $field_config The field configuration array.
 	 * @param mixed $field_value The field value (string or array).
@@ -501,40 +499,7 @@ class Exprdawc_Product_Page_Fronted {
 	 * @return float The calculated price adjustment.
 	 */
 	private function calculate_price_adjustment( array $field_config, $field_value, float $base_price = 0.0 ): float {
-		if ( empty( $field_config['adjust_price'] ) ) {
-			return 0.0;
-		}
-
-		$price_adjustment = 0.0;
-
-		// Handle option-based fields (checkbox, radio, select).
-		if ( in_array( $field_config['type'], array( 'checkbox', 'radio', 'select' ), true ) ) {
-			if ( empty( $field_config['options'] ) || ! is_array( $field_config['options'] ) ) {
-				return 0.0;
-			}
-
-			// Convert field value to array for consistent handling.
-			$field_values = is_array( $field_value ) ? $field_value : explode( ', ', (string) $field_value );
-
-			foreach ( $field_config['options'] as $option ) {
-				if ( in_array( $option['value'], $field_values, true ) ) {
-					if ( 'fixed' === $option['price_adjustment_type'] ) {
-						$price_adjustment += $option['price_adjustment_value'];
-					} elseif ( 'percentage' === $option['price_adjustment_type'] ) {
-						$price_adjustment += ( $base_price / 100 ) * $option['price_adjustment_value'];
-					}
-				}
-			}
-		} else { // phpcs:ignore
-			// Handle non-option fields.
-			if ( 'fixed' === $field_config['price_adjustment_type'] ) {
-				$price_adjustment = $field_config['price_adjustment_value'];
-			} elseif ( 'percentage' === $field_config['price_adjustment_type'] ) {
-				$price_adjustment = ( $base_price / 100 ) * $field_config['price_adjustment_value'];
-			}
-		}
-
-		return $price_adjustment;
+		return Exprdawc_Order_Helper::calculate_price_adjustment( $field_config, $field_value, $base_price );
 	}
 
 	/**

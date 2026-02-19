@@ -639,4 +639,159 @@ class Exprdawc_Helper {
 
 		load_template( $path, true, $args );
 	}
+
+	/**
+	 * Convert a field label to a standardized index/key.
+	 *
+	 * Converts label to lowercase, removes spaces/hyphens replacing with underscores.
+	 * Used consistently across product fields and order items.
+	 *
+	 * @param string $label The field label to convert.
+	 * @return string The standardized field index.
+	 */
+	public static function get_field_index_from_label( string $label ): string {
+		return strtolower( str_replace( array( ' ', '-' ), '_', sanitize_title( $label ) ) );
+	}
+
+	/**
+	 * Sanitize a field value based on its type (string or array).
+	 *
+	 * @param mixed $field_value The field value to sanitize (string, array, or other).
+	 * @return mixed The sanitized field value.
+	 */
+	public static function sanitize_field_value( $field_value ) {
+		// Handle array values (checkboxes, multi-select).
+		if ( is_array( $field_value ) ) {
+			return array_map( 'sanitize_text_field', $field_value );
+		}
+
+		// Handle string/numeric values.
+		if ( is_string( $field_value ) || is_numeric( $field_value ) ) {
+			return sanitize_text_field( $field_value );
+		}
+
+		return $field_value;
+	}
+
+	/**
+	 * Get value from POST data for a field.
+	 *
+	 * Note: This method should only be called within nonce-verified contexts.
+	 * Callers are responsible for nonce verification before invoking this function.
+	 *
+	 * @param string $field_index The field index/key.
+	 * @param string $post_key    The POST array key (default: 'exprdawc_custom_field_input').
+	 * @return mixed The field value or empty string.
+	 */
+	public static function get_field_value_from_post( string $field_index, string $post_key = 'exprdawc_custom_field_input' ) {
+		// phpcs:ignore phpcs:ignore WordPress.Security.ValidatedSanitizedInput.InputNotSanitized, WordPress.Security.NonceVerification.Missing -- Called only from verified contexts
+		if ( isset( $_POST[ $post_key ][ $field_index ] ) ) { // phpcs:ignore WordPress.Security.NonceVerification.Missing
+			$value = wp_unslash( $_POST[ $post_key ][ $field_index ] ); // phpcs:ignore WordPress.Security.ValidatedSanitizedInput.InputNotSanitized, WordPress.Security.NonceVerification.Missing
+			return self::sanitize_field_value( $value );
+		}
+
+		return '';
+	}
+
+	/**
+	 * Convert option values to indexed array for easier validation.
+	 *
+	 * @param array $options Array of option arrays with 'value' key.
+	 * @return array Array of option values.
+	 */
+	public static function get_option_values( array $options ): array {
+		return array_column( $options, 'value' );
+	}
+
+	/**
+	 * Validate that selected values exist in available options.
+	 *
+	 * @param mixed $selected_values The selected value(s) (string or array).
+	 * @param array $available_options Array of option arrays with 'value' key.
+	 * @return bool True if valid, false otherwise.
+	 */
+	public static function validate_option_selection( $selected_values, array $available_options ): bool {
+		$valid_options = self::get_option_values( $available_options );
+		if ( empty( $valid_options ) ) {
+			return false;
+		}
+
+		$selected  = is_array( $selected_values ) ? $selected_values : array( $selected_values );
+		$intersect = array_intersect( $selected, $valid_options );
+
+		return ! empty( $intersect ) && count( $intersect ) === count( $selected );
+	}
+
+	/**
+	 * Validate field value based on its type.
+	 *
+	 * @param mixed  $field_value    The field value to validate.
+	 * @param string $field_type     The field type (email, number, date, etc.).
+	 * @param array  $field_options  Optional options for validation (for choice fields).
+	 * @return array Array with 'valid' (bool) and 'message' (string) keys.
+	 */
+	public static function validate_field_by_type( $field_value, string $field_type, array $field_options = array() ): array {
+		// Empty values are valid (required check is separate).
+		if ( empty( $field_value ) ) {
+			return array(
+				'valid'   => true,
+				'message' => '',
+			);
+		}
+
+		switch ( $field_type ) {
+			case 'email':
+				if ( ! is_email( $field_value ) ) {
+					return array(
+						'valid'   => false,
+						'message' => __( 'Please enter a valid email address.', 'extra-product-data-for-woocommerce' ),
+					);
+				}
+				break;
+
+			case 'number':
+				if ( ! is_numeric( $field_value ) ) {
+					return array(
+						'valid'   => false,
+						'message' => __( 'Please enter a valid number.', 'extra-product-data-for-woocommerce' ),
+					);
+				}
+				break;
+
+			case 'date':
+				if ( ! strtotime( (string) $field_value ) ) {
+					return array(
+						'valid'   => false,
+						'message' => __( 'Please enter a valid date.', 'extra-product-data-for-woocommerce' ),
+					);
+				}
+				break;
+
+			case 'radio':
+			case 'checkbox':
+			case 'select':
+			case 'multiselect':
+				if ( ! empty( $field_options ) && ! self::validate_option_selection( $field_value, $field_options ) ) {
+					return array(
+						'valid'   => false,
+						'message' => __( 'Please select a valid option.', 'extra-product-data-for-woocommerce' ),
+					);
+				}
+				break;
+
+			case 'url':
+				if ( ! filter_var( $field_value, FILTER_VALIDATE_URL ) ) {
+					return array(
+						'valid'   => false,
+						'message' => __( 'Please enter a valid URL.', 'extra-product-data-for-woocommerce' ),
+					);
+				}
+				break;
+		}
+
+		return array(
+			'valid'   => true,
+			'message' => '',
+		);
+	}
 }

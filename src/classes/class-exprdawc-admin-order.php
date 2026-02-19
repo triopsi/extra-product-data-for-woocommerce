@@ -68,10 +68,10 @@ class Exprdawc_Admin_Order extends Exprdawc_Base_Order_Class {
 		add_action( 'admin_footer', array( $this, 'add_js_template' ) );
 
 		// AJAX action for configuring addon order item.
-		add_action( 'wp_ajax_woocommerce_configure_exprdawc_order_item', array( $this, 'woocommerce_configure_exprdawc_order_item' ) );
+		add_action( 'wp_ajax_woocommerce_configure_exprdawc_order_item', array( $this, 'exprdawc_load_edit_modal_form' ) );
 
 		// Ajax handler used to store updated order item.
-		add_action( 'wp_ajax_woocommerce_edit_exprdawc_order_item', array( $this, 'ajax_edit_exprdawc_order_item' ) );
+		add_action( 'wp_ajax_woocommerce_edit_exprdawc_order_item', array( $this, 'exprdawc_save_edit_modal_form' ) );
 	}
 
 	/**
@@ -165,9 +165,11 @@ class Exprdawc_Admin_Order extends Exprdawc_Base_Order_Class {
 	}
 
 	/**
-	 * AJAX action for configuring addon order item.
+	 * Load the edit form in a modal via ajax.
+	 *
+	 * @return void
 	 */
-	public function woocommerce_configure_exprdawc_order_item() {
+	public function exprdawc_load_edit_modal_form() {
 
 		// Check permissions and nonce.
 		check_ajax_referer( 'wc_exprdawc_edit_exprdawc', 'security' );
@@ -233,9 +235,11 @@ class Exprdawc_Admin_Order extends Exprdawc_Base_Order_Class {
 	}
 
 	/**
-	 * Ajax handler used to store updated order item.
+	 * Save the edit via ajax request.
+	 *
+	 * @return void
 	 */
-	public function ajax_edit_exprdawc_order_item() {
+	public function exprdawc_save_edit_modal_form() {
 		// Check permissions and nonce.
 		check_ajax_referer( 'wc_exprdawc_edit_exprdawc', 'security' );
 

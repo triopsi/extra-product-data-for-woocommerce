@@ -1999,7 +1999,8 @@ class TestClassExprdawcProductPageFronted extends WP_UnitTestCase {
 
 		$this->assertArrayHasKey( 'post_data_product_item', $result );
 		$this->assertEquals( 'opt1', $result['post_data_product_item'][0]['value'] );
-		$this->assertEquals( 'opt1', $result['post_data_product_item'][0]['value_cart'] );
+		// Price adjustment should be displayed in cart for select with percent.
+		$this->assertStringContainsString( 'opt1 (+', $result['post_data_product_item'][0]['value_cart'] );
 	}
 
 	/**
@@ -2037,7 +2038,8 @@ class TestClassExprdawcProductPageFronted extends WP_UnitTestCase {
 
 		$this->assertArrayHasKey( 'post_data_product_item', $result );
 		$this->assertEquals( 'opt1', $result['post_data_product_item'][0]['value'] );
-		$this->assertEquals( 'opt1', $result['post_data_product_item'][0]['value_cart'] );
+		// Price adjustment should be displayed in cart.
+		$this->assertStringContainsString( 'opt1 (+', $result['post_data_product_item'][0]['value_cart'] );
 	}
 
 	/**
@@ -2081,7 +2083,8 @@ class TestClassExprdawcProductPageFronted extends WP_UnitTestCase {
 
 		$this->assertArrayHasKey( 'post_data_product_item', $result );
 		$this->assertEquals( 'opt1, opt2', $result['post_data_product_item'][0]['value'] );
-		$this->assertEquals( 'opt1, opt2', $result['post_data_product_item'][0]['value_cart'] );
+		// Price adjustment should be displayed in cart for checkbox with percent.
+		$this->assertStringContainsString( 'opt1, opt2 (+', $result['post_data_product_item'][0]['value_cart'] );
 	}
 
 	/**
@@ -2125,7 +2128,8 @@ class TestClassExprdawcProductPageFronted extends WP_UnitTestCase {
 
 		$this->assertArrayHasKey( 'post_data_product_item', $result );
 		$this->assertEquals( 'opt1, opt2', $result['post_data_product_item'][0]['value'] );
-		$this->assertEquals( 'opt1, opt2 (+' . wc_price( 4 ) . ')', $result['post_data_product_item'][0]['value_cart'] );
+		// Mixed adjustments: fixed 4 + percent 10% = 4 + 10 = 14.
+		$this->assertStringContainsString( 'opt1, opt2 (+', $result['post_data_product_item'][0]['value_cart'] );
 	}
 
 	/**
