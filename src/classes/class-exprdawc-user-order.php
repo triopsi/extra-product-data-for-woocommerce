@@ -177,7 +177,11 @@ class Exprdawc_User_Order extends Exprdawc_Base_Order_Class {
 			wp_send_json_error( array( 'message' => __( 'Item not found.', 'extra-product-data-for-woocommerce' ) ) );
 		}
 
-		// Get the product data.
+		/**
+		 * Get the product data.
+		 *
+		 * @disregard
+		 */
 		$product = $item->get_product();
 		if ( $product->is_type( 'variation' ) ) {
 			$product = wc_get_product( $product->get_parent_id() );

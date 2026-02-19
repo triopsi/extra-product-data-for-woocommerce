@@ -97,7 +97,18 @@ class Exprdawc_Base_Order_Class {
 		// Calculate new price adjustments and update the item.
 		$new_price = $this->calculate_new_price( $item );
 
+		/**
+		 * Set the subtotal for the item.
+		 *
+		 * @disregard
+		 */
 		$item->set_subtotal( $new_price * $item->get_quantity() );
+
+		/**
+		 * Set the total for the item.
+		 *
+		 * @disregard
+		 */
 		$item->set_total( $new_price * $item->get_quantity() );
 
 		// Save the item.
@@ -115,6 +126,12 @@ class Exprdawc_Base_Order_Class {
 	 * @param WC_Order_Item $item  The order item object.
 	 */
 	protected function save_new_meta_data( $order, $item ) {
+
+		/**
+		 * Get the product data.
+		 *
+		 * @disregard
+		 */
 		$product = $item->get_product();
 		if ( $product->is_type( 'variation' ) ) {
 			$product = wc_get_product( $product->get_parent_id() );
@@ -264,6 +281,12 @@ class Exprdawc_Base_Order_Class {
 	 * @return float The new price for the item.
 	 */
 	protected function calculate_new_price( $item ) {
+
+		/**
+		 * Get the product data.
+		 *
+		 * @disregard
+		 */
 		$product = $item->get_product();
 		if ( $product->is_type( 'variation' ) ) {
 			$product = wc_get_product( $product->get_parent_id() );
