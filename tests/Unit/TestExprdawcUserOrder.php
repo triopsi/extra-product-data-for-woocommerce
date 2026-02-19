@@ -498,6 +498,11 @@ class TestExprdawcUserOrder extends WP_UnitTestCase {
 	 * @group ajax
 	 */
 	public function test_save_order_item_meta_ajax_registered() {
+
+		// Set up an administrator user for AJAX tests.
+		$user_id = $this->factory()->user->create( array( 'role' => 'administrator' ) );
+		wp_set_current_user( $user_id );
+
 		if ( ! defined( 'DOING_AJAX' ) ) {
 			define( 'DOING_AJAX', true );
 		}
