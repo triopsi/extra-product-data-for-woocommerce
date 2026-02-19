@@ -90,6 +90,30 @@ class TestClassExprdawcProductPageFronted extends WP_UnitTestCase {
 	}
 
 	/**
+	 * Helper method to create a cart page for testing.
+	 *
+	 * This method creates a new page with the WooCommerce cart shortcode and
+	 * sets it as the cart page in WooCommerce settings. It returns the ID of
+	 * the created page.
+	 *
+	 * @return int The ID of the created cart page.
+	 */
+	private function create_cart_page(): int {
+		$page_id = $this->factory()->post->create(
+			array(
+				'post_type'    => 'page',
+				'post_title'   => 'Cart',
+				'post_status'  => 'publish',
+				'post_content' => '[woocommerce_cart]',
+			)
+		);
+
+		update_option( 'woocommerce_cart_page_id', $page_id );
+
+		return $page_id;
+	}
+
+	/**
 	 * Test exprdawc_has_options returns false when no custom fields.
 	 *
 	 * Test Goal:
@@ -766,6 +790,42 @@ class TestClassExprdawcProductPageFronted extends WP_UnitTestCase {
 
 		$result = $this->instance->exprdawc_validate_custom_fields( true, $this->product_id, 1 );
 		$this->assertFalse( $result );
+	}
+
+	/**
+	 * Test exprdawc_validate_custom_fields validates date field.
+	 *
+	 * Test Goal:
+	 * Verifies that date validation succeeds when a valid date is entered.
+	 *
+	 * Expected Result:
+	 * - Validation returns TRUE
+	 * - No WooCommerce error notice is added
+	 * - Product can be added to cart
+	 *
+	 * Test Conditions:
+	 * - Product with a date field (type = 'date')
+	 * - POST data contains valid value "2024-01-01"
+	 * - PHP strtotime() function is used for validation
+	 */
+	public function test_exprdawc_validate_custom_fields_valid_date() {
+		// Add custom fields with date field.
+		$custom_fields = array(
+			array(
+				'label' => 'Date Field',
+				'type'  => 'date',
+			),
+		);
+		$this->product->update_meta_data( '_extra_product_fields', $custom_fields );
+		$this->product->save();
+
+		// Set up $_POST data with valid date.
+		$_POST['exprdawc_custom_field_input'] = array(
+			'date_field' => '2024-01-01',
+		);
+
+		$result = $this->instance->exprdawc_validate_custom_fields( true, $this->product_id, 1 );
+		$this->assertTrue( $result );
 	}
 
 	/**
@@ -1631,6 +1691,446 @@ class TestClassExprdawcProductPageFronted extends WP_UnitTestCase {
 	}
 
 	/**
+	 * Test exprdawc_save_extra_product_data_in_cart handles date field.
+	 *
+	 * Test Goal:
+	 * Verifies that date field data is correctly saved as a string value
+	 * when the product is added to the cart.
+	 *
+	 * Expected Result:
+	 * - Cart item data contains 'extra_user_data' array
+	 * - Date value is correctly formatted and saved as a string
+	 *
+	 * Test Conditions:
+	 * - Product with date field (type = 'date')
+	 * - Valid nonce in POST data
+	 * - POST contains date value "2024-06-19"
+	 */
+	public function test_exprdawc_save_extra_product_data_in_cart_date_field() {
+		// Add custom fields.
+		$custom_fields = array(
+			array(
+				'label'        => 'Date Field',
+				'type'         => 'date',
+				'adjust_price' => false,
+			),
+		);
+		$this->product->update_meta_data( '_extra_product_fields', $custom_fields );
+		$this->product->save();
+
+		// Set up $_POST data.
+		$_POST['exprdawc_nonce']              = wp_create_nonce( 'exprdawc_save_custom_field' );
+		$_POST['exprdawc_custom_field_input'] = array(
+			'date_field' => '2024-06-19',
+		);
+
+		$cart_item_data = array();
+		$result         = $this->instance->exprdawc_save_extra_product_data_in_cart( $cart_item_data, $this->product_id, 0, 1 );
+
+		$this->assertArrayHasKey( 'extra_user_data', $result );
+		$this->assertEquals( '2024-06-19', $result['extra_user_data'][0]['value'] );
+	}
+
+	/**
+	 * Test exprdawc_save_extra_product_data_in_cart handles default field.
+	 *
+	 * Test Goal:
+	 * Verifies that default field data is correctly saved as a string value
+	 * when the product is added to the cart.
+	 *
+	 * Expected Result:
+	 * - Cart item data contains 'extra_user_data' array
+	 * - Default value is correctly formatted and saved as a string
+	 *
+	 * Test Conditions:
+	 * - Product with default field (type = 'default')
+	 * - Valid nonce in POST data
+	 * - POST contains default value "<h2>Title</h2>"
+	 */
+	public function test_exprdawc_save_extra_product_data_in_cart_default_field() {
+		// Add custom fields.
+		$custom_fields = array(
+			array(
+				'label'        => 'Default Field',
+				'type'         => 'default',
+				'adjust_price' => false,
+			),
+		);
+		$this->product->update_meta_data( '_extra_product_fields', $custom_fields );
+		$this->product->save();
+
+		// Set up $_POST data.
+		$_POST['exprdawc_nonce']              = wp_create_nonce( 'exprdawc_save_custom_field' );
+		$_POST['exprdawc_custom_field_input'] = array(
+			'default_field' => '<h2>Title</h2>',
+		);
+
+		$cart_item_data = array();
+		$result         = $this->instance->exprdawc_save_extra_product_data_in_cart( $cart_item_data, $this->product_id, 0, 1 );
+
+		$this->assertArrayHasKey( 'extra_user_data', $result );
+		$this->assertEquals( 'Title', $result['extra_user_data'][0]['value'] );
+	}
+
+	// Price adjustment tests for exprdawc_save_extra_product_data_in_cart().
+
+	/**
+	 * Test exprdawc_save_extra_product_data_in_cart applies fixed price adjustment (text field).
+	 *
+	 * Test Goal:
+	 * Verifies that calculate_price_adjustment is applied for fixed adjustments
+	 * when saving cart data through exprdawc_save_extra_product_data_in_cart().
+	 *
+	 * Expected Result:
+	 * - value_cart includes the fixed adjustment amount
+	 * - adjustment is formatted with wc_price()
+	 */
+	public function test_exprdawc_save_extra_product_data_in_cart_fixed_adjustment_text_field() {
+		$custom_fields = array(
+			array(
+				'label'                  => 'Adjustment Field',
+				'type'                   => 'text',
+				'adjust_price'           => true,
+				'price_adjustment_type'  => 'fixed',
+				'price_adjustment_value' => 10,
+			),
+		);
+		$this->product->update_meta_data( '_extra_product_fields', $custom_fields );
+		$this->product->save();
+
+		$_POST['exprdawc_nonce']              = wp_create_nonce( 'exprdawc_save_custom_field' );
+		$_POST['exprdawc_custom_field_input'] = array(
+			'adjustment_field' => 'test value',
+		);
+
+		$cart_item_data = array();
+		$result         = $this->instance->exprdawc_save_extra_product_data_in_cart( $cart_item_data, $this->product_id, 0, 1 );
+
+		$this->assertArrayHasKey( 'extra_user_data', $result );
+		$this->assertEquals( 'test value', $result['extra_user_data'][0]['value'] );
+		$this->assertEquals( 'test value (+' . wc_price( 10 ) . ')', $result['extra_user_data'][0]['value_cart'] );
+	}
+
+	/**
+	 * Test exprdawc_save_extra_product_data_in_cart applies fixed price adjustment (select option).
+	 *
+	 * Test Goal:
+	 * Verifies that calculate_price_adjustment sums option-based fixed adjustments
+	 * when a select option is chosen.
+	 */
+	public function test_exprdawc_save_extra_product_data_in_cart_fixed_adjustment_select_option() {
+		$custom_fields = array(
+			array(
+				'label'        => 'Select Field',
+				'type'         => 'select',
+				'adjust_price' => true,
+				'options'      => array(
+					array(
+						'label'                  => 'Option 1',
+						'value'                  => 'opt1',
+						'price_adjustment_type'  => 'fixed',
+						'price_adjustment_value' => 5,
+					),
+					array(
+						'label'                  => 'Option 2',
+						'value'                  => 'opt2',
+						'price_adjustment_type'  => 'fixed',
+						'price_adjustment_value' => 3,
+					),
+				),
+			),
+		);
+		$this->product->update_meta_data( '_extra_product_fields', $custom_fields );
+		$this->product->save();
+
+		$_POST['exprdawc_nonce']              = wp_create_nonce( 'exprdawc_save_custom_field' );
+		$_POST['exprdawc_custom_field_input'] = array(
+			'select_field' => 'opt1',
+		);
+
+		$cart_item_data = array();
+		$result         = $this->instance->exprdawc_save_extra_product_data_in_cart( $cart_item_data, $this->product_id, 0, 1 );
+
+		$this->assertArrayHasKey( 'extra_user_data', $result );
+		$this->assertEquals( 'opt1', $result['extra_user_data'][0]['value'] );
+		$this->assertEquals( 'opt1 (+' . wc_price( 5 ) . ')', $result['extra_user_data'][0]['value_cart'] );
+	}
+
+	/**
+	 * Test exprdawc_save_extra_product_data_in_cart applies fixed price adjustment (checkbox options).
+	 *
+	 * Test Goal:
+	 * Verifies that calculate_price_adjustment sums multiple selected options
+	 * for checkbox fields.
+	 */
+	public function test_exprdawc_save_extra_product_data_in_cart_fixed_adjustment_checkbox_options() {
+		$custom_fields = array(
+			array(
+				'label'        => 'Checkbox Field',
+				'type'         => 'checkbox',
+				'adjust_price' => true,
+				'options'      => array(
+					array(
+						'label'                  => 'Option 1',
+						'value'                  => 'opt1',
+						'price_adjustment_type'  => 'fixed',
+						'price_adjustment_value' => 5,
+					),
+					array(
+						'label'                  => 'Option 2',
+						'value'                  => 'opt2',
+						'price_adjustment_type'  => 'fixed',
+						'price_adjustment_value' => 3,
+					),
+				),
+			),
+		);
+		$this->product->update_meta_data( '_extra_product_fields', $custom_fields );
+		$this->product->save();
+
+		$_POST['exprdawc_nonce']              = wp_create_nonce( 'exprdawc_save_custom_field' );
+		$_POST['exprdawc_custom_field_input'] = array(
+			'checkbox_field' => array( 'opt1', 'opt2' ),
+		);
+
+		$cart_item_data = array();
+		$result         = $this->instance->exprdawc_save_extra_product_data_in_cart( $cart_item_data, $this->product_id, 0, 1 );
+
+		$this->assertArrayHasKey( 'extra_user_data', $result );
+		$this->assertEquals( 'opt1, opt2', $result['extra_user_data'][0]['value'] );
+		$this->assertEquals( 'opt1, opt2 (+' . wc_price( 8 ) . ')', $result['extra_user_data'][0]['value_cart'] );
+	}
+
+	/**
+	 * Test exprdawc_save_extra_product_data_in_cart keeps value for percent adjustment.
+	 *
+	 * Test Goal:
+	 * Verifies that percent adjustments do not alter cart display when base price is 0.0
+	 * in exprdawc_save_extra_product_data_in_cart().
+	 */
+	public function test_exprdawc_save_extra_product_data_in_cart_percent_adjustment_no_cart_display() {
+		$custom_fields = array(
+			array(
+				'label'                  => 'Percent Field',
+				'type'                   => 'text',
+				'adjust_price'           => true,
+				'price_adjustment_type'  => 'percent',
+				'price_adjustment_value' => 15,
+			),
+		);
+		$this->product->update_meta_data( '_extra_product_fields', $custom_fields );
+		$this->product->save();
+
+		$_POST['exprdawc_nonce']              = wp_create_nonce( 'exprdawc_save_custom_field' );
+		$_POST['exprdawc_custom_field_input'] = array(
+			'percent_field' => 'test value',
+		);
+
+		$cart_item_data = array();
+		$result         = $this->instance->exprdawc_save_extra_product_data_in_cart( $cart_item_data, $this->product_id, 0, 1 );
+
+		$this->assertArrayHasKey( 'extra_user_data', $result );
+		$this->assertEquals( 'test value', $result['extra_user_data'][0]['value'] );
+		$this->assertEquals( 'test value', $result['extra_user_data'][0]['value_cart'] );
+	}
+
+	/**
+	 * Test exprdawc_save_extra_product_data_in_cart applies negative fixed adjustment.
+	 *
+	 * Test Goal:
+	 * Verifies that negative fixed adjustments are formatted with a minus sign.
+	 */
+	public function test_exprdawc_save_extra_product_data_in_cart_negative_fixed_adjustment() {
+		$custom_fields = array(
+			array(
+				'label'                  => 'Negative Field',
+				'type'                   => 'text',
+				'adjust_price'           => true,
+				'price_adjustment_type'  => 'fixed',
+				'price_adjustment_value' => -5,
+			),
+		);
+		$this->product->update_meta_data( '_extra_product_fields', $custom_fields );
+		$this->product->save();
+
+		$_POST['exprdawc_nonce']              = wp_create_nonce( 'exprdawc_save_custom_field' );
+		$_POST['exprdawc_custom_field_input'] = array(
+			'negative_field' => 'test value',
+		);
+
+		$cart_item_data = array();
+		$result         = $this->instance->exprdawc_save_extra_product_data_in_cart( $cart_item_data, $this->product_id, 0, 1 );
+
+		$this->assertArrayHasKey( 'extra_user_data', $result );
+		$this->assertEquals( 'test value', $result['extra_user_data'][0]['value'] );
+		$this->assertEquals( 'test value (-' . wc_price( 5 ) . ')', $result['extra_user_data'][0]['value_cart'] );
+	}
+
+	/**
+	 * Test exprdawc_save_extra_product_data_in_cart applies percent adjustment (select option).
+	 *
+	 * Test Goal:
+	 * Verifies that percent adjustments are saved without altering the value when displayed in cart.
+	 */
+	public function test_exprdawc_save_extra_product_data_in_cart_percent_adjustment_select_option() {
+		$custom_fields = array(
+			array(
+				'label'        => 'Select Percent',
+				'type'         => 'select',
+				'adjust_price' => true,
+				'options'      => array(
+					array(
+						'label'                  => 'Option 1',
+						'value'                  => 'opt1',
+						'price_adjustment_type'  => 'percent',
+						'price_adjustment_value' => 10,
+					),
+				),
+			),
+		);
+		$this->product->update_meta_data( '_extra_product_fields', $custom_fields );
+		$this->product->save();
+
+		$_POST['exprdawc_nonce']              = wp_create_nonce( 'exprdawc_save_custom_field' );
+		$_POST['exprdawc_custom_field_input'] = array(
+			'select_percent' => 'opt1',
+		);
+
+		$cart_item_data = array();
+		$result         = $this->instance->exprdawc_save_extra_product_data_in_cart( $cart_item_data, $this->product_id, 0, 1 );
+
+		$this->assertArrayHasKey( 'extra_user_data', $result );
+		$this->assertEquals( 'opt1', $result['extra_user_data'][0]['value'] );
+		$this->assertEquals( 'opt1', $result['extra_user_data'][0]['value_cart'] );
+	}
+
+	/**
+	 * Test exprdawc_save_extra_product_data_in_cart applies percent adjustment (radio option).
+	 *
+	 * Test Goal:
+	 * Verifies that percent adjustments for radio options are saved without altering the value when displayed in cart.
+	 */
+	public function test_exprdawc_save_extra_product_data_in_cart_percent_adjustment_radio_option() {
+		$custom_fields = array(
+			array(
+				'label'        => 'Radio Percent',
+				'type'         => 'radio',
+				'adjust_price' => true,
+				'options'      => array(
+					array(
+						'label'                  => 'Option 1',
+						'value'                  => 'opt1',
+						'price_adjustment_type'  => 'percent',
+						'price_adjustment_value' => 15,
+					),
+				),
+			),
+		);
+		$this->product->update_meta_data( '_extra_product_fields', $custom_fields );
+		$this->product->save();
+
+		$_POST['exprdawc_nonce']              = wp_create_nonce( 'exprdawc_save_custom_field' );
+		$_POST['exprdawc_custom_field_input'] = array(
+			'radio_percent' => 'opt1',
+		);
+
+		$cart_item_data = array();
+		$result         = $this->instance->exprdawc_save_extra_product_data_in_cart( $cart_item_data, $this->product_id, 0, 1 );
+
+		$this->assertArrayHasKey( 'extra_user_data', $result );
+		$this->assertEquals( 'opt1', $result['extra_user_data'][0]['value'] );
+		$this->assertEquals( 'opt1', $result['extra_user_data'][0]['value_cart'] );
+	}
+
+	/**
+	 * Test exprdawc_save_extra_product_data_in_cart applies percent adjustment (checkbox options).
+	 *
+	 * Test Goal:
+	 * Verifies that percent adjustments for checkbox options are saved without altering the value when displayed in cart.
+	 */
+	public function test_exprdawc_save_extra_product_data_in_cart_percent_adjustment_checkbox_options() {
+		$custom_fields = array(
+			array(
+				'label'        => 'Checkbox Percent',
+				'type'         => 'checkbox',
+				'adjust_price' => true,
+				'options'      => array(
+					array(
+						'label'                  => 'Option 1',
+						'value'                  => 'opt1',
+						'price_adjustment_type'  => 'percent',
+						'price_adjustment_value' => 5,
+					),
+					array(
+						'label'                  => 'Option 2',
+						'value'                  => 'opt2',
+						'price_adjustment_type'  => 'percent',
+						'price_adjustment_value' => 7,
+					),
+				),
+			),
+		);
+		$this->product->update_meta_data( '_extra_product_fields', $custom_fields );
+		$this->product->save();
+
+		$_POST['exprdawc_nonce']              = wp_create_nonce( 'exprdawc_save_custom_field' );
+		$_POST['exprdawc_custom_field_input'] = array(
+			'checkbox_percent' => array( 'opt1', 'opt2' ),
+		);
+
+		$cart_item_data = array();
+		$result         = $this->instance->exprdawc_save_extra_product_data_in_cart( $cart_item_data, $this->product_id, 0, 1 );
+
+		$this->assertArrayHasKey( 'extra_user_data', $result );
+		$this->assertEquals( 'opt1, opt2', $result['extra_user_data'][0]['value'] );
+		$this->assertEquals( 'opt1, opt2', $result['extra_user_data'][0]['value_cart'] );
+	}
+
+	/**
+	 * Test exprdawc_save_extra_product_data_in_cart applies mixed adjustments (checkbox options).
+	 *
+	 * Test Goal:
+	 * Verifies that a combination of fixed and percent adjustments for checkbox options is handled correctly in cart display.
+	 */
+	public function test_exprdawc_save_extra_product_data_in_cart_mixed_adjustment_checkbox_options() {
+		$custom_fields = array(
+			array(
+				'label'        => 'Checkbox Mixed',
+				'type'         => 'checkbox',
+				'adjust_price' => true,
+				'options'      => array(
+					array(
+						'label'                  => 'Option 1',
+						'value'                  => 'opt1',
+						'price_adjustment_type'  => 'fixed',
+						'price_adjustment_value' => 4,
+					),
+					array(
+						'label'                  => 'Option 2',
+						'value'                  => 'opt2',
+						'price_adjustment_type'  => 'percent',
+						'price_adjustment_value' => 10,
+					),
+				),
+			),
+		);
+		$this->product->update_meta_data( '_extra_product_fields', $custom_fields );
+		$this->product->save();
+
+		$_POST['exprdawc_nonce']              = wp_create_nonce( 'exprdawc_save_custom_field' );
+		$_POST['exprdawc_custom_field_input'] = array(
+			'checkbox_mixed' => array( 'opt1', 'opt2' ),
+		);
+
+		$cart_item_data = array();
+		$result         = $this->instance->exprdawc_save_extra_product_data_in_cart( $cart_item_data, $this->product_id, 0, 1 );
+
+		$this->assertArrayHasKey( 'extra_user_data', $result );
+		$this->assertEquals( 'opt1, opt2', $result['extra_user_data'][0]['value'] );
+		$this->assertEquals( 'opt1, opt2 (+' . wc_price( 4 ) . ')', $result['extra_user_data'][0]['value_cart'] );
+	}
+
+	/**
 	 * Test exprdawc_save_extra_product_data_in_cart returns original data when nonce invalid.
 	 *
 	 * Test Goal:
@@ -1674,6 +2174,7 @@ class TestClassExprdawcProductPageFronted extends WP_UnitTestCase {
 	 *
 	 * Test Conditions:
 	 * - Option 'exprdawc_show_in_cart' is set to 'yes'
+	 * - Option 'exprdawc_show_empty_fields' is set to 'yes'
 	 * - Cart item contains extra_user_data
 	 * - Product has custom fields in meta data
 	 *
@@ -1682,6 +2183,10 @@ class TestClassExprdawcProductPageFronted extends WP_UnitTestCase {
 	 * require full page context which is not available in unit tests.
 	 */
 	public function test_exprdawc_display_fields_on_cart_and_checkout() {
+
+		// Create cart page to ensure wc_get_cart_url() works.
+		$cart_page_id = $this->create_cart_page();
+
 		// Add custom fields to product.
 		$custom_fields = array(
 			array(
@@ -1694,35 +2199,32 @@ class TestClassExprdawcProductPageFronted extends WP_UnitTestCase {
 
 		// Set option to show in cart.
 		update_option( 'exprdawc_show_in_cart', 'yes' );
+		update_option( 'exprdawc_show_empty_fields', 'yes' );
+
+		$this->go_to( get_permalink( $cart_page_id ) );
 
 		// Prepare cart item with extra user data.
 		$cart_item = array(
 			'product_id'      => $this->product_id,
 			'extra_user_data' => array(
 				array(
-					'index'      => 'test_field',
-					'value'      => 'test value',
-					'value_cart' => 'test value',
+					'value'      => 'test value',  // raw value (for internal use).
+					'value_cart' => 'test value', // display value (for cart display).
 					'field_raw'  => array(
 						'label' => 'Test Field',
-						'type'  => 'text',
 					),
 				),
 			),
 		);
 
-		// Set the page to cart by using the query var.
-		set_query_var( 'pagename', 'cart' );
-		global $wp_query;
-		$wp_query->is_page           = true;
-		$wp_query->queried_object_id = wc_get_page_id( 'cart' );
-
 		$item_data = array();
 		$result    = $this->instance->exprdawc_display_fields_on_cart_and_checkout( $item_data, $cart_item );
 
-		// In unit test context, is_cart() may not work properly, so we test the logic directly.
-		// by verifying that when extra_user_data is present, the method processes it correctly.
-		$this->assertIsArray( $result );
+		// Asserts.
+		$this->assertCount( 1, $result );
+		$this->assertSame( 'Test Field', $result[0]['key'] );
+		$this->assertSame( 'test value', $result[0]['value'] );
+		$this->assertSame( 'test value', $result[0]['display'] );
 
 		// Clean up.
 		wp_reset_postdata();

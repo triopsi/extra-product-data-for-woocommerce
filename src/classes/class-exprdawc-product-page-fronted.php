@@ -631,12 +631,6 @@ class Exprdawc_Product_Page_Fronted {
 						case 'email':
 							$user_input_value = sanitize_email( wp_unslash( $field_value ) );
 							break;
-						case 'url':
-							$user_input_value = esc_url_raw( wp_unslash( $field_value ) );
-							break;
-						case 'tel':
-							$user_input_value = sanitize_text_field( wp_unslash( $field_value ) );
-							break;
 						case 'select':
 						case 'radio':
 						case 'checkbox':
@@ -695,7 +689,10 @@ class Exprdawc_Product_Page_Fronted {
 		$custom_fields = $product->get_meta( '_extra_product_fields', true );
 
 		if ( ! empty( $custom_fields ) ) {
-			if ( ( is_cart() && get_option( 'exprdawc_show_in_cart', 'yes' ) === 'yes' ) || ( is_checkout() && get_option( 'exprdawc_show_in_checkout', 'yes' ) === 'yes' ) ) {
+			if ( // phpcs:ignore
+				( is_cart() && get_option( 'exprdawc_show_in_cart', 'yes' ) === 'yes' ) || // In Cart page and option is enabled. OR.
+				( is_checkout() && get_option( 'exprdawc_show_in_checkout', 'yes' ) === 'yes' ) // In Checkout page and option is enabled.
+			) {
 				foreach ( $cart_item['extra_user_data'] as $user_data ) {
 					$show_empty_fields = get_option( 'exprdawc_show_empty_fields', 'yes' );
 					if ( true === empty( $user_data['value'] ) && 'yes' !== $show_empty_fields ) {
