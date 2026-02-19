@@ -244,7 +244,7 @@ class Exprdawc_Admin_Order extends Exprdawc_Base_Order_Class {
 		check_ajax_referer( 'wc_exprdawc_edit_exprdawc', 'security' );
 
 		// Process Data Save.
-		$order_id = $this->process_save_order();
+		$order_id = $this->process_save_order( true );
 
 		// Generate the updated HTML for the order items and notes.
 		ob_start();

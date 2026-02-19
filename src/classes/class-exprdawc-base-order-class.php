@@ -44,11 +44,12 @@ use WC_Product;
 class Exprdawc_Base_Order_Class {
 
 	/**
-	 * Process the order item update.
+	 * Process save order.
 	 *
+	 * @param bool $admin Whether the save is triggered from admin or user side. Default false.
 	 * @return int|false The order ID on success, false on failure.
 	 */
-	protected function process_save_order() {
+	protected function process_save_order( bool $admin = false ) {
 
 		// Get the necessary parameters.
 		$item_id  = isset( $_POST['item_id'] ) ? intval( $_POST['item_id'] ) : 0;// phpcs:ignore
@@ -76,22 +77,29 @@ class Exprdawc_Base_Order_Class {
 		// Get all capabilities for the current user.
 		$user         = get_user_by( 'id', $current_user_id );
 		$capabilities = $user ? $user->allcaps : array();
-		var_dump( $capabilities ); // phpcs:ignore
 
-		var_dump(current_user_can( 'edit_shop_orders' )); // phpcs:ignore
-		var_dump($order->get_user_id() ); // phpcs:ignore
-		var_dump($current_user_id ); // phpcs:ignore
-
-		// Check if the current user is the one who placed the order.
-		if ( $order->get_user_id() !== $current_user_id && ! current_user_can( 'edit_shop_orders' ) ) { // phpcs:ignore
-			wp_send_json_error( array( 'message' => __( 'You do not have permission to edit this order.', 'extra-product-data-for-woocommerce' ) ) );
+		if ( $admin ) {
+			// Check if the current user is the one who placed the order.
+			if ( ! current_user_can( 'edit_shop_orders' ) ) { // phpcs:ignore
+				wp_send_json_error( array( 'message' => __( 'You do not have permission to edit this order.', 'extra-product-data-for-woocommerce' ) ) );
+			}
+		} else { // phpcs:ignore
+			// Check if the current user is the one who placed the order.
+			if ( $order->get_user_id() !== $current_user_id ) { // phpcs:ignore
+				wp_send_json_error( array( 'message' => __( 'You do not have permission to edit this order.', 'extra-product-data-for-woocommerce' ) ) );
+			}
 		}
 
 		// Check if the order status is allowed for editing.
-		var_dump(current_user_can( 'manage_woocommerce' )); // phpcs:ignore
-		if ( ! current_user_can( 'manage_woocommerce' ) ) {
+		if ( $admin ) {
+			if ( ! current_user_can( 'manage_woocommerce' ) ) {
+				$max_order_status = get_option( 'extra_product_data_max_order_status', 'processing' );
+				if ( ! $order->has_status( OrderUtil::remove_status_prefix( $max_order_status ) ) ) {
+					wp_send_json_error( array( 'message' => __( 'You do not have permission to edit this order.', 'extra-product-data-for-woocommerce' ) ) );
+				}
+			}
+		} else {
 			$max_order_status = get_option( 'extra_product_data_max_order_status', 'processing' );
-			var_dump($max_order_status); // phpcs:ignore
 			if ( ! $order->has_status( OrderUtil::remove_status_prefix( $max_order_status ) ) ) {
 				wp_send_json_error( array( 'message' => __( 'You do not have permission to edit this order.', 'extra-product-data-for-woocommerce' ) ) );
 			}

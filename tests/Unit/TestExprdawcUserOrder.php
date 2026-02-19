@@ -562,7 +562,6 @@ class TestExprdawcUserOrder extends WP_UnitTestCase {
 			// Expected.
 		}
 		$output = ob_get_clean();
-		var_dump( $output ); // phpcs:ignore
 
 		$response = json_decode( $output, true );
 		$this->assertTrue( $response['success'] );
