@@ -512,6 +512,7 @@ class TestExprdawcUserOrder extends WP_UnitTestCase {
 		$user    = get_user_by( 'id', $user_id );
 		// Add capability. This is needed for the permission check in the AJAX handler.
 		$user->add_cap( 'edit_shop_orders' );
+		$user->add_cap( 'manage_woocommerce' );
 		wp_set_current_user( $user_id );
 
 		// Create order with product without custom fields.
