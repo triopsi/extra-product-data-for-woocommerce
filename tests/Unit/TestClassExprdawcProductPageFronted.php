@@ -1570,8 +1570,8 @@ class TestClassExprdawcProductPageFronted extends WP_UnitTestCase {
 	 * with custom fields is added.
 	 *
 	 * Expected Result:
-	 * - Cart item data contains 'extra_user_data' array
-	 * - Exactly one entry in the extra_user_data array
+	 * - Cart item data contains 'post_data_product_item' array
+	 * - Exactly one entry in the post_data_product_item array
 	 * - The value "test value" is correctly saved
 	 * - Data is made available for cart and checkout
 	 *
@@ -1601,9 +1601,9 @@ class TestClassExprdawcProductPageFronted extends WP_UnitTestCase {
 		$cart_item_data = array();
 		$result         = $this->instance->exprdawc_save_extra_product_data_in_cart( $cart_item_data, $this->product_id, 0, 1 );
 
-		$this->assertArrayHasKey( 'extra_user_data', $result );
-		$this->assertCount( 1, $result['extra_user_data'] );
-		$this->assertEquals( 'test value', $result['extra_user_data'][0]['value'] );
+		$this->assertArrayHasKey( 'post_data_product_item', $result );
+		$this->assertCount( 1, $result['post_data_product_item'] );
+		$this->assertEquals( 'test value', $result['post_data_product_item'][0]['value'] );
 	}
 
 	/**
@@ -1614,7 +1614,7 @@ class TestClassExprdawcProductPageFronted extends WP_UnitTestCase {
 	 * is added to the cart.
 	 *
 	 * Expected Result:
-	 * - Cart item data contains 'extra_user_data' array
+	 * - Cart item data contains 'post_data_product_item' array
 	 * - Email is processed with sanitize_email()
 	 * - The value "Test@Example.COM" is correctly saved (case-sensitive)
 	 *
@@ -1644,8 +1644,8 @@ class TestClassExprdawcProductPageFronted extends WP_UnitTestCase {
 		$cart_item_data = array();
 		$result         = $this->instance->exprdawc_save_extra_product_data_in_cart( $cart_item_data, $this->product_id, 0, 1 );
 
-		$this->assertArrayHasKey( 'extra_user_data', $result );
-		$this->assertEquals( 'Test@Example.COM', $result['extra_user_data'][0]['value'] );
+		$this->assertArrayHasKey( 'post_data_product_item', $result );
+		$this->assertEquals( 'Test@Example.COM', $result['post_data_product_item'][0]['value'] );
 	}
 
 	/**
@@ -1656,7 +1656,7 @@ class TestClassExprdawcProductPageFronted extends WP_UnitTestCase {
 	 * when the product is added to the cart.
 	 *
 	 * Expected Result:
-	 * - Cart item data contains 'extra_user_data' array
+	 * - Cart item data contains 'post_data_product_item' array
 	 * - String "42.5" is converted to float 42.5
 	 * - Numeric value is correctly typed and saved
 	 *
@@ -1686,8 +1686,8 @@ class TestClassExprdawcProductPageFronted extends WP_UnitTestCase {
 		$cart_item_data = array();
 		$result         = $this->instance->exprdawc_save_extra_product_data_in_cart( $cart_item_data, $this->product_id, 0, 1 );
 
-		$this->assertArrayHasKey( 'extra_user_data', $result );
-		$this->assertEquals( 42.5, $result['extra_user_data'][0]['value'] );
+		$this->assertArrayHasKey( 'post_data_product_item', $result );
+		$this->assertEquals( 42.5, $result['post_data_product_item'][0]['value'] );
 	}
 
 	/**
@@ -1698,7 +1698,7 @@ class TestClassExprdawcProductPageFronted extends WP_UnitTestCase {
 	 * when the product is added to the cart.
 	 *
 	 * Expected Result:
-	 * - Cart item data contains 'extra_user_data' array
+	 * - Cart item data contains 'post_data_product_item' array
 	 * - Date value is correctly formatted and saved as a string
 	 *
 	 * Test Conditions:
@@ -1727,8 +1727,8 @@ class TestClassExprdawcProductPageFronted extends WP_UnitTestCase {
 		$cart_item_data = array();
 		$result         = $this->instance->exprdawc_save_extra_product_data_in_cart( $cart_item_data, $this->product_id, 0, 1 );
 
-		$this->assertArrayHasKey( 'extra_user_data', $result );
-		$this->assertEquals( '2024-06-19', $result['extra_user_data'][0]['value'] );
+		$this->assertArrayHasKey( 'post_data_product_item', $result );
+		$this->assertEquals( '2024-06-19', $result['post_data_product_item'][0]['value'] );
 	}
 
 	/**
@@ -1739,7 +1739,7 @@ class TestClassExprdawcProductPageFronted extends WP_UnitTestCase {
 	 * when the product is added to the cart.
 	 *
 	 * Expected Result:
-	 * - Cart item data contains 'extra_user_data' array
+	 * - Cart item data contains 'post_data_product_item' array
 	 * - Default value is correctly formatted and saved as a string
 	 *
 	 * Test Conditions:
@@ -1768,11 +1768,9 @@ class TestClassExprdawcProductPageFronted extends WP_UnitTestCase {
 		$cart_item_data = array();
 		$result         = $this->instance->exprdawc_save_extra_product_data_in_cart( $cart_item_data, $this->product_id, 0, 1 );
 
-		$this->assertArrayHasKey( 'extra_user_data', $result );
-		$this->assertEquals( 'Title', $result['extra_user_data'][0]['value'] );
+		$this->assertArrayHasKey( 'post_data_product_item', $result );
+		$this->assertEquals( 'Title', $result['post_data_product_item'][0]['value'] );
 	}
-
-	// Price adjustment tests for exprdawc_save_extra_product_data_in_cart().
 
 	/**
 	 * Test exprdawc_save_extra_product_data_in_cart applies fixed price adjustment (text field).
@@ -1806,9 +1804,9 @@ class TestClassExprdawcProductPageFronted extends WP_UnitTestCase {
 		$cart_item_data = array();
 		$result         = $this->instance->exprdawc_save_extra_product_data_in_cart( $cart_item_data, $this->product_id, 0, 1 );
 
-		$this->assertArrayHasKey( 'extra_user_data', $result );
-		$this->assertEquals( 'test value', $result['extra_user_data'][0]['value'] );
-		$this->assertEquals( 'test value (+' . wc_price( 10 ) . ')', $result['extra_user_data'][0]['value_cart'] );
+		$this->assertArrayHasKey( 'post_data_product_item', $result );
+		$this->assertEquals( 'test value', $result['post_data_product_item'][0]['value'] );
+		$this->assertEquals( 'test value (+' . wc_price( 10 ) . ')', $result['post_data_product_item'][0]['value_cart'] );
 	}
 
 	/**
@@ -1851,9 +1849,9 @@ class TestClassExprdawcProductPageFronted extends WP_UnitTestCase {
 		$cart_item_data = array();
 		$result         = $this->instance->exprdawc_save_extra_product_data_in_cart( $cart_item_data, $this->product_id, 0, 1 );
 
-		$this->assertArrayHasKey( 'extra_user_data', $result );
-		$this->assertEquals( 'opt1', $result['extra_user_data'][0]['value'] );
-		$this->assertEquals( 'opt1 (+' . wc_price( 5 ) . ')', $result['extra_user_data'][0]['value_cart'] );
+		$this->assertArrayHasKey( 'post_data_product_item', $result );
+		$this->assertEquals( 'opt1', $result['post_data_product_item'][0]['value'] );
+		$this->assertEquals( 'opt1 (+' . wc_price( 5 ) . ')', $result['post_data_product_item'][0]['value_cart'] );
 	}
 
 	/**
@@ -1896,9 +1894,9 @@ class TestClassExprdawcProductPageFronted extends WP_UnitTestCase {
 		$cart_item_data = array();
 		$result         = $this->instance->exprdawc_save_extra_product_data_in_cart( $cart_item_data, $this->product_id, 0, 1 );
 
-		$this->assertArrayHasKey( 'extra_user_data', $result );
-		$this->assertEquals( 'opt1, opt2', $result['extra_user_data'][0]['value'] );
-		$this->assertEquals( 'opt1, opt2 (+' . wc_price( 8 ) . ')', $result['extra_user_data'][0]['value_cart'] );
+		$this->assertArrayHasKey( 'post_data_product_item', $result );
+		$this->assertEquals( 'opt1, opt2', $result['post_data_product_item'][0]['value'] );
+		$this->assertEquals( 'opt1, opt2 (+' . wc_price( 8 ) . ')', $result['post_data_product_item'][0]['value_cart'] );
 	}
 
 	/**
@@ -1929,9 +1927,9 @@ class TestClassExprdawcProductPageFronted extends WP_UnitTestCase {
 		$cart_item_data = array();
 		$result         = $this->instance->exprdawc_save_extra_product_data_in_cart( $cart_item_data, $this->product_id, 0, 1 );
 
-		$this->assertArrayHasKey( 'extra_user_data', $result );
-		$this->assertEquals( 'test value', $result['extra_user_data'][0]['value'] );
-		$this->assertEquals( 'test value', $result['extra_user_data'][0]['value_cart'] );
+		$this->assertArrayHasKey( 'post_data_product_item', $result );
+		$this->assertEquals( 'test value', $result['post_data_product_item'][0]['value'] );
+		$this->assertEquals( 'test value', $result['post_data_product_item'][0]['value_cart'] );
 	}
 
 	/**
@@ -1961,9 +1959,9 @@ class TestClassExprdawcProductPageFronted extends WP_UnitTestCase {
 		$cart_item_data = array();
 		$result         = $this->instance->exprdawc_save_extra_product_data_in_cart( $cart_item_data, $this->product_id, 0, 1 );
 
-		$this->assertArrayHasKey( 'extra_user_data', $result );
-		$this->assertEquals( 'test value', $result['extra_user_data'][0]['value'] );
-		$this->assertEquals( 'test value (-' . wc_price( 5 ) . ')', $result['extra_user_data'][0]['value_cart'] );
+		$this->assertArrayHasKey( 'post_data_product_item', $result );
+		$this->assertEquals( 'test value', $result['post_data_product_item'][0]['value'] );
+		$this->assertEquals( 'test value (-' . wc_price( 5 ) . ')', $result['post_data_product_item'][0]['value_cart'] );
 	}
 
 	/**
@@ -1999,9 +1997,9 @@ class TestClassExprdawcProductPageFronted extends WP_UnitTestCase {
 		$cart_item_data = array();
 		$result         = $this->instance->exprdawc_save_extra_product_data_in_cart( $cart_item_data, $this->product_id, 0, 1 );
 
-		$this->assertArrayHasKey( 'extra_user_data', $result );
-		$this->assertEquals( 'opt1', $result['extra_user_data'][0]['value'] );
-		$this->assertEquals( 'opt1', $result['extra_user_data'][0]['value_cart'] );
+		$this->assertArrayHasKey( 'post_data_product_item', $result );
+		$this->assertEquals( 'opt1', $result['post_data_product_item'][0]['value'] );
+		$this->assertEquals( 'opt1', $result['post_data_product_item'][0]['value_cart'] );
 	}
 
 	/**
@@ -2037,9 +2035,9 @@ class TestClassExprdawcProductPageFronted extends WP_UnitTestCase {
 		$cart_item_data = array();
 		$result         = $this->instance->exprdawc_save_extra_product_data_in_cart( $cart_item_data, $this->product_id, 0, 1 );
 
-		$this->assertArrayHasKey( 'extra_user_data', $result );
-		$this->assertEquals( 'opt1', $result['extra_user_data'][0]['value'] );
-		$this->assertEquals( 'opt1', $result['extra_user_data'][0]['value_cart'] );
+		$this->assertArrayHasKey( 'post_data_product_item', $result );
+		$this->assertEquals( 'opt1', $result['post_data_product_item'][0]['value'] );
+		$this->assertEquals( 'opt1', $result['post_data_product_item'][0]['value_cart'] );
 	}
 
 	/**
@@ -2081,9 +2079,9 @@ class TestClassExprdawcProductPageFronted extends WP_UnitTestCase {
 		$cart_item_data = array();
 		$result         = $this->instance->exprdawc_save_extra_product_data_in_cart( $cart_item_data, $this->product_id, 0, 1 );
 
-		$this->assertArrayHasKey( 'extra_user_data', $result );
-		$this->assertEquals( 'opt1, opt2', $result['extra_user_data'][0]['value'] );
-		$this->assertEquals( 'opt1, opt2', $result['extra_user_data'][0]['value_cart'] );
+		$this->assertArrayHasKey( 'post_data_product_item', $result );
+		$this->assertEquals( 'opt1, opt2', $result['post_data_product_item'][0]['value'] );
+		$this->assertEquals( 'opt1, opt2', $result['post_data_product_item'][0]['value_cart'] );
 	}
 
 	/**
@@ -2125,9 +2123,9 @@ class TestClassExprdawcProductPageFronted extends WP_UnitTestCase {
 		$cart_item_data = array();
 		$result         = $this->instance->exprdawc_save_extra_product_data_in_cart( $cart_item_data, $this->product_id, 0, 1 );
 
-		$this->assertArrayHasKey( 'extra_user_data', $result );
-		$this->assertEquals( 'opt1, opt2', $result['extra_user_data'][0]['value'] );
-		$this->assertEquals( 'opt1, opt2 (+' . wc_price( 4 ) . ')', $result['extra_user_data'][0]['value_cart'] );
+		$this->assertArrayHasKey( 'post_data_product_item', $result );
+		$this->assertEquals( 'opt1, opt2', $result['post_data_product_item'][0]['value'] );
+		$this->assertEquals( 'opt1, opt2 (+' . wc_price( 4 ) . ')', $result['post_data_product_item'][0]['value_cart'] );
 	}
 
 	/**
@@ -2139,7 +2137,7 @@ class TestClassExprdawcProductPageFronted extends WP_UnitTestCase {
 	 *
 	 * Expected Result:
 	 * - Method returns empty array
-	 * - No extra_user_data is added
+	 * - No post_data_product_item is added
 	 * - Security check prevents data manipulation
 	 *
 	 * Test Conditions:
@@ -2175,7 +2173,7 @@ class TestClassExprdawcProductPageFronted extends WP_UnitTestCase {
 	 * Test Conditions:
 	 * - Option 'exprdawc_show_in_cart' is set to 'yes'
 	 * - Option 'exprdawc_show_empty_fields' is set to 'yes'
-	 * - Cart item contains extra_user_data
+	 * - Cart item contains post_data_product_item
 	 * - Product has custom fields in meta data
 	 *
 	 * Note:
@@ -2206,7 +2204,7 @@ class TestClassExprdawcProductPageFronted extends WP_UnitTestCase {
 		// Prepare cart item with extra user data.
 		$cart_item = array(
 			'product_id'      => $this->product_id,
-			'extra_user_data' => array(
+			'post_data_product_item' => array(
 				array(
 					'value'      => 'test value',  // raw value (for internal use).
 					'value_cart' => 'test value', // display value (for cart display).
@@ -2246,7 +2244,7 @@ class TestClassExprdawcProductPageFronted extends WP_UnitTestCase {
 	 * Test Conditions:
 	 * - Option 'exprdawc_show_in_cart' is set to 'yes'
 	 * - Option 'exprdawc_show_empty_fields' is set to 'no'
-	 * - Cart item contains extra_user_data with empty value
+	 * - Cart item contains post_data_product_item with empty value
 	 *
 	 * Note:
 	 * The test verifies the empty field logic without relying on is_cart().
@@ -2269,7 +2267,7 @@ class TestClassExprdawcProductPageFronted extends WP_UnitTestCase {
 		// Prepare cart item with empty field.
 		$cart_item = array(
 			'product_id'      => $this->product_id,
-			'extra_user_data' => array(
+			'post_data_product_item' => array(
 				array(
 					'index'      => 'test_field',
 					'value'      => '',
@@ -2295,10 +2293,10 @@ class TestClassExprdawcProductPageFronted extends WP_UnitTestCase {
 	}
 
 	/**
-	 * Test exprdawc_display_fields_on_cart_and_checkout returns original data when no extra_user_data.
+	 * Test exprdawc_display_fields_on_cart_and_checkout returns original data when no post_data_product_item.
 	 *
 	 * Test Goal:
-	 * Verifies that the method returns empty item data when no extra_user_data
+	 * Verifies that the method returns empty item data when no post_data_product_item
 	 * is present in the cart item.
 	 *
 	 * Expected Result:
@@ -2307,7 +2305,7 @@ class TestClassExprdawcProductPageFronted extends WP_UnitTestCase {
 	 * - Method returns early when no custom field data is present
 	 *
 	 * Test Conditions:
-	 * - Cart item without extra_user_data key
+	 * - Cart item without post_data_product_item key
 	 * - Standard product without custom fields
 	 */
 	public function test_exprdawc_display_fields_on_cart_and_checkout_no_extra_data() {
@@ -2348,7 +2346,7 @@ class TestClassExprdawcProductPageFronted extends WP_UnitTestCase {
 		$cart_items = WC()->cart->get_cart();
 		$cart_item  = $cart_items[ $cart_item_key ];
 
-		$cart_item['extra_user_data'] = array(
+		$cart_item['post_data_product_item'] = array(
 			array(
 				'index'     => 'test_field',
 				'value'     => 'test value',
@@ -2401,7 +2399,7 @@ class TestClassExprdawcProductPageFronted extends WP_UnitTestCase {
 		$cart_items = WC()->cart->get_cart();
 		$cart_item  = $cart_items[ $cart_item_key ];
 
-		$cart_item['extra_user_data'] = array(
+		$cart_item['post_data_product_item'] = array(
 			array(
 				'index'     => 'test_field',
 				'value'     => 'test value',
@@ -2409,7 +2407,7 @@ class TestClassExprdawcProductPageFronted extends WP_UnitTestCase {
 					'label'                  => 'Test Field',
 					'type'                   => 'text',
 					'adjust_price'           => true,
-					'price_adjustment_type'  => 'percent',
+					'price_adjustment_type'  => 'percentage',
 					'price_adjustment_value' => 20,
 				),
 			),
@@ -2442,7 +2440,7 @@ class TestClassExprdawcProductPageFronted extends WP_UnitTestCase {
 	 *
 	 * Test Conditions:
 	 * - Mock order and order item are created
-	 * - Cart item contains extra_user_data
+	 * - Cart item contains post_data_product_item
 	 * - Hook: woocommerce_checkout_create_order_line_item
 	 */
 	public function test_exprdawc_add_extra_product_data_to_order() {
@@ -2453,7 +2451,7 @@ class TestClassExprdawcProductPageFronted extends WP_UnitTestCase {
 
 		// Prepare values with extra user data.
 		$values = array(
-			'extra_user_data' => array(
+			'post_data_product_item' => array(
 				array(
 					'index'     => 'test_field',
 					'value'     => 'test value',
@@ -2486,11 +2484,11 @@ class TestClassExprdawcProductPageFronted extends WP_UnitTestCase {
 	}
 
 	/**
-	 * Test exprdawc_add_extra_product_data_to_order does nothing when no extra_user_data.
+	 * Test exprdawc_add_extra_product_data_to_order does nothing when no post_data_product_item.
 	 *
 	 * Test Goal:
 	 * Verifies that the method does not add meta data and returns early when
-	 * no extra_user_data is present in the values array.
+	 * no post_data_product_item is present in the values array.
 	 *
 	 * Expected Result:
 	 * - Order item contains no meta data
@@ -2499,7 +2497,7 @@ class TestClassExprdawcProductPageFronted extends WP_UnitTestCase {
 	 *
 	 * Test Conditions:
 	 * - Mock order and order item are created
-	 * - Values array contains no extra_user_data
+	 * - Values array contains no post_data_product_item
 	 * - Standard product without custom fields
 	 */
 	public function test_exprdawc_add_extra_product_data_to_order_no_extra_data() {

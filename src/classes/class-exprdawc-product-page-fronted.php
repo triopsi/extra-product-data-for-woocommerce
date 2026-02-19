@@ -520,7 +520,7 @@ class Exprdawc_Product_Page_Fronted {
 				if ( in_array( $option['value'], $field_values, true ) ) {
 					if ( 'fixed' === $option['price_adjustment_type'] ) {
 						$price_adjustment += $option['price_adjustment_value'];
-					} elseif ( 'percent' === $option['price_adjustment_type'] ) {
+					} elseif ( 'percentage' === $option['price_adjustment_type'] ) {
 						$price_adjustment += ( $base_price / 100 ) * $option['price_adjustment_value'];
 					}
 				}
@@ -529,7 +529,7 @@ class Exprdawc_Product_Page_Fronted {
 			// Handle non-option fields.
 			if ( 'fixed' === $field_config['price_adjustment_type'] ) {
 				$price_adjustment = $field_config['price_adjustment_value'];
-			} elseif ( 'percent' === $field_config['price_adjustment_type'] ) {
+			} elseif ( 'percentage' === $field_config['price_adjustment_type'] ) {
 				$price_adjustment = ( $base_price / 100 ) * $field_config['price_adjustment_value'];
 			}
 		}
@@ -560,7 +560,7 @@ class Exprdawc_Product_Page_Fronted {
 		}
 
 		// For percentage adjustments.
-		if ( 'percent' === $field_config['price_adjustment_type'] ) {
+		if ( 'percentage' === $field_config['price_adjustment_type'] ) {
 			return $user_input_value . ' (+' . wc_price( $field_config['price_adjustment_value'] ) . '%)';
 		}
 
@@ -586,7 +586,7 @@ class Exprdawc_Product_Page_Fronted {
 	/**
 	 * Saves extra product data in the cart item data.
 	 *
-	 * This function is responsible for saving the extra product data in the cart item data when a product is added to the cart. It checks for the presence of custom fields and their values in the $_POST data, sanitizes the input, and then adds it to the cart item data array under the key 'extra_user_data'.
+	 * This function is responsible for saving the extra product data in the cart item data when a product is added to the cart. It checks for the presence of custom fields and their values in the $_POST data, sanitizes the input, and then adds it to the cart item data array under the key 'post_data_product_item'.
 	 *
 	 * @param array $cart_item_data The existing cart item data.
 	 * @param int   $product_id The ID of the product being added to the cart.
@@ -649,7 +649,7 @@ class Exprdawc_Product_Page_Fronted {
 					}
 
 					// Create a value only for cart. (Extra price are in the value of price).
-					$price_adjustment      = $this->calculate_price_adjustment( $input_field_array, $field_value, 0.0 );
+					$price_adjustment      = $this->calculate_price_adjustment( $input_field_array, $field_value, (float) $product->get_price() );
 					$user_input_value_cart = $this->format_cart_value_with_price( $user_input_value, $price_adjustment, $input_field_array );
 
 					// Save the user input in the cart item data.
@@ -663,7 +663,7 @@ class Exprdawc_Product_Page_Fronted {
 			}
 			// Save the user input in the cart item data.
 			if ( ! empty( $cart_item_data_user_inputs ) ) {
-				$cart_item_data['extra_user_data'] = $cart_item_data_user_inputs;
+				$cart_item_data['post_data_product_item'] = $cart_item_data_user_inputs;
 			}
 		}
 		return $cart_item_data;
@@ -677,7 +677,7 @@ class Exprdawc_Product_Page_Fronted {
 	 */
 	public function exprdawc_display_fields_on_cart_and_checkout( array $item_data, array $cart_item ): array {
 
-		if ( ! isset( $cart_item['extra_user_data'] ) ) {
+		if ( ! isset( $cart_item['post_data_product_item'] ) ) {
 			return $item_data;
 		}
 
@@ -693,7 +693,7 @@ class Exprdawc_Product_Page_Fronted {
 				( is_cart() && get_option( 'exprdawc_show_in_cart', 'yes' ) === 'yes' ) || // In Cart page and option is enabled. OR.
 				( is_checkout() && get_option( 'exprdawc_show_in_checkout', 'yes' ) === 'yes' ) // In Checkout page and option is enabled.
 			) {
-				foreach ( $cart_item['extra_user_data'] as $user_data ) {
+				foreach ( $cart_item['post_data_product_item'] as $user_data ) {
 					$show_empty_fields = get_option( 'exprdawc_show_empty_fields', 'yes' );
 					if ( true === empty( $user_data['value'] ) && 'yes' !== $show_empty_fields ) {
 						continue;
@@ -717,25 +717,10 @@ class Exprdawc_Product_Page_Fronted {
 	 */
 	public function exprdawc_adjust_cart_item_pricing( object $cart_object ): void {
 
-		// Avoid running this function in the admin area or during AJAX requests to prevent unintended consequences.
-		if ( is_admin() && ! defined( 'DOING_AJAX' ) ) {
-			return;
-		}
-
-		// Additionally, check if we're in an AJAX request but not in the admin area, to allow price adjustments during AJAX calls on the frontend.
-		if ( is_admin() && defined( 'DOING_AJAX' ) && ! is_ajax() ) {
-			return;
-		}
-
-		// Prevent infinite loops by ensuring this function only runs once per cart calculation.
-		if ( did_action( 'woocommerce_before_calculate_totals' ) >= 2 ) {
-			return;
-		}
-
 		// Loop through each cart item and adjust the price based on the extra user data.
 		foreach ( $cart_object->get_cart() as $cart_item_key => $cart_item ) {
-			if ( isset( $cart_item['extra_user_data'] ) ) {
-				foreach ( $cart_item['extra_user_data'] as $user_data ) {
+			if ( isset( $cart_item['post_data_product_item'] ) ) {
+				foreach ( $cart_item['post_data_product_item'] as $user_data ) {
 					if ( empty( $user_data['value'] ) ) {
 						continue;
 					}
@@ -765,13 +750,13 @@ class Exprdawc_Product_Page_Fronted {
 	 */
 	public function exprdawc_add_extra_product_data_to_order( object $item, string $cart_item_key, array $values, object $order ): void { // phpcs:ignore
 
-		if ( empty( $values['extra_user_data'] ) ) {
+		if ( empty( $values['post_data_product_item'] ) ) {
 			return;
 		}
 
 		$field_meta = array();
 		// Loop through all fields and include the template.
-		foreach ( $values['extra_user_data'] as $field ) {
+		foreach ( $values['post_data_product_item'] as $field ) {
 			$item->add_meta_data( sanitize_text_field( $field['field_raw']['label'] ), sanitize_text_field( $field['value'] ), true );
 			$field_meta[] = array(
 				'label'     => sanitize_text_field( $field['field_raw']['label'] ),

@@ -306,7 +306,7 @@ class Exprdawc_Base_Order_Class {
 	protected function get_adjustment_value( $field, $product ) {
 		if ( 'fixed' === $field['price_adjustment_type'] ) {
 			return floatval( $field['price_adjustment_value'] );
-		} elseif ( 'percent' === $field['price_adjustment_type'] ) {
+		} elseif ( 'percentage' === $field['price_adjustment_type'] ) {
 			return ( $product->get_price() / 100 ) * floatval( $field['price_adjustment_value'] );
 		}
 		return 0;

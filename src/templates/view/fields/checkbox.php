@@ -32,20 +32,16 @@ echo '<span class="' . esc_attr( implode( ' ', $field_args['input_wrapper_class'
 if ( isset( $field_args['options'] ) && is_array( $field_args['options'] ) ) {
 	foreach ( $field_args['options'] as $option ) {
 		$option_value = $option['value'];
-		$option_label = $option['label'];
+		$option_label = $option['label']; // Label already formatted with price adjustment in helper.
 		$checked      = in_array( $option_value, (array) explode( ', ', $field_args['value'] ) ) ? 'checked' : '';
 		$id           = $field_args['id'] . '-' . str_replace( array( ' ', '_' ), '-', $option_value );
 
-		// if option have adjustable price than add price to the label.
-		$price_adjustment = array();
-		if ( isset( $option['price_adjustment_value'] ) && $field_args['adjust_price'] ) {
-			$plus_minus    = $option['price_adjustment_value'] != 0 ? ( $option['price_adjustment_value'] > 0 ? '+' : '-' ) : '';
-			$option_label .= ' (' . $plus_minus . wc_price( $option['price_adjustment_value'] ) . ')';
-			// Add custom data attribute to the input field and type.
-			$price_adjustment[] = 'data-price-adjustment="' . esc_attr( $option['price_adjustment_value'] ) . '"';
-			$price_adjustment[] = 'data-price-adjustment-type="' . esc_attr( $option['price_adjustment_type'] ) . '"';
-			// add data label to the input field.
-			$price_adjustment[] = 'data-label="' . esc_attr( $option_label ) . '"';
+		// Build data attributes for price adjustment if present.
+		$data_attrs = '';
+		if ( isset( $option['price_adjustment_value'] ) && ! empty( $option['price_adjustment_value'] ) ) {
+			$data_attrs = ' data-price-adjustment="' . esc_attr( $option['price_adjustment_value'] ) . '"';
+			$data_attrs .= ' data-price-adjustment-type="' . esc_attr( $option['price_adjustment_type'] ?? 'fixed' ) . '"';
+			$data_attrs .= ' data-label="' . esc_attr( $option_label ) . '"';
 		}
 
 		echo '<div class="exprdawc-checkbox-option">';
@@ -55,10 +51,9 @@ if ( isset( $field_args['options'] ) && is_array( $field_args['options'] ) ) {
             value="' . esc_attr( $option_value ) . '"
             ' . $checked . ' 
             class="' . esc_attr( implode( ' ', $field_args['input_class'] ) ) . '"
-            ' . implode( ' ', $custom_attributes ) . '
-			' . implode( ' ', $price_adjustment ) . '/>';
+            ' . implode( ' ', $custom_attributes ) . $data_attrs . '/>';
 
-		echo '<label for="' . esc_attr( $id ) . '" class="exprdawc-label-checkbox">' . $option_label . '</label>';
+		echo '<label for="' . esc_attr( $id ) . '" class="exprdawc-label-checkbox">' . esc_html( $option_label ) . '</label>';
 		echo '</div>';
 	}
 	if ( isset( $field_args['unchecked_value'] ) ) {

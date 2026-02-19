@@ -109,10 +109,10 @@ class Exprdawc_User_Order extends Exprdawc_Base_Order_Class {
 				}
 			}
 
-			$extra_user_data = array();
+			$post_data_product_item = array();
 			foreach ( $custom_fields as $index => $input_field_array ) {
 				$label_id                     = strtolower( str_replace( ' ', '_', $input_field_array['label'] ) );
-				$extra_user_data[ $label_id ] = isset( $all_user_inputs[ $input_field_array['label'] ] ) ? $all_user_inputs[ $input_field_array['label'] ]->value : '';
+				$post_data_product_item[ $label_id ] = isset( $all_user_inputs[ $input_field_array['label'] ] ) ? $all_user_inputs[ $input_field_array['label'] ]->value : '';
 			}
 
 			// Check if any label user data matches with product user meta.
@@ -132,7 +132,7 @@ class Exprdawc_User_Order extends Exprdawc_Base_Order_Class {
 					echo '<form action="" method="post" class="exprdawc-order-item-form">';
 					echo '<input type="hidden" name="order_id" value="' . esc_attr( $order->get_id() ) . '">';
 					foreach ( $custom_fields as $field ) {
-						$value = isset( $extra_user_data[ strtolower( str_replace( ' ', '_', $field['label'] ) ) ] ) ? $extra_user_data[ strtolower( str_replace( ' ', '_', $field['label'] ) ) ] : '';
+						$value = isset( $post_data_product_item[ strtolower( str_replace( ' ', '_', $field['label'] ) ) ] ) ? $post_data_product_item[ strtolower( str_replace( ' ', '_', $field['label'] ) ) ] : '';
 						Exprdawc_Helper::generate_input_field( $field, $value );
 					}
 					echo '</form>';
@@ -204,7 +204,7 @@ class Exprdawc_User_Order extends Exprdawc_Base_Order_Class {
 			}
 		}
 
-		$extra_user_data = array();
+		$post_data_product_item = array();
 		$extra_costs     = 0;
 		foreach ( $custom_fields as $index => $input_field_array ) {
 			if ( ! $input_field_array['editable'] ) {
@@ -331,13 +331,13 @@ class Exprdawc_User_Order extends Exprdawc_Base_Order_Class {
 							if ( is_array( $cart_value ) && in_array( $option['value'], $cart_value, true ) ) {
 								if ( 'fixed' === $option['price_adjustment_type'] ) {
 									$total_adjustment += $option['price_adjustment_value'];
-								} elseif ( 'percent' === $option['price_adjustment_type'] ) {
+								} elseif ( 'percentage' === $option['price_adjustment_type'] ) {
 									$total_adjustment += ( $product->get_price() / 100 ) * $option['price_adjustment_value'];
 								}
 							} elseif ( $field_value === $option['value'] ) {
 								if ( 'fixed' === $option['price_adjustment_type'] ) {
 									$total_adjustment = $option['price_adjustment_value'];
-								} elseif ( 'percent' === $option['price_adjustment_type'] ) {
+								} elseif ( 'percentage' === $option['price_adjustment_type'] ) {
 									$total_adjustment = ( $product->get_price() / 100 ) * $option['price_adjustment_value'];
 								}
 								break;
@@ -346,7 +346,7 @@ class Exprdawc_User_Order extends Exprdawc_Base_Order_Class {
 						$price_adjustment = $total_adjustment;
 					} elseif ( 'fixed' === $input_field_array['price_adjustment_type'] ) {
 						$price_adjustment = $input_field_array['price_adjustment_value'];
-					} elseif ( 'percent' === $input_field_array['price_adjustment_type'] ) {
+					} elseif ( 'percentage' === $input_field_array['price_adjustment_type'] ) {
 						$price_adjustment = ( $product->get_price() / 100 ) * $input_field_array['price_adjustment_value'];
 					}
 				}

@@ -210,16 +210,16 @@ class Exprdawc_Admin_Order extends Exprdawc_Base_Order_Class {
 				$all_user_inputs[ $meta->key ] = $meta;
 			}
 		}
-		$extra_user_data = array();
+		$post_data_product_item = array();
 		foreach ( $custom_fields as $index => $input_field_array ) {
 			$label_id                     = strtolower( str_replace( ' ', '_', $input_field_array['label'] ) );
-			$extra_user_data[ $label_id ] = isset( $all_user_inputs[ $input_field_array['label'] ] ) ? $all_user_inputs[ $input_field_array['label'] ]->value : '';
+			$post_data_product_item[ $label_id ] = isset( $all_user_inputs[ $input_field_array['label'] ] ) ? $all_user_inputs[ $input_field_array['label'] ]->value : '';
 		}
 
 		// Generate the HTML for the form.
 		ob_start();
 		foreach ( $custom_fields as $index => $field ) {
-			$value = isset( $extra_user_data[ strtolower( str_replace( ' ', '_', $field['label'] ) ) ] ) ? $extra_user_data[ strtolower( str_replace( ' ', '_', $field['label'] ) ) ] : '';
+			$value = isset( $post_data_product_item[ strtolower( str_replace( ' ', '_', $field['label'] ) ) ] ) ? $post_data_product_item[ strtolower( str_replace( ' ', '_', $field['label'] ) ) ] : '';
 			Exprdawc_Helper::generate_input_field( $field, $value, true );
 		}
 		$html = ob_get_clean();
