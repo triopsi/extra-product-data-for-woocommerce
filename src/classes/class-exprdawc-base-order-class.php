@@ -172,7 +172,7 @@ class Exprdawc_Base_Order_Class {
 				wp_send_json_error(
 					array(
 						'message' => sprintf(
-						// translators: %1$s is the field label, %2$s is the validation message.
+							// translators: %1$s is the field label, %2$s is the validation message.
 							__( '%1$s: %2$s', 'extra-product-data-for-woocommerce' ),
 							esc_html( $field['label'] ),
 							esc_html( $validation_result['message'] )

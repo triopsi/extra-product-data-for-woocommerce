@@ -453,12 +453,8 @@ class TestExprdawcAdminOrder extends WP_UnitTestCase {
 	 *
 	 * Test Goal:
 	 * Verifies that form HTML is generated correctly.
-	 *
-	 * Note: Skipped because AJAX tests require WP_Ajax_UnitTestCase infrastructure
-	 * which properly handles wp_die() and output buffering for AJAX responses.
 	 */
 	public function test_load_edit_modal_form_with_valid_parameters() {
-		$this->markTestSkipped( 'AJAX tests require WP_Ajax_UnitTestCase infrastructure for proper nonce and wp_die handling' );
 
 		$items   = $this->order->get_items();
 		$item    = reset( $items );
@@ -497,11 +493,8 @@ class TestExprdawcAdminOrder extends WP_UnitTestCase {
 	 *
 	 * Test Goal:
 	 * Verifies proper error when product has no custom fields.
-	 *
-	 * Note: Skipped because AJAX tests require WP_Ajax_UnitTestCase infrastructure.
 	 */
 	public function test_load_edit_modal_form_no_custom_fields() {
-		$this->markTestSkipped( 'AJAX tests require WP_Ajax_UnitTestCase infrastructure for proper nonce and wp_die handling' );
 
 		// Create order with product without custom fields.
 		$product_id = wp_insert_post(
@@ -515,7 +508,7 @@ class TestExprdawcAdminOrder extends WP_UnitTestCase {
 		$product->set_regular_price( 50 );
 		$product->save();
 
-		$order_id = wc_create_order();
+		$order_id = wc_create_order()->get_id();
 		$order    = wc_get_order( $order_id );
 		$item_id  = $order->add_product( $product, 1 );
 		$order->save();
@@ -523,10 +516,12 @@ class TestExprdawcAdminOrder extends WP_UnitTestCase {
 		$items = $order->get_items();
 		$item  = reset( $items );
 
-		$_POST['security']  = wp_create_nonce( 'wc_exprdawc_edit_exprdawc' );
-		$_POST['item_id']   = $item->get_id();
-		$_POST['order_id']  = $order_id;
-		$_REQUEST['action'] = 'woocommerce_configure_exprdawc_order_item';
+		$nonce                = wp_create_nonce( 'wc_exprdawc_edit_exprdawc' );
+		$_POST['security']    = $nonce;
+		$_REQUEST['security'] = $nonce;
+		$_POST['item_id']     = $item_id;
+		$_POST['order_id']    = $this->order_id;
+		$_REQUEST['action']   = 'woocommerce_configure_exprdawc_order_item';
 
 		if ( ! defined( 'DOING_AJAX' ) ) {
 			define( 'DOING_AJAX', true );
@@ -553,27 +548,26 @@ class TestExprdawcAdminOrder extends WP_UnitTestCase {
 	 *
 	 * Test Goal:
 	 * Verifies that order item is updated correctly when form is saved.
-	 *
-	 * Note: Skipped because AJAX tests require WP_Ajax_UnitTestCase infrastructure.
 	 */
 	public function test_save_edit_modal_form_updates_item() {
-		$this->markTestSkipped( 'AJAX tests require WP_Ajax_UnitTestCase infrastructure for proper nonce and wp_die handling' );
 
 		$items   = $this->order->get_items();
 		$item    = reset( $items );
 		$item_id = $item->get_id();
 
-		$_POST['security']                    = wp_create_nonce( 'wc_exprdawc_edit_exprdawc' );
+		if ( ! defined( 'DOING_AJAX' ) ) {
+			define( 'DOING_AJAX', true );
+		}
+
+		$nonce                                = wp_create_nonce( 'wc_exprdawc_edit_exprdawc' );
+		$_POST['security']                    = $nonce;
+		$_REQUEST['security']                 = $nonce;
 		$_POST['item_id']                     = $item_id;
 		$_POST['order_id']                    = $this->order_id;
 		$_POST['exprdawc_custom_field_input'] = array(
 			'test_field' => 'Updated Value',
 		);
 		$_REQUEST['action']                   = 'woocommerce_edit_exprdawc_order_item';
-
-		if ( ! defined( 'DOING_AJAX' ) ) {
-			define( 'DOING_AJAX', true );
-		}
 
 		ob_start();
 		try {
