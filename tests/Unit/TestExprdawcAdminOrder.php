@@ -52,7 +52,7 @@ class TestExprdawcAdminOrder extends WP_UnitTestCase {
 	 *
 	 * @var string
 	 */
-	protected $_last_response;
+	protected $_last_response; // phpcs:ignore
 
 	/**
 	 * Sets up the test environment before each test.
