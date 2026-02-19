@@ -538,10 +538,9 @@ class TestExprdawcUserOrder extends WP_UnitTestCase {
 		$product->update_meta_data( '_extra_product_fields', $custom_fields );
 		$product->save();
 
-		$order_id = wc_create_order()->get_id();
-
-		$order = wc_get_order( $order_id );
+		$order = wc_create_order( array( 'customer_id' => $user_id ) );
 		$order->set_customer_id( $user_id );
+		$order->set_status( 'processing' );
 		$item_id = $order->add_product( $product, 1 );
 		$order->save();
 
@@ -552,7 +551,7 @@ class TestExprdawcUserOrder extends WP_UnitTestCase {
 		$_POST['security']    = $nonce;
 		$_REQUEST['security'] = $nonce;
 		$_POST['item_id']     = $item_id;
-		$_POST['order_id']    = $order_id;
+		$_POST['order_id']    = $order->get_id();
 		$_REQUEST['action']   = 'woocommerce_configure_exprdawc_order_item';
 
 		ob_start();
