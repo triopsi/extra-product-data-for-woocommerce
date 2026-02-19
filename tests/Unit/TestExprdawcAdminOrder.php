@@ -571,6 +571,7 @@ class TestExprdawcAdminOrder extends WP_UnitTestCase {
 		$output = ob_get_clean();
 
 		$response = json_decode( $output, true );
+		var_dump( $response ); // phpcs:ignore
 
 		$this->assertTrue( $response['success'] );
 		$this->assertArrayHasKey( 'html', $response['data'] );
