@@ -2203,7 +2203,7 @@ class TestClassExprdawcProductPageFronted extends WP_UnitTestCase {
 
 		// Prepare cart item with extra user data.
 		$cart_item = array(
-			'product_id'      => $this->product_id,
+			'product_id'             => $this->product_id,
 			'post_data_product_item' => array(
 				array(
 					'value'      => 'test value',  // raw value (for internal use).
@@ -2266,7 +2266,7 @@ class TestClassExprdawcProductPageFronted extends WP_UnitTestCase {
 
 		// Prepare cart item with empty field.
 		$cart_item = array(
-			'product_id'      => $this->product_id,
+			'product_id'             => $this->product_id,
 			'post_data_product_item' => array(
 				array(
 					'index'      => 'test_field',

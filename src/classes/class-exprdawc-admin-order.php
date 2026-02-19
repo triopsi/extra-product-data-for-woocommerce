@@ -212,7 +212,7 @@ class Exprdawc_Admin_Order extends Exprdawc_Base_Order_Class {
 		}
 		$post_data_product_item = array();
 		foreach ( $custom_fields as $index => $input_field_array ) {
-			$label_id                     = strtolower( str_replace( ' ', '_', $input_field_array['label'] ) );
+			$label_id                            = strtolower( str_replace( ' ', '_', $input_field_array['label'] ) );
 			$post_data_product_item[ $label_id ] = isset( $all_user_inputs[ $input_field_array['label'] ] ) ? $all_user_inputs[ $input_field_array['label'] ]->value : '';
 		}
 
