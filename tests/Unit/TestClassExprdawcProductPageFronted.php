@@ -2352,14 +2352,65 @@ class TestClassExprdawcProductPageFrontend extends WP_UnitTestCase {
 
 		$cart_item['post_data_product_item'] = array(
 			array(
-				'index'     => 'test_field',
-				'value'     => 'test value',
-				'field_raw' => array(
-					'label'                  => 'Test Field',
-					'type'                   => 'text',
+				'index'                 => 'test_field',
+				'value'                 => 'test value',
+				'field_raw'             => array(
+					'label'                  => 'Optionen',
+					'type'                   => 'checkbox',
+					'required'               => 0,
+					'conditional_logic'      => 0,
+					'placeholder_text'       => '',
+					'help_text'              => 'Wähle eien Option',
+					'options'                => array(
+						array(
+							'label'                  => 'Option A',
+							'value'                  => 'A',
+							'price_adjustment_type'  => 'fixed',
+							'price_adjustment_value' => '10',
+							'default'                => 0,
+						),
+						array(
+							'label'                  => 'Option B',
+							'value'                  => 'B',
+							'price_adjustment_type'  => 'fixed',
+							'price_adjustment_value' => '1',
+							'default'                => 0,
+						),
+						array(
+							'label'                  => 'Option C',
+							'value'                  => 'C',
+							'price_adjustment_type'  => 'fixed',
+							'price_adjustment_value' => '1',
+							'default'                => 0,
+						),
+					),
+					'default'                => '',
+					'minlength'              => 0,
+					'maxlength'              => 255,
+					'rows'                   => 2,
+					'cols'                   => 5,
+					'autocomplete'           => 'on',
+					'autofocus'              => false,
+					'conditional_rules'      => array(
+						array(
+							array(
+								'field'    => '',
+								'operator' => 'field_is_empty',
+								'value'    => '',
+							),
+						),
+					),
+					'index'                  => 1,
+					'editable'               => false,
 					'adjust_price'           => true,
 					'price_adjustment_type'  => 'fixed',
-					'price_adjustment_value' => 10,
+					'price_adjustment_value' => '0',
+				),
+				'value_cart'            => 'A (+<span class="woocommerce-Price-amount amount"><bdi>1,00&nbsp;<span class="woocommerce-Price-currencySymbol">&euro;</span></bdi></span>)',
+				'price_adjustment'      => 1,
+				'price_adjustment_type' => 'fixed',
+				'raw_value'             => array(
+					'A',
 				),
 			),
 		);
@@ -2405,15 +2456,43 @@ class TestClassExprdawcProductPageFrontend extends WP_UnitTestCase {
 
 		$cart_item['post_data_product_item'] = array(
 			array(
-				'index'     => 'test_field',
-				'value'     => 'test value',
-				'field_raw' => array(
-					'label'                  => 'Test Field',
+				'index'                 => 'short_text',
+				'value'                 => 'test value',
+				'field_raw'             => array(
+					'label'                  => 'Short Text',
 					'type'                   => 'text',
+					'required'               => 1,
+					'conditional_logic'      => 0,
+					'placeholder_text'       => '',
+					'help_text'              => '',
+					'options'                => array(),
+					'default'                => '',
+					'minlength'              => 0,
+					'maxlength'              => 255,
+					'rows'                   => 2,
+					'cols'                   => 5,
+					'autocomplete'           => 'on',
+					'autofocus'              => false,
+					'conditional_rules'      =>
+					array(
+						array(
+							array(
+								'field'    => '',
+								'operator' => 'field_is_empty',
+								'value'    => '',
+							),
+						),
+					),
+					'index'                  => 1,
+					'editable'               => false,
 					'adjust_price'           => true,
 					'price_adjustment_type'  => 'percentage',
-					'price_adjustment_value' => 20,
+					'price_adjustment_value' => '20',
 				),
+				'value_cart'            => 'test value (+<span class="woocommerce-Price-amount amount"><bdi>20,00&nbsp;<span class="woocommerce-Price-currencySymbol">&euro;</span></bdi></span>%)',
+				'price_adjustment'      => 3.5999999999999996,
+				'price_adjustment_type' => 'percentage',
+				'raw_value'             => 'test value',
 			),
 		);
 
