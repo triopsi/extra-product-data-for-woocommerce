@@ -163,7 +163,7 @@ class Exprdawc_Product_Page_Frontend {
 	 * @return string The modified URL of the add-to-cart button.
 	 */
 	public function exprdawc_change_add_to_cart_url( string $url, WC_Product $product ): string {
-		if ( ! is_single( $product->get_id() ) && in_array( $product->get_type(), array( ProductType::SIMPLE, ProductType::VARIATION ), true ) ) {
+		if ( in_array( $product->get_type(), array( ProductType::SIMPLE, ProductType::VARIATION ), true ) ) {
 			if ( Exprdawc_Helper::check_required_fields( $product->get_id() ) ) {
 				$url = get_permalink( $product->get_id() );
 			}
@@ -621,10 +621,13 @@ class Exprdawc_Product_Page_Frontend {
 
 					// Save the user input in the cart item data.
 					$cart_item_data_user_inputs[] = array(
-						'index'      => $index,
-						'value'      => $user_input_value,
-						'field_raw'  => $input_field_array,
-						'value_cart' => $user_input_value_cart,
+						'index'                 => $index,
+						'value'                 => $user_input_value,
+						'field_raw'             => $input_field_array,
+						'value_cart'            => $user_input_value_cart,
+						'price_adjustment'      => $price_adjustment,
+						'price_adjustment_type' => $input_field_array['price_adjustment_type'] ?? 'fixed',
+						'raw_value'             => wp_unslash( $field_value ),
 					);
 				}
 			}
@@ -658,7 +661,8 @@ class Exprdawc_Product_Page_Frontend {
 		if ( ! empty( $custom_fields ) ) {
 			if ( // phpcs:ignore
 				( is_cart() && get_option( 'exprdawc_show_in_cart', 'yes' ) === 'yes' ) || // In Cart page and option is enabled. OR.
-				( is_checkout() && get_option( 'exprdawc_show_in_checkout', 'yes' ) === 'yes' ) // In Checkout page and option is enabled.
+				( is_checkout() && get_option( 'exprdawc_show_in_checkout', 'yes' ) === 'yes' ) || // In Checkout page and option is enabled. OR.
+				( wp_doing_ajax() || wp_is_json_request() ) // In AJAX request (for dynamic updates).
 			) {
 				foreach ( $cart_item['post_data_product_item'] as $user_data ) {
 					$show_empty_fields = get_option( 'exprdawc_show_empty_fields', 'yes' );
@@ -698,7 +702,7 @@ class Exprdawc_Product_Page_Frontend {
 					}
 
 					$base_price       = (float) $cart_item['data']->get_price();
-					$price_adjustment = $this->calculate_price_adjustment( $user_data['field_raw'], $user_data['value'], $base_price );
+					$price_adjustment = $this->calculate_price_adjustment( $user_data['field_raw'], $user_data['raw_value'], $base_price );
 
 					// Adjust the cart item price by adding the price adjustment to the base price.
 					$cart_item['data']->set_price( $base_price + $price_adjustment );
