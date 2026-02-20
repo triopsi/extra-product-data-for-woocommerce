@@ -16,8 +16,6 @@ README.md
 VERSION
 webpack.mix.js
 .DS_Store
-vendor/*
-node_modules/*
 src/assets/*
 create_release.sh
 .releaserc.json

@@ -92,20 +92,9 @@ class Exprdawc_Main {
 	}
 
 	/**
-	 * Register the autoloader.
-	 */
-	protected function register_autoloader() {
-		require_once EXPRDAWC_CLASSES . 'utils/class-autoloader.php';
-		Utils\Autoloader::setup( EXPRDAWC_CLASSES, __NAMESPACE__ );
-	}
-
-	/**
 	 * Initiate our sub-objects.
 	 */
 	protected function __construct() {
-
-		$this->register_autoloader();
-
 		// Init Hooks.
 		add_action( 'init', array( $this, 'load_components' ), 0 );
 

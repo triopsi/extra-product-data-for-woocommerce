@@ -38,19 +38,6 @@ class TestClassExprdawcMain extends WP_UnitTestCase {
 	}
 
 	/**
-	 * Tests if the autoloader is registered correctly.
-	 */
-	public function test_register_autoloader() {
-		// Use reflection to access the protected method.
-		$reflection = new ReflectionClass( $this->exprdawc_main_instance );
-		$method     = $reflection->getMethod( 'register_autoloader' );
-		$method->setAccessible( true );
-		$method->invoke( $this->exprdawc_main_instance );
-
-		$this->assertTrue( class_exists( 'Triopsi\Exprdawc\Utils\Autoloader' ) );
-	}
-
-	/**
 	 * Tests if constructor hooks are registered.
 	 */
 	public function test_constructor_hooks_registered() {

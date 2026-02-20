@@ -4,6 +4,10 @@
 
 The Extra Product Data for WooCommerce plugin uses a lightweight template system similar to Twig/Jinja2 for field rendering.
 
+## Development
+
+This plugin uses Composer autoloading for its PHP classes. Run `composer install` to generate the autoloader. The autoload configuration includes a classmap for the WordPress-style `class-*.php` files in `src/classes/`.
+
 ## Template Engine Class
 
 The `Exprdawc_Template_Engine` class provides:

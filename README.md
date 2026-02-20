@@ -62,6 +62,14 @@ The plugin was developed by @triopsi using the latest stable PHP version (8.2) a
 2. Activate the plugin through the 'Plugins' screen in WordPress.
 3. Go to any WooCommerce product page to see the additional input fields.
 
+## Development
+
+This plugin uses Composer autoloading for its PHP classes.
+
+```bash
+composer install
+```
+
 ## Support
 
 This repository is used for development and issue tracking.

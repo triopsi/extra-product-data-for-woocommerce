@@ -49,6 +49,12 @@ The following field types are currently implemented:
 2. Activate the plugin through the 'Plugins' screen in WordPress.
 3. Go to any WooCommerce product page to see the additional input fields.
 
+== Development ==
+
+This plugin uses Composer autoloading for its PHP classes.
+
+1. Run `composer install` in the plugin directory.
+
 == Frequently Asked Questions ==
 
 = Can the fields be customized? =

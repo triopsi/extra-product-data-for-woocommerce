@@ -22,17 +22,14 @@ if ( ! defined( 'ABSPATH' ) ) {
 use Triopsi\Exprdawc\Exprdawc_Main;
 use Triopsi\Exprdawc\Helper\Exprdawc_Helper;
 
+// Load Composer autoloader when available.
+$autoload_path = __DIR__ . '/vendor/autoload.php';
+if ( file_exists( $autoload_path ) ) {
+	require_once $autoload_path;
+}
+
 // Include constants.
 require_once __DIR__ . '/src/constants.php';
-
-// Include Base Order Class.
-require_once EXPRDAWC_CLASSES . 'order/class-exprdawc-base-order-class.php';
-
-// Include main class.
-require_once EXPRDAWC_CLASSES . 'class-exprdawc-main.php';
-
-// Include Helper Class.
-require_once EXPRDAWC_CLASSES . 'helper/class-exprdawc-helper.php';
 
 // Is WooCommerce active? Then not, display a notice.
 if ( ! Exprdawc_Helper::is_woocommerce_active() ) {
