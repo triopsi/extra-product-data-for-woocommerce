@@ -452,8 +452,12 @@ class Exprdawc_Helper {
 				$field_args['custom_attributes']['data-price-adjustment']      = esc_attr( $field_args['price_adjustment_value'] );
 
 				// Add price to required string.
-				$plus_minus                     = ( $adjustment_value > 0 ) ? '+' : '-';
-				$field_args['required_string'] .= ' (' . $plus_minus . wc_price( abs( $adjustment_value ) ) . ')';
+				$plus_minus = ( $adjustment_value > 0 ) ? '+' : '-';
+				if ( 'percentage' === $field_args['price_adjustment_type'] ) {
+					$field_args['required_string'] .= ' (' . $plus_minus . abs( $adjustment_value ) . '%)';
+				} else {
+					$field_args['required_string'] .= ' (' . $plus_minus . wc_price( abs( $adjustment_value ) ) . ')';
+				}
 			}
 		}
 
