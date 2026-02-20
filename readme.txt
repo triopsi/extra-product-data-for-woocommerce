@@ -4,7 +4,7 @@ Tags: WooCommerce Product Addons, WooCommerce product options, WooCommerce custo
 Requires at least: 5.0
 Tested up to: 6.7
 Requires PHP: 8.2
-Stable tag: 1.8.2
+Stable tag: 2.0.0
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
@@ -80,6 +80,9 @@ Yes, the plugin has been tested with the latest WordPress release and PHP 8.2.
 14. Set Conditional Logic
 
 == Changelog ==
+
+= 2.0.0 (20.02.2026) =
+* Changes will be documented here
 
 = 1.0.0 ((2024-11-20)) =
 * Initial release.

@@ -30,7 +30,7 @@ Project:             | Woocommerce Extra Product Data
 | Requires at least |  5.0 |
 | Tested up to |  6.x |
 | Requires PHP |  > 8.2 |
-| Stable tag | 1.8.2 |
+| Stable tag | 2.0.0 |
 | License |  GPLv2 or later |
 | License URI |  https://www.gnu.org/licenses/gpl-2.0.html |
 | Wordpress Plugin Site | https://wordpress.org/plugins/extra-product-data-for-woocommerce/ |
