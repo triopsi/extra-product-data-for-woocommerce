@@ -24,22 +24,22 @@
  * This file is part of the development of WordPress plugins.
  */
 
-namespace Triopsi\Exprdawc;
+declare( strict_types=1 );
+namespace Triopsi\Exprdawc\Order\Customer;
 
 if ( ! defined( 'ABSPATH' ) ) {
 	exit; // Exit if accessed directly.
 }
 use Automattic\WooCommerce\Utilities\OrderUtil;
-use WC_Order;
-use WC_Order_Item;
-use WC_Product;
+use Triopsi\Exprdawc\Order\Exprdawc_Base_Order_Class;
+use Triopsi\Exprdawc\Helper\Exprdawc_Helper;
 
 /**
  * Class Exprdawc_User_Order
  *
  * This class is responsible for the user order.
  *
- * @package Exprdawc
+ * @package Exprdawc\Order\Customer
  */
 class Exprdawc_User_Order extends Exprdawc_Base_Order_Class {
 
@@ -57,9 +57,9 @@ class Exprdawc_User_Order extends Exprdawc_Base_Order_Class {
 	 */
 	public function enqueue_scripts() {
 		if ( is_account_page() ) {
-			wp_enqueue_style( 'form-css', EXPRDAWC_ASSETS_CSS . 'forms.css', array(), '1.0.0', 'all' );
-			wp_enqueue_style( 'order-frontend-css', EXPRDAWC_ASSETS_CSS . 'order-frontend.css', array(), '1.0.0', 'all' );
-			wp_enqueue_script( 'exprdawc-user-order', EXPRDAWC_ASSETS_JS . 'wc-user-order.min.js', array( 'jquery' ), '1.0.0', true );
+			wp_enqueue_style( 'form-css', EXPRDAWC_ASSETS_CSS . 'forms.css', array(), EXPRDAWC_VERSION, 'all' );
+			wp_enqueue_style( 'order-frontend-css', EXPRDAWC_ASSETS_CSS . 'order-frontend.css', array(), EXPRDAWC_VERSION, 'all' );
+			wp_enqueue_script( 'exprdawc-user-order', EXPRDAWC_ASSETS_JS . 'wc-user-order.min.js', array( 'jquery' ), EXPRDAWC_VERSION, true );
 			wp_localize_script(
 				'exprdawc-user-order',
 				'exprdawc_user_order',

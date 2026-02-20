@@ -24,16 +24,20 @@
  * This file is part of the development of WordPress plugins.
  */
 
+declare( strict_types=1 );
 namespace Triopsi\Exprdawc;
 
 if ( ! defined( 'ABSPATH' ) ) {
 	exit; // Exit if accessed directly.
 }
+
+use Triopsi\Exprdawc\Helper\Exprdawc_Helper;
+
 /**
- * Class Selection
+ * Class Exprdawc_Product_Page_Backend
  *
- * This class represents a selection of items. It provides methods to add, remove,
- * and retrieve items from the selection. The selection can be manipulated and queried
+ * This class represents the backend functionality for the product page in the Extra Product Data for WooCommerce plugin.
+ * It provides methods to add, remove, and retrieve items from the selection. The selection can be manipulated and queried
  * to perform various operations on the contained items.
  *
  * @package Exprdawc
@@ -129,11 +133,11 @@ class Exprdawc_Product_Page_Backend {
 	 */
 	public function exprdawc_show_general_tab() {
 		// Enqueue main product meta boxes script.
-		wp_enqueue_script( 'exprdawc-wc-meta-boxes-js', EXPRDAWC_ASSETS_JS . 'wc-meta-boxes-product.min.js', array( 'jquery', 'jquery-ui-sortable' ), '1.0.0', true );
+		wp_enqueue_script( 'exprdawc-wc-meta-boxes-js', EXPRDAWC_ASSETS_JS . 'wc-meta-boxes-product.min.js', array( 'jquery', 'jquery-ui-sortable' ), EXPRDAWC_VERSION, true );
 
 		// Enqueue import/export modal CSS and JS.
-		wp_enqueue_style( 'exprdawc-import-export-modal-css', EXPRDAWC_ASSETS_CSS . 'import-export-modal.css', array(), '1.0.0' );
-		wp_enqueue_script( 'exprdawc-import-export-modal-js', EXPRDAWC_ASSETS_JS . 'import-export-modal.min.js', array( 'jquery' ), '1.0.0', true );
+		wp_enqueue_style( 'exprdawc-import-export-modal-css', EXPRDAWC_ASSETS_CSS . 'import-export-modal.css', array(), EXPRDAWC_VERSION );
+		wp_enqueue_script( 'exprdawc-import-export-modal-js', EXPRDAWC_ASSETS_JS . 'import-export-modal.min.js', array( 'jquery' ), EXPRDAWC_VERSION, true );
 
 		wp_localize_script(
 			'exprdawc-wc-meta-boxes-js',

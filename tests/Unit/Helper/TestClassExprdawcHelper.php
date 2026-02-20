@@ -1,9 +1,8 @@
 <?php
 declare( strict_types=1 );
 
-require_once dirname( __DIR__ ) . '/../src/classes/class-exprdawc-helper.php';
-
-use Triopsi\Exprdawc\Exprdawc_Helper;
+require_once dirname( __DIR__, 2 ) . '/../src/classes/helper/class-exprdawc-helper.php';
+use Triopsi\Exprdawc\Helper\Exprdawc_Helper;
 
 /**
  * Class TestClassExprdawcHelper
@@ -323,7 +322,7 @@ class TestClassExprdawcHelper extends WP_UnitTestCase {
 		}
 		$output = ob_get_clean();
 
-		$this->assertEquals( file_get_contents( __DIR__ . '/resources/soll_field_output_test_generate_input_field.html' ), $output ); // phpcs:ignore
+        $this->assertEquals( file_get_contents( dirname( __DIR__ ) . '/resources/soll_field_output_test_generate_input_field.html' ), $output ); // phpcs:ignore
 	}
 
 	/**
@@ -337,6 +336,327 @@ class TestClassExprdawcHelper extends WP_UnitTestCase {
 		$product = $this->create_product_with_custom_fields( false );
 
 		$this->assertFalse( Exprdawc_Helper::check_required_fields( $product->get_id() ) );
+	}
+
+	/**
+	 * Test WooCommerce active helper and function.
+	 */
+	public function test_woocommerce_active_check() {
+		$this->assertTrue( Exprdawc_Helper::is_woocommerce_active() );
+	}
+
+	/**
+	 * Test validate_field_by_type with empty values.
+	 */
+	public function test_validate_field_by_type_allows_empty() {
+		$result = Exprdawc_Helper::validate_field_by_type( '', 'email' );
+		$this->assertTrue( $result['valid'] );
+		$this->assertSame( '', $result['message'] );
+	}
+
+	/**
+	 * Test validate_field_by_type for email values.
+	 */
+	public function test_validate_field_by_type_email() {
+		$invalid = Exprdawc_Helper::validate_field_by_type( 'not-an-email', 'email' );
+		$this->assertFalse( $invalid['valid'] );
+
+		$valid = Exprdawc_Helper::validate_field_by_type( 'user@example.com', 'email' );
+		$this->assertTrue( $valid['valid'] );
+	}
+
+	/**
+	 * Test validate_field_by_type for number values.
+	 */
+	public function test_validate_field_by_type_number() {
+		$invalid = Exprdawc_Helper::validate_field_by_type( 'abc', 'number' );
+		$this->assertFalse( $invalid['valid'] );
+
+		$valid = Exprdawc_Helper::validate_field_by_type( '123.45', 'number' );
+		$this->assertTrue( $valid['valid'] );
+	}
+
+	/**
+	 * Test validate_field_by_type for date values.
+	 */
+	public function test_validate_field_by_type_date() {
+		$invalid = Exprdawc_Helper::validate_field_by_type( 'not-a-date', 'date' );
+		$this->assertFalse( $invalid['valid'] );
+
+		$valid = Exprdawc_Helper::validate_field_by_type( '2026-02-20', 'date' );
+		$this->assertTrue( $valid['valid'] );
+	}
+
+	/**
+	 * Test validate_field_by_type for URL values.
+	 */
+	public function test_validate_field_by_type_url() {
+		$invalid = Exprdawc_Helper::validate_field_by_type( 'not-a-url', 'url' );
+		$this->assertFalse( $invalid['valid'] );
+
+		$valid = Exprdawc_Helper::validate_field_by_type( 'https://example.com', 'url' );
+		$this->assertTrue( $valid['valid'] );
+	}
+
+	/**
+	 * Test validate_field_by_type for option selections.
+	 */
+	public function test_validate_field_by_type_options() {
+		$options = array(
+			array( 'value' => 'a' ),
+			array( 'value' => 'b' ),
+		);
+
+		$invalid = Exprdawc_Helper::validate_field_by_type( 'c', 'select', $options );
+		$this->assertFalse( $invalid['valid'] );
+
+		$valid = Exprdawc_Helper::validate_field_by_type( 'a', 'radio', $options );
+		$this->assertTrue( $valid['valid'] );
+
+		$valid_multi = Exprdawc_Helper::validate_field_by_type( array( 'a', 'b' ), 'multiselect', $options );
+		$this->assertTrue( $valid_multi['valid'] );
+	}
+
+	/**
+	 * Test get_option_values extracts values from options array.
+	 */
+	public function test_get_option_values() {
+		$options = array(
+			array(
+				'value' => 'option1',
+				'label' => 'Option 1',
+			),
+			array(
+				'value' => 'option2',
+				'label' => 'Option 2',
+			),
+			array(
+				'value' => 'option3',
+				'label' => 'Option 3',
+			),
+		);
+
+		$result = Exprdawc_Helper::get_option_values( $options );
+
+		$this->assertIsArray( $result );
+		$this->assertCount( 3, $result );
+		$this->assertEquals( array( 'option1', 'option2', 'option3' ), $result );
+	}
+
+	/**
+	 * Test get_option_values with empty array.
+	 */
+	public function test_get_option_values_empty() {
+		$result = Exprdawc_Helper::get_option_values( array() );
+
+		$this->assertIsArray( $result );
+		$this->assertEmpty( $result );
+	}
+
+	/**
+	 * Test validate_option_selection with single valid value.
+	 */
+	public function test_validate_option_selection_single_valid() {
+		$options = array(
+			array( 'value' => 'red' ),
+			array( 'value' => 'green' ),
+			array( 'value' => 'blue' ),
+		);
+
+		$result = Exprdawc_Helper::validate_option_selection( 'red', $options );
+		$this->assertTrue( $result );
+
+		$result = Exprdawc_Helper::validate_option_selection( 'green', $options );
+		$this->assertTrue( $result );
+	}
+
+	/**
+	 * Test validate_option_selection with single invalid value.
+	 */
+	public function test_validate_option_selection_single_invalid() {
+		$options = array(
+			array( 'value' => 'red' ),
+			array( 'value' => 'green' ),
+		);
+
+		$result = Exprdawc_Helper::validate_option_selection( 'yellow', $options );
+		$this->assertFalse( $result );
+	}
+
+	/**
+	 * Test validate_option_selection with multiple valid values.
+	 */
+	public function test_validate_option_selection_multiple_valid() {
+		$options = array(
+			array( 'value' => 'red' ),
+			array( 'value' => 'green' ),
+			array( 'value' => 'blue' ),
+		);
+
+		$result = Exprdawc_Helper::validate_option_selection( array( 'red', 'blue' ), $options );
+		$this->assertTrue( $result );
+
+		$result = Exprdawc_Helper::validate_option_selection( array( 'red', 'green', 'blue' ), $options );
+		$this->assertTrue( $result );
+	}
+
+	/**
+	 * Test validate_option_selection with multiple invalid values.
+	 */
+	public function test_validate_option_selection_multiple_invalid() {
+		$options = array(
+			array( 'value' => 'red' ),
+			array( 'value' => 'green' ),
+		);
+
+		// One valid, one invalid.
+		$result = Exprdawc_Helper::validate_option_selection( array( 'red', 'yellow' ), $options );
+		$this->assertFalse( $result );
+
+		// All invalid.
+		$result = Exprdawc_Helper::validate_option_selection( array( 'yellow', 'purple' ), $options );
+		$this->assertFalse( $result );
+	}
+
+	/**
+	 * Test validate_option_selection with empty options array.
+	 */
+	public function test_validate_option_selection_empty_options() {
+		$result = Exprdawc_Helper::validate_option_selection( 'red', array() );
+		$this->assertFalse( $result );
+	}
+
+	/**
+	 * Test prepare_option_labels_with_prices for fixed price adjustments.
+	 */
+	public function test_prepare_option_labels_with_prices_fixed() {
+		$field_args = array(
+			'options' => array(
+				array(
+					'label'                  => 'Small',
+					'value'                  => 'small',
+					'price_adjustment_type'  => 'fixed',
+					'price_adjustment_value' => '5.00',
+				),
+				array(
+					'label'                  => 'Large',
+					'value'                  => 'large',
+					'price_adjustment_type'  => 'fixed',
+					'price_adjustment_value' => '10.50',
+				),
+			),
+		);
+
+		$reflection = new ReflectionClass( Exprdawc_Helper::class );
+		$method     = $reflection->getMethod( 'prepare_option_labels_with_prices' );
+		$method->setAccessible( true );
+
+		$result = $method->invokeArgs( null, array( $field_args ) );
+
+		$currency_symbol = get_woocommerce_currency_symbol();
+		$this->assertStringContainsString( '+5.00', $result['options'][0]['label'] );
+		$this->assertStringContainsString( $currency_symbol, $result['options'][0]['label'] );
+		$this->assertStringContainsString( '+10.50', $result['options'][1]['label'] );
+	}
+
+	/**
+	 * Test prepare_option_labels_with_prices for percentage adjustments.
+	 */
+	public function test_prepare_option_labels_with_prices_percentage() {
+		$field_args = array(
+			'options' => array(
+				array(
+					'label'                  => 'Premium',
+					'value'                  => 'premium',
+					'price_adjustment_type'  => 'percentage',
+					'price_adjustment_value' => '20',
+				),
+				array(
+					'label'                  => 'Discount',
+					'value'                  => 'discount',
+					'price_adjustment_type'  => 'percentage',
+					'price_adjustment_value' => '-10',
+				),
+			),
+		);
+
+		$reflection = new ReflectionClass( Exprdawc_Helper::class );
+		$method     = $reflection->getMethod( 'prepare_option_labels_with_prices' );
+		$method->setAccessible( true );
+
+		$result = $method->invokeArgs( null, array( $field_args ) );
+
+		$this->assertStringContainsString( '+20%', $result['options'][0]['label'] );
+		$this->assertStringContainsString( 'Premium', $result['options'][0]['label'] );
+		$this->assertStringContainsString( '-10%', $result['options'][1]['label'] );
+		$this->assertStringContainsString( 'Discount', $result['options'][1]['label'] );
+	}
+
+	/**
+	 * Test prepare_option_labels_with_prices skips zero values.
+	 */
+	public function test_prepare_option_labels_with_prices_zero_value() {
+		$field_args = array(
+			'options' => array(
+				array(
+					'label'                  => 'Standard',
+					'value'                  => 'standard',
+					'price_adjustment_type'  => 'fixed',
+					'price_adjustment_value' => '0',
+				),
+			),
+		);
+
+		$reflection = new ReflectionClass( Exprdawc_Helper::class );
+		$method     = $reflection->getMethod( 'prepare_option_labels_with_prices' );
+		$method->setAccessible( true );
+
+		$result = $method->invokeArgs( null, array( $field_args ) );
+
+		// Label should remain unchanged as value is 0.
+		$this->assertEquals( 'Standard', $result['options'][0]['label'] );
+	}
+
+	/**
+	 * Test prepare_option_labels_with_prices with empty values.
+	 */
+	public function test_prepare_option_labels_with_prices_empty_value() {
+		$field_args = array(
+			'options' => array(
+				array(
+					'label'                  => 'Basic',
+					'value'                  => 'basic',
+					'price_adjustment_type'  => 'fixed',
+					'price_adjustment_value' => '',
+				),
+			),
+		);
+
+		$reflection = new ReflectionClass( Exprdawc_Helper::class );
+		$method     = $reflection->getMethod( 'prepare_option_labels_with_prices' );
+		$method->setAccessible( true );
+
+		$result = $method->invokeArgs( null, array( $field_args ) );
+
+		// Label should remain unchanged as value is empty.
+		$this->assertEquals( 'Basic', $result['options'][0]['label'] );
+	}
+
+	/**
+	 * Test prepare_option_labels_with_prices with no options.
+	 */
+	public function test_prepare_option_labels_with_prices_no_options() {
+		$field_args = array(
+			'options' => array(),
+		);
+
+		$reflection = new ReflectionClass( Exprdawc_Helper::class );
+		$method     = $reflection->getMethod( 'prepare_option_labels_with_prices' );
+		$method->setAccessible( true );
+
+		$result = $method->invokeArgs( null, array( $field_args ) );
+
+		$this->assertEmpty( $result['options'] );
 	}
 
 	/**

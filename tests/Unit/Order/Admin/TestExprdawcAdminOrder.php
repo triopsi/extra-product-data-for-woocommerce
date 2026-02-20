@@ -1,7 +1,7 @@
 <?php
 declare( strict_types=1 );
 
-use Triopsi\Exprdawc\Exprdawc_Admin_Order;
+use Triopsi\Exprdawc\Order\Admin\Exprdawc_Admin_Order;
 
 /**
  * Class TestExprdawcAdminOrder

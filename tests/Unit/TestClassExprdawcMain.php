@@ -47,7 +47,16 @@ class TestClassExprdawcMain extends WP_UnitTestCase {
 		$method->setAccessible( true );
 		$method->invoke( $this->exprdawc_main_instance );
 
-		$this->assertTrue( class_exists( 'Triopsi\Exprdawc\Autoloader' ) );
+		$this->assertTrue( class_exists( 'Triopsi\Exprdawc\Utils\Autoloader' ) );
+	}
+
+	/**
+	 * Tests if constructor hooks are registered.
+	 */
+	public function test_constructor_hooks_registered() {
+		$this->assertNotFalse( has_action( 'init', array( $this->exprdawc_main_instance, 'load_components' ) ) );
+		$this->assertNotFalse( has_action( 'admin_enqueue_scripts', array( $this->exprdawc_main_instance, 'exprdawc_only_admin_enqueue_scripts' ) ) );
+		$this->assertNotFalse( has_filter( 'plugin_action_links_' . EXPRDAWC_BASENAME, array( $this->exprdawc_main_instance, 'exprdawc_plugin_action_links' ) ) );
 	}
 
 	/**

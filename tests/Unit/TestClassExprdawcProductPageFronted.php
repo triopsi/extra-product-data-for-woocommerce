@@ -2,7 +2,7 @@
 declare( strict_types=1 );
 
 require_once dirname( __DIR__ ) . '/../src/classes/class-exprdawc-product-page-fronted.php';
-require_once dirname( __DIR__ ) . '/../src/classes/class-exprdawc-helper.php';
+require_once dirname( __DIR__ ) . '/../src/classes/helper/class-exprdawc-helper.php';
 
 use Automattic\WooCommerce\Enums\ProductStockStatus;
 use Triopsi\Exprdawc\Exprdawc_Product_Page_Fronted;

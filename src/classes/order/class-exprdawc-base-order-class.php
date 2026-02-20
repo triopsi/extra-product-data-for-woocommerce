@@ -24,7 +24,8 @@
  * This file is part of the development of WordPress plugins.
  */
 
-namespace Triopsi\Exprdawc;
+declare( strict_types=1 );
+namespace Triopsi\Exprdawc\Order;
 
 if ( ! defined( 'ABSPATH' ) ) {
 	exit; // Exit if accessed directly.
@@ -32,14 +33,15 @@ if ( ! defined( 'ABSPATH' ) ) {
 use Automattic\WooCommerce\Utilities\OrderUtil;
 use WC_Order;
 use WC_Order_Item;
-use WC_Product;
+use Triopsi\Exprdawc\Helper\Exprdawc_Helper;
+use Triopsi\Exprdawc\Helper\Exprdawc_Order_Helper;
 
 /**
  * Class Exprdawc_Base_Order_Class
  *
  * This class is responsible for the base order class.
  *
- * @package Exprdawc
+ * @package Exprdawc\Order
  */
 class Exprdawc_Base_Order_Class {
 
@@ -231,7 +233,7 @@ class Exprdawc_Base_Order_Class {
 
 		$custom_fields = $product->get_meta( '_extra_product_fields', true );
 		if ( ! is_array( $custom_fields ) || empty( $custom_fields ) ) {
-			return $product->get_price();
+			return (float) $product->get_price();
 		}
 
 		$extra_costs = 0.0;
@@ -244,7 +246,7 @@ class Exprdawc_Base_Order_Class {
 
 			if ( ! empty( $field['adjust_price'] ) && ! empty( $field_value ) ) {
 				$price_adjustment = Exprdawc_Order_Helper::calculate_price_adjustment( $field, $field_value, $base_price );
-				$extra_costs     += $price_adjustment;
+				$extra_costs     += (float) $price_adjustment;
 			}
 		}
 

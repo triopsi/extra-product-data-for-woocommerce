@@ -28,6 +28,8 @@ declare( strict_types=1 );
 namespace Triopsi\Exprdawc;
 
 use Automattic\WooCommerce\Enums\ProductType;
+use Triopsi\Exprdawc\Helper\Exprdawc_Helper;
+use Triopsi\Exprdawc\Helper\Exprdawc_Order_Helper;
 use WC_Product;
 
 if ( ! defined( 'ABSPATH' ) ) {
@@ -35,9 +37,9 @@ if ( ! defined( 'ABSPATH' ) ) {
 }
 
 /**
- * Class User
+ * Class Exprdawc_Product_Page_Fronted
  *
- * This class represents a user in the system.
+ * This class represents the frontend functionality for the product page in the Extra Product Data for WooCommerce plugin.
  *
  * @property int $id The unique identifier for the user.
  * @property string $name The name of the user.
@@ -179,13 +181,13 @@ class Exprdawc_Product_Page_Fronted {
 	 */
 	public function exprdawc_add_frontend_styles_scripts(): void {
 		if ( is_product() ) {
-			wp_enqueue_style( 'form-css', EXPRDAWC_ASSETS_CSS . 'forms.css', array(), '1.0.0', 'all' );
+			wp_enqueue_style( 'form-css', EXPRDAWC_ASSETS_CSS . 'forms.css', array(), EXPRDAWC_VERSION, 'all' );
 
 			// Enqueue the wc-conditional-rules-js script.
-			wp_enqueue_script( 'wc-conditional-rules-js', EXPRDAWC_ASSETS_JS . 'wc-conditional-rules-js.min.js', array( 'jquery' ), '1.0.0', true );
+			wp_enqueue_script( 'wc-conditional-rules-js', EXPRDAWC_ASSETS_JS . 'wc-conditional-rules-js.min.js', array( 'jquery' ), EXPRDAWC_VERSION, true );
 
 			// Enqueue the exprdawc-frontend-js script.
-			wp_enqueue_script( 'exprdawc-frontend-js', EXPRDAWC_ASSETS_JS . 'wc-product-frontend.min.js', array( 'jquery' ), '1.0.0', true );
+			wp_enqueue_script( 'exprdawc-frontend-js', EXPRDAWC_ASSETS_JS . 'wc-product-frontend.min.js', array( 'jquery' ), EXPRDAWC_VERSION, true );
 			wp_localize_script(
 				'exprdawc-frontend-js',
 				'exprdawc_frontend_settings',

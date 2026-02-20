@@ -24,7 +24,8 @@
  * This file is part of the development of WordPress plugins.
  */
 
-namespace Triopsi\Exprdawc;
+declare( strict_types=1 );
+namespace Triopsi\Exprdawc\Order\Admin;
 
 if ( ! defined( 'ABSPATH' ) ) {
 	exit; // Exit if accessed directly.
@@ -34,13 +35,15 @@ use Automattic\WooCommerce\Utilities\OrderUtil;
 use WC_Order;
 use WC_Order_Item;
 use WC_Product;
+use Triopsi\Exprdawc\Order\Exprdawc_Base_Order_Class;
+use Triopsi\Exprdawc\Helper\Exprdawc_Helper;
 
 /**
  * Class Exprdawc_Admin_Order
  *
  * This class is responsible for the admin order page.
  *
- * @package Exprdawc
+ * @package Exprdawc\Order\Admin
  */
 class Exprdawc_Admin_Order extends Exprdawc_Base_Order_Class {
 

@@ -24,7 +24,8 @@
  * This file is part of the development of WordPress plugins.
  */
 
-namespace Triopsi\Exprdawc;
+declare( strict_types=1 );
+namespace Triopsi\Exprdawc\Helper;
 
 if ( ! defined( 'ABSPATH' ) ) {
 	exit; // Exit if accessed directly.
@@ -40,7 +41,7 @@ use WC_Product;
  * Helper class for order-specific operations and calculations.
  * Centralizes price adjustment calculations and field value processing for orders.
  *
- * @package Exprdawc
+ * @package Exprdawc\Helper
  */
 class Exprdawc_Order_Helper {
 

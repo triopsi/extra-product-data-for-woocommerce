@@ -2,8 +2,8 @@
 declare( strict_types=1 );
 
 use PHPUnit\Framework\TestCase;
-use Triopsi\Exprdawc\Exprdawc_Base_Order_Class;
-use Triopsi\Exprdawc\Exprdawc_Order_Helper;
+use Triopsi\Exprdawc\Order\Exprdawc_Base_Order_Class;
+use Triopsi\Exprdawc\Helper\Exprdawc_Order_Helper;
 
 /**
  * Class TestExprdawcBaseOrderClass

@@ -24,6 +24,7 @@
  * This file is part of the development of WordPress plugins.
  */
 
+declare( strict_types=1 );
 namespace Triopsi\Exprdawc;
 
 if ( ! defined( 'ABSPATH' ) ) {

@@ -24,7 +24,8 @@
  * This file is part of the development of WordPress plugins.
  */
 
-namespace Triopsi\Exprdawc;
+declare( strict_types=1 );
+namespace Triopsi\Exprdawc\Helper;
 
 use Automattic\WooCommerce\Enums\ProductType;
 
@@ -38,7 +39,7 @@ if ( ! defined( 'ABSPATH' ) ) {
  * This class contains helper functions for the plugin.
  * Refactored for improved code organization, type safety, and WordPress standards compliance.
  *
- * @package Exprdawc
+ * @package Exprdawc\Helper
  */
 class Exprdawc_Helper {
 
@@ -55,6 +56,26 @@ class Exprdawc_Helper {
 	 * @var array
 	 */
 	private const PRICE_ADJUSTMENT_TYPES = array( 'checkbox', 'radio', 'select' );
+
+	/**
+	 * Check if WooCommerce is active.
+	 *
+	 * @return bool True when WooCommerce is available or active.
+	 */
+	public static function is_woocommerce_active(): bool {
+		if ( class_exists( 'WooCommerce' ) || function_exists( 'WC' ) ) {
+			return true;
+		}
+
+		$active_plugins = (array) get_option( 'active_plugins', array() );
+
+		if ( is_multisite() ) {
+			$sitewide_plugins = (array) get_site_option( 'active_sitewide_plugins', array() );
+			$active_plugins   = array_merge( $active_plugins, array_keys( $sitewide_plugins ) );
+		}
+
+		return in_array( 'woocommerce/woocommerce.php', $active_plugins, true );
+	}
 
 	/**
 	 * Generate and render an input field.
@@ -553,6 +574,10 @@ class Exprdawc_Helper {
 	private static function render_field_template( array $field_args ): void {
 		$template_path = EXPRDAWC_FIELDS_TEMPLATES_PATH;
 
+		if ( ! class_exists( 'Triopsi\\Exprdawc\\Helper\\Exprdawc_Template_Helpers' ) ) {
+			require_once EXPRDAWC_CLASSES . 'helper/class-exprdawc-template-helpers.php';
+		}
+
 		// Extract variables for template scope.
 		$required_string   = $field_args['required_string'] ?? '';
 		$custom_attributes = self::build_attributes_array( $field_args['custom_attributes'] );
@@ -567,7 +592,7 @@ class Exprdawc_Helper {
 
 		if ( file_exists( $field_template ) ) {
 			include $field_template;
-		} else {
+		} elseif ( file_exists( $template_path . 'text.php' ) ) {
 			// Fallback to text template.
 			include $template_path . 'text.php';
 		}

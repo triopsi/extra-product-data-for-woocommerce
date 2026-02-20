@@ -1,62 +1,75 @@
 <?php
 /**
- * Created on Tue Nov 26 2024
+ * Select Field Template (Template Engine Version)
  *
- * Copyright (c) 2024 IT-Dienstleistungen Drevermann - All Rights Reserved
+ * Variables available:
+ * - $field: Complete field configuration
+ * - $required_string: Required indicator HTML
+ * - $custom_attributes: Array of custom HTML attributes
  *
- * @package Extra Product Data for WooCommerce
- * @author Daniel Drevermann <info@triopsi.com>
- * @copyright Copyright (c) 2024, IT-Dienstleistungen Drevermann
- *
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation, either version 2 of the License, or
- * (at your option) any later version.
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
- * GNU General Public License for more details.
- *
- * You should have received a copy of the GNU General Public License
- * along with this program. If not, see <https://www.gnu.org/licenses/>.
- *
- * This file is part of the development of WordPress plugins.
+ * @package Extra_Product_Data_For_WooCommerce
+ * @since 1.9.0
  */
+
+use Triopsi\Exprdawc\Helper\Exprdawc_Template_Helpers as H;
+
 // phpcs:ignoreFile
 if ( ! defined( 'ABSPATH' ) ) {
 	exit;
 }
-echo '<label for="' . esc_attr( $field_args['id'] ) . '" class="' . esc_attr( implode( ' ', $field_args['label_class'] ) ) . '">' . esc_html( $field_args['label'] ) . $required_string . '</label>';
-echo '<span class="' . esc_attr( implode( ' ', $field_args['input_wrapper_class'] ) ) . '">';
-if ( isset( $field_args['options'] ) && is_array( $field_args['options'] ) ) {
-	echo '<select class="select ' . esc_attr( implode( ' ', $field_args['input_class'] ) ) . '"
-    id="' . esc_attr( $field_args['id'] ) . '"
-    name="' . esc_attr( $field_args['name'] ) . '"
-    ' . implode( ' ', $custom_attributes ) . '>';
 
-	// If placeholder is set, add it as an option.
-	if ( ! empty( $field_args['placeholder'] ) ) {
-		echo '<option value="" disabled selected>' . esc_html( $field_args['placeholder'] ) . '</option>';
-	}
-	foreach ( $field_args['options'] as $option ) {
-		$option_value = $option['value'];
-		$option_label = $option['label']; // Label already formatted with price adjustment in helper.
-		$selected     = selected( $field_args['value'], $option_value, false );
+// Alias field_args as field for template.
+$field = $field_args ?? array();
+?>
 
-		// Build data attributes for price adjustment if present.
-		$data_attrs = '';
-		if ( isset( $option['price_adjustment_value'] ) && ! empty( $option['price_adjustment_value'] ) ) {
-			$data_attrs = ' data-price-adjustment="' . esc_attr( $option['price_adjustment_value'] ) . '"';
-			$data_attrs .= ' data-price-adjustment-type="' . esc_attr( $option['price_adjustment_type'] ?? 'fixed' ) . '"';
-			$data_attrs .= ' data-label="' . esc_attr( $option_label ) . '"';
-		}
+<label for="<?php echo H::attr( $field['id'] ); ?>" 
+	class="<?php echo H::classes( $field['label_class'] ); ?>">
+	<?php echo H::e( $field['label'] ); ?>
+	<?php echo $required_string; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped ?>
+</label>
 
-		echo '<option value="' . esc_attr( $option_value ) . '" ' . $selected . $data_attrs . '>' . esc_html( $option_label ) . '</option>';
-	}
-	echo '</select>';
-}
-echo '</span>';
-if ( ! empty( $field_args['description'] ) ) {
-	echo '<span id="' . esc_attr( $field_args['id'] ) . '-description" class="' . esc_attr( implode( ' ', $field_args['description_class'] ) ) . '">' . esc_html( $field_args['description'] ) . '</span>';
-}
+<span class="<?php echo H::classes( $field['input_wrapper_class'] ); ?>">
+	<?php if ( ! empty( $field['options'] ) && is_array( $field['options'] ) ) : ?>
+		<select class="select <?php echo H::classes( $field['input_class'] ); ?>"
+			id="<?php echo H::attr( $field['id'] ); ?>"
+			name="<?php echo H::attr( $field['name'] ); ?>"
+			<?php echo H::join( $custom_attributes ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped ?>
+		>
+			<?php if ( ! empty( $field['placeholder'] ) ) : ?>
+				<option value="" disabled selected>
+					<?php echo H::e( $field['placeholder'] ); ?>
+				</option>
+			<?php endif; ?>
+
+			<?php foreach ( $field['options'] as $option ) : ?>
+				<?php
+				$option_value = $option['value'] ?? '';
+				$option_label = $option['label'] ?? '';
+				$selected     = H::selected( $field['value'] ?? '', $option_value );
+
+				// Build data attributes for price adjustment.
+				$data_attrs = array();
+				if ( ! empty( $option['price_adjustment_value'] ) ) {
+					$data_attrs['price-adjustment']      = $option['price_adjustment_value'];
+					$data_attrs['price-adjustment-type'] = $option['price_adjustment_type'] ?? 'fixed';
+					$data_attrs['label']                 = $option_label;
+				}
+				?>
+
+				<option value="<?php echo H::attr( $option_value ); ?>"
+					<?php echo $selected; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped ?>
+					<?php echo H::data_attrs( $data_attrs ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped ?>
+				>
+					<?php echo H::e( $option_label ); ?>
+				</option>
+			<?php endforeach; ?>
+		</select>
+	<?php endif; ?>
+</span>
+
+<?php if ( ! empty( $field['description'] ) ) : ?>
+	<span id="<?php echo H::attr( $field['id'] ); ?>-description"
+		class="<?php echo H::classes( $field['description_class'] ); ?>">
+		<?php echo H::e( $field['description'] ); ?>
+	</span>
+<?php endif; ?>

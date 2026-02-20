@@ -19,26 +19,23 @@ if ( ! defined( 'ABSPATH' ) ) {
 	exit; // Exit if accessed directly.
 }
 
-use function Triopsi\Exprdawc\tr_is_woocommerce_active;
 use Triopsi\Exprdawc\Exprdawc_Main;
+use Triopsi\Exprdawc\Helper\Exprdawc_Helper;
 
 // Include constants.
 require_once __DIR__ . '/src/constants.php';
 
-// Include functions/helpers.
-require_once EXPRDAWC_SRC . 'functions.php';
-
 // Include Base Order Class.
-require_once EXPRDAWC_CLASSES . 'class-exprdawc-base-order-class.php';
+require_once EXPRDAWC_CLASSES . 'order/class-exprdawc-base-order-class.php';
 
 // Include main class.
 require_once EXPRDAWC_CLASSES . 'class-exprdawc-main.php';
 
 // Include Helper Class.
-require_once EXPRDAWC_CLASSES . 'class-exprdawc-helper.php';
+require_once EXPRDAWC_CLASSES . 'helper/class-exprdawc-helper.php';
 
 // Is WooCommerce active? Then not, display a notice.
-if ( ! tr_is_woocommerce_active() ) {
+if ( ! Exprdawc_Helper::is_woocommerce_active() ) {
 	add_action( 'admin_notices', 'exprdawc_admin_notice' );
 } else {
 	// Initiate the main class.

@@ -1,44 +1,45 @@
 <?php
 /**
- * Created on Tue Nov 26 2024
+ * Textarea Field Template (Template Engine Version)
  *
- * Copyright (c) 2024 IT-Dienstleistungen Drevermann - All Rights Reserved
+ * Variables available:
+ * - $field: Complete field configuration
+ * - $required_string: Required indicator HTML
+ * - $custom_attributes: Array of custom HTML attributes
  *
- * @package Extra Product Data for WooCommerce
- * @author Daniel Drevermann <info@triopsi.com>
- * @copyright Copyright (c) 2024, IT-Dienstleistungen Drevermann
- *
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation, either version 2 of the License, or
- * (at your option) any later version.
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
- * GNU General Public License for more details.
- *
- * You should have received a copy of the GNU General Public License
- * along with this program. If not, see <https://www.gnu.org/licenses/>.
- *
- * This file is part of the development of WordPress plugins.
+ * @package Extra_Product_Data_For_WooCommerce
+ * @since 1.9.0
  */
+
+use Triopsi\Exprdawc\Helper\Exprdawc_Template_Helpers as H;
+
 // phpcs:ignoreFile
 if ( ! defined( 'ABSPATH' ) ) {
 	exit;
 }
 
-echo '<label for="' . esc_attr( $field_args['id'] ) . '" class="' . esc_attr( implode( ' ', $field_args['label_class'] ) ) . '">' . esc_html( $field_args['label'] ) . $required_string . '</label>';
-echo '<span class="' . esc_attr( implode( ' ', $field_args['input_wrapper_class'] ) ) . '">';
-echo '<textarea 
-    name="' . esc_attr( $field_args['name'] ) . '"
-    class="' . esc_attr( implode( ' ', $field_args['input_class'] ) ) . '"
-    id="' . esc_attr( $field_args['id'] ) . '"
-    placeholder="' . esc_attr( $field_args['placeholder'] ) . '" ' .
-	implode( ' ', $custom_attributes ) . '>' .
-	esc_textarea( $field_args['value'] ) .
-	'</textarea>';
-if ( ! empty( $field_args['description'] ) ) {
-	echo '<span id="' . esc_attr( $field_args['id'] ) . '-description" class="' . esc_attr( implode( ' ', $field_args['description_class'] ) ) . '">' . esc_html( $field_args['description'] ) . '</span>';
-}
-echo '</span>';
+// Alias field_args as field for template.
+$field = $field_args ?? array();
+?>
+
+<label for="<?php echo H::attr( $field['id'] ); ?>" 
+	class="<?php echo H::classes( $field['label_class'] ); ?>">
+	<?php echo H::e( $field['label'] ); ?>
+	<?php echo $required_string; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped ?>
+</label>
+
+<span class="<?php echo H::classes( $field['input_wrapper_class'] ); ?>">
+	<textarea name="<?php echo H::attr( $field['name'] ); ?>"
+		class="<?php echo H::classes( $field['input_class'] ); ?>"
+		id="<?php echo H::attr( $field['id'] ); ?>"
+		placeholder="<?php echo H::attr( $field['placeholder'] ?? '' ); ?>"
+		<?php echo H::join( $custom_attributes ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped ?>
+	><?php echo H::textarea( $field['value'] ?? '' ); ?></textarea>
+
+	<?php if ( ! empty( $field['description'] ) ) : ?>
+		<span id="<?php echo H::attr( $field['id'] ); ?>-description"
+			class="<?php echo H::classes( $field['description_class'] ); ?>">
+			<?php echo H::e( $field['description'] ); ?>
+		</span>
+	<?php endif; ?>
+</span>

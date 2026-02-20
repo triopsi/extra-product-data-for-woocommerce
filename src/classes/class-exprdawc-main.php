@@ -24,12 +24,15 @@
  * This file is part of the development of WordPress plugins.
  */
 
+declare( strict_types=1 );
 namespace Triopsi\Exprdawc;
 
 if ( ! defined( 'ABSPATH' ) ) {
 	exit; // Exit if accessed directly.
 }
-use function Triopsi\Exprdawc\tr_is_woocommerce_active;
+use Triopsi\Exprdawc\Helper\Exprdawc_Helper;
+use Triopsi\Exprdawc\Order\Admin\Exprdawc_Admin_Order;
+use Triopsi\Exprdawc\Order\Customer\Exprdawc_User_Order;
 
 /**
  * Class Exprdawc_Main
@@ -92,8 +95,8 @@ class Exprdawc_Main {
 	 * Register the autoloader.
 	 */
 	protected function register_autoloader() {
-		require_once EXPRDAWC_CLASSES . 'class-autoloader.php';
-		Autoloader::setup( EXPRDAWC_CLASSES, __NAMESPACE__ );
+		require_once EXPRDAWC_CLASSES . 'utils/class-autoloader.php';
+		Utils\Autoloader::setup( EXPRDAWC_CLASSES, __NAMESPACE__ );
 	}
 
 	/**
@@ -131,7 +134,7 @@ class Exprdawc_Main {
 	 */
 	public function load_components() {
 
-		if ( tr_is_woocommerce_active() ) {
+		if ( Exprdawc_Helper::is_woocommerce_active() ) {
 
 			// Product Create/Edit Page.
 			$this->exprdawc_product_backend = new Exprdawc_Product_Page_Backend();
@@ -157,8 +160,8 @@ class Exprdawc_Main {
 	 */
 	public function exprdawc_only_admin_enqueue_scripts() {
 		if ( is_admin() ) {
-			wp_enqueue_style( 'exprdawc-backend-css', EXPRDAWC_ASSETS_CSS . 'admin-backend.css', array(), '1.0.0', 'all' );
-			wp_enqueue_style( 'form-css', EXPRDAWC_ASSETS_CSS . 'forms.css', array(), '1.0.0', 'all' );
+			wp_enqueue_style( 'exprdawc-backend-css', EXPRDAWC_ASSETS_CSS . 'admin-backend.css', array(), EXPRDAWC_VERSION, 'all' );
+			wp_enqueue_style( 'form-css', EXPRDAWC_ASSETS_CSS . 'forms.css', array(), EXPRDAWC_VERSION, 'all' );
 		}
 	}
 }
