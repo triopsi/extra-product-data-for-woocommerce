@@ -38,5 +38,11 @@ jobs:
       - name: Setup tests
         run: bash bin/install-wp-tests.sh wordpress_tests root root 127.0.0.1 latest
 
+      - name: Install Composer dependencies
+        run: composer install --prefer-dist --no-interaction --no-progress
+
+      - name: Optimize Composer autoload
+        run: composer dump-autoload -o
+
       - name: Run tests
         run: composer test
