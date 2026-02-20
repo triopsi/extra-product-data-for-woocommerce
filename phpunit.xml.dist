@@ -7,7 +7,13 @@
 	convertWarningsToExceptions="true"
 	convertNoticesToExceptions="true"
 	convertDeprecationsToExceptions="true"
+	defaultTestSuite="unit"
 	>
+	<testsuites>
+		<testsuite name="unit">
+			<directory suffix=".php">./tests/Unit/</directory>
+		</testsuite>
+	</testsuites>
 	<coverage processUncoveredFiles="true">
         <include>
             <directory suffix=".php">./src</directory>
@@ -20,9 +26,4 @@
             <html outputDirectory="./reports/coverage" lowUpperBound="50" highLowerBound="80"/>
         </report>
     </coverage>
-	<testsuites>
-		<testsuite name="unit">
-			<directory suffix=".php">./tests/Unit/</directory>
-		</testsuite>
-	</testsuites>
 </phpunit>

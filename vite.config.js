@@ -9,6 +9,7 @@ export default defineConfig({
 				'wc-conditional-rules-js': 'src/assets/js/wc-conditional-rules-js.js',
 				'wc-user-order': 'src/assets/js/wc-user-order.js',
 				'wc-product-frontend': 'src/assets/js/wc-product-frontend.js',
+				'import-export-modal': 'src/assets/js/import-export-modal.js',
 			},
 			output: {
 				entryFileNames: '[name].min.js',

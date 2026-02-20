@@ -1,9 +1,9 @@
-# This workflow updates the plugin assets and readme on the WordPress.org repository when changes are pushed to the main branch.
+# This workflow updates the plugin assets and readme on the WordPress.org repository when changes are pushed to the update-readme branch.
 name: Plugin asset/readme update
 on:
   push:
     branches:
-      - main
+      - update-readme
 jobs:
   trunk:
     if: github.repository == 'triopsi/extra-product-data-for-woocommerce'

@@ -11,10 +11,11 @@ set -euo pipefail
 # Updates the `version` field in package.json and the plugin header Version in
 # extra-product-data-for-woocommerce.php. Prints the new version.
 
-ROOT_DIR="$(cd "$(dirname "$0")/../.." && pwd)"
+ROOT_DIR="$(cd "$(dirname "$0")/.." && pwd)"
 PACKAGE_JSON="$ROOT_DIR/package.json"
 PLUGIN_PHP="$ROOT_DIR/extra-product-data-for-woocommerce.php"
 COMPOSER_JSON="$ROOT_DIR/composer.json"
+CONSTANTS_PHP="$ROOT_DIR/src/constants.php"
 
 if [ "$#" -ne 1 ]; then
   echo "Usage: $0 {patch|minor|major|<version>}"
@@ -112,6 +113,11 @@ if [ -f "$PLUGIN_PHP" ]; then
     }
   ' "$PLUGIN_PHP" > "$tmpfile"
   mv "$tmpfile" "$PLUGIN_PHP"
+fi
+
+# update src/constants.php $version variable if present
+if [ -f "$CONSTANTS_PHP" ]; then
+  sed -E -i.bak "s/(\\\$version = ')[0-9]+\.[0-9]+\.[0-9]+'/\1$new_version'/" "$CONSTANTS_PHP"
 fi
 
 # update readme.txt stable tag if present

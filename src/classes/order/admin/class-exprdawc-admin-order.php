@@ -24,7 +24,8 @@
  * This file is part of the development of WordPress plugins.
  */
 
-namespace Triopsi\Exprdawc;
+declare( strict_types=1 );
+namespace Triopsi\Exprdawc\Order\Admin;
 
 if ( ! defined( 'ABSPATH' ) ) {
 	exit; // Exit if accessed directly.
@@ -34,13 +35,15 @@ use Automattic\WooCommerce\Utilities\OrderUtil;
 use WC_Order;
 use WC_Order_Item;
 use WC_Product;
+use Triopsi\Exprdawc\Order\Exprdawc_Base_Order_Class;
+use Triopsi\Exprdawc\Helper\Exprdawc_Helper;
 
 /**
  * Class Exprdawc_Admin_Order
  *
  * This class is responsible for the admin order page.
  *
- * @package Exprdawc
+ * @package Exprdawc\Order\Admin
  */
 class Exprdawc_Admin_Order extends Exprdawc_Base_Order_Class {
 
@@ -68,10 +71,10 @@ class Exprdawc_Admin_Order extends Exprdawc_Base_Order_Class {
 		add_action( 'admin_footer', array( $this, 'add_js_template' ) );
 
 		// AJAX action for configuring addon order item.
-		add_action( 'wp_ajax_woocommerce_configure_exprdawc_order_item', array( $this, 'woocommerce_configure_exprdawc_order_item' ) );
+		add_action( 'wp_ajax_woocommerce_configure_exprdawc_order_item', array( $this, 'exprdawc_load_edit_modal_form' ) );
 
 		// Ajax handler used to store updated order item.
-		add_action( 'wp_ajax_woocommerce_edit_exprdawc_order_item', array( $this, 'ajax_edit_exprdawc_order_item' ) );
+		add_action( 'wp_ajax_woocommerce_edit_exprdawc_order_item', array( $this, 'exprdawc_save_edit_modal_form' ) );
 	}
 
 	/**
@@ -165,9 +168,11 @@ class Exprdawc_Admin_Order extends Exprdawc_Base_Order_Class {
 	}
 
 	/**
-	 * AJAX action for configuring addon order item.
+	 * Load the edit form in a modal via ajax.
+	 *
+	 * @return void
 	 */
-	public function woocommerce_configure_exprdawc_order_item() {
+	public function exprdawc_load_edit_modal_form() {
 
 		// Check permissions and nonce.
 		check_ajax_referer( 'wc_exprdawc_edit_exprdawc', 'security' );
@@ -189,7 +194,11 @@ class Exprdawc_Admin_Order extends Exprdawc_Base_Order_Class {
 			wp_send_json_error( array( 'message' => __( 'Order or item not found.', 'extra-product-data-for-woocommerce' ) ) );
 		}
 
-		// Get the product data.
+		/**
+		 * Get the product data.
+		 *
+		 * @disregard
+		 */
 		$product = $item->get_product();
 		if ( $product->is_type( 'variation' ) ) {
 			$product = wc_get_product( $product->get_parent_id() );
@@ -210,16 +219,16 @@ class Exprdawc_Admin_Order extends Exprdawc_Base_Order_Class {
 				$all_user_inputs[ $meta->key ] = $meta;
 			}
 		}
-		$extra_user_data = array();
+		$post_data_product_item = array();
 		foreach ( $custom_fields as $index => $input_field_array ) {
-			$label_id                     = strtolower( str_replace( ' ', '_', $input_field_array['label'] ) );
-			$extra_user_data[ $label_id ] = isset( $all_user_inputs[ $input_field_array['label'] ] ) ? $all_user_inputs[ $input_field_array['label'] ]->value : '';
+			$label_id                            = strtolower( str_replace( ' ', '_', $input_field_array['label'] ) );
+			$post_data_product_item[ $label_id ] = isset( $all_user_inputs[ $input_field_array['label'] ] ) ? $all_user_inputs[ $input_field_array['label'] ]->value : '';
 		}
 
 		// Generate the HTML for the form.
 		ob_start();
 		foreach ( $custom_fields as $index => $field ) {
-			$value = isset( $extra_user_data[ strtolower( str_replace( ' ', '_', $field['label'] ) ) ] ) ? $extra_user_data[ strtolower( str_replace( ' ', '_', $field['label'] ) ) ] : '';
+			$value = isset( $post_data_product_item[ strtolower( str_replace( ' ', '_', $field['label'] ) ) ] ) ? $post_data_product_item[ strtolower( str_replace( ' ', '_', $field['label'] ) ) ] : '';
 			Exprdawc_Helper::generate_input_field( $field, $value, true );
 		}
 		$html = ob_get_clean();
@@ -229,14 +238,16 @@ class Exprdawc_Admin_Order extends Exprdawc_Base_Order_Class {
 	}
 
 	/**
-	 * Ajax handler used to store updated order item.
+	 * Save the edit via ajax request.
+	 *
+	 * @return void
 	 */
-	public function ajax_edit_exprdawc_order_item() {
+	public function exprdawc_save_edit_modal_form() {
 		// Check permissions and nonce.
 		check_ajax_referer( 'wc_exprdawc_edit_exprdawc', 'security' );
 
 		// Process Data Save.
-		$order_id = $this->process_save_order();
+		$order_id = $this->process_save_order( true );
 
 		// Generate the updated HTML for the order items and notes.
 		ob_start();

@@ -4,7 +4,7 @@ Tags: WooCommerce Product Addons, WooCommerce product options, WooCommerce custo
 Requires at least: 5.0
 Tested up to: 6.7
 Requires PHP: 8.2
-Stable tag: 1.8.2
+Stable tag: 2.0.0
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
@@ -49,6 +49,12 @@ The following field types are currently implemented:
 2. Activate the plugin through the 'Plugins' screen in WordPress.
 3. Go to any WooCommerce product page to see the additional input fields.
 
+== Development ==
+
+This plugin uses Composer autoloading for its PHP classes.
+
+1. Run `composer install` in the plugin directory.
+
 == Frequently Asked Questions ==
 
 = Can the fields be customized? =
@@ -74,6 +80,9 @@ Yes, the plugin has been tested with the latest WordPress release and PHP 8.2.
 14. Set Conditional Logic
 
 == Changelog ==
+
+= 2.0.0 (20.02.2026) =
+* Changes will be documented here
 
 = 1.0.0 ((2024-11-20)) =
 * Initial release.

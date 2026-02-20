@@ -197,13 +197,21 @@ jQuery(document).ready(function ($) {
 
 
                     let fieldPrice = 0;
+                    let adjustmentType = 'fixed';
                     if (fieldType === "select") {
                         const $selectedOption = $(this).find("option:selected");
                         if ($selectedOption.data('price-adjustment')) {
                             fieldPrice = parseFloat($selectedOption.data('price-adjustment')) || 0;
+                            adjustmentType = $selectedOption.data('price-adjustment-type') || 'fixed';
                         }
                     } else {
                         fieldPrice = parseFloat($(this).data('price-adjustment')) || 0;
+                        adjustmentType = $(this).data('price-adjustment-type') || 'fixed';
+                    }
+
+                    // Calculate percentage-based price adjustments
+                    if (adjustmentType === 'percentage' && fieldPrice !== 0) {
+                        fieldPrice = (basePrice * fieldPrice) / 100;
                     }
 
                     if ($("[data-qty-based]").length) {

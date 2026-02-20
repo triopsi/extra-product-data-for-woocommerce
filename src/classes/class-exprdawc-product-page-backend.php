@@ -24,16 +24,20 @@
  * This file is part of the development of WordPress plugins.
  */
 
+declare( strict_types=1 );
 namespace Triopsi\Exprdawc;
 
 if ( ! defined( 'ABSPATH' ) ) {
 	exit; // Exit if accessed directly.
 }
+
+use Triopsi\Exprdawc\Helper\Exprdawc_Helper;
+
 /**
- * Class Selection
+ * Class Exprdawc_Product_Page_Backend
  *
- * This class represents a selection of items. It provides methods to add, remove,
- * and retrieve items from the selection. The selection can be manipulated and queried
+ * This class represents the backend functionality for the product page in the Extra Product Data for WooCommerce plugin.
+ * It provides methods to add, remove, and retrieve items from the selection. The selection can be manipulated and queried
  * to perform various operations on the contained items.
  *
  * @package Exprdawc
@@ -46,17 +50,19 @@ class Exprdawc_Product_Page_Backend {
 	public function __construct() {
 
 		// Add custom tab in product edit page.
-		add_filter( 'woocommerce_product_data_tabs', array( $this, 'exprdawc_add_custom_product_tab' ) );
-		add_action( 'woocommerce_product_data_panels', array( $this, 'exprdawc_add_custom_product_fields' ) );
+		if ( is_admin() ) {
+			add_filter( 'woocommerce_product_data_tabs', array( $this, 'exprdawc_add_custom_product_tab' ) );
+			add_action( 'woocommerce_product_data_panels', array( $this, 'exprdawc_add_custom_product_fields' ) );
 
-		// Save custom fields.
-		add_action( 'woocommerce_process_product_meta', array( $this, 'exprdawc_save_extra_product_fields' ) );
+			// Save custom fields.
+			add_action( 'woocommerce_process_product_meta', array( $this, 'exprdawc_save_extra_product_fields' ) );
 
-		// Add Scripts in head and footer.
-		add_action( 'admin_enqueue_scripts', array( $this, 'exprdawc_show_general_tab' ) );
+			// Add Scripts in head and footer.
+			add_action( 'admin_enqueue_scripts', array( $this, 'exprdawc_show_general_tab' ) );
 
-		// Import custom fields.
-		add_action( 'wp_ajax_exprdawc_import_custom_fields', array( $this, 'exprdawc_import_custom_fields' ) );
+			// Import custom fields.
+			add_action( 'wp_ajax_exprdawc_import_custom_fields', array( $this, 'exprdawc_import_custom_fields' ) );
+		}
 	}
 
 	/**
@@ -76,17 +82,48 @@ class Exprdawc_Product_Page_Backend {
 	}
 
 	/**
-	 * Add custom fields to the product edit page.
+	 * Add custom product fields to the product edit page.
 	 *
-	 * This function is responsible for adding custom fields to the product edit page
-	 * in the WooCommerce admin interface. It ensures that the fields are displayed
-	 * correctly and can be used to store additional product data.
+	 * This function is hooked to the 'woocommerce_product_data_panels' action and is responsible for
+	 * rendering the HTML for the custom product fields panel in the product edit page.
 	 */
-	public function exprdawc_add_custom_product_fields() {
+	public function exprdawc_add_custom_product_fields(): void {
 		global $post;
-		$product       = wc_get_product( $post );
+		$post_id = ( $post instanceof \WP_Post ) ? (int) $post->ID : 0;
+		if ( $post_id <= 0 ) {
+			return;
+		}
+
+		echo $this->get_custom_product_fields_panel_html( $post_id ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
+	}
+
+	/**
+	 * Get the HTML for the custom product fields panel.
+	 *
+	 * @param int $product_id The ID of the product for which to get the panel HTML.
+	 * @return string The HTML for the custom product fields panel.
+	 */
+	public function get_custom_product_fields_panel_html( int $product_id ): string {
+		$product = wc_get_product( $product_id );
+		if ( ! $product ) {
+			return '';
+		}
+
 		$custom_fields = $product->get_meta( '_extra_product_fields', true );
-		include EXPRDAWC_TEMPLATES . 'html-tab-extra-attributes.php';
+		if ( ! is_array( $custom_fields ) ) {
+			$custom_fields = array();
+		}
+
+		ob_start();
+		Exprdawc_Helper::render_template(
+			'html-tab-extra-attributes.php',
+			array(
+				'product'       => $product,
+				'custom_fields' => $custom_fields,
+				'product_id'    => $product_id,
+			)
+		);
+		return (string) ob_get_clean();
 	}
 
 	/**
@@ -95,13 +132,20 @@ class Exprdawc_Product_Page_Backend {
 	 * @return void
 	 */
 	public function exprdawc_show_general_tab() {
-		wp_enqueue_script( 'exprdawc-wc-meta-boxes-js', EXPRDAWC_ASSETS_JS . 'wc-meta-boxes-product.min.js', array( 'jquery', 'jquery-ui-sortable' ), '1.0.0', true );
+		// Enqueue main product meta boxes script.
+		wp_enqueue_script( 'exprdawc-wc-meta-boxes-js', EXPRDAWC_ASSETS_JS . 'wc-meta-boxes-product.min.js', array( 'jquery', 'jquery-ui-sortable' ), EXPRDAWC_VERSION, true );
+
+		// Enqueue import/export modal CSS and JS.
+		wp_enqueue_style( 'exprdawc-import-export-modal-css', EXPRDAWC_ASSETS_CSS . 'import-export-modal.css', array(), EXPRDAWC_VERSION );
+		wp_enqueue_script( 'exprdawc-import-export-modal-js', EXPRDAWC_ASSETS_JS . 'import-export-modal.min.js', array( 'jquery' ), EXPRDAWC_VERSION, true );
+
 		wp_localize_script(
 			'exprdawc-wc-meta-boxes-js',
 			'exprdawc_admin_meta_boxes',
 			array(
 				'edit_exprdawc_nonce'                  => wp_create_nonce( 'edit_exprdawc_nonce' ),
 				'label_placeholder'                    => esc_html__( 'Name of the label', 'extra-product-data-for-woocommerce' ),
+				'columns'                              => esc_html__( 'Columns', 'extra-product-data-for-woocommerce' ),
 				'short_text'                           => esc_html__( 'Short Text', 'extra-product-data-for-woocommerce' ),
 				'long_text'                            => esc_html__( 'Long Text', 'extra-product-data-for-woocommerce' ),
 				'email'                                => esc_html__( 'Email', 'extra-product-data-for-woocommerce' ),
@@ -208,6 +252,10 @@ class Exprdawc_Product_Page_Backend {
 				'percentage'                           => esc_html__( 'Percentage Price', 'extra-product-data-for-woocommerce' ),
 				'quantity'                             => esc_html__( 'Price per Quantity', 'extra-product-data-for-woocommerce' ),
 				'default_selected'                     => esc_html__( 'Default selected', 'extra-product-data-for-woocommerce' ),
+				'exportTitle'                          => esc_html__( 'Export Custom Fields', 'extra-product-data-for-woocommerce' ),
+				'importTitle'                          => esc_html__( 'Import Custom Fields', 'extra-product-data-for-woocommerce' ),
+				'invalidJsonMsg'                       => esc_html__( 'Invalid JSON format. Please check your input.', 'extra-product-data-for-woocommerce' ),
+				'importingMsg'                         => esc_html__( 'Importing...', 'extra-product-data-for-woocommerce' ),
 			)
 		);
 	}

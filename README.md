@@ -30,7 +30,7 @@ Project:             | Woocommerce Extra Product Data
 | Requires at least |  5.0 |
 | Tested up to |  6.x |
 | Requires PHP |  > 8.2 |
-| Stable tag | 1.8.2 |
+| Stable tag | 2.0.0 |
 | License |  GPLv2 or later |
 | License URI |  https://www.gnu.org/licenses/gpl-2.0.html |
 | Wordpress Plugin Site | https://wordpress.org/plugins/extra-product-data-for-woocommerce/ |
@@ -61,6 +61,14 @@ The plugin was developed by @triopsi using the latest stable PHP version (8.2) a
 1. Upload the plugin files to the `/wp-content/plugins/extra-product-data-for-woocommerce` directory, or install the plugin directly through the WordPress plugins screen.
 2. Activate the plugin through the 'Plugins' screen in WordPress.
 3. Go to any WooCommerce product page to see the additional input fields.
+
+## Development
+
+This plugin uses Composer autoloading for its PHP classes.
+
+```bash
+composer install
+```
 
 ## Support
 
