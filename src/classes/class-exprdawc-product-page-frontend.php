@@ -37,7 +37,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 }
 
 /**
- * Class Exprdawc_Product_Page_Fronted
+ * Class Exprdawc_Product_Page_Frontend
  *
  * This class represents the frontend functionality for the product page in the Extra Product Data for WooCommerce plugin.
  *
@@ -53,7 +53,7 @@ if ( ! defined( 'ABSPATH' ) ) {
  * @method void save() Saves the user to the database.
  * @method void delete() Deletes the user from the database.
  */
-class Exprdawc_Product_Page_Fronted {
+class Exprdawc_Product_Page_Frontend {
 
 	/**
 	 * Constructor for the class.
@@ -683,6 +683,11 @@ class Exprdawc_Product_Page_Fronted {
 	 * @return void
 	 */
 	public function exprdawc_adjust_cart_item_pricing( object $cart_object ): void {
+
+		// Prevent infinite loop by ensuring this function only runs once per cart calculation.
+		if ( did_action( 'woocommerce_before_calculate_totals' ) > 1 ) {
+			return;
+		}
 
 		// Loop through each cart item and adjust the price based on the extra user data.
 		foreach ( $cart_object->get_cart() as $cart_item_key => $cart_item ) {

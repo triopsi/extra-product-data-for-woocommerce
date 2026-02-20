@@ -58,9 +58,9 @@ class TestClassExprdawcMain extends WP_UnitTestCase {
 		$product_backend->setAccessible( true );
 		$this->assertNotNull( $product_backend->getValue( $this->exprdawc_main_instance ) );
 
-		$product_fronted = $reflection->getProperty( 'exprdawc_product_fronted' );
-		$product_fronted->setAccessible( true );
-		$this->assertNotNull( $product_fronted->getValue( $this->exprdawc_main_instance ) );
+		$product_frontend = $reflection->getProperty( 'exprdawc_product_frontend' );
+		$product_frontend->setAccessible( true );
+		$this->assertNotNull( $product_frontend->getValue( $this->exprdawc_main_instance ) );
 
 		$admin_order_edit = $reflection->getProperty( 'exprdawc_admin_order_edit' );
 		$admin_order_edit->setAccessible( true );

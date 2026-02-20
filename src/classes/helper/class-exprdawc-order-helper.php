@@ -105,7 +105,7 @@ class Exprdawc_Order_Helper {
 		$adjustment_type = $config['price_adjustment_type'] ?? 'fixed';
 
 		// For percentage adjustments, calculate based on base price.
-		if ( in_array( $adjustment_type, array( 'percentage', 'percent' ), true ) && $base_price > 0 ) {
+		if ( in_array( $adjustment_type, array( 'percentage' ), true ) && $base_price > 0 ) {
 			return ( $base_price / 100 ) * $adjustment_value;
 		}
 

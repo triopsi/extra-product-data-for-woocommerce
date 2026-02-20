@@ -1,25 +1,25 @@
 <?php
 declare( strict_types=1 );
 
-require_once dirname( __DIR__ ) . '/../src/classes/class-exprdawc-product-page-fronted.php';
+require_once dirname( __DIR__ ) . '/../src/classes/class-exprdawc-product-page-frontend.php';
 require_once dirname( __DIR__ ) . '/../src/classes/helper/class-exprdawc-helper.php';
 
 use Automattic\WooCommerce\Enums\ProductStockStatus;
-use Triopsi\Exprdawc\Exprdawc_Product_Page_Fronted;
+use Triopsi\Exprdawc\Exprdawc_Product_Page_Frontend;
 
 /**
- * Class TestClassExprdawcProductPageFronted
+ * Class TestClassExprdawcProductPageFrontend
  *
- * PHPUnit tests for Exprdawc_Product_Page_Fronted class.
+ * PHPUnit tests for Exprdawc_Product_Page_Frontend class.
  *
  * @package Extra_Product_Data_For_WooCommerce\Tests\Unit
  */
-class TestClassExprdawcProductPageFronted extends WP_UnitTestCase {
+class TestClassExprdawcProductPageFrontend extends WP_UnitTestCase {
 
 	/**
 	 * The instance of the class to test.
 	 *
-	 * @var Exprdawc_Product_Page_Fronted
+	 * @var Exprdawc_Product_Page_Frontend
 	 */
 	private $instance;
 
@@ -43,7 +43,7 @@ class TestClassExprdawcProductPageFronted extends WP_UnitTestCase {
 	public function setUp(): void {
 		parent::setUp();
 
-		$this->instance = new Exprdawc_Product_Page_Fronted();
+		$this->instance = new Exprdawc_Product_Page_Frontend();
 
 		// Create a test product.
 		$this->product_id = $this->factory()->post->create(

@@ -47,6 +47,8 @@ class Exprdawc_User_Order extends Exprdawc_Base_Order_Class {
 	 * Exprdawc_User_Order constructor.
 	 */
 	public function __construct() {
+
+		// Add "Edit"-Button on frontend in the user order section.
 		add_action( 'woocommerce_order_item_meta_end', array( $this, 'add_edit_button_to_order_item' ), 10, 3 );
 		add_action( 'wp_enqueue_scripts', array( $this, 'enqueue_scripts' ) );
 		add_action( 'wp_ajax_exprdawc_save_order_item_meta', array( $this, 'save_order_item_meta' ) );
