@@ -11,6 +11,8 @@
  * WC requires at least: 3.9
  * WC tested up to: 9.4
  * Requires Plugins: woocommerce
+ * Requires PHP: 8.0
+ * Requires at least: 6.0
  *
  * @package ExtraProductDataForWooCommerce
  */
@@ -59,3 +61,20 @@ function exprdawc_admin_notice() {
 	</div>
 	<?php
 }
+
+/**
+ * Deactivate the plugin if the PHP version is below 8.0.
+ */
+register_activation_hook(
+	__FILE__,
+	function () {
+		if ( version_compare( PHP_VERSION, '8.0.0', '<' ) ) {
+			deactivate_plugins( plugin_basename( __FILE__ ) );
+			wp_die(
+				esc_html__( 'This plugin requires PHP 8.0 or higher.', 'extra-product-data-for-woocommerce' ),
+				esc_html__( 'Plugin Activation Error', 'extra-product-data-for-woocommerce' ),
+				array( 'back_link' => true )
+			);
+		}
+	}
+);
