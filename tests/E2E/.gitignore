@@ -1,0 +1,11 @@
+# E2E Test artifacts
+.env
+.env.local
+test-results/
+reports/
+screenshots/
+*.png
+*.mp4
+
+# Playwright specific
+.auth/

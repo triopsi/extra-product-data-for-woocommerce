@@ -63,18 +63,7 @@ class Exprdawc_Helper {
 	 * @return bool True when WooCommerce is available or active.
 	 */
 	public static function is_woocommerce_active(): bool {
-		if ( class_exists( 'WooCommerce' ) || function_exists( 'WC' ) ) {
-			return true;
-		}
-
-		$active_plugins = (array) get_option( 'active_plugins', array() );
-
-		if ( is_multisite() ) {
-			$sitewide_plugins = (array) get_site_option( 'active_sitewide_plugins', array() );
-			$active_plugins   = array_merge( $active_plugins, array_keys( $sitewide_plugins ) );
-		}
-
-		return in_array( 'woocommerce/woocommerce.php', $active_plugins, true );
+		return class_exists( 'WooCommerce' ) ? true : false;
 	}
 
 	/**
@@ -635,6 +624,9 @@ class Exprdawc_Helper {
 	 */
 	public static function check_required_fields( $product_id ) {
 		$product = wc_get_product( $product_id );
+		if ( ! $product ) {
+			return false;
+		}
 		if ( $product->is_type( ProductType::VARIATION ) ) {
 			$product = wc_get_product( $product->get_parent_id() );
 		}

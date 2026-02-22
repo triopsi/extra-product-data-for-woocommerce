@@ -60,3 +60,4 @@ coverage.xml
 /tests/_output
 reports/
 vite.config.js
+sample_products.csv

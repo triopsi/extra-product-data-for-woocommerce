@@ -15,17 +15,22 @@
     "prepare": "husky",
     "commit": "commit",
     "test": "composer test",
-    "wp-env": "wp-env"
+    "wp-env": "wp-env",
+    "wp:start": "wp-env start",
+    "wp:stop": "wp-env stop",
+    "wp:destroy": "wp-env destroy",
+    "wp:cli": "wp-env run cli"
   },
   "repository": {
     "type": "git",
-    "url": "git@git.triopsi.dev:triopsi/extra-product-data-for-woocommerce.git"
+    "url": "git@github.com:triopsi/extra-product-data-for-woocommerce.git"
   },
   "author": "triopsi",
   "license": "ISC",
   "devDependencies": {
     "@commitlint/cli": "19.6.0",
     "@commitlint/config-conventional": "19.6.0",
+    "@wordpress/env": "^11.0.0",
     "babel-eslint": "^10.1.0",
     "eslint": "^10.0.0",
     "eslint-config-wordpress": "^2.0.0",

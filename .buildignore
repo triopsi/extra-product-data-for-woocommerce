@@ -32,3 +32,4 @@ phpunit.xml
 .phpunit.result.cache
 reports/
 vite.config.js
+sample_products.csv

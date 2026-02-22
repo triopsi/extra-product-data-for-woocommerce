@@ -129,19 +129,20 @@ class Exprdawc_Admin_Order extends Exprdawc_Base_Order_Class {
 	 * Enqueue JS.
 	 */
 	public function js_meta_boxes_enqueue() {
-		if ( ! $this->is_current_screen( array( 'product' ) ) ) {
-			wp_enqueue_script( 'woocommerce_exprdawc-admin-order-panel', EXPRDAWC_ASSETS_JS . 'wc-meta-boxes-order.min.js', array( 'wc-admin-order-meta-boxes', 'jquery-ui-datepicker', 'jquery' ), '1.0.0', true );
-			wp_localize_script(
-				'woocommerce_exprdawc-admin-order-panel',
-				'wc_exprdawc_admin_order_params',
-				array(
-					'edit_exprdawc_nonce' => wp_create_nonce( 'wc_exprdawc_edit_exprdawc' ),
-					'i18n_configure'      => __( 'Configure', 'extra-product-data-for-woocommerce' ),
-					'i18n_edit'           => __( 'Edit', 'extra-product-data-for-woocommerce' ),
-					'i18n_form_error'     => __( 'Failed to initialize form. If this issue persists, please reload the page and try again.', 'extra-product-data-for-woocommerce' ),
-				)
-			);
+		if ( ! $this->is_current_screen( array( 'shop_order', 'edit-shop_order', 'woocommerce_page_wc-orders' ) ) ) {
+			return;
 		}
+		wp_enqueue_script( 'woocommerce_exprdawc-admin-order-panel', EXPRDAWC_ASSETS_JS . 'wc-meta-boxes-order.min.js', array( 'wc-admin-order-meta-boxes', 'jquery-ui-datepicker', 'jquery' ), '1.0.0', true );
+		wp_localize_script(
+			'woocommerce_exprdawc-admin-order-panel',
+			'wc_exprdawc_admin_order_params',
+			array(
+				'edit_exprdawc_nonce' => wp_create_nonce( 'wc_exprdawc_edit_exprdawc' ),
+				'i18n_configure'      => __( 'Configure', 'extra-product-data-for-woocommerce' ),
+				'i18n_edit'           => __( 'Edit', 'extra-product-data-for-woocommerce' ),
+				'i18n_form_error'     => __( 'Failed to initialize form. If this issue persists, please reload the page and try again.', 'extra-product-data-for-woocommerce' ),
+			)
+		);
 	}
 
 	/**

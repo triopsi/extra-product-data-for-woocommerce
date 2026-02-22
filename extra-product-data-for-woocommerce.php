@@ -21,8 +21,8 @@ if ( ! defined( 'ABSPATH' ) ) {
 	exit; // Exit if accessed directly.
 }
 
+use Automattic\WooCommerce\Utilities\FeaturesUtil;
 use Triopsi\Exprdawc\Exprdawc_Main;
-use Triopsi\Exprdawc\Helper\Exprdawc_Helper;
 
 // Load Composer autoloader when available.
 $autoload_path = __DIR__ . '/vendor/autoload.php';
@@ -33,20 +33,15 @@ if ( file_exists( $autoload_path ) ) {
 // Include constants.
 require_once __DIR__ . '/src/constants.php';
 
-// Is WooCommerce active? Then not, display a notice.
-if ( ! Exprdawc_Helper::is_woocommerce_active() ) {
-	add_action( 'admin_notices', 'exprdawc_admin_notice' );
-} else {
-	// Initiate the main class.
-	Exprdawc_Main::get_instance();
-}
+// Initiate the main class.
+Exprdawc_Main::get_instance();
 
 // Declare compatibility with WooCommerce HPOS.
 add_action(
 	'before_woocommerce_init',
 	function () {
-		if ( class_exists( \Automattic\WooCommerce\Utilities\FeaturesUtil::class ) ) {
-			\Automattic\WooCommerce\Utilities\FeaturesUtil::declare_compatibility( 'custom_order_tables', __FILE__, true );
+		if ( class_exists( FeaturesUtil::class ) ) {
+			FeaturesUtil::declare_compatibility( 'custom_order_tables', __FILE__, true );
 		}
 	}
 );
