@@ -61,3 +61,8 @@ coverage.xml
 reports/
 vite.config.js
 sample_products.csv
+playwright-report/
+node_modules/
+commitlint.config.mjs
+mix-manifest.json
+README.md
