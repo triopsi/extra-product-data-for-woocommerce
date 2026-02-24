@@ -49,6 +49,10 @@ jobs:
         run: bash bin/set-up-test-env.sh
 
       - name: Run Smoke (PR) or Full (main)
+        env:
+          BASE_URL: http://127.0.0.1:8889
+          WP_ADMIN_URL: http://127.0.0.1:8889/wp-admin
+          WP_USERNAME: admin
         run: |
           cd ${GITHUB_WORKSPACE}/tests/E2E
           if [ "${{ github.event_name }}" = "pull_request" ]; then
