@@ -33,3 +33,4 @@ phpunit.xml
 reports/
 vite.config.js
 sample_products.csv
+playwright-report/

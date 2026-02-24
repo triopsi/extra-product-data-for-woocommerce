@@ -5,12 +5,12 @@
   "main": "index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "e2e": "playwright test tests/E2E/specs/ --project=chromium",
-    "e2e:headed": "playwright test tests/E2E/specs/ --headed --project=chromium",
-    "e2e:debug": "playwright test tests/E2E/specs/ --debug",
-    "e2e:ui": "playwright test tests/E2E/specs/ --ui",
-    "e2e:report": "playwright show-report tests/E2E/reports",
-     "wp-env": "wp-env"
+    "e2e": "playwright test",
+    "e2e:smoke": "playwright test tests/E2E/testcases/00-smoke.spec.js",
+    "e2e:headed": "playwright test --headed",
+    "e2e:debug": "playwright test --debug",
+    "e2e:ui": "playwright test --ui",
+    "e2e:report": "playwright show-report"
   },
   "keywords": [],
   "author": "",

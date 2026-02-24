@@ -144,3 +144,4 @@ CHANGELOG.md
 *.afdesign
 reports/
 sample_products.csv
+playwright-report
