@@ -34,3 +34,8 @@ reports/
 vite.config.js
 sample_products.csv
 playwright-report/
+/.wordpress-org
+/.git
+/.github
+/node_modules
+.distignore
