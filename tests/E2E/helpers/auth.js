@@ -16,7 +16,7 @@
  * await loginAsAdmin(page, 'admin', 'password', 'http://localhost/wp-admin');
  */
 export async function loginAsAdmin(page, username, password, adminUrl) {
-  await page.goto(`${adminUrl}/`, { waitUntil: 'networkidle' });
+  await page.goto(`${adminUrl}/`, { waitUntil: 'domcontentloaded' });
 
   // Check if already logged in
   const isLoggedIn = await page.locator('a:text("Logout")').isVisible().catch(() => false);
@@ -30,7 +30,7 @@ export async function loginAsAdmin(page, username, password, adminUrl) {
   await page.click('input[type="submit"]');
 
   // Wait for redirect to dashboard
-  await page.waitForURL(`${adminUrl}/`, { waitUntil: 'networkidle' });
+  await page.waitForURL(`${adminUrl}/`, { waitUntil: 'domcontentloaded' });
 }
 
 /**
@@ -44,13 +44,13 @@ export async function loginAsAdmin(page, username, password, adminUrl) {
  */
 export async function logout(page) {
   // Navigate to admin area
-  await page.goto(process.env.WP_ADMIN_URL || 'http://localhost:8080/wp-admin');
+  await page.goto(process.env.WP_ADMIN_URL || 'http://localhost:8080/wp-admin', { waitUntil: 'domcontentloaded' });
 
   // Click user menu
   const userMenu = page.locator('a[aria-label*="Log out"]').first();
   if (await userMenu.isVisible()) {
     await userMenu.click();
-    await page.waitForNavigation();
+    await page.waitForNavigation({ waitUntil: 'domcontentloaded' });
   }
 }
 
