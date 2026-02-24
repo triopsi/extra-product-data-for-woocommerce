@@ -82,7 +82,9 @@ echo "Install Wordpress-Import plugin for product import..."
 npm run wp:cli -- wp plugin install wordpress-importer --activate
 
 echo "Importing sample products..."
-npm run wp:cli -- wp import wp-content/plugins/woocommerce/sample-data/sample_products.xml --authors=create --skip=image_resize --user=1
+# npm run wp:cli -- wp import wp-content/plugins/woocommerce/sample-data/sample_products.xml --authors=create --skip=image_resize --user=1
+npm run wp:cli -- wp import wp-content/plugins/extra-product-data-for-woocommerce/bin/data/e2e_product_data_import.xml --authors=create --skip=image_resize --user=1
+
 
 echo "Set site visibility to public..."
 npm run wp:cli -- wp option update woocommerce_coming_soon no
