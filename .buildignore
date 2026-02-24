@@ -39,3 +39,6 @@ playwright-report/
 /.github
 /node_modules
 .distignore
+commitlint.config.mjs
+mix-manifest.json
+README.md
