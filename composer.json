@@ -2,11 +2,14 @@
   "name": "triopsi/extra-product-data-for-woocommerce",
   "homepage": "https://triopsi.com",
   "type": "project",
-  "version": "1.8.2",
+  "version": "2.0.0",
   "autoload": {
     "psr-4": {
       "Triopsi\\Exprdawc\\": "src/classes/"
-    }
+    },
+    "classmap": [
+      "src/classes/"
+    ]
   },
   "authors": [
     {
@@ -15,14 +18,20 @@
     }
   ],
   "scripts": {
-    "test": "phpunit",
-    "test-cov": "XDEBUG_MODE=coverage phpunit --coverage-html=reports/coverage --coverage-clover=reports/clover.xml",
+    "test": "phpunit --testdox",
+    "test-cov": "XDEBUG_MODE=coverage phpunit --coverage-html=reports/coverage --coverage-clover=reports/clover.xml --testdox",
     "test-install": "bash bin/install-wp-tests.sh wordpress_test root 'root' db latest"
   },
   "config": {
     "allow-plugins": {
       "dealerdirect/phpcodesniffer-composer-installer": true
+    },
+    "platform": {
+      "php": "8.0.0"
     }
+  },
+  "require": {
+    "php": ">=8.0"
   },
   "require-dev": {
     "wp-coding-standards/wpcs": "^3.0",

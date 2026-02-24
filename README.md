@@ -16,7 +16,11 @@
   - [Description](#description)
   - [Features](#features)
   - [Installation](#installation)
+  - [Development](#development)
   - [Support](#support)
+  - [Contributing](#contributing)
+    - [Development Setup](#development-setup)
+    - [Testing](#testing)
 - [Frequently Asked Questions](#frequently-asked-questions)
 - [Can the fields be customized?](#can-the-fields-be-customized)
 - [Is the plugin compatible with the latest WordPress version?](#is-the-plugin-compatible-with-the-latest-wordpress-version)
@@ -30,7 +34,7 @@ Project:             | Woocommerce Extra Product Data
 | Requires at least |  5.0 |
 | Tested up to |  6.x |
 | Requires PHP |  > 8.2 |
-| Stable tag | 1.8.2 |
+| Stable tag | 2.0.0 |
 | License |  GPLv2 or later |
 | License URI |  https://www.gnu.org/licenses/gpl-2.0.html |
 | Wordpress Plugin Site | https://wordpress.org/plugins/extra-product-data-for-woocommerce/ |
@@ -62,6 +66,14 @@ The plugin was developed by @triopsi using the latest stable PHP version (8.2) a
 2. Activate the plugin through the 'Plugins' screen in WordPress.
 3. Go to any WooCommerce product page to see the additional input fields.
 
+## Development
+
+This plugin uses Composer autoloading for its PHP classes.
+
+```bash
+composer install
+```
+
 ## Support
 
 This repository is used for development and issue tracking.
@@ -71,6 +83,35 @@ If you need help using the plugin, please use the WordPress.org support forum:
 https://wordpress.org/support/plugin/extra-product-data-for-woocommerce/
 
 Bug reports and feature requests are welcome here on GitHub.
+
+## Contributing
+
+We welcome contributions from the community! To contribute to this project:
+
+1. Fork the repository
+2. Create a feature branch (`git checkout -b feature/amazing-feature`)
+3. Commit your changes (`git commit -m 'Add amazing feature'`)
+4. Push to the branch (`git push origin feature/amazing-feature`)
+5. Open a Pull Request
+
+### Development Setup
+
+```bash
+# Install dependencies
+composer install
+npm install
+
+# Run tests
+npm run test
+
+# Build assets
+npm run build
+```
+
+### Testing
+
+For End-to-End testing with Playwright, please refer to the [E2E Testing Quick Start Guide](tests/E2E/QUICKSTART.md).
+
 # Frequently Asked Questions 
 
 # Can the fields be customized? 

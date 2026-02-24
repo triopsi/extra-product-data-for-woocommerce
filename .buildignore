@@ -16,8 +16,6 @@ README.md
 VERSION
 webpack.mix.js
 .DS_Store
-vendor/*
-node_modules/*
 src/assets/*
 create_release.sh
 .releaserc.json
@@ -33,3 +31,6 @@ phpunit.xml
 .afdesign
 .phpunit.result.cache
 reports/
+vite.config.js
+sample_products.csv
+playwright-report/

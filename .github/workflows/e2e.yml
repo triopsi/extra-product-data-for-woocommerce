@@ -1,0 +1,88 @@
+name: Run E2E tests
+
+on:
+  pull_request:
+  push:
+    branches: [main]
+
+jobs:
+  e2e:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: npm
+
+      - name: Setup PHP
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: "8.4"
+          extensions: mbstring, xml, zip, intl, pdo, mysql
+
+      - name: Install Composer dependencies
+        run: composer install --prefer-dist --no-interaction --no-progress
+
+      - name: Optimize Composer autoload
+        run: composer dump-autoload -o
+
+      - name: Install npm deps
+        run: |
+          npm ci
+
+      - name: Install Playwright browsers
+        run: |
+          cd ${GITHUB_WORKSPACE}/tests/E2E
+          npm ci
+          npx playwright install --with-deps
+
+      - name: Start wp-env
+        run: |
+          cd ${GITHUB_WORKSPACE}
+          npm run wp:start
+
+      - name: Seed Woo + activate plugin
+        run: bash bin/set-up-test-env.sh
+
+      - name: Wait for WP to be ready
+        run: |
+          for i in {1..60}; do
+            if curl -sSf http://localhost:8889/wp-login.php >/dev/null; then
+              echo "WP ready"
+              exit 0
+            fi
+            sleep 1
+          done
+          echo "WP not ready in time" && exit 1
+
+      - name: Run Smoke (PR) or Full (main)
+        env:
+          BASE_URL: http://localhost:8889
+          WP_ADMIN_URL: http://localhost:8889/wp-admin
+          WP_USERNAME: admin
+        run: |
+          cd ${GITHUB_WORKSPACE}/tests/E2E
+          if [ "${{ github.event_name }}" = "pull_request" ]; then
+            npm run e2e:smoke
+          else
+            npm run e2e
+          fi
+
+      - name: Upload Playwright report
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: playwright-report
+          path: |
+            tests/E2E/test-results/
+            tests/E2E/playwright-report/
+
+      - name: Stop wp-env
+        if: always()
+        run: |
+          cd ${GITHUB_WORKSPACE}
+          npm run wp:stop

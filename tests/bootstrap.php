@@ -37,24 +37,14 @@ if ( ! file_exists( "{$_tests_dir}/includes/functions.php" ) ) {
 // Give access to tests_add_filter() function.
 require_once "{$_tests_dir}/includes/functions.php";
 
-// require_once WP_CORE_DIR . '/includes/capabilities.php';
-require_once WP_CORE_DIR . '/wp-includes/pluggable.php';
-
 /**
  * Manually load the plugin being tested.
  */
 function _manually_load_plugin() {
 
-    // Load WooCommerce first.
-	$woocommerce_plugin = WP_CORE_DIR . '/wp-content/plugins/woocommerce/woocommerce.php';
+	// Load WooCommerce first from the standard WordPress plugins directory.
+	require_once WP_CORE_DIR . '/wp-content/plugins/woocommerce/woocommerce.php';
 
-	if ( file_exists( $woocommerce_plugin ) ) {
-		require_once $woocommerce_plugin;
-	} else {
-		echo "Warning: WooCommerce plugin not found at: {$woocommerce_plugin}" . PHP_EOL;
-		echo "Tests will run with WooCommerce mocks instead." . PHP_EOL;
-	}
-	
 	// Load our plugin.
 	require dirname( __DIR__ ) . '/extra-product-data-for-woocommerce.php';
 }
@@ -67,20 +57,64 @@ tests_add_filter( 'muplugins_loaded', '_manually_load_plugin' );
  * @return void
  */
 function _install_woocommerce() {
-	if ( class_exists( 'WC_Install' ) ) {
-		// Define WooCommerce constants.
-		if ( ! defined( 'WC_ABSPATH' ) ) {
-			define( 'WC_ABSPATH', WP_CORE_DIR . '/wp-content/plugins/woocommerce/' );
-		}
+	// WooCommerce muss geladen sein.
+	if ( ! class_exists( 'WooCommerce' ) || ! class_exists( 'WC_Install' ) ) {
+		return;
+	}
 
-		// Update WooCommerce options.
-		update_option( 'woocommerce_status_options', array( 'uninstall_data' => 0 ) );
-		update_option( 'woocommerce_enable_guest_checkout', 'yes' );
-		update_option( 'woocommerce_enable_signup_and_login_from_checkout', 'yes' );
+	// WC_ABSPATH sauber setzen (wird von WC intern oft erwartet).
+	if ( ! defined( 'WC_ABSPATH' ) ) {
+		define( 'WC_ABSPATH', trailingslashit( WP_CORE_DIR . '/wp-content/plugins/woocommerce' ) );
+	}
+
+	// Installer ausführen (legt DB-Tabellen/Optionen an).
+	WC_Install::install();
+
+	// In manchen Setups ist install() nicht “komplett genug” → explizit nachziehen.
+	if ( method_exists( 'WC_Install', 'create_tables' ) ) {
+		WC_Install::create_tables();
+	}
+	if ( method_exists( 'WC_Install', 'create_roles' ) ) {
+		WC_Install::create_roles();
+	}
+	if ( method_exists( 'WC_Install', 'create_terms' ) ) {
+		WC_Install::create_terms();
+	}
+
+	// typische Defaults für Tests (optional).
+	update_option( 'woocommerce_enable_guest_checkout', 'yes' );
+	update_option( 'woocommerce_enable_signup_and_login_from_checkout', 'yes' );
+	update_option( 'woocommerce_status_options', array( 'uninstall_data' => 0 ) );
+
+	// WooCommerce initialisieren (Taxonomies, Post Types, etc.).
+	if ( function_exists( 'WC' ) ) {
+		WC()->init();
 	}
 }
-
 tests_add_filter( 'setup_theme', '_install_woocommerce' );
+
+// Make wp_die() throw instead of exiting PHP (prevents PHPUnit from stopping).
+tests_add_filter(
+	'wp_die_handler',
+	function () {
+		return function ( $message = '' ) {
+			throw new RuntimeException(
+				is_string( $message ) ? $message : 'wp_die called' // phpcs:ignore
+			);
+		};
+	}
+);
+
+tests_add_filter(
+	'wp_die_ajax_handler',
+	function () {
+		return function ( $message = '' ) {
+			throw new RuntimeException(
+				is_string( $message ) ? $message : 'wp_die (ajax) called' // phpcs:ignore
+			);
+		};
+	}
+);
 
 // Start up the WP testing environment.
 require "{$_tests_dir}/includes/bootstrap.php";

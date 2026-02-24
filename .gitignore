@@ -143,3 +143,6 @@ CHANGELOG.md
 !.wordpress-org
 *.afdesign
 reports/
+sample_products.csv
+playwright-report
+!.wp-env.json

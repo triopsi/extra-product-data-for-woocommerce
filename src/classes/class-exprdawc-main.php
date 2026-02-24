@@ -24,12 +24,15 @@
  * This file is part of the development of WordPress plugins.
  */
 
+declare( strict_types=1 );
 namespace Triopsi\Exprdawc;
 
 if ( ! defined( 'ABSPATH' ) ) {
 	exit; // Exit if accessed directly.
 }
-use function Triopsi\Exprdawc\tr_is_woocommerce_active;
+use Triopsi\Exprdawc\Helper\Exprdawc_Helper;
+use Triopsi\Exprdawc\Order\Admin\Exprdawc_Admin_Order;
+use Triopsi\Exprdawc\Order\Customer\Exprdawc_User_Order;
 
 /**
  * Class Exprdawc_Main
@@ -56,11 +59,11 @@ class Exprdawc_Main {
 	protected $exprdawc_product_backend = null;
 
 	/**
-	 * Product Fronted Object Holder.
+	 * Product Frontend Object Holder.
 	 *
-	 * @var \Product_Page_Fronted
+	 * @var \Product_Page_Frontend
 	 */
-	protected $exprdawc_product_fronted = null;
+	protected $exprdawc_product_frontend = null;
 
 	/**
 	 * Overview Order Obejct Holder.
@@ -77,6 +80,13 @@ class Exprdawc_Main {
 	protected $exprdawc_settings = null;
 
 	/**
+	 * User Order Object Holder.
+	 *
+	 * @var \User_Order
+	 */
+	protected $exprdawc_user_order = null;
+
+	/**
 	 * Creates or returns an instance of this class.
 	 *
 	 * @return Exprdawc_Main A single instance of this class.
@@ -89,20 +99,9 @@ class Exprdawc_Main {
 	}
 
 	/**
-	 * Register the autoloader.
-	 */
-	protected function register_autoloader() {
-		require_once EXPRDAWC_CLASSES . 'class-autoloader.php';
-		Autoloader::setup( EXPRDAWC_CLASSES, __NAMESPACE__ );
-	}
-
-	/**
 	 * Initiate our sub-objects.
 	 */
 	protected function __construct() {
-
-		$this->register_autoloader();
-
 		// Init Hooks.
 		add_action( 'init', array( $this, 'load_components' ), 0 );
 
@@ -131,22 +130,22 @@ class Exprdawc_Main {
 	 */
 	public function load_components() {
 
-		if ( tr_is_woocommerce_active() ) {
+		if ( Exprdawc_Helper::is_woocommerce_active() ) {
 
 			// Product Create/Edit Page.
 			$this->exprdawc_product_backend = new Exprdawc_Product_Page_Backend();
 
-			// Product Product Fronted.
-			$this->exprdawc_product_fronted = new Exprdawc_Product_Page_Fronted();
+			// Product Product Frontend.
+			$this->exprdawc_product_frontend = new Exprdawc_Product_Page_Frontend();
 
 			// Admin Order Edit Page.
 			$this->exprdawc_admin_order_edit = new Exprdawc_Admin_Order();
 
-			// Settings.
-			$this->exprdawc_settings = new Exprdawc_Settings();
-
 			// User Order.
-			new Exprdawc_User_Order();
+			$this->exprdawc_user_order = new Exprdawc_User_Order();
+
+			// Add Settings in the WooCommerce Settings Page.
+			$this->exprdawc_settings = new Exprdawc_Settings();
 		}
 	}
 
@@ -157,8 +156,8 @@ class Exprdawc_Main {
 	 */
 	public function exprdawc_only_admin_enqueue_scripts() {
 		if ( is_admin() ) {
-			wp_enqueue_style( 'exprdawc-backend-css', EXPRDAWC_ASSETS_CSS . 'admin-backend.css', array(), '1.0.0', 'all' );
-			wp_enqueue_style( 'form-css', EXPRDAWC_ASSETS_CSS . 'forms.css', array(), '1.0.0', 'all' );
+			wp_enqueue_style( 'exprdawc-backend-css', EXPRDAWC_ASSETS_CSS . 'admin-backend.css', array(), EXPRDAWC_VERSION, 'all' );
+			wp_enqueue_style( 'form-css', EXPRDAWC_ASSETS_CSS . 'forms.css', array(), EXPRDAWC_VERSION, 'all' );
 		}
 	}
 }

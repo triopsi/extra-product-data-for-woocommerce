@@ -28,7 +28,13 @@ if ( ! defined( 'ABSPATH' ) ) {
 	exit;
 }
 ?>
-<input type="hidden" id="exprdawc_export_string" name="exprdawc_export_string" value="<?php echo $custom_fields ? wc_esc_json( json_encode( $custom_fields ) ) : ''; // phpcs:ignore ?>" />
+<input type="hidden" id="exprdawc_export_string" name="exprdawc_export_string" value="<?php echo $args['custom_fields'] ? wc_esc_json( json_encode( $args['custom_fields'] ) ) : ''; // phpcs:ignore ?>" />
+
+<?php
+// Include the import/export modal template.
+require EXPRDAWC_TEMPLATES . 'modal-import-export.php';
+?>
+
 <div id="extra-product-data" class="panel woocommerce_options_panel exprdawc_panel_wrapper">
 	<div class="toolbar toolbar-top">
 		
@@ -44,13 +50,13 @@ if ( ! defined( 'ABSPATH' ) ) {
 			<table class="field-options wp-list-table widefat exprdawc_field_table">
 				<tbody id="exprdawc_field_body">
 				<?php
-				if ( ! empty( $custom_fields ) ) {
+				if ( ! empty( $args['custom_fields'] ) ) {
 					$all_fields = array();
 					// Loop through all fields and include the template.
-					foreach ( $custom_fields as $index => $field ) {
+					foreach ( $args['custom_fields'] as $index => $field ) {
 						$all_fields[ $field['label'] ] = $field['label'];
 					}
-					foreach ( $custom_fields as $index => $field ) {
+					foreach ( $args['custom_fields'] as $index => $field ) {
 						$field['price_adjustment_type'] = isset( $field['price_adjustment_type'] ) ? $field['price_adjustment_type'] : '';
 						echo '<tr class="exprdawc_fields_wrapper">';
 						echo '<td colspan="5">';
