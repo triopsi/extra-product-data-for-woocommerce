@@ -11,17 +11,12 @@ export default defineConfig({
   forbidOnly: !!process.env.CI,
   retries: process.env.CI ? 2 : 0,
   workers: process.env.CI ? 1 : 1,
-  reporter: [
-    ['html', {
-      host: '0.0.0.0',
-      port: 9323,
-      open: 'never',
-    }],
-    ['list'],
-  ],
+  reporter: process.env.CI
+    ? [['github'], ['html', { outputFolder: 'playwright-report', open: 'never' }], ['list']]
+    : [['html', { outputFolder: 'playwright-report', open: 'never' }], ['list']],
   use: {
     baseURL: process.env.BASE_URL || 'http://localhost:8889',
-    trace: 'on-first-retry',
+    trace: process.env.CI ? 'retain-on-failure' : 'on-first-retry',
     screenshot: 'only-on-failure',
     video: 'retain-on-failure',
   },
