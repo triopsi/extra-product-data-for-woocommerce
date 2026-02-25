@@ -37,8 +37,8 @@ jobs:
         run: composer install --no-dev --prefer-dist --no-interaction --no-progress
       - name: Optimize Composer autoload
         run: composer dump-autoload -o
-      - name: Install npm dependencies (no dev)
-        run: npm ci --omit=dev
+      - name: Install npm dependencies
+        run: npm ci
       - name: WordPress Plugin Deploy
         id: deploy
         uses: tinify/action-wordpress-plugin-deploy@stable
