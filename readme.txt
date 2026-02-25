@@ -175,3 +175,13 @@ Yes, the plugin has been tested with the latest WordPress release and PHP 8.2.
 
 = 1.8.2 (13.02.2026) =
 * Fix: Required input name with full stops
+
+= 2.0.0 (25.02.2026) =
+* various bug fixes in calculation, display, and when adding fields
+* fixed default selection issues for select, checkbox, and radio
+* added E2E tests with Playwright
+* added WP ENV for development
+* achieved >90% path coverage in PHPUnit
+* fix for checking whether WooCommerce has already loaded
+* stricter checks for usage of actions and filters
+
