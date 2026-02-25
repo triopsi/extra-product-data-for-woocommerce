@@ -1,24 +1,35 @@
 # Exclude development and build files from distribution
-.git
-.github
+
+# Repo metadata and tooling
+.git/
+.github/
 .gitignore
 .distignore
-.npm
-.eslintrc.js
+.buildignore
+
+# Editor and OS files
 .editorconfig
+.vscode/
 .DS_Store
 Thumbs.db
-.env
-.devcontainer
-*.bak
 
-# Development files
-webpack.config.js
-tsconfig.json
+# Environment and local config
+.env
+.devcontainer/
+.wp-env.json
+.npm/
+.husky/
+
+# Build and dev tooling
+commitlint.config.mjs
 debug.log
+mix-manifest.json
+tsconfig.json
 vite.config.js
+webpack.config.js
 
 # Node/NPM
+node_modules/
 package.json
 package-lock.json
 
@@ -28,43 +39,32 @@ composer-setup.php
 composer.json
 composer.lock
 
-# Tests & reports
-tests
-bin
+# Tests and fixtures
+tests/
+bin/
 playwright.config.ts
 phpunit.xml
 phpunit.xml.dist
 phpcs.xml
 phpcs.xml.dist
-playwright-report
-test-results
-.phpcs.xml.dist
-release
-utils
+sample_products.csv
+utils/
 
-# Editors
-.vscode
-
-# Docs
-docs
-phpcs-report.xml
-
-# CI/config files
-.wp-env.json
-/.wordpress-org
-
-# ignore test coverage and test artifacts
+# Reports and artifacts
+playwright-report/
+reports/
+test-results/
 /coverage-html
 coverage.xml
 .phpunit.result.cache
 /tests/_output
-reports/
-vite.config.js
-sample_products.csv
-playwright-report/
-node_modules/
-commitlint.config.mjs
-mix-manifest.json
+phpcs-report.xml
+
+# Docs and distribution
+docs/
 README.md
-.husky/
-.buildignore
+release/
+/.wordpress-org/
+
+# Backups
+*.bak
