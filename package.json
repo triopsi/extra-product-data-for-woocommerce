@@ -28,7 +28,7 @@
   "author": "triopsi",
   "license": "ISC",
   "devDependencies": {
-    "@commitlint/cli": "19.6.0",
+    "@commitlint/cli": "20.4.2",
     "@commitlint/config-conventional": "19.6.0",
     "@wordpress/env": "^11.0.0",
     "babel-eslint": "^10.1.0",
