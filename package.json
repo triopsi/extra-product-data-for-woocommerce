@@ -35,7 +35,7 @@
     "eslint": "^10.0.0",
     "eslint-config-wordpress": "^2.0.0",
     "husky": "9.1.7",
-    "sass": "1.82.0",
+    "sass": "1.97.3",
     "terser": "^5.46.0",
     "vite": "^7.3.1"
   }
