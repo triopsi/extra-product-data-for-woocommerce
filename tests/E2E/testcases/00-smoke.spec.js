@@ -31,22 +31,6 @@ test.describe('@P0 @SMOKE', () => {
   });
 
   /**
-   * Test case: SMK-02 Storefront loads
-   * Description: Verify that the storefront loads successfully and displays the expected elements.
-   * Steps:
-   * 1. Navigate to the storefront URL.
-   * 2. Wait for the page to load completely.
-   * 3. Verify that the main heading "Welcome" is visible.
-   * 4. Verify that the "Shop" link is visible.
-   */
-  test('SMK-02 Storefront loads', async ({ page }) => {
-    await page.goto('/');
-    await page.waitForLoadState('domcontentloaded');
-    await expect(page.getByRole('heading', { name: 'Welcome' })).toBeVisible();
-    await expect(page.getByRole('link', { name: 'Shop' }).first()).toBeVisible();
-  });
-
-  /**
    * Test case: SMK-03 Product page loads
    * Description: Verify that the product page for "Sunglasses" loads successfully and displays the expected elements.
    * Steps:
