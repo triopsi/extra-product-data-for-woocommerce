@@ -36,7 +36,7 @@
   "require-dev": {
     "wp-coding-standards/wpcs": "^3.0",
     "squizlabs/php_codesniffer": "^3.13.5",
-    "dealerdirect/phpcodesniffer-composer-installer": "1.0.0",
+    "dealerdirect/phpcodesniffer-composer-installer": "1.2.0",
     "yoast/phpunit-polyfills": "^1.0",
     "phpcompatibility/phpcompatibility-wp": "*",
     "wp-phpunit/wp-phpunit": "^6.3",
