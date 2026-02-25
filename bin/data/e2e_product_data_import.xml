@@ -3101,7 +3101,7 @@ content. -->
 			<pubDate>Wed, 16 Jan 2019 13:01:56 +0000</pubDate>
 			<dc:creator><![CDATA[shopmanager]]></dc:creator>
 			<guid isPermaLink="false">
-				http://localhost:8889/wp-content/uploads/2019/01/vneck-tee-2.jpg</guid>
+				https://woocommercecore.mystagingwebsite.com/wp-content/uploads/2017/12/vneck-tee-2.jpg</guid>
 			<description></description>
 			<content:encoded><![CDATA[]]></content:encoded>
 			<excerpt:encoded><![CDATA[]]></excerpt:encoded>
@@ -3119,7 +3119,7 @@ content. -->
 			<wp:post_type><![CDATA[attachment]]></wp:post_type>
 			<wp:post_password><![CDATA[]]></wp:post_password>
 			<wp:is_sticky>0</wp:is_sticky>
-			<wp:attachment_url><![CDATA[http://localhost:8889/wp-content/uploads/2019/01/vneck-tee-2.jpg]]></wp:attachment_url>
+			<wp:attachment_url><![CDATA[https://woocommercecore.mystagingwebsite.com/wp-content/uploads/2017/12/vneck-tee-2.jpg]]></wp:attachment_url>
 			<wp:postmeta>
 				<wp:meta_key><![CDATA[_wp_attached_file]]></wp:meta_key>
 				<wp:meta_value><![CDATA[2019/01/vneck-tee-2.jpg]]></wp:meta_value>
@@ -3139,7 +3139,7 @@ content. -->
 			<pubDate>Wed, 16 Jan 2019 13:01:57 +0000</pubDate>
 			<dc:creator><![CDATA[shopmanager]]></dc:creator>
 			<guid isPermaLink="false">
-				http://localhost:8889/wp-content/uploads/2019/01/vnech-tee-green-1.jpg</guid>
+				https://woocommercecore.mystagingwebsite.com/wp-content/uploads/2017/12/vnech-tee-green-1.jpg</guid>
 			<description></description>
 			<content:encoded><![CDATA[]]></content:encoded>
 			<excerpt:encoded><![CDATA[]]></excerpt:encoded>
@@ -3157,7 +3157,7 @@ content. -->
 			<wp:post_type><![CDATA[attachment]]></wp:post_type>
 			<wp:post_password><![CDATA[]]></wp:post_password>
 			<wp:is_sticky>0</wp:is_sticky>
-			<wp:attachment_url><![CDATA[http://localhost:8889/wp-content/uploads/2019/01/vnech-tee-green-1.jpg]]></wp:attachment_url>
+			<wp:attachment_url><![CDATA[https://woocommercecore.mystagingwebsite.com/wp-content/uploads/2017/12/vnech-tee-green-1.jpg]]></wp:attachment_url>
 			<wp:postmeta>
 				<wp:meta_key><![CDATA[_wp_attached_file]]></wp:meta_key>
 				<wp:meta_value><![CDATA[2019/01/vnech-tee-green-1.jpg]]></wp:meta_value>
@@ -3177,7 +3177,7 @@ content. -->
 			<pubDate>Wed, 16 Jan 2019 13:01:58 +0000</pubDate>
 			<dc:creator><![CDATA[shopmanager]]></dc:creator>
 			<guid isPermaLink="false">
-				http://localhost:8889/wp-content/uploads/2019/01/vnech-tee-blue-1.jpg</guid>
+				https://woocommercecore.mystagingwebsite.com/wp-content/uploads/2017/12/vnech-tee-blue-1.jpg</guid>
 			<description></description>
 			<content:encoded><![CDATA[]]></content:encoded>
 			<excerpt:encoded><![CDATA[]]></excerpt:encoded>
@@ -3195,7 +3195,7 @@ content. -->
 			<wp:post_type><![CDATA[attachment]]></wp:post_type>
 			<wp:post_password><![CDATA[]]></wp:post_password>
 			<wp:is_sticky>0</wp:is_sticky>
-			<wp:attachment_url><![CDATA[http://localhost:8889/wp-content/uploads/2019/01/vnech-tee-blue-1.jpg]]></wp:attachment_url>
+			<wp:attachment_url><![CDATA[https://woocommercecore.mystagingwebsite.com/wp-content/uploads/2017/12/vnech-tee-blue-1.jpg]]></wp:attachment_url>
 			<wp:postmeta>
 				<wp:meta_key><![CDATA[_wp_attached_file]]></wp:meta_key>
 				<wp:meta_value><![CDATA[2019/01/vnech-tee-blue-1.jpg]]></wp:meta_value>
@@ -3214,7 +3214,7 @@ content. -->
 			<link>http://localhost:8889/?attachment_id=38</link>
 			<pubDate>Wed, 16 Jan 2019 13:01:58 +0000</pubDate>
 			<dc:creator><![CDATA[shopmanager]]></dc:creator>
-			<guid isPermaLink="false">http://localhost:8889/wp-content/uploads/2019/01/hoodie-2.jpg</guid>
+			<guid isPermaLink="false">https://woocommercecore.mystagingwebsite.com/wp-content/uploads/2017/12/hoodie-2.jpg</guid>
 			<description></description>
 			<content:encoded><![CDATA[]]></content:encoded>
 			<excerpt:encoded><![CDATA[]]></excerpt:encoded>
@@ -3232,7 +3232,7 @@ content. -->
 			<wp:post_type><![CDATA[attachment]]></wp:post_type>
 			<wp:post_password><![CDATA[]]></wp:post_password>
 			<wp:is_sticky>0</wp:is_sticky>
-			<wp:attachment_url><![CDATA[http://localhost:8889/wp-content/uploads/2019/01/hoodie-2.jpg]]></wp:attachment_url>
+			<wp:attachment_url><![CDATA[https://woocommercecore.mystagingwebsite.com/wp-content/uploads/2017/12/hoodie-2.jpg]]></wp:attachment_url>
 			<wp:postmeta>
 				<wp:meta_key><![CDATA[_wp_attached_file]]></wp:meta_key>
 				<wp:meta_value><![CDATA[2019/01/hoodie-2.jpg]]></wp:meta_value>
@@ -3248,11 +3248,11 @@ content. -->
 		</item>
 		<item>
 			<title><![CDATA[hoodie-blue-1.jpg]]></title>
-			<link>http://localhost:8889/?attachment_id=39</link>
+			<link>https://woocommercecore.mystagingwebsite.com/?attachment_id=35</link>
 			<pubDate>Wed, 16 Jan 2019 13:01:59 +0000</pubDate>
 			<dc:creator><![CDATA[shopmanager]]></dc:creator>
 			<guid isPermaLink="false">
-				http://localhost:8889/wp-content/uploads/2019/01/hoodie-blue-1.jpg</guid>
+				https://woocommercecore.mystagingwebsite.com/wp-content/uploads/2017/12/hoodie-blue-1.jpg</guid>
 			<description></description>
 			<content:encoded><![CDATA[]]></content:encoded>
 			<excerpt:encoded><![CDATA[]]></excerpt:encoded>
@@ -3270,7 +3270,7 @@ content. -->
 			<wp:post_type><![CDATA[attachment]]></wp:post_type>
 			<wp:post_password><![CDATA[]]></wp:post_password>
 			<wp:is_sticky>0</wp:is_sticky>
-			<wp:attachment_url><![CDATA[http://localhost:8889/wp-content/uploads/2019/01/hoodie-blue-1.jpg]]></wp:attachment_url>
+			<wp:attachment_url><![CDATA[https://woocommercecore.mystagingwebsite.com/wp-content/uploads/2017/12/hoodie-blue-1.jpg]]></wp:attachment_url>
 			<wp:postmeta>
 				<wp:meta_key><![CDATA[_wp_attached_file]]></wp:meta_key>
 				<wp:meta_value><![CDATA[2019/01/hoodie-blue-1.jpg]]></wp:meta_value>
@@ -3290,7 +3290,7 @@ content. -->
 			<pubDate>Wed, 16 Jan 2019 13:02:00 +0000</pubDate>
 			<dc:creator><![CDATA[shopmanager]]></dc:creator>
 			<guid isPermaLink="false">
-				http://localhost:8889/wp-content/uploads/2019/01/hoodie-green-1.jpg</guid>
+				https://woocommercecore.mystagingwebsite.com/wp-content/uploads/2017/12/hoodie-green-1.jpg</guid>
 			<description></description>
 			<content:encoded><![CDATA[]]></content:encoded>
 			<excerpt:encoded><![CDATA[]]></excerpt:encoded>
@@ -3308,7 +3308,7 @@ content. -->
 			<wp:post_type><![CDATA[attachment]]></wp:post_type>
 			<wp:post_password><![CDATA[]]></wp:post_password>
 			<wp:is_sticky>0</wp:is_sticky>
-			<wp:attachment_url><![CDATA[http://localhost:8889/wp-content/uploads/2019/01/hoodie-green-1.jpg]]></wp:attachment_url>
+			<wp:attachment_url><![CDATA[https://woocommercecore.mystagingwebsite.com/wp-content/uploads/2017/12/hoodie-green-1.jpg]]></wp:attachment_url>
 			<wp:postmeta>
 				<wp:meta_key><![CDATA[_wp_attached_file]]></wp:meta_key>
 				<wp:meta_value><![CDATA[2019/01/hoodie-green-1.jpg]]></wp:meta_value>
@@ -3328,7 +3328,7 @@ content. -->
 			<pubDate>Wed, 16 Jan 2019 13:02:01 +0000</pubDate>
 			<dc:creator><![CDATA[shopmanager]]></dc:creator>
 			<guid isPermaLink="false">
-				http://localhost:8889/wp-content/uploads/2019/01/hoodie-with-logo-2.jpg</guid>
+				https://woocommercecore.mystagingwebsite.com/wp-content/uploads/2017/12/hoodie-with-logo-2.jpg</guid>
 			<description></description>
 			<content:encoded><![CDATA[]]></content:encoded>
 			<excerpt:encoded><![CDATA[]]></excerpt:encoded>
@@ -3346,7 +3346,7 @@ content. -->
 			<wp:post_type><![CDATA[attachment]]></wp:post_type>
 			<wp:post_password><![CDATA[]]></wp:post_password>
 			<wp:is_sticky>0</wp:is_sticky>
-			<wp:attachment_url><![CDATA[http://localhost:8889/wp-content/uploads/2019/01/hoodie-with-logo-2.jpg]]></wp:attachment_url>
+			<wp:attachment_url><![CDATA[https://woocommercecore.mystagingwebsite.com/wp-content/uploads/2017/12/hoodie-with-logo-2.jpg]]></wp:attachment_url>
 			<wp:postmeta>
 				<wp:meta_key><![CDATA[_wp_attached_file]]></wp:meta_key>
 				<wp:meta_value><![CDATA[2019/01/hoodie-with-logo-2.jpg]]></wp:meta_value>
@@ -3365,7 +3365,7 @@ content. -->
 			<link>http://localhost:8889/?attachment_id=42</link>
 			<pubDate>Wed, 16 Jan 2019 13:02:02 +0000</pubDate>
 			<dc:creator><![CDATA[shopmanager]]></dc:creator>
-			<guid isPermaLink="false">http://localhost:8889/wp-content/uploads/2019/01/tshirt-2.jpg</guid>
+			<guid isPermaLink="false">https://woocommercecore.mystagingwebsite.com/wp-content/uploads/2017/12/tshirt-2.jpg</guid>
 			<description></description>
 			<content:encoded><![CDATA[]]></content:encoded>
 			<excerpt:encoded><![CDATA[]]></excerpt:encoded>
@@ -3383,7 +3383,7 @@ content. -->
 			<wp:post_type><![CDATA[attachment]]></wp:post_type>
 			<wp:post_password><![CDATA[]]></wp:post_password>
 			<wp:is_sticky>0</wp:is_sticky>
-			<wp:attachment_url><![CDATA[http://localhost:8889/wp-content/uploads/2019/01/tshirt-2.jpg]]></wp:attachment_url>
+			<wp:attachment_url><![CDATA[https://woocommercecore.mystagingwebsite.com/wp-content/uploads/2017/12/tshirt-2.jpg]]></wp:attachment_url>
 			<wp:postmeta>
 				<wp:meta_key><![CDATA[_wp_attached_file]]></wp:meta_key>
 				<wp:meta_value><![CDATA[2019/01/tshirt-2.jpg]]></wp:meta_value>
@@ -3402,7 +3402,7 @@ content. -->
 			<link>http://localhost:8889/?attachment_id=43</link>
 			<pubDate>Wed, 16 Jan 2019 13:02:02 +0000</pubDate>
 			<dc:creator><![CDATA[shopmanager]]></dc:creator>
-			<guid isPermaLink="false">http://localhost:8889/wp-content/uploads/2019/01/beanie-2.jpg</guid>
+			<guid isPermaLink="false">https://woocommercecore.mystagingwebsite.com/wp-content/uploads/2017/12/beanie-2.jpg</guid>
 			<description></description>
 			<content:encoded><![CDATA[]]></content:encoded>
 			<excerpt:encoded><![CDATA[]]></excerpt:encoded>
@@ -3420,7 +3420,7 @@ content. -->
 			<wp:post_type><![CDATA[attachment]]></wp:post_type>
 			<wp:post_password><![CDATA[]]></wp:post_password>
 			<wp:is_sticky>0</wp:is_sticky>
-			<wp:attachment_url><![CDATA[http://localhost:8889/wp-content/uploads/2019/01/beanie-2.jpg]]></wp:attachment_url>
+			<wp:attachment_url><![CDATA[https://woocommercecore.mystagingwebsite.com/wp-content/uploads/2017/12/beanie-2.jpg]]></wp:attachment_url>
 			<wp:postmeta>
 				<wp:meta_key><![CDATA[_wp_attached_file]]></wp:meta_key>
 				<wp:meta_value><![CDATA[2019/01/beanie-2.jpg]]></wp:meta_value>
@@ -3439,7 +3439,7 @@ content. -->
 			<link>http://localhost:8889/?attachment_id=44</link>
 			<pubDate>Wed, 16 Jan 2019 13:02:03 +0000</pubDate>
 			<dc:creator><![CDATA[shopmanager]]></dc:creator>
-			<guid isPermaLink="false">http://localhost:8889/wp-content/uploads/2019/01/belt-2.jpg</guid>
+			<guid isPermaLink="false">https://woocommercecore.mystagingwebsite.com/wp-content/uploads/2017/12/belt-2.jpg</guid>
 			<description></description>
 			<content:encoded><![CDATA[]]></content:encoded>
 			<excerpt:encoded><![CDATA[]]></excerpt:encoded>
@@ -3457,7 +3457,7 @@ content. -->
 			<wp:post_type><![CDATA[attachment]]></wp:post_type>
 			<wp:post_password><![CDATA[]]></wp:post_password>
 			<wp:is_sticky>0</wp:is_sticky>
-			<wp:attachment_url><![CDATA[http://localhost:8889/wp-content/uploads/2019/01/belt-2.jpg]]></wp:attachment_url>
+			<wp:attachment_url><![CDATA[https://woocommercecore.mystagingwebsite.com/wp-content/uploads/2017/12/belt-2.jpg]]></wp:attachment_url>
 			<wp:postmeta>
 				<wp:meta_key><![CDATA[_wp_attached_file]]></wp:meta_key>
 				<wp:meta_value><![CDATA[2019/01/belt-2.jpg]]></wp:meta_value>
@@ -3476,7 +3476,7 @@ content. -->
 			<link>http://localhost:8889/?attachment_id=45</link>
 			<pubDate>Wed, 16 Jan 2019 13:02:04 +0000</pubDate>
 			<dc:creator><![CDATA[shopmanager]]></dc:creator>
-			<guid isPermaLink="false">http://localhost:8889/wp-content/uploads/2019/01/cap-2.jpg</guid>
+			<guid isPermaLink="false">https://woocommercecore.mystagingwebsite.com/wp-content/uploads/2017/12/cap-2.jpg</guid>
 			<description></description>
 			<content:encoded><![CDATA[]]></content:encoded>
 			<excerpt:encoded><![CDATA[]]></excerpt:encoded>
@@ -3494,7 +3494,7 @@ content. -->
 			<wp:post_type><![CDATA[attachment]]></wp:post_type>
 			<wp:post_password><![CDATA[]]></wp:post_password>
 			<wp:is_sticky>0</wp:is_sticky>
-			<wp:attachment_url><![CDATA[http://localhost:8889/wp-content/uploads/2019/01/cap-2.jpg]]></wp:attachment_url>
+			<wp:attachment_url><![CDATA[https://woocommercecore.mystagingwebsite.com/wp-content/uploads/2017/12/cap-2.jpg]]></wp:attachment_url>
 			<wp:postmeta>
 				<wp:meta_key><![CDATA[_wp_attached_file]]></wp:meta_key>
 				<wp:meta_value><![CDATA[2019/01/cap-2.jpg]]></wp:meta_value>
@@ -3514,7 +3514,7 @@ content. -->
 			<pubDate>Wed, 16 Jan 2019 13:02:05 +0000</pubDate>
 			<dc:creator><![CDATA[shopmanager]]></dc:creator>
 			<guid isPermaLink="false">
-				http://localhost:8889/wp-content/uploads/2019/01/sunglasses-2.jpg</guid>
+				https://woocommercecore.mystagingwebsite.com/wp-content/uploads/2017/12/sunglasses-2.jpg</guid>
 			<description></description>
 			<content:encoded><![CDATA[]]></content:encoded>
 			<excerpt:encoded><![CDATA[]]></excerpt:encoded>
@@ -3532,7 +3532,7 @@ content. -->
 			<wp:post_type><![CDATA[attachment]]></wp:post_type>
 			<wp:post_password><![CDATA[]]></wp:post_password>
 			<wp:is_sticky>0</wp:is_sticky>
-			<wp:attachment_url><![CDATA[http://localhost:8889/wp-content/uploads/2019/01/sunglasses-2.jpg]]></wp:attachment_url>
+			<wp:attachment_url><![CDATA[https://woocommercecore.mystagingwebsite.com/wp-content/uploads/2017/12/sunglasses-2.jpg]]></wp:attachment_url>
 			<wp:postmeta>
 				<wp:meta_key><![CDATA[_wp_attached_file]]></wp:meta_key>
 				<wp:meta_value><![CDATA[2019/01/sunglasses-2.jpg]]></wp:meta_value>
@@ -3552,7 +3552,7 @@ content. -->
 			<pubDate>Wed, 16 Jan 2019 13:02:06 +0000</pubDate>
 			<dc:creator><![CDATA[shopmanager]]></dc:creator>
 			<guid isPermaLink="false">
-				http://localhost:8889/wp-content/uploads/2019/01/hoodie-with-pocket-2.jpg</guid>
+				https://woocommercecore.mystagingwebsite.com/wp-content/uploads/2017/12/hoodie-with-pocket-2.jpg</guid>
 			<description></description>
 			<content:encoded><![CDATA[]]></content:encoded>
 			<excerpt:encoded><![CDATA[]]></excerpt:encoded>
@@ -3570,7 +3570,7 @@ content. -->
 			<wp:post_type><![CDATA[attachment]]></wp:post_type>
 			<wp:post_password><![CDATA[]]></wp:post_password>
 			<wp:is_sticky>0</wp:is_sticky>
-			<wp:attachment_url><![CDATA[http://localhost:8889/wp-content/uploads/2019/01/hoodie-with-pocket-2.jpg]]></wp:attachment_url>
+			<wp:attachment_url><![CDATA[https://woocommercecore.mystagingwebsite.com/wp-content/uploads/2017/12/hoodie-with-pocket-2.jpg]]></wp:attachment_url>
 			<wp:postmeta>
 				<wp:meta_key><![CDATA[_wp_attached_file]]></wp:meta_key>
 				<wp:meta_value><![CDATA[2019/01/hoodie-with-pocket-2.jpg]]></wp:meta_value>
@@ -3590,7 +3590,7 @@ content. -->
 			<pubDate>Wed, 16 Jan 2019 13:02:06 +0000</pubDate>
 			<dc:creator><![CDATA[shopmanager]]></dc:creator>
 			<guid isPermaLink="false">
-				http://localhost:8889/wp-content/uploads/2019/01/hoodie-with-zipper-2.jpg</guid>
+				https://woocommercecore.mystagingwebsite.com/wp-content/uploads/2017/12/hoodie-with-zipper-2.jpg</guid>
 			<description></description>
 			<content:encoded><![CDATA[]]></content:encoded>
 			<excerpt:encoded><![CDATA[]]></excerpt:encoded>
@@ -3608,7 +3608,7 @@ content. -->
 			<wp:post_type><![CDATA[attachment]]></wp:post_type>
 			<wp:post_password><![CDATA[]]></wp:post_password>
 			<wp:is_sticky>0</wp:is_sticky>
-			<wp:attachment_url><![CDATA[http://localhost:8889/wp-content/uploads/2019/01/hoodie-with-zipper-2.jpg]]></wp:attachment_url>
+			<wp:attachment_url><![CDATA[https://woocommercecore.mystagingwebsite.com/wp-content/uploads/2017/12/hoodie-with-zipper-2.jpg]]></wp:attachment_url>
 			<wp:postmeta>
 				<wp:meta_key><![CDATA[_wp_attached_file]]></wp:meta_key>
 				<wp:meta_value><![CDATA[2019/01/hoodie-with-zipper-2.jpg]]></wp:meta_value>
@@ -3628,7 +3628,7 @@ content. -->
 			<pubDate>Wed, 16 Jan 2019 13:02:07 +0000</pubDate>
 			<dc:creator><![CDATA[shopmanager]]></dc:creator>
 			<guid isPermaLink="false">
-				http://localhost:8889/wp-content/uploads/2019/01/long-sleeve-tee-2.jpg</guid>
+				https://woocommercecore.mystagingwebsite.com/wp-content/uploads/2017/12/long-sleeve-tee-2.jpg</guid>
 			<description></description>
 			<content:encoded><![CDATA[]]></content:encoded>
 			<excerpt:encoded><![CDATA[]]></excerpt:encoded>
@@ -3646,7 +3646,7 @@ content. -->
 			<wp:post_type><![CDATA[attachment]]></wp:post_type>
 			<wp:post_password><![CDATA[]]></wp:post_password>
 			<wp:is_sticky>0</wp:is_sticky>
-			<wp:attachment_url><![CDATA[http://localhost:8889/wp-content/uploads/2019/01/long-sleeve-tee-2.jpg]]></wp:attachment_url>
+			<wp:attachment_url><![CDATA[https://woocommercecore.mystagingwebsite.com/wp-content/uploads/2017/12/long-sleeve-tee-2.jpg]]></wp:attachment_url>
 			<wp:postmeta>
 				<wp:meta_key><![CDATA[_wp_attached_file]]></wp:meta_key>
 				<wp:meta_value><![CDATA[2019/01/long-sleeve-tee-2.jpg]]></wp:meta_value>
@@ -3665,7 +3665,7 @@ content. -->
 			<link>http://localhost:8889/?attachment_id=50</link>
 			<pubDate>Wed, 16 Jan 2019 13:02:08 +0000</pubDate>
 			<dc:creator><![CDATA[shopmanager]]></dc:creator>
-			<guid isPermaLink="false">http://localhost:8889/wp-content/uploads/2019/01/polo-2.jpg</guid>
+			<guid isPermaLink="false">https://woocommercecore.mystagingwebsite.com/wp-content/uploads/2017/12/polo-2.jpg</guid>
 			<description></description>
 			<content:encoded><![CDATA[]]></content:encoded>
 			<excerpt:encoded><![CDATA[]]></excerpt:encoded>
@@ -3683,7 +3683,7 @@ content. -->
 			<wp:post_type><![CDATA[attachment]]></wp:post_type>
 			<wp:post_password><![CDATA[]]></wp:post_password>
 			<wp:is_sticky>0</wp:is_sticky>
-			<wp:attachment_url><![CDATA[http://localhost:8889/wp-content/uploads/2019/01/polo-2.jpg]]></wp:attachment_url>
+			<wp:attachment_url><![CDATA[https://woocommercecore.mystagingwebsite.com/wp-content/uploads/2017/12/polo-2.jpg]]></wp:attachment_url>
 			<wp:postmeta>
 				<wp:meta_key><![CDATA[_wp_attached_file]]></wp:meta_key>
 				<wp:meta_value><![CDATA[2019/01/polo-2.jpg]]></wp:meta_value>
@@ -3702,7 +3702,7 @@ content. -->
 			<link>http://localhost:8889/?attachment_id=51</link>
 			<pubDate>Wed, 16 Jan 2019 13:02:09 +0000</pubDate>
 			<dc:creator><![CDATA[shopmanager]]></dc:creator>
-			<guid isPermaLink="false">http://localhost:8889/wp-content/uploads/2019/01/album-1.jpg</guid>
+			<guid isPermaLink="false">https://woocommercecore.mystagingwebsite.com/wp-content/uploads/2017/12/album-1.jpg</guid>
 			<description></description>
 			<content:encoded><![CDATA[]]></content:encoded>
 			<excerpt:encoded><![CDATA[]]></excerpt:encoded>
@@ -3720,7 +3720,7 @@ content. -->
 			<wp:post_type><![CDATA[attachment]]></wp:post_type>
 			<wp:post_password><![CDATA[]]></wp:post_password>
 			<wp:is_sticky>0</wp:is_sticky>
-			<wp:attachment_url><![CDATA[http://localhost:8889/wp-content/uploads/2019/01/album-1.jpg]]></wp:attachment_url>
+			<wp:attachment_url><![CDATA[https://woocommercecore.mystagingwebsite.com/wp-content/uploads/2017/12/album-1.jpg]]></wp:attachment_url>
 			<wp:postmeta>
 				<wp:meta_key><![CDATA[_wp_attached_file]]></wp:meta_key>
 				<wp:meta_value><![CDATA[2019/01/album-1.jpg]]></wp:meta_value>
@@ -3739,7 +3739,7 @@ content. -->
 			<link>http://localhost:8889/?attachment_id=52</link>
 			<pubDate>Wed, 16 Jan 2019 13:02:10 +0000</pubDate>
 			<dc:creator><![CDATA[shopmanager]]></dc:creator>
-			<guid isPermaLink="false">http://localhost:8889/wp-content/uploads/2019/01/single-1.jpg</guid>
+			<guid isPermaLink="false">https://woocommercecore.mystagingwebsite.com/wp-content/uploads/2017/12/single-1.jpg</guid>
 			<description></description>
 			<content:encoded><![CDATA[]]></content:encoded>
 			<excerpt:encoded><![CDATA[]]></excerpt:encoded>
@@ -3757,7 +3757,7 @@ content. -->
 			<wp:post_type><![CDATA[attachment]]></wp:post_type>
 			<wp:post_password><![CDATA[]]></wp:post_password>
 			<wp:is_sticky>0</wp:is_sticky>
-			<wp:attachment_url><![CDATA[http://localhost:8889/wp-content/uploads/2019/01/single-1.jpg]]></wp:attachment_url>
+			<wp:attachment_url><![CDATA[https://woocommercecore.mystagingwebsite.com/wp-content/uploads/2017/12/single-1.jpg]]></wp:attachment_url>
 			<wp:postmeta>
 				<wp:meta_key><![CDATA[_wp_attached_file]]></wp:meta_key>
 				<wp:meta_value><![CDATA[2019/01/single-1.jpg]]></wp:meta_value>
@@ -3777,7 +3777,7 @@ content. -->
 			<pubDate>Wed, 16 Jan 2019 13:02:11 +0000</pubDate>
 			<dc:creator><![CDATA[shopmanager]]></dc:creator>
 			<guid isPermaLink="false">
-				http://localhost:8889/wp-content/uploads/2019/01/t-shirt-with-logo-1.jpg</guid>
+				https://woocommercecore.mystagingwebsite.com/wp-content/uploads/2017/12/t-shirt-with-logo-1.jpg</guid>
 			<description></description>
 			<content:encoded><![CDATA[]]></content:encoded>
 			<excerpt:encoded><![CDATA[]]></excerpt:encoded>
@@ -3795,7 +3795,7 @@ content. -->
 			<wp:post_type><![CDATA[attachment]]></wp:post_type>
 			<wp:post_password><![CDATA[]]></wp:post_password>
 			<wp:is_sticky>0</wp:is_sticky>
-			<wp:attachment_url><![CDATA[http://localhost:8889/wp-content/uploads/2019/01/t-shirt-with-logo-1.jpg]]></wp:attachment_url>
+			<wp:attachment_url><![CDATA[https://woocommercecore.mystagingwebsite.com/wp-content/uploads/2017/12/t-shirt-with-logo-1.jpg]]></wp:attachment_url>
 			<wp:postmeta>
 				<wp:meta_key><![CDATA[_wp_attached_file]]></wp:meta_key>
 				<wp:meta_value><![CDATA[2019/01/t-shirt-with-logo-1.jpg]]></wp:meta_value>
@@ -3815,7 +3815,7 @@ content. -->
 			<pubDate>Wed, 16 Jan 2019 13:02:12 +0000</pubDate>
 			<dc:creator><![CDATA[shopmanager]]></dc:creator>
 			<guid isPermaLink="false">
-				http://localhost:8889/wp-content/uploads/2019/01/beanie-with-logo-1.jpg</guid>
+				https://woocommercecore.mystagingwebsite.com/wp-content/uploads/2017/12/beanie-with-logo-1.jpg</guid>
 			<description></description>
 			<content:encoded><![CDATA[]]></content:encoded>
 			<excerpt:encoded><![CDATA[]]></excerpt:encoded>
@@ -3833,7 +3833,7 @@ content. -->
 			<wp:post_type><![CDATA[attachment]]></wp:post_type>
 			<wp:post_password><![CDATA[]]></wp:post_password>
 			<wp:is_sticky>0</wp:is_sticky>
-			<wp:attachment_url><![CDATA[http://localhost:8889/wp-content/uploads/2019/01/beanie-with-logo-1.jpg]]></wp:attachment_url>
+			<wp:attachment_url><![CDATA[https://woocommercecore.mystagingwebsite.com/wp-content/uploads/2017/12/beanie-with-logo-1.jpg]]></wp:attachment_url>
 			<wp:postmeta>
 				<wp:meta_key><![CDATA[_wp_attached_file]]></wp:meta_key>
 				<wp:meta_value><![CDATA[2019/01/beanie-with-logo-1.jpg]]></wp:meta_value>
@@ -3852,7 +3852,7 @@ content. -->
 			<link>http://localhost:8889/?attachment_id=55</link>
 			<pubDate>Wed, 16 Jan 2019 13:02:13 +0000</pubDate>
 			<dc:creator><![CDATA[shopmanager]]></dc:creator>
-			<guid isPermaLink="false">http://localhost:8889/wp-content/uploads/2019/01/logo-1.jpg</guid>
+			<guid isPermaLink="false">https://woocommercecore.mystagingwebsite.com/wp-content/uploads/2017/12/logo-1.jpg</guid>
 			<description></description>
 			<content:encoded><![CDATA[]]></content:encoded>
 			<excerpt:encoded><![CDATA[]]></excerpt:encoded>
@@ -3870,7 +3870,7 @@ content. -->
 			<wp:post_type><![CDATA[attachment]]></wp:post_type>
 			<wp:post_password><![CDATA[]]></wp:post_password>
 			<wp:is_sticky>0</wp:is_sticky>
-			<wp:attachment_url><![CDATA[http://localhost:8889/wp-content/uploads/2019/01/logo-1.jpg]]></wp:attachment_url>
+			<wp:attachment_url><![CDATA[https://woocommercecore.mystagingwebsite.com/wp-content/uploads/2017/12/logo-1.jpg]]></wp:attachment_url>
 			<wp:postmeta>
 				<wp:meta_key><![CDATA[_wp_attached_file]]></wp:meta_key>
 				<wp:meta_value><![CDATA[2019/01/logo-1.jpg]]></wp:meta_value>
@@ -3889,7 +3889,7 @@ content. -->
 			<link>http://localhost:8889/?attachment_id=56</link>
 			<pubDate>Wed, 16 Jan 2019 13:02:13 +0000</pubDate>
 			<dc:creator><![CDATA[shopmanager]]></dc:creator>
-			<guid isPermaLink="false">http://localhost:8889/wp-content/uploads/2019/01/pennant-1.jpg</guid>
+			<guid isPermaLink="false">https://woocommercecore.mystagingwebsite.com/wp-content/uploads/2017/12/pennant-1.jpg</guid>
 			<description></description>
 			<content:encoded><![CDATA[]]></content:encoded>
 			<excerpt:encoded><![CDATA[]]></excerpt:encoded>
@@ -3907,7 +3907,7 @@ content. -->
 			<wp:post_type><![CDATA[attachment]]></wp:post_type>
 			<wp:post_password><![CDATA[]]></wp:post_password>
 			<wp:is_sticky>0</wp:is_sticky>
-			<wp:attachment_url><![CDATA[http://localhost:8889/wp-content/uploads/2019/01/pennant-1.jpg]]></wp:attachment_url>
+			<wp:attachment_url><![CDATA[https://woocommercecore.mystagingwebsite.com/wp-content/uploads/2017/12/pennant-1.jpg]]></wp:attachment_url>
 			<wp:postmeta>
 				<wp:meta_key><![CDATA[_wp_attached_file]]></wp:meta_key>
 				<wp:meta_value><![CDATA[2019/01/pennant-1.jpg]]></wp:meta_value>
