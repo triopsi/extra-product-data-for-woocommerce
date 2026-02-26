@@ -1,0 +1,78 @@
+{
+  "version": "2.0.0",
+  "tasks": [
+    {
+      "label": "Bump Version: patch",
+      "type": "shell",
+      "command": "./bin/bump-version.sh",
+      "args": ["patch"],
+      "presentation": {
+        "echo": true,
+        "reveal": "always",
+        "focus": false,
+        "panel": "shared"
+      },
+      "problemMatcher": []
+    },
+    {
+      "label": "Bump Version: minor",
+      "type": "shell",
+      "command": "./bin/bump-version.sh",
+      "args": ["minor"],
+      "presentation": {
+        "echo": true,
+        "reveal": "always",
+        "focus": false,
+        "panel": "shared"
+      },
+      "problemMatcher": []
+    },
+    {
+      "label": "Bump Version: major",
+      "type": "shell",
+      "command": "./bin/bump-version.sh",
+      "args": ["major"],
+      "presentation": {
+        "echo": true,
+        "reveal": "always",
+        "focus": false,
+        "panel": "shared"
+      },
+      "problemMatcher": []
+    },
+    {
+      "label": "Bump Version: custom",
+      "type": "shell",
+      "command": "./bin/bump-version.sh",
+      "args": ["${input:customVersion}"],
+      "presentation": {
+        "echo": true,
+        "reveal": "always",
+        "focus": false,
+        "panel": "shared"
+      },
+      "problemMatcher": []
+    },
+    {
+      "label": "Install WP for testing",
+      "type": "shell",
+      "command": "./bin/install-wp-tests.sh",
+      "args": ["wordpress_test", "root", "root", "db", "latest"],
+      "presentation": {
+          "echo": true,
+          "reveal": "always",
+          "focus": false,
+          "panel": "shared"
+        },
+        "problemMatcher": []
+    }
+  ],
+  "inputs": [
+    {
+      "id": "customVersion",
+      "type": "promptString",
+      "description": "Enter explicit version (e.g. 1.2.3)",
+      "default": ""
+    }
+  ]
+}

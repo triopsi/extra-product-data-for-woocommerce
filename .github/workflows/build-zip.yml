@@ -31,8 +31,6 @@ jobs:
         run: composer dump-autoload -o
       - name: Install npm dependencies
         run: npm ci
-      - name: Build assets
-        run: npm run build
       - name: Build plugin zip and upload as github artifacts
         id: build
         uses: 10up/action-wordpress-plugin-build-zip@stable

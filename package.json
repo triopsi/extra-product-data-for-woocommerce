@@ -15,26 +15,20 @@
     "prepare": "husky",
     "commit": "commit",
     "test": "composer test",
+    "plugin-zip": "mkdir -p release && rsync -av --delete --exclude-from=\".distignore\" ./ release/extra-product-data-for-woocommerce/ && cd release && zip -r extra-product-data-for-woocommerce.zip extra-product-data-for-woocommerce && cd ..",
     "wp-env": "wp-env",
     "wp:start": "wp-env start",
     "wp:stop": "wp-env stop",
     "wp:destroy": "wp-env destroy",
     "wp:cli": "wp-env run cli"
   },
-  "repository": {
-    "type": "git",
-    "url": "git@github.com:triopsi/extra-product-data-for-woocommerce.git"
-  },
   "author": "triopsi",
   "license": "ISC",
   "devDependencies": {
-    "@commitlint/cli": "19.6.0",
-    "@commitlint/config-conventional": "19.6.0",
     "@wordpress/env": "^11.0.0",
     "babel-eslint": "^10.1.0",
     "eslint": "^10.0.0",
     "eslint-config-wordpress": "^2.0.0",
-    "husky": "9.1.7",
     "sass": "1.82.0",
     "terser": "^5.46.0",
     "vite": "^7.3.1"
