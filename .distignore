@@ -68,3 +68,7 @@ release/
 
 # Backups
 *.bak
+
+# Specials for this plugin
+release/
+extra-product-data-for-woocommerce.zip

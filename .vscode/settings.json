@@ -1,0 +1,54 @@
+{
+  "intelephense.environment.includePaths": [
+    "/var/www/",
+    "/tmp/wordpress",
+    "/tmp/wordpress-tests-lib"
+  ],
+  "fileHeaderComment.parameter": {
+    "*": {
+      "author": "Daniel Drevermann <info@triopsi.com>",
+      "commentbegin": "/**",
+      "commentprefix": " *",
+      "commentend": " */",
+      "company": "IT-Dienstleistungen Drevermann",
+      "package": "Extra Product Data for WooCommerce"
+    }
+  },
+  "fileHeaderComment.template": {
+    "*": [
+      "${commentbegin}",
+      "${commentprefix} Created on ${date}",
+      "${commentprefix}",
+      "${commentprefix} Copyright (c) ${year} ${company} - All Rights Reserved",
+      "${commentprefix}",
+      "${commentprefix} @package ${package}",
+      "${commentprefix} @author ${author}",
+      "${commentprefix} @copyright Copyright (c) ${year}, ${company}",
+      "${commentprefix}",
+      "${commentprefix} This program is free software: you can redistribute it and/or modify",
+      "${commentprefix} it under the terms of the GNU General Public License as published by",
+      "${commentprefix} the Free Software Foundation, either version 2 of the License, or",
+      "${commentprefix} (at your option) any later version.",
+      "${commentprefix}",
+      "${commentprefix} This program is distributed in the hope that it will be useful,",
+      "${commentprefix} but WITHOUT ANY WARRANTY; without even the implied warranty of",
+      "${commentprefix} MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the",
+      "${commentprefix} GNU General Public License for more details.",
+      "${commentprefix}",
+      "${commentprefix} You should have received a copy of the GNU General Public License",
+      "${commentprefix} along with this program. If not, see <https://www.gnu.org/licenses/>.",
+      "${commentprefix}",
+      "${commentprefix} This file is part of the development of WordPress plugins.",
+      "${commentend}"
+    ]
+  },
+  "phpsab.standard": null,
+  "phpsab.snifferEnable": true,
+  "phpsab.executablePathCS": "./vendor/bin/phpcs",
+  "phpsab.executablePathCBF": "./vendor/bin/phpcbf",
+  "phpsab.snifferShowSources": true,
+  "phpsab.debug": false,
+  "phpunit.phpunit": "./vendor/bin/phpunit",
+  "phpunit.debuggerConfig": "Listen for Xdebug"
+
+}

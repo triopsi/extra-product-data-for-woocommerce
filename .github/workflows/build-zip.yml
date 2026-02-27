@@ -9,17 +9,17 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout code
-        uses: actions/checkout@v4
+        uses: actions/checkout@v6
         with:
           fetch-depth: 0
       - name: Setup Node.js
-        uses: actions/setup-node@v4
+        uses: actions/setup-node@v6
         with:
           node-version: '20'
           cache: 'npm'
           cache-dependency-path: package-lock.json
       - name: Cache Composer dependencies
-        uses: actions/cache@v4
+        uses: actions/cache@v5
         with:
           path: ~/.composer/cache/files
           key: ${{ runner.os }}-composer-${{ hashFiles('**/composer.lock') }}
@@ -31,8 +31,6 @@ jobs:
         run: composer dump-autoload -o
       - name: Install npm dependencies
         run: npm ci
-      - name: Build assets
-        run: npm run build
       - name: Build plugin zip and upload as github artifacts
         id: build
         uses: 10up/action-wordpress-plugin-build-zip@stable
