@@ -1,28 +1,36 @@
-const { test, expect } = require('../fixtures/checkout');
-import { loginAsAdmin, logout } from '../helpers/auth.js';
-import { env } from '../helpers/env.js';
+const { test, expect } = require('@playwright/test');
+import { ProductPage } from '../pages/shop/ProductPage.js';
+import { CartPage } from '../pages/shop/CartPage.js';
+import { CheckoutPage } from '../pages/shop/CheckoutPage.js';
 
 
 test.describe('@P0 @CHECKOUT', () => {
-    test('ORD-01 Values flow to cart, checkout and order meta (placeholder)', async ({ page, checkout }) => {
+    test('ORD-01 Values flow to cart, checkout and order meta (placeholder)', async ({ page }) => {
 
-        // Order product and go to checkout
-        await page.goto('/product/sunglasses/');
-        await page.waitForLoadState('domcontentloaded');
+        const productPage = new ProductPage(page);
+        const cartPage = new CartPage(page);
+        const checkoutPage = new CheckoutPage(page);
+
+        await productPage.goToProductPage('Sunglasses');
+
         await expect(page.getByRole('heading', { name: 'Sunglasses' })).toBeVisible();
         await page.getByRole('textbox', { name: 'Branding  *' }).click();
         await page.getByRole('textbox', { name: 'Branding  *' }).fill('Triopsi');
         await page.getByRole('button', { name: 'Add to cart', exact: true }).click();
+
+        // Check Banner
         await expect(page.getByRole('alert')).toContainText('“Sunglasses” has been added to your cart. View cart');
-        await page.locator('#content').getByRole('link', { name: 'View cart ' }).click();
+
+        // Go to Cart
+        await cartPage.goToCartPage();
         await expect(page.locator('tbody')).toContainText('Branding: Triopsi');
-        await page.getByRole('cell', { name: '€90.00', exact: true }).click();
+        await expect(cartPage.getCartTotal()).toContainText('€90.00');
 
         // Checkout
-        await checkout.goToCheckout();
+        await cartPage.proceedToCheckout();
 
         // Set customer details
-        await checkout.fillCustomer({
+        await checkoutPage.fillClassicCheckout({
             firstName: 'Max',
             lastName: 'Tester',
             email: 'daniel@example.com',
@@ -34,20 +42,17 @@ test.describe('@P0 @CHECKOUT', () => {
         });
 
         // Select payment method
-        // await checkout.selectPayment('bacs');
+        await checkoutPage.selectPaymentMethod('cod');
+
+        // Verify total on checkout page
+        await expect(checkoutPage.getTotal()).toContainText('€90.00');
 
         // Place order
-        const result = await checkout.placeOrder();
+        await checkoutPage.placeOrder();
 
         // Verify order confirmation
-        await expect(
-            page.locator('.woocommerce-thankyou-order-received')
-        ).toContainText('Thank you. Your order has been received.');
-
-        expect(result.orderNumber).not.toBeNull();
-
-        await expect(result.total).toContainText('€90.00');
-
+        await expect(page.getByText('Thank you. Your order has')).toBeVisible();
+        await expect(page.getByText('Total: €90.00', { exact: true })).toBeVisible();
         await expect(page.getByText('Branding: Triopsi')).toBeVisible();
     });
 });
