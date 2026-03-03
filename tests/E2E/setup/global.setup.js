@@ -1,13 +1,15 @@
 import { test, expect } from '@playwright/test';
-import { loginAsAdmin, logout } from '../helpers/auth.js';
 import { env } from '../helpers/env.js';
+import { AdminLoginPage } from '../pages/admin/AdminLoginPage.js';
 
 test('setup storefront starter pack', async ({ page }) => {
     const adminUrl = env.wpAdminURL;
     const username = env.adminUser;
     const password = env.adminPass;
 
-    await loginAsAdmin(page, username, password, adminUrl);
+    const adminLoginPage = new AdminLoginPage(page);
+    await adminLoginPage.goto(adminUrl);
+    await adminLoginPage.login(username, password);
     await page.goto('/wp-admin/themes.php?page=storefront-welcome');
 
     const alreadyInstalled = await page

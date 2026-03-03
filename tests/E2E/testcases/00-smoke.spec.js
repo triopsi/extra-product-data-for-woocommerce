@@ -1,6 +1,7 @@
-import { test, expect } from '../fixtures/test-fixture.js';
-import { loginAsAdmin, logout } from '../helpers/auth.js';
+const { test, expect } = require('@playwright/test');
 import { env } from '../helpers/env.js';
+import { AdminLoginPage } from '../pages/admin/AdminLoginPage.js';
+import { ProductPage } from '../pages/shop/ProductPage.js';
 
 /**
  * @fileoverview Smoke tests for the Extra Product Data for WooCommerce plugin.
@@ -24,10 +25,14 @@ test.describe('@P0 @SMOKE', () => {
     const adminUrl = env.wpAdminURL;
     const username = env.adminUser;
     const password = env.adminPass;
-    await loginAsAdmin(page, username, password, adminUrl);
+
+    const adminLoginPage = new AdminLoginPage(page);
+    await adminLoginPage.goto(adminUrl);
+    await adminLoginPage.login(username, password);
+
     await expect(page).toHaveURL(/.*\/wp-admin\/?$/);
     await expect(page.locator('#wpadminbar')).toBeVisible();
-    await logout(page);
+    await adminLoginPage.logout();
   });
 
   /**
@@ -41,11 +46,9 @@ test.describe('@P0 @SMOKE', () => {
    * 5. Verify that the custom field "Branding" label and description are visible.
    * 6. Verify that the "Branding" input field is empty.
    */
-  test ('SMK-03 Product page loads', async ({ page }) => {
-    await page.goto('/product/sunglasses/');
-    await page.waitForLoadState('domcontentloaded');
-    await expect(page.getByRole('heading', { name: 'Sunglasses' })).toBeVisible();
-    await expect(page.getByRole('button', { name: 'Add to cart', exact: true })).toBeVisible();
+  test('SMK-03 Product page loads', async ({ page }) => {
+    const productPage = new ProductPage(page);
+    await productPage.goToProductPage('Sunglasses');
     await expect(page.locator('#exprdawc-custom-field-input-branding-wrapper-field')).toContainText('Branding *');
     await expect(page.locator('#exprdawc-custom-field-input-branding-description')).toContainText('Branding');
     await expect(page.getByRole('textbox', { name: 'Branding  *' })).toBeEmpty();
