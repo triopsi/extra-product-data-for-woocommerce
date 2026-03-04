@@ -19,20 +19,5 @@ export default defineConfig({
     trace: process.env.CI ? 'retain-on-failure' : 'on-first-retry',
     screenshot: 'only-on-failure',
     video: 'retain-on-failure',
-  },
-  projects: [
-    {
-      name: 'setup',
-      testMatch: /global\.setup\.js/,
-      testDir: './setup',
-      retries: 0,
-      workers: 1,
-    },
-    {
-      name: 'chromium',
-      testMatch: /.*\.spec\.js/,
-      use: { ...devices['Desktop Chrome'] },
-      dependencies: ['setup'],
-    }
-  ],
+  }
 });
