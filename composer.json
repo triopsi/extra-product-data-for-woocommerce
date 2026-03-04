@@ -5,7 +5,17 @@
   "version": "2.0.2",
   "autoload": {
     "psr-4": {
-      "Triopsi\\Exprdawc\\": "src/classes/"
+      "Triopsi\\Exprdawc\\": "src/",
+      "Triopsi\\Exprdawc\\Core\\": "src/Core/",
+      "Triopsi\\Exprdawc\\Backend\\": "src/Backend/",
+      "Triopsi\\Exprdawc\\Frontend\\": "src/Frontend/",
+      "Triopsi\\Exprdawc\\Settings\\": "src/Settings/",
+      "Triopsi\\Exprdawc\\Template\\": "src/Template/",
+      "Triopsi\\Exprdawc\\Traits\\": "src/Traits/",
+      "Triopsi\\Exprdawc\\Models\\": "src/Models/",
+      "Triopsi\\Exprdawc\\Helpers\\": "src/Helpers/",
+      "Triopsi\\Exprdawc\\Orders\\": "src/Orders/",
+      "Triopsi\\Exprdawc\\Contracts\\": "src/Contracts/"
     },
     "classmap": [
       "src/classes/"

@@ -22,7 +22,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 }
 
 use Automattic\WooCommerce\Utilities\FeaturesUtil;
-use Triopsi\Exprdawc\Exprdawc_Main;
+use Triopsi\Exprdawc\Core\Plugin;
 
 // Load Composer autoloader when available.
 $autoload_path = __DIR__ . '/vendor/autoload.php';
@@ -34,7 +34,7 @@ if ( file_exists( $autoload_path ) ) {
 require_once __DIR__ . '/src/constants.php';
 
 // Initiate the main class.
-Exprdawc_Main::get_instance();
+Plugin::getInstance();
 
 // Declare compatibility with WooCommerce HPOS.
 add_action(
