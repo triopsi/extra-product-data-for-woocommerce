@@ -65,9 +65,9 @@ jQuery(function ($) {
             $(document).on('change', '.exprdawc_conditional_operator', this.toggleConditionalValueField.bind(this));
             $(document).on('change', '.exprdawc_conditional_logic_field', this.toggleConditionalTable.bind(this));
             $(document).on('click', '.exprdawc_adjust_price_field', this.togglePriceAdjustmentTable.bind(this));
-            $(document).on('change keyup', '.field_option_table_value_td input', this.syncOptionValueToDefault.bind(this));
+            $(document).on('change keyup keydown input', '.field_option_table_value_td input', this.syncOptionValueToDefault.bind(this));
             $(document).on('click', '.exprdawc_copy_custom_field', this.exprdawc_copy_custom_field.bind(this));
-            $(document).on('change keyup', 'input.field_name', this.updateConditionalFieldOptions.bind(this));
+            $(document).on('change keyup keydown input', 'input.field_name', this.updateConditionalFieldOptions.bind(this));
 
             // Inits
             this.toggleConditionalValueFieldAll();
