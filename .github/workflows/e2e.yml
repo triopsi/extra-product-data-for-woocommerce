@@ -64,18 +64,14 @@ jobs:
           done
           echo "WP not ready in time" && exit 1
 
-      - name: Run Smoke (PR) or Full (main)
+      - name: Run E2E tests
         env:
           BASE_URL: http://localhost:8889
           WP_ADMIN_URL: http://localhost:8889/wp-admin
           WP_USERNAME: admin
         run: |
           cd ${GITHUB_WORKSPACE}/tests/E2E
-          if [ "${{ github.event_name }}" = "pull_request" ]; then
-            npm run e2e:smoke
-          else
-            npm run e2e
-          fi
+          npm run e2e
 
       - name: Upload Playwright report
         if: always()
