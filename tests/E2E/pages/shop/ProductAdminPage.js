@@ -38,7 +38,9 @@ class ProductAdminPage {
      * @returns {Promise<void>}
      */
     async goToExtraProductDataTab() {
-        await this.page.click('a:has-text("Extra Product Input")');
+        await expect(this.page.getByRole('link', { name: 'Extra Product Input' })).toBeVisible();
+        await this.page.getByRole('link', { name: 'Extra Product Input' }).click();
+        // await this.page.click('a:has-text("Extra Product Input")');
     }
 
     /**
