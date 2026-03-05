@@ -16,10 +16,7 @@
       "Triopsi\\Exprdawc\\Helpers\\": "src/Helpers/",
       "Triopsi\\Exprdawc\\Orders\\": "src/Orders/",
       "Triopsi\\Exprdawc\\Contracts\\": "src/Contracts/"
-    },
-    "classmap": [
-      "src/classes/"
-    ]
+    }
   },
   "authors": [
     {
