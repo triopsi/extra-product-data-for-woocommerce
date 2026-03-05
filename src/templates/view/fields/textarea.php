@@ -11,7 +11,7 @@
  * @since 1.9.0
  */
 
-use Triopsi\Exprdawc\Helper\Exprdawc_Template_Helpers as H;
+use Triopsi\Exprdawc\Helpers\TemplateHelper as H;
 
 // phpcs:ignoreFile
 if ( ! defined( 'ABSPATH' ) ) {

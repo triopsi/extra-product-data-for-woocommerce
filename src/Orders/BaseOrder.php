@@ -16,18 +16,190 @@ declare(strict_types=1);
 
 namespace Triopsi\Exprdawc\Orders;
 
+use Automattic\WooCommerce\Utilities\OrderUtil;
+use WC_Order;
+use WC_Order_Item;
+use Triopsi\Exprdawc\Helpers\Helper;
+use Triopsi\Exprdawc\Helpers\OrderHelper;
+
 if ( ! defined( 'ABSPATH' ) ) {
 	exit;
 }
-
-// Load old implementation temporarily.
-require_once EXPRDAWC_CLASSES . 'order/class-exprdawc-base-order-class.php';
 
 /**
  * Base Order Handler
  *
  * Abstract base class for order-related functionality.
  */
-abstract class BaseOrder extends \Triopsi\Exprdawc\Order\Exprdawc_Base_Order_Class {
-	// Extension point for future refactoring.
+class BaseOrder {
+
+	/**
+	 * Process save order.
+	 *
+	 * @param bool $admin Whether the save is triggered from admin or user side. Default false.
+	 * @return int|false The order ID on success, false on failure.
+	 */
+	protected function process_save_order( bool $admin = false ) {
+
+		$item_id  = isset( $_POST['item_id'] ) ? intval( $_POST['item_id'] ) : 0;// phpcs:ignore
+		$order_id = isset( $_POST['order_id'] ) ? intval( $_POST['order_id'] ) : 0;// phpcs:ignore
+
+		if ( ! $item_id || ! $order_id ) {
+			wp_send_json_error( array( 'message' => __( 'Invalid order or item ID.', 'extra-product-data-for-woocommerce' ) ) );
+		}
+
+		if ( ! is_user_logged_in() ) {
+			wp_send_json_error( array( 'message' => __( 'You must be logged in to edit this order.', 'extra-product-data-for-woocommerce' ) ) );
+		}
+
+		$current_user_id = get_current_user_id();
+
+		$order = wc_get_order( $order_id );
+		if ( ! $order || ! ( $order instanceof WC_Order ) ) {
+			wp_send_json_error( array( 'message' => __( 'Order not found.', 'extra-product-data-for-woocommerce' ) ) );
+		}
+
+		$user         = get_user_by( 'id', $current_user_id );
+		$capabilities = $user ? $user->allcaps : array();
+
+		if ( $admin ) {
+			if ( ! current_user_can( 'edit_shop_orders' ) ) { // phpcs:ignore
+				wp_send_json_error( array( 'message' => __( 'You do not have permission to edit this order.', 'extra-product-data-for-woocommerce' ) ) );
+			}
+		} else { // phpcs:ignore
+			if ( $order->get_user_id() !== $current_user_id ) { // phpcs:ignore
+				wp_send_json_error( array( 'message' => __( 'You do not have permission to edit this order.', 'extra-product-data-for-woocommerce' ) ) );
+			}
+		}
+
+		if ( $admin ) {
+			if ( ! current_user_can( 'manage_woocommerce' ) ) {
+				$max_order_status = get_option( 'extra_product_data_max_order_status', 'processing' );
+				if ( ! $order->has_status( OrderUtil::remove_status_prefix( $max_order_status ) ) ) {
+					wp_send_json_error( array( 'message' => __( 'You do not have permission to edit this order.', 'extra-product-data-for-woocommerce' ) ) );
+				}
+			}
+		} else {
+			$max_order_status = get_option( 'extra_product_data_max_order_status', 'processing' );
+			if ( ! $order->has_status( OrderUtil::remove_status_prefix( $max_order_status ) ) ) {
+				wp_send_json_error( array( 'message' => __( 'You do not have permission to edit this order.', 'extra-product-data-for-woocommerce' ) ) );
+			}
+		}
+
+		$item = $order->get_item( $item_id );
+		if ( ! $item || ! ( $item instanceof WC_Order_Item ) ) {
+			wp_send_json_error( array( 'message' => __( 'Item not found.', 'extra-product-data-for-woocommerce' ) ) );
+		}
+
+		$this->save_new_meta_data( $order, $item );
+
+		$new_price = $this->calculate_new_price( $item );
+
+		$item->set_subtotal( $new_price * $item->get_quantity() );
+		$item->set_total( $new_price * $item->get_quantity() );
+
+		$item->save();
+
+		$order->calculate_totals();
+		return $order->save();
+	}
+
+	/**
+	 * Save new meta data.
+	 *
+	 * @param WC_Order      $order The order object.
+	 * @param WC_Order_Item $item  The order item object.
+	 * @return void
+	 */
+	protected function save_new_meta_data( WC_Order $order, WC_Order_Item $item ): void {
+		$product = OrderHelper::getProductFromItem( $item );
+		if ( ! $product ) {
+			wp_send_json_error( array( 'message' => __( 'Product not found.', 'extra-product-data-for-woocommerce' ) ) );
+		}
+
+		$custom_fields = $product->get_meta( '_extra_product_fields', true );
+		if ( ! is_array( $custom_fields ) || empty( $custom_fields ) ) {
+			wp_send_json_error( array( 'message' => __( 'No extra product data found.', 'extra-product-data-for-woocommerce' ) ) );
+		}
+
+		$item_metadata = OrderHelper::getItemFieldMetadata( $item );
+
+		$field_values = array();
+		foreach ( $custom_fields as $field ) {
+			$field_index = Helper::getFieldIndexFromLabel( $field['label'] );
+			$field_value = Helper::getFieldValueFromPost( $field_index );
+
+			if ( ! empty( $field['required'] ) && empty( $field_value ) ) {
+				wp_send_json_error(
+					array(
+						'message' => sprintf(
+															/* translators: %s is the field label */                            __( '%s is a required field.', 'extra-product-data-for-woocommerce' ),
+							esc_html( $field['label'] )
+						),
+					)
+				);
+			}
+
+			$validation_result = Helper::validateFieldByType(
+				$field_value,
+				$field['type'],
+				$field['options'] ?? array()
+			);
+
+			if ( ! $validation_result['valid'] ) {
+				wp_send_json_error(
+					array(
+						'message' => sprintf(
+															/* translators: %1$s is the field label, %2$s is the error message */                            __( '%1$s: %2$s', 'extra-product-data-for-woocommerce' ),
+							esc_html( $field['label'] ),
+							esc_html( $validation_result['message'] )
+						),
+					)
+				);
+			}
+
+			$field_values[ $field_index ] = $field_value;
+
+			$old_value = OrderHelper::getOldFieldValue( $item_metadata, $field_index );
+			OrderHelper::addOrderNoteForChange( $order, $field['label'], $old_value, $field_value );
+
+			$item->update_meta_data( $field['label'], $field_value );
+		}
+
+		$field_meta = OrderHelper::buildFieldMetadataArray( $custom_fields, $field_values );
+		$item->update_meta_data( '_meta_extra_product_data', $field_meta );
+	}
+
+	/**
+	 * Calculates the new price for the order item.
+	 *
+	 * @param WC_Order_Item $item The order item.
+	 * @return float The new price for the item.
+	 */
+	protected function calculate_new_price( WC_Order_Item $item ): float {
+		$product = OrderHelper::getProductFromItem( $item );
+		if ( ! $product ) {
+			return 0.0;
+		}
+
+		$custom_fields = $product->get_meta( '_extra_product_fields', true );
+		if ( ! is_array( $custom_fields ) || empty( $custom_fields ) ) {
+			return (float) $product->get_price();
+		}
+
+		$extra_costs = 0.0;
+		$base_price  = (float) $product->get_price();
+
+		foreach ( $custom_fields as $field ) {
+			$field_index = Helper::getFieldIndexFromLabel( $field['label'] );
+			$field_value = Helper::getFieldValueFromPost( $field_index );
+
+			if ( ! empty( $field['adjust_price'] ) && ! empty( $field_value ) ) {
+				$price_adjustment = OrderHelper::calculatePriceAdjustment( $field, $field_value, $base_price );
+				$extra_costs     += (float) $price_adjustment;
+			}
+		}
+
+		return $base_price + $extra_costs;
+	}
 }

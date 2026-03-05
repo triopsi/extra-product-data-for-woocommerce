@@ -1,12 +1,12 @@
 <?php
 declare( strict_types=1 );
 
-use Triopsi\Exprdawc\Exprdawc_Product_Page_Backend;
+use Triopsi\Exprdawc\Backend\ProductBackend;
 
 /**
  * Class TestExprdawcProductPageBackend
  *
- * PHPUnit tests for Exprdawc_Product_Page_Backend class.
+ * PHPUnit tests for ProductBackend class.
  *
  * @package Extra_Product_Data_For_WooCommerce\Tests\Unit
  */
@@ -15,7 +15,7 @@ class TestExprdawcProductPageBackend extends WP_UnitTestCase {
 	/**
 	 * Instance of the class being tested
 	 *
-	 * @var Exprdawc_Product_Page_Backend
+	 * @var ProductBackend
 	 */
 	private $product_page_backend;
 
@@ -28,7 +28,7 @@ class TestExprdawcProductPageBackend extends WP_UnitTestCase {
 	 */
 	public function setUp(): void {
 		parent::setUp();
-		$this->product_page_backend = new Exprdawc_Product_Page_Backend();
+		$this->product_page_backend = new ProductBackend();
 	}
 
 	/**
@@ -50,9 +50,9 @@ class TestExprdawcProductPageBackend extends WP_UnitTestCase {
 	 */
 	public function test_can_instantiate() {
 		$this->assertInstanceOf(
-			Exprdawc_Product_Page_Backend::class,
+			ProductBackend::class,
 			$this->product_page_backend,
-			'Instance should be of type Exprdawc_Product_Page_Backend.'
+			'Instance should be of type ProductBackend.'
 		);
 	}
 
@@ -67,7 +67,7 @@ class TestExprdawcProductPageBackend extends WP_UnitTestCase {
 		set_current_screen( 'edit-post' );
 
 		// Create new instance in admin context.
-		$backend = new Exprdawc_Product_Page_Backend();
+		$backend = new ProductBackend();
 
 		// Check filter is registered.
 		$this->assertTrue(
@@ -127,7 +127,7 @@ class TestExprdawcProductPageBackend extends WP_UnitTestCase {
 		}
 
 		// Create new instance in frontend context.
-		$backend = new Exprdawc_Product_Page_Backend();
+		$backend = new ProductBackend();
 
 		// Verify hooks were not added.
 		foreach ( $hooks_to_check as $hook ) {
@@ -207,34 +207,34 @@ class TestExprdawcProductPageBackend extends WP_UnitTestCase {
 		// Set custom fields meta for the product.
 		$custom_fields = array(
 			array(
-				'label'                  => 'Select Field',
-				'type'                   => 'select',
-				'required'               => 1,
-				'placeholder_text'       => 'Choose an option',
-				'help_text'              => 'Select one option',
-				'autocomplete'           => '',
-				'autofocus'              => false,
-				'index'                  => 0,
-				'price_adjustment_type'  => '',
-				'price_adjustment_value' => '',
-				'conditional_logic'      => 0,
-				'conditional_rules'      => array(),
-				'editable'               => true,
-				'adjust_price'           => false,
-				'options'                => array(
+				'label'                 => 'Select Field',
+				'type'                  => 'select',
+				'required'              => 1,
+				'placeholder_text'      => 'Choose an option',
+				'help_text'             => 'Select one option',
+				'autocomplete'          => '',
+				'autofocus'             => false,
+				'index'                 => 0,
+				'price_adjustment_type' => '',
+				'priceAdjustmentValue'  => '',
+				'conditional_logic'     => 0,
+				'conditional_rules'     => array(),
+				'editable'              => true,
+				'adjust_price'          => false,
+				'options'               => array(
 					array(
-						'label'                  => 'Option A',
-						'value'                  => 'a',
-						'price_adjustment_type'  => '',
-						'price_adjustment_value' => '',
-						'default'                => 0,
+						'label'                 => 'Option A',
+						'value'                 => 'a',
+						'price_adjustment_type' => '',
+						'priceAdjustmentValue'  => '',
+						'default'               => 0,
 					),
 					array(
-						'label'                  => 'Option B',
-						'value'                  => 'b',
-						'price_adjustment_type'  => '',
-						'price_adjustment_value' => '',
-						'default'                => 0,
+						'label'                 => 'Option B',
+						'value'                 => 'b',
+						'price_adjustment_type' => '',
+						'priceAdjustmentValue'  => '',
+						'default'               => 0,
 					),
 				),
 			),
@@ -305,14 +305,14 @@ class TestExprdawcProductPageBackend extends WP_UnitTestCase {
 
 		$_POST['extra_product_fields'] = array(
 			array(
-				'label'                  => 'Test Field',
-				'type'                   => 'text',
-				'required'               => '1',
-				'placeholder_text'       => 'Enter text',
-				'help_text'              => 'Help text here',
-				'index'                  => '0',
-				'price_adjustment_type'  => '',
-				'price_adjustment_value' => '',
+				'label'                 => 'Test Field',
+				'type'                  => 'text',
+				'required'              => '1',
+				'placeholder_text'      => 'Enter text',
+				'help_text'             => 'Help text here',
+				'index'                 => '0',
+				'price_adjustment_type' => '',
+				'priceAdjustmentValue'  => '',
 			),
 		);
 
@@ -345,14 +345,14 @@ class TestExprdawcProductPageBackend extends WP_UnitTestCase {
 
 		$_POST['extra_product_fields'] = array(
 			array(
-				'label'                  => '<script>alert("xss")</script>Test Field',
-				'type'                   => 'text',
-				'required'               => '1',
-				'placeholder_text'       => '<b>Placeholder</b>',
-				'help_text'              => 'Help text',
-				'index'                  => '0',
-				'price_adjustment_type'  => '',
-				'price_adjustment_value' => '',
+				'label'                 => '<script>alert("xss")</script>Test Field',
+				'type'                  => 'text',
+				'required'              => '1',
+				'placeholder_text'      => '<b>Placeholder</b>',
+				'help_text'             => 'Help text',
+				'index'                 => '0',
+				'price_adjustment_type' => '',
+				'priceAdjustmentValue'  => '',
 			),
 		);
 
@@ -383,15 +383,15 @@ class TestExprdawcProductPageBackend extends WP_UnitTestCase {
 
 		$_POST['extra_product_fields'] = array(
 			array(
-				'label'                  => 'Select Field',
-				'type'                   => 'select',
-				'required'               => '0',
-				'placeholder_text'       => '',
-				'help_text'              => '',
-				'index'                  => '0',
-				'price_adjustment_type'  => '',
-				'price_adjustment_value' => '',
-				'options'                => array(
+				'label'                 => 'Select Field',
+				'type'                  => 'select',
+				'required'              => '0',
+				'placeholder_text'      => '',
+				'help_text'             => '',
+				'index'                 => '0',
+				'price_adjustment_type' => '',
+				'priceAdjustmentValue'  => '',
+				'options'               => array(
 					array(
 						'label'   => 'Option 1',
 						'value'   => 'opt1',
@@ -577,16 +577,16 @@ class TestExprdawcProductPageBackend extends WP_UnitTestCase {
 
 		$_POST['extra_product_fields'] = array(
 			array(
-				'label'                  => 'Conditional Field',
-				'type'                   => 'text',
-				'required'               => '0',
-				'placeholder_text'       => '',
-				'help_text'              => '',
-				'index'                  => '0',
-				'price_adjustment_type'  => '',
-				'price_adjustment_value' => '',
-				'conditional_logic'      => '1',
-				'conditional_rules'      => array(
+				'label'                 => 'Conditional Field',
+				'type'                  => 'text',
+				'required'              => '0',
+				'placeholder_text'      => '',
+				'help_text'             => '',
+				'index'                 => '0',
+				'price_adjustment_type' => '',
+				'priceAdjustmentValue'  => '',
+				'conditional_logic'     => '1',
+				'conditional_rules'     => array(
 					array(
 						array(
 							'field'    => 'other_field',

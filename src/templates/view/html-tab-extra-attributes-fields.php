@@ -147,20 +147,20 @@ if ( ! defined( 'ABSPATH' ) ) {
 				<hr>
 
 				<!-- Price Adjustment -->
-				<table class="exprdawc_settings_table exprdawc_price_adjustment_table" style="display:<?php echo ( $field['adjust_price'] ?? false ) && ! in_array( $field['type'], array( 'checkbox', 'radio', 'select' ), true ) ? 'table' : 'none'; ?>">
+				<table class="exprdawc_settings_table exprdawcPriceAdjustment_table" style="display:<?php echo ( $field['adjust_price'] ?? false ) && ! in_array( $field['type'], array( 'checkbox', 'radio', 'select' ), true ) ? 'table' : 'none'; ?>">
 					<tbody>
 						<tr>
 							<td>
-								<label class="exprdawc_label" for="exprdawc_price_adjustment_type_<?php echo esc_html( $index ); ?>"><?php esc_html_e( 'Price Adjustment Type', 'extra-product-data-for-woocommerce' ); ?></label>
-								<select id="exprdawc_price_adjustment_type_<?php echo esc_html( $index ); ?>" name="extra_product_fields[<?php echo esc_html( $index ); ?>][price_adjustment_type]" class="exprdawc_input exprdawc_price_adjustment_type">
+								<label class="exprdawc_label" for="exprdawcPriceAdjustment_type_<?php echo esc_html( $index ); ?>"><?php esc_html_e( 'Price Adjustment Type', 'extra-product-data-for-woocommerce' ); ?></label>
+								<select id="exprdawcPriceAdjustment_type_<?php echo esc_html( $index ); ?>" name="extra_product_fields[<?php echo esc_html( $index ); ?>][price_adjustment_type]" class="exprdawc_input exprdawcPriceAdjustment_type">
 									<option value="fixed" <?php selected( $field['price_adjustment_type'], 'fixed' ); ?>><?php esc_html_e( 'Fixed Price', 'extra-product-data-for-woocommerce' ); ?></option>
 									<option value="quantity" <?php selected( $field['price_adjustment_type'], 'quantity' ); ?>><?php esc_html_e( 'Price per Quantity', 'extra-product-data-for-woocommerce' ); ?></option>
 									<option value="percentage" <?php selected( $field['price_adjustment_type'], 'percentage' ); ?>><?php esc_html_e( 'Percentage Price', 'extra-product-data-for-woocommerce' ); ?></option>
 								</select>
 							</td>
 							<td>
-								<label class="exprdawc_label" for="exprdawc_price_adjustment_value_<?php echo esc_html( $index ); ?>"><?php esc_html_e( 'Price Adjustment Value', 'extra-product-data-for-woocommerce' ); ?></label>
-								<input type="number" id="exprdawc_price_adjustment_value_<?php echo esc_html( $index ); ?>" class="exprdawc_input exprdawc_price_adjustment_value" name="extra_product_fields[<?php echo esc_html( $index ); ?>][price_adjustment_value]" placeholder="0.00" value="<?php echo esc_attr( $field['price_adjustment_value'] ?? '' ); ?>" step="0.01" />
+								<label class="exprdawc_label" for="exprdawc_priceAdjustmentValue_<?php echo esc_html( $index ); ?>"><?php esc_html_e( 'Price Adjustment Value', 'extra-product-data-for-woocommerce' ); ?></label>
+								<input type="number" id="exprdawc_priceAdjustmentValue_<?php echo esc_html( $index ); ?>" class="exprdawc_input exprdawc_priceAdjustmentValue" name="extra_product_fields[<?php echo esc_html( $index ); ?>][priceAdjustmentValue]" placeholder="0.00" value="<?php echo esc_attr( $field['priceAdjustmentValue'] ?? '' ); ?>" step="0.01" />
 							</td>
 						</tr>
 					</tbody>
@@ -296,11 +296,11 @@ if ( ! defined( 'ABSPATH' ) ) {
 								<?php esc_html_e( 'Default', 'extra-product-data-for-woocommerce' ); ?>
 								<span class="dashicons dashicons-editor-help" title="<?php esc_html_e( 'Set as default option.', 'extra-product-data-for-woocommerce' ); ?>"></span>
 							</th>
-							<th class="field_price_adjustment_type_th" style="<?php echo ( $field['adjust_price'] ?? false ) ? '' : 'display:none'; ?>">
+							<th class="fieldPriceAdjustment_type_th" style="<?php echo ( $field['adjust_price'] ?? false ) ? '' : 'display:none'; ?>">
 								<?php esc_html_e( 'Price Adjustment Type', 'extra-product-data-for-woocommerce' ); ?>
 								<span class="dashicons dashicons-editor-help" title="<?php esc_html_e( 'This is the price adjustment type for the option.', 'extra-product-data-for-woocommerce' ); ?>"></span>
 							</th>
-							<th class="field_price_adjustment_val_th" style="<?php echo ( $field['adjust_price'] ?? false ) ? '' : 'display:none'; ?>">
+							<th class="fieldPriceAdjustment_val_th" style="<?php echo ( $field['adjust_price'] ?? false ) ? '' : 'display:none'; ?>">
 								<?php esc_html_e( 'Price Adjustment Value', 'extra-product-data-for-woocommerce' ); ?>
 								<span class="dashicons dashicons-editor-help" title="<?php esc_html_e( 'This is the price adjustment value for the option.', 'extra-product-data-for-woocommerce' ); ?>"></span>
 							</th>
@@ -326,15 +326,15 @@ if ( ! defined( 'ABSPATH' ) ) {
 												<input type="radio" class="exprdawc_input exprdawc_radio exprdawc_option_default" name="extra_product_fields[<?php echo esc_html( $index ); ?>][default]" value="<?php echo esc_attr( $option['value'] ); ?>" <?php checked( isset( $field['default'] ) && $field['default'] === $option['value'] ); ?> />
 											<?php endif; ?>
 										</td>
-										<td class="field_price_adjustment_type" style="<?php echo ( $field['adjust_price'] ?? false ) ? '' : 'display:none'; ?>">
-											<select name="extra_product_fields[<?php echo esc_html( $index ); ?>][options][<?php echo esc_html( $option_index ); ?>][price_adjustment_type]" class="exprdawc_input exprdawc_price_adjustment_type">
+										<td class="fieldPriceAdjustment_type" style="<?php echo ( $field['adjust_price'] ?? false ) ? '' : 'display:none'; ?>">
+											<select name="extra_product_fields[<?php echo esc_html( $index ); ?>][options][<?php echo esc_html( $option_index ); ?>][price_adjustment_type]" class="exprdawc_input exprdawcPriceAdjustment_type">
 												<option value="fixed" <?php selected( $option['price_adjustment_type'], 'fixed' ); ?>><?php esc_html_e( 'Fixed Price', 'extra-product-data-for-woocommerce' ); ?></option>
 												<option value="quantity" <?php selected( $option['price_adjustment_type'], 'quantity' ); ?>><?php esc_html_e( 'Price per Quantity', 'extra-product-data-for-woocommerce' ); ?></option>
 												<option value="percentage" <?php selected( $option['price_adjustment_type'], 'percentage' ); ?>><?php esc_html_e( 'Percentage Price', 'extra-product-data-for-woocommerce' ); ?></option>
 											</select>
 										</td>
-										<td class="field_price_adjustment_value" style="<?php echo ( $field['adjust_price'] ?? false ) ? '' : 'display:none'; ?>">
-											<input type="number" class="exprdawc_input exprdawc_price_adjustment_value" name="extra_product_fields[<?php echo esc_html( $index ); ?>][options][<?php echo esc_html( $option_index ); ?>][price_adjustment_value]" placeholder="0.00" value="<?php echo esc_attr( $option['price_adjustment_value'] ?? '' ); ?>" step="0.01" />
+										<td class="field_priceAdjustmentValue" style="<?php echo ( $field['adjust_price'] ?? false ) ? '' : 'display:none'; ?>">
+											<input type="number" class="exprdawc_input exprdawc_priceAdjustmentValue" name="extra_product_fields[<?php echo esc_html( $index ); ?>][options][<?php echo esc_html( $option_index ); ?>][priceAdjustmentValue]" placeholder="0.00" value="<?php echo esc_attr( $option['priceAdjustmentValue'] ?? '' ); ?>" step="0.01" />
 										</td>
 										<td class="field_option_table_action_td">
 											<button type="button" class="button remove_option"><?php esc_html_e( 'Remove', 'extra-product-data-for-woocommerce' ); ?></button>

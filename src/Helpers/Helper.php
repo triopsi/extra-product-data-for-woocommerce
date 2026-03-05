@@ -109,40 +109,40 @@ class Helper {
 	 */
 	private static function getDefaultFieldArgs(): array {
 		return array(
-			'id_prefix'              => 'exprdawc_custom_field_input',
-			'id'                     => '',
-			'name'                   => '',
-			'type'                   => 'text',
-			'wrapper_class'          => array( 'form-row-wide' ),
-			'label_class'            => array( 'exprdawc-label' ),
-			'input_wrapper_class'    => array( 'wc-block-components-text-input', 'exprdawc-input-wrapper' ),
-			'input_class'            => array( 'exprdawc-input' ),
-			'description_class'      => array( 'exprdawc-description' ),
-			'label'                  => '',
-			'required'               => false,
-			'placeholder'            => '',
-			'description'            => '',
-			'custom_attributes'      => array(),
-			'options'                => array(),
-			'maxlength'              => 255,
-			'minlength'              => 0,
-			'autocomplete'           => null,
-			'autofocus'              => false,
-			'disabled'               => false,
-			'editable'               => true,
-			'validate'               => array(),
-			'data'                   => array(),
-			'adjust_price'           => false,
-			'price_adjustment_type'  => null,
-			'price_adjustment_value' => 0,
-			'default'                => '',
-			'value'                  => '',
-			'help_text'              => '',
-			'placeholder_text'       => '',
-			'conditional_logic'      => false,
-			'conditional_rules'      => array(),
-			'rows'                   => 2,
-			'cols'                   => 5,
+			'id_prefix'             => 'exprdawc_custom_field_input',
+			'id'                    => '',
+			'name'                  => '',
+			'type'                  => 'text',
+			'wrapper_class'         => array( 'form-row-wide' ),
+			'label_class'           => array( 'exprdawc-label' ),
+			'input_wrapper_class'   => array( 'wc-block-components-text-input', 'exprdawc-input-wrapper' ),
+			'input_class'           => array( 'exprdawc-input' ),
+			'description_class'     => array( 'exprdawc-description' ),
+			'label'                 => '',
+			'required'              => false,
+			'placeholder'           => '',
+			'description'           => '',
+			'custom_attributes'     => array(),
+			'options'               => array(),
+			'maxlength'             => 255,
+			'minlength'             => 0,
+			'autocomplete'          => null,
+			'autofocus'             => false,
+			'disabled'              => false,
+			'editable'              => true,
+			'validate'              => array(),
+			'data'                  => array(),
+			'adjust_price'          => false,
+			'price_adjustment_type' => null,
+			'priceAdjustmentValue'  => 0,
+			'default'               => '',
+			'value'                 => '',
+			'help_text'             => '',
+			'placeholder_text'      => '',
+			'conditional_logic'     => false,
+			'conditional_rules'     => array(),
+			'rows'                  => 2,
+			'cols'                  => 5,
 		);
 	}
 
@@ -377,14 +377,14 @@ class Helper {
 	 * @return array Field arguments with price adjustment data.
 	 */
 	private static function preparePriceAdjustment( array $fieldArgs, bool $skipRequiredCheck ): array { // phpcs:ignore
-		$adjustmentValue = (float) ( $fieldArgs['price_adjustment_value'] ?? 0 );
+		$adjustmentValue = (float) ( $fieldArgs['priceAdjustmentValue'] ?? 0 );
 
 		if ( 0 !== $adjustmentValue ) {
 			$fieldArgs['input_class'][] = 'exprdawc-price-adjustment-field';
 
 			if ( ! in_array( $fieldArgs['type'], self::PRICE_ADJUSTMENT_TYPES, true ) ) {
 				$fieldArgs['custom_attributes']['data-price-adjustment-type'] = esc_attr( $fieldArgs['price_adjustment_type'] );
-				$fieldArgs['custom_attributes']['data-price-adjustment']      = esc_attr( $fieldArgs['price_adjustment_value'] );
+				$fieldArgs['custom_attributes']['data-price-adjustment']      = esc_attr( $fieldArgs['priceAdjustmentValue'] );
 
 				$plusMinus = ( $adjustmentValue > 0 ) ? '+' : '-';
 				if ( 'percentage' === $fieldArgs['price_adjustment_type'] ) {
@@ -412,11 +412,11 @@ class Helper {
 
 		$fieldArgs['options'] = array_map(
 			function ( $option ) use ( $fieldArgs ) {
-				if ( ! isset( $option['price_adjustment_value'] ) || empty( $option['price_adjustment_value'] ) ) {
+				if ( ! isset( $option['priceAdjustmentValue'] ) || empty( $option['priceAdjustmentValue'] ) ) {
 					return $option;
 				}
 
-				$adjustmentValue = (float) $option['price_adjustment_value'];
+				$adjustmentValue = (float) $option['priceAdjustmentValue'];
 				$adjustmentType  = $option['price_adjustment_type'] ?? 'fixed';
 
 				if ( 0 === $adjustmentValue ) {
@@ -499,6 +499,10 @@ class Helper {
 
 		$requiredString   = $fieldArgs['required_string'] ?? '';
 		$customAttributes = self::buildAttributesArray( $fieldArgs['custom_attributes'] );
+		// Make variables available to templates using legacy variable names.
+		$field_args        = $fieldArgs;
+		$required_string   = $requiredString;
+		$custom_attributes = $customAttributes;
 
 		if ( file_exists( $templatePath . 'custom-field-start.php' ) ) {
 			include $templatePath . 'custom-field-start.php';

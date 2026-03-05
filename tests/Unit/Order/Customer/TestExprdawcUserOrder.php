@@ -1,12 +1,12 @@
 <?php
 declare( strict_types=1 );
 
-use Triopsi\Exprdawc\Order\Customer\Exprdawc_User_Order;
+use Triopsi\Exprdawc\Orders\Customer\CustomerOrder;
 
 /**
  * Class TestExprdawcUserOrder
  *
- * PHPUnit tests for Exprdawc_User_Order class.
+ * PHPUnit tests for CustomerOrder class.
  *
  * @package Extra_Product_Data_For_WooCommerce\Tests\Unit
  */
@@ -15,7 +15,7 @@ class TestExprdawcUserOrder extends WP_UnitTestCase {
 	/**
 	 * Instance of the class being tested.
 	 *
-	 * @var Exprdawc_User_Order
+	 * @var CustomerOrder
 	 */
 	private $user_order;
 
@@ -28,7 +28,7 @@ class TestExprdawcUserOrder extends WP_UnitTestCase {
 	 */
 	public function setUp(): void {
 		parent::setUp();
-		$this->user_order = new Exprdawc_User_Order();
+		$this->user_order = new CustomerOrder();
 	}
 
 	/**
@@ -90,9 +90,9 @@ class TestExprdawcUserOrder extends WP_UnitTestCase {
 	 */
 	public function test_can_instantiate() {
 		$this->assertInstanceOf(
-			Exprdawc_User_Order::class,
+			CustomerOrder::class,
 			$this->user_order,
-			'Instance should be of type Exprdawc_User_Order.'
+			'Instance should be of type CustomerOrder.'
 		);
 	}
 
@@ -191,7 +191,7 @@ class TestExprdawcUserOrder extends WP_UnitTestCase {
 		}
 
 		// Create new instance to avoid conflicts from previous tests.
-		$test_instance = new Exprdawc_User_Order();
+		$test_instance = new CustomerOrder();
 		$test_instance->enqueue_scripts();
 
 		// Verify method executed successfully.
