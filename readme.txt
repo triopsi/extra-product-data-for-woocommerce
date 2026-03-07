@@ -81,97 +81,11 @@ Yes, the plugin has been tested with the latest WordPress release and PHP 8.2.
 
 == Changelog ==
 
-= 1.0.0 ((2024-11-20)) =
-* Initial release.
+= 2.0.2 (04.03.2026) =
+* Fix: Radio default on admin product page now also listens to input event
 
-= 1.1.1 (2024-11-20) =
-* Initial release with fixes
-
-= 1.1.2 (2024-11-20) =
-* Initial release with fixes
-
-= 1.1.3 (2024-11-27) =
-* Update for the WordPress Library
-
-= 1.2.0 (2024-11-27) =
-* Add Edit Button in the order overview.
-
-= 1.3.0 (2024-11-30) =
-* Add more field types checkboxes, radio and selects
-* Edit option for admins in order overview
-
-= 1.4.0 (2024-12-04) =
-* Radio and checkboxes don't have input-text CSS classes
-* Select overflow
-* Add autocomplete function
-* Add Conditional Logic for fields
-* Add Conditional rules in backend
-
-= 1.4.1 (2024-12-06) =
-* export link are always broke
-
-= 1.5.0 (2024-12-09) =
-* plugin can enable for another woocommerce products
-
-= 1.5.1 (2024-12-09) =
-* edit button dont visible on order overview
-
-= 1.6.0 (2024-12-09) =
-* add setting page and add options for "Show on Cart" and "Show on Checkout"
-
-= 1.7.0 (2024-12-12) =
-* add editable section for user in the order overview
-* compatibility with WooCommerce HPOS
-
-= 1.7.1 (2024-12-26) =
-* Restructuring of the entire code
-* Fields can now influence the base price
-* Many minor bug fixes
-* Support Variable Products ans Simple Products
-
-= 1.7.2 (2024-12-26) =
-* JS are reade for plugin
-
-= 1.7.3 (11.01.2025) =
-* Bug fix: Admin and users who placed the order can manipulate the total price after editing the order.
-
-= 1.7.4 (13.01.2025) =
-* Bug fix: fix version in files
-
-= 1.7.5 (13.01.2025) =
-* Bug fix: fix with normally artefacts
-
-= 1.7.6 (13.01.2025) =
-* Bug fix: maintenance versions
-
-= 1.7.7 (13.01.2025) =
-* Bug fix: input fields have same css style
-
-= 1.7.8 (13.01.2025) =
-* Bug fix: css fix on user edit page
-* Bug fix: admin can edit the custom fields
-
-= 1.7.9 (13.01.2025) =
-* Bug fix: css fix on user edit page
-
-= 1.7.10 (18.01.2025) =
-* Bug fix: calculate with empty fields
-
-= 1.7.11 (05.02.2025) =
-* Bug fix: the product can only be purchased once
-
-= 1.8.0 (13.02.2026) =
-* Bugfix: Radio buttons/checkboxes could not be created
-* Feat: Colors and usability slightly adjusted according to WooCommerce
-* Chore: Refactor the code, clean it up, and move it to GitHub.
-* Documentation: Updated Readme and Changelog for 1.8.0
-* Chore: New logo and banner for the WordPress plugin page
-
-= 1.8.1 (13.02.2026) =
-* Chore: Change Readme
-
-= 1.8.2 (13.02.2026) =
-* Fix: Required input name with full stops
+= 2.0.1 (25.02.2026) =
+* Fix and Bump Version to wg.org
 
 = 2.0.0 (25.02.2026) =
 * various bug fixes in calculation, display, and when adding fields
@@ -182,8 +96,94 @@ Yes, the plugin has been tested with the latest WordPress release and PHP 8.2.
 * fix for checking whether WooCommerce has already loaded
 * stricter checks for usage of actions and filters
 
-= 2.0.1 (25.02.2026) =
-* Fix and Bump Version to wg.org
+= 1.8.2 (13.02.2026) =
+* Fix: Required input name with full stops
 
-= 2.0.2 (04.03.2026) =
-* Fix: Radio default on admin product page now also listens to input event
+= 1.8.1 (13.02.2026) =
+* Chore: Change Readme
+
+= 1.8.0 (13.02.2026) =
+* Bugfix: Radio buttons/checkboxes could not be created
+* Feat: Colors and usability slightly adjusted according to WooCommerce
+* Chore: Refactor the code, clean it up, and move it to GitHub.
+* Documentation: Updated Readme and Changelog for 1.8.0
+* Chore: New logo and banner for the WordPress plugin page
+
+= 1.7.11 (05.02.2025) =
+* Bug fix: the product can only be purchased once
+
+= 1.7.10 (18.01.2025) =
+* Bug fix: calculate with empty fields
+
+= 1.7.9 (13.01.2025) =
+* Bug fix: css fix on user edit page
+
+= 1.7.8 (13.01.2025) =
+* Bug fix: css fix on user edit page
+* Bug fix: admin can edit the custom fields
+
+= 1.7.7 (13.01.2025) =
+* Bug fix: input fields have same css style
+
+= 1.7.6 (13.01.2025) =
+* Bug fix: maintenance versions
+
+= 1.7.5 (13.01.2025) =
+* Bug fix: fix with normally artefacts
+
+= 1.7.4 (13.01.2025) =
+* Bug fix: fix version in files
+
+= 1.7.3 (11.01.2025) =
+* Bug fix: Admin and users who placed the order can manipulate the total price after editing the order.
+
+= 1.7.2 (2024-12-26) =
+* JS are reade for plugin
+
+= 1.7.1 (2024-12-26) =
+* Restructuring of the entire code
+* Fields can now influence the base price
+* Many minor bug fixes
+* Support Variable Products ans Simple Products
+
+= 1.7.0 (2024-12-12) =
+* add editable section for user in the order overview
+* compatibility with WooCommerce HPOS
+
+= 1.6.0 (2024-12-09) =
+* add setting page and add options for "Show on Cart" and "Show on Checkout"
+
+= 1.5.1 (2024-12-09) =
+* edit button dont visible on order overview
+
+= 1.5.0 (2024-12-09) =
+* plugin can enable for another woocommerce products
+
+= 1.4.1 (2024-12-06) =
+* export link are always broke
+
+= 1.4.0 (2024-12-04) =
+* Radio and checkboxes don't have input-text CSS classes
+* Select overflow
+* Add autocomplete function
+* Add Conditional Logic for fields
+* Add Conditional rules in backend
+
+= 1.3.0 (2024-11-30) =
+* Add more field types checkboxes, radio and selects
+* Edit option for admins in order overview
+
+= 1.2.0 (2024-11-27) =
+* Add Edit Button in the order overview.
+
+= 1.1.3 (2024-11-27) =
+* Update for the WordPress Library
+
+= 1.1.2 (2024-11-20) =
+* Initial release with fixes
+
+= 1.1.1 (2024-11-20) =
+* Initial release with fixes
+
+= 1.0.0 ((2024-11-20)) =
+* Initial release.
