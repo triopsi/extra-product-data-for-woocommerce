@@ -321,7 +321,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 										</td>
 										<td class="field_option_table_selected_td">
 											<?php if ( 'checkbox' === $field['type'] ) : ?>
-												<input type="checkbox" class="exprdawc_input exprdawc_checkbox exprdawc_option_default" name="extra_product_fields[<?php echo esc_html( $index ); ?>][options][<?php echo esc_html( $option_index ); ?>][default]" value="1" <?php checked( 1, $option['default'] ); ?> />
+												<input type="checkbox" class="exprdawc_input exprdawc_checkbox exprdawc_option_default" name="extra_product_fields[<?php echo esc_html( $index ); ?>][default][]" value="<?php echo esc_attr( $option['value'] ); ?>" <?php checked( in_array( (string) $option['value'], (array) $field['default'], true ) ); ?> />
 											<?php else : ?>
 												<input type="radio" class="exprdawc_input exprdawc_radio exprdawc_option_default" name="extra_product_fields[<?php echo esc_html( $index ); ?>][default]" value="<?php echo esc_attr( $option['value'] ); ?>" <?php checked( isset( $field['default'] ) && $field['default'] === $option['value'] ); ?> />
 											<?php endif; ?>

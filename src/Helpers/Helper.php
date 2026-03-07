@@ -197,9 +197,9 @@ class Helper {
 	 * @param array  $fieldArgs Field arguments.
 	 * @param string $value     Passed value.
 	 *
-	 * @return string Field value.
+	 * @return mixed Field value.
 	 */
-	private static function getFieldValue( array $fieldArgs, string $value ): string {
+	private static function getFieldValue( array $fieldArgs, string $value ): mixed {
 		if ( ! empty( $value ) ) {
 			return $value;
 		}

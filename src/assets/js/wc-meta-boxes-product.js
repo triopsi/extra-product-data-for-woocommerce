@@ -544,7 +544,7 @@ jQuery(function ($) {
                         <input type="text" name="extra_product_fields[${actual_index}][options][${optionIndex}][value]" placeholder="${exprdawc_admin_meta_boxes.option_value_placeholder}" />
                     </td>
                     <td class="field_option_table_selected_td">
-                        <input type="checkbox" name="extra_product_fields[${actual_index}][options][${optionIndex}][default]" value="1" />
+                        <input type="checkbox" name="extra_product_fields[${actual_index}][default][]" value="${optionIndex}" />
                     </td>
                     ${priceAdjustmentColumns}
                     <td class="field_option_table_action_td">
@@ -608,15 +608,15 @@ jQuery(function ($) {
             const fieldType = $optionsTable.closest('.exprdawc_fields_table').find('.exprdawc_attribute_type').val();
 
             // For radio/select types the default is a single value input (radio)
-            if (fieldType === 'radio' || fieldType === 'select') {
-                const $targetRadio = $optionsTable.find('tbody tr').eq(optionIndex).find('input[type="radio"]');
-                if ($targetRadio.length) {
-                    $targetRadio.val(newValue);
+            if (fieldType === 'radio' || fieldType === 'select' || fieldType === 'checkbox') {
+                const $targetRadioOrCheckbox = $optionsTable.find('tbody tr').eq(optionIndex).find('input[type="radio"], input[type="checkbox"]').first();
+                if ($targetRadioOrCheckbox.length) {
+                    $targetRadioOrCheckbox.val(newValue);
                 } else {
                     // Fallback: try to find radios by name pattern and set the matching index
-                    const $radios = $optionsTable.find('input[type="radio"][name^="extra_product_fields"]');
-                    if ($radios.length > optionIndex) {
-                        $radios.eq(optionIndex).val(newValue);
+                    const $targetRadioOrCheckbox = $optionsTable.find('input[type="radio"][name^="extra_product_fields"], input[type="checkbox"][name^="extra_product_fields"]');
+                    if ($targetRadioOrCheckbox.length > optionIndex) {
+                        $targetRadioOrCheckbox.eq(optionIndex).val(newValue);
                     }
                 }
             }

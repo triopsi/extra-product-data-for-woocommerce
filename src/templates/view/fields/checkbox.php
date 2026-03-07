@@ -33,7 +33,7 @@ $field = $field_args ?? array();
 			<?php
 			$option_value = $option['value'] ?? '';
 			$option_label = $option['label'] ?? '';
-			$checked      = H::checked( $field['value'], $option_value );
+			$checked      = H::checked( in_array( (string) $option_value, (array) $field['value'], true ), true );
 			$option_id    = H::id( $field['id'] . '-' . $option_value );
 
 			// Build data attributes for price adjustment.
