@@ -17,15 +17,13 @@
     "woocommerce"
   ],
   "features": {
-    "intl": true
+    "intl": true,
+    "networking": true
   },
   "landingPage": "/wp-admin/post.php?post=17&action=edit",
   "preferredVersions": {
     "php": "8.4",
     "wp": "latest"
-  },
-  "features": {
-    "networking": true
   },
   "siteOptions": {
     "blogName": "Extra Product Data for WooCommerce",
