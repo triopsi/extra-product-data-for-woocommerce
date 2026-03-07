@@ -48,6 +48,7 @@
     "phpcompatibility/phpcompatibility-wp": "*",
     "wp-phpunit/wp-phpunit": "^6.3",
     "phpunit/php-code-coverage": "^9.2",
-    "phpunit/phpunit": "^9.6"
+    "phpunit/phpunit": "^9.6",
+    "php-stubs/woocommerce-stubs": "^10.5"
   }
 }

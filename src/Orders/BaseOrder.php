@@ -19,6 +19,7 @@ namespace Triopsi\Exprdawc\Orders;
 use Automattic\WooCommerce\Utilities\OrderUtil;
 use WC_Order;
 use WC_Order_Item;
+use WC_Order_Item_Product;
 use Triopsi\Exprdawc\Helpers\Helper;
 use Triopsi\Exprdawc\Helpers\OrderHelper;
 
@@ -52,21 +53,22 @@ class BaseOrder {
 			wp_send_json_error( array( 'message' => __( 'You must be logged in to edit this order.', 'extra-product-data-for-woocommerce' ) ) );
 		}
 
+		// Check user permissions.
 		$current_user_id = get_current_user_id();
 
+		// Load the order and check if it exists.
 		$order = wc_get_order( $order_id );
 		if ( ! $order || ! ( $order instanceof WC_Order ) ) {
 			wp_send_json_error( array( 'message' => __( 'Order not found.', 'extra-product-data-for-woocommerce' ) ) );
 		}
-
-		$user         = get_user_by( 'id', $current_user_id );
-		$capabilities = $user ? $user->allcaps : array();
-
+		// Check if the user has permission to edit the order.
 		if ( $admin ) {
+			// For admin users, check if they have the capability to edit shop orders.
 			if ( ! current_user_can( 'edit_shop_orders' ) ) { // phpcs:ignore
 				wp_send_json_error( array( 'message' => __( 'You do not have permission to edit this order.', 'extra-product-data-for-woocommerce' ) ) );
 			}
 		} else { // phpcs:ignore
+			// For non-admin users, check if they are the owner of the order or have permission to edit it based on order status.
 			if ( $order->get_user_id() !== $current_user_id ) { // phpcs:ignore
 				wp_send_json_error( array( 'message' => __( 'You do not have permission to edit this order.', 'extra-product-data-for-woocommerce' ) ) );
 			}
@@ -86,20 +88,30 @@ class BaseOrder {
 			}
 		}
 
+		// Load the order item and check if it exists and is a product item.
 		$item = $order->get_item( $item_id );
-		if ( ! $item || ! ( $item instanceof WC_Order_Item ) ) {
-			wp_send_json_error( array( 'message' => __( 'Item not found.', 'extra-product-data-for-woocommerce' ) ) );
+		if ( ! $item instanceof WC_Order_Item_Product ) {
+			wp_send_json_error(
+				array(
+					'message' => __( 'Item not found.', 'extra-product-data-for-woocommerce' ),
+				)
+			);
 		}
 
+		// Save new meta data and update item price.
 		$this->save_new_meta_data( $order, $item );
 
+		// Calculate new price based on updated meta data.
 		$new_price = $this->calculate_new_price( $item );
 
+		// Update item price and totals.
 		$item->set_subtotal( $new_price * $item->get_quantity() );
 		$item->set_total( $new_price * $item->get_quantity() );
 
+		// Save the item to update the price changes.
 		$item->save();
 
+		// Recalculate order totals after updating item price.
 		$order->calculate_totals();
 		return $order->save();
 	}
@@ -133,7 +145,8 @@ class BaseOrder {
 				wp_send_json_error(
 					array(
 						'message' => sprintf(
-															/* translators: %s is the field label */                            __( '%s is a required field.', 'extra-product-data-for-woocommerce' ),
+							/* translators: %s is the field label */
+							__( '%s is a required field.', 'extra-product-data-for-woocommerce' ),
 							esc_html( $field['label'] )
 						),
 					)
@@ -150,7 +163,8 @@ class BaseOrder {
 				wp_send_json_error(
 					array(
 						'message' => sprintf(
-															/* translators: %1$s is the field label, %2$s is the error message */                            __( '%1$s: %2$s', 'extra-product-data-for-woocommerce' ),
+							/* translators: %1$s is the field label, %2$s is the error message */
+							__( '%1$s: %2$s', 'extra-product-data-for-woocommerce' ),
 							esc_html( $field['label'] ),
 							esc_html( $validation_result['message'] )
 						),

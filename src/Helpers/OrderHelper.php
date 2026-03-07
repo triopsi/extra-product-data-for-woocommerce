@@ -18,6 +18,7 @@ namespace Triopsi\Exprdawc\Helpers;
 
 use WC_Order;
 use WC_Order_Item;
+use WC_Order_Item_Product;
 use WC_Product;
 use Triopsi\Exprdawc\Helpers\Helper;
 
@@ -197,6 +198,9 @@ class OrderHelper {
 	 * @return WC_Product|false The product object or false.
 	 */
 	public static function getProductFromItem( WC_Order_Item $item ) {
+		if ( ! $item instanceof WC_Order_Item_Product ) {
+			return false;
+		}
 		$product = $item->get_product();
 
 		if ( ! $product instanceof WC_Product ) {

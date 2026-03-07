@@ -19,6 +19,7 @@ namespace Triopsi\Exprdawc\Orders\Admin;
 use Automattic\WooCommerce\Utilities\OrderUtil;
 use WC_Order;
 use WC_Order_Item;
+use WC_Order_Item_Product;
 use WC_Product;
 use Triopsi\Exprdawc\Helpers\Helper;
 use Triopsi\Exprdawc\Contracts\Hookable;
@@ -161,6 +162,13 @@ class AdminOrder extends BaseOrder implements Hookable {
 			wp_send_json_error( array( 'message' => __( 'Order or item not found.', 'extra-product-data-for-woocommerce' ) ) );
 		}
 
+		if ( ! $item instanceof WC_Order_Item_Product ) {
+			wp_send_json_error(
+				array(
+					'message' => __( 'Order item is not a product item.', 'extra-product-data-for-woocommerce' ),
+				)
+			);
+		}
 		$product = $item->get_product();
 		if ( $product->is_type( 'variation' ) ) {
 			$product = wc_get_product( $product->get_parent_id() );
