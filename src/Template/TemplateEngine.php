@@ -1,38 +1,31 @@
 <?php
 /**
- * Template Engine for Extra Product Data for WooCommerce
+ * Template Engine
  *
- * A lightweight template engine similar to Twig/Jinja2 for WordPress
- * Provides variable interpolation, auto-escaping, conditionals, loops, and includes.
- *
- * @package Extra_Product_Data_For_WooCommerce
+ * @package ExtraProductDataForWooCommerce
  * @author Daniel Drevermann <info@triopsi.com>
- * @copyright Copyright (c) 2024-2026, IT-Dienstleistungen Drevermann
- * @since 1.9.0
+ * @copyright Copyright (c) 2024, IT-Dienstleistungen Drevermann
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 2 of the License, or
+ * (at your option) any later version.
  */
 
-declare( strict_types=1 );
-namespace Triopsi\Exprdawc;
+declare(strict_types=1);
+
+namespace Triopsi\Exprdawc\Template;
 
 if ( ! defined( 'ABSPATH' ) ) {
-	exit; // Exit if accessed directly.
+	exit;
 }
 
 /**
- * Class Exprdawc_Template_Engine
+ * Template Engine
  *
- * Lightweight template engine for rendering field templates with automatic escaping.
- *
- * Syntax:
- * - {{ variable }} - Escaped output
- * - {{{ variable }}} - Raw/unescaped output
- * - {% if variable %}...{% endif %} - Conditional
- * - {% foreach items as item %}...{% endforeach %} - Loop
- * - {% include 'template.php' %} - Include template
- *
- * @package Exprdawc
+ * Handles template rendering with variable interpolation and control structures.
  */
-class Exprdawc_Template_Engine {
+class TemplateEngine {
 
 	/**
 	 * Template base path.
@@ -89,7 +82,7 @@ class Exprdawc_Template_Engine {
 
 		if ( ! file_exists( $template_file ) ) {
 			if ( defined( 'WP_DEBUG' ) && WP_DEBUG ) {
-                // phpcs:ignore WordPress.PHP.DevelopmentFunctions.error_log_trigger_error
+				// phpcs:ignore WordPress.PHP.DevelopmentFunctions.error_log_trigger_error
 				trigger_error( sprintf( 'Template not found: %s', esc_html( $template_file ) ), E_USER_WARNING );
 			}
 			return $should_echo ? '' : '';
@@ -98,7 +91,7 @@ class Exprdawc_Template_Engine {
 		$output = $this->process_template( $template_file );
 
 		if ( $should_echo ) {
-            // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
+			// phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
 			echo $output;
 			return;
 		}
@@ -114,28 +107,24 @@ class Exprdawc_Template_Engine {
 	 * @return string Rendered HTML.
 	 */
 	private function process_template( string $template_file ): string {
-		// Get from cache if enabled.
 		$cache_key = md5( $template_file . wp_json_encode( $this->variables ) );
 
 		if ( $this->cache_enabled && isset( self::$cache[ $cache_key ] ) ) {
 			return self::$cache[ $cache_key ];
 		}
 
-		// Load template content from local filesystem.
-		// phpcs:ignore WordPress.WP.AlternativeFunctions.file_get_contents_file_get_contents -- Reading local template files, not remote URLs.
+		// phpcs:ignore WordPress.WP.AlternativeFunctions.file_get_contents_file_get_contents
 		$content = file_get_contents( $template_file );
 
 		if ( false === $content ) {
 			return '';
 		}
 
-		// Process template directives.
 		$content = $this->process_includes( $content );
 		$content = $this->process_conditionals( $content );
 		$content = $this->process_loops( $content );
 		$content = $this->process_variables( $content );
 
-		// Cache result.
 		if ( $this->cache_enabled ) {
 			self::$cache[ $cache_key ] = $content;
 		}
@@ -151,7 +140,7 @@ class Exprdawc_Template_Engine {
 	 * @return string Processed content.
 	 */
 	private function process_includes( string $content ): string {
-		$pattern = '/{%\s*include\s+[\'"]([^\'"]+)[\'"]\s*%}/';
+		$pattern = '/{%\s*include\s+[\'\"]([^\'\"]+)[\'\"]\s*%}/';
 
 		return preg_replace_callback(
 			$pattern,
@@ -185,7 +174,6 @@ class Exprdawc_Template_Engine {
 				$condition = trim( $matches[1] );
 				$block     = $matches[2];
 
-				// Evaluate condition.
 				if ( $this->evaluate_condition( $condition ) ) {
 					return $block;
 				}
@@ -221,17 +209,14 @@ class Exprdawc_Template_Engine {
 
 				$output = '';
 				foreach ( $items as $item ) {
-					// Temporarily add item to variables.
 					$original_value               = $this->variables[ $item_var ] ?? null;
 					$this->variables[ $item_var ] = $item;
 
-					// Process block with item context.
 					$rendered = $this->process_variables( $block );
 					$rendered = $this->process_conditionals( $rendered );
 
 					$output .= $rendered;
 
-					// Restore original value.
 					if ( null === $original_value ) {
 						unset( $this->variables[ $item_var ] );
 					} else {
@@ -253,7 +238,6 @@ class Exprdawc_Template_Engine {
 	 * @return string Processed content.
 	 */
 	private function process_variables( string $content ): string {
-		// Process raw variables first {{{ var }}}.
 		$content = preg_replace_callback(
 			'/\{\{\{\s*([^\}]+)\s*\}\}\}/',
 			function ( $matches ) {
@@ -263,7 +247,6 @@ class Exprdawc_Template_Engine {
 			$content
 		);
 
-		// Process escaped variables {{ var }}.
 		$content = preg_replace_callback(
 			'/\{\{\s*([^\}]+)\s*\}\}/',
 			function ( $matches ) {
@@ -279,7 +262,7 @@ class Exprdawc_Template_Engine {
 	/**
 	 * Get variable value with optional escaping.
 	 *
-	 * @param string $var_path Variable path (e.g., 'user.name' or 'items.0.title').
+	 * @param string $var_path Variable path.
 	 * @param bool   $escape Whether to escape the value.
 	 *
 	 * @return string Variable value.
@@ -291,22 +274,17 @@ class Exprdawc_Template_Engine {
 			return '';
 		}
 
-		// Convert arrays to string.
 		if ( is_array( $value ) ) {
 			$value = implode( ', ', $value );
 		}
 
-		// Convert boolean to string.
 		if ( is_bool( $value ) ) {
 			$value = $value ? 'true' : 'false';
 		}
 
-		// Convert to string.
 		$value = (string) $value;
 
-		// Escape if needed.
 		if ( $escape ) {
-			// Auto-detect context for escaping.
 			return $this->auto_escape( $value );
 		}
 
@@ -316,9 +294,9 @@ class Exprdawc_Template_Engine {
 	/**
 	 * Get variable by path (supports dot notation).
 	 *
-	 * @param string $path Variable path (e.g., 'user.name').
+	 * @param string $path Variable path.
 	 *
-	 * @return mixed Variable value or null.
+	 * @return mixed
 	 */
 	private function get_variable( string $path ) {
 		$parts = explode( '.', $path );
@@ -340,16 +318,14 @@ class Exprdawc_Template_Engine {
 	 *
 	 * @param string $condition Condition to evaluate.
 	 *
-	 * @return bool Whether condition is true.
+	 * @return bool
 	 */
 	private function evaluate_condition( string $condition ): bool {
-		// Handle ! (not) operator.
 		if ( '!' === substr( $condition, 0, 1 ) ) {
 			$var = trim( substr( $condition, 1 ) );
 			return ! $this->is_truthy( $this->get_variable( $var ) );
 		}
 
-		// Handle variable existence checks.
 		$value = $this->get_variable( $condition );
 
 		return $this->is_truthy( $value );
@@ -360,7 +336,7 @@ class Exprdawc_Template_Engine {
 	 *
 	 * @param mixed $value Value to check.
 	 *
-	 * @return bool Whether value is truthy.
+	 * @return bool
 	 */
 	private function is_truthy( $value ): bool {
 		if ( null === $value ) {
@@ -391,11 +367,9 @@ class Exprdawc_Template_Engine {
 	 *
 	 * @param string $value Value to escape.
 	 *
-	 * @return string Escaped value.
+	 * @return string
 	 */
 	private function auto_escape( string $value ): string {
-		// For now, use HTML escaping as default.
-		// Could be extended to detect context (attribute, JS, URL).
 		return esc_html( $value );
 	}
 
@@ -404,7 +378,7 @@ class Exprdawc_Template_Engine {
 	 *
 	 * @param string $template_name Template filename.
 	 *
-	 * @return string Full template path.
+	 * @return string
 	 */
 	private function get_template_path( string $template_name ): string {
 		return $this->template_path . $template_name;
@@ -429,5 +403,16 @@ class Exprdawc_Template_Engine {
 	 */
 	public function render_field( string $template, array $variables ): string {
 		return $this->render( 'fields/' . $template, $variables, false );
+	}
+
+	/**
+	 * Create instance with modern static factory.
+	 *
+	 * @param string $templatePath   Path to templates.
+	 * @param bool   $cacheEnabled   Enable template caching.
+	 * @return self
+	 */
+	public static function create( string $templatePath, bool $cacheEnabled = true ): self {
+		return new self( $templatePath, $cacheEnabled );
 	}
 }

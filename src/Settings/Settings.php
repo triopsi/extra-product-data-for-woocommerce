@@ -1,47 +1,36 @@
 <?php
 /**
- * Created on Fri Nov 01 2024
+ * Settings Handler
  *
- * Copyright (c) 2024 IT-Dienstleistungen Drevermann - All Rights Reserved
- *
- * @package Extra Product Data for WooCommerce
+ * @package ExtraProductDataForWooCommerce
  * @author Daniel Drevermann <info@triopsi.com>
- * @copyright (c) 2024, IT-Dienstleistungen Drevermann
+ * @copyright Copyright (c) 2024, IT-Dienstleistungen Drevermann
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation, either version 2 of the License, or
  * (at your option) any later version.
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
- * GNU General Public License for more details.
- *
- * You should have received a copy of the GNU General Public License
- * along with this program. If not, see <https://www.gnu.org/licenses/>.
- *
- * This file is part of the development of WordPress plugins.
  */
 
-declare( strict_types=1 );
-namespace Triopsi\Exprdawc;
+declare(strict_types=1);
+
+namespace Triopsi\Exprdawc\Settings;
+
+use Triopsi\Exprdawc\Contracts\Hookable;
 
 if ( ! defined( 'ABSPATH' ) ) {
 	exit;
 }
 
 /**
- * Class Exprdawc_Settings
+ * Settings Handler
  *
- * This class contains the settings for the plugin.
- *
- * @package Exprdawc
+ * Manages plugin settings in WooCommerce settings panel.
  */
-class Exprdawc_Settings {
+class Settings implements Hookable {
 
 	/**
-	 * Exprdawc_Settings constructor.
+	 * Settings constructor.
 	 */
 	public function __construct() {
 		add_filter( 'woocommerce_get_sections_products', array( $this, 'add_settings_section' ) );
@@ -123,5 +112,14 @@ class Exprdawc_Settings {
 			);
 		}
 		return $settings;
+	}
+
+	/**
+	 * Register WordPress hooks.
+	 *
+	 * @return void
+	 */
+	public function registerHooks(): void {
+		// Hooks are registered in constructor.
 	}
 }

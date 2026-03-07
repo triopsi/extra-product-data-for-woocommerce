@@ -1,10 +1,8 @@
 <?php
 /**
- * Created on Fri Nov 01 2024
+ * Product Backend Handler
  *
- * Copyright (c) 2024 IT-Dienstleistungen Drevermann - All Rights Reserved
- *
- * @package Extra Product Data for WooCommerce
+ * @package ExtraProductDataForWooCommerce
  * @author Daniel Drevermann <info@triopsi.com>
  * @copyright Copyright (c) 2024, IT-Dienstleistungen Drevermann
  *
@@ -12,55 +10,39 @@
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation, either version 2 of the License, or
  * (at your option) any later version.
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
- * GNU General Public License for more details.
- *
- * You should have received a copy of the GNU General Public License
- * along with this program. If not, see <https://www.gnu.org/licenses/>.
- *
- * This file is part of the development of WordPress plugins.
  */
 
-declare( strict_types=1 );
-namespace Triopsi\Exprdawc;
+declare(strict_types=1);
+
+namespace Triopsi\Exprdawc\Backend;
+
+use Triopsi\Exprdawc\Contracts\Hookable;
+use Triopsi\Exprdawc\Helpers\Helper;
 
 if ( ! defined( 'ABSPATH' ) ) {
-	exit; // Exit if accessed directly.
+	exit;
 }
 
-use Triopsi\Exprdawc\Helper\Exprdawc_Helper;
-
 /**
- * Class Exprdawc_Product_Page_Backend
+ * Product Backend Handler
  *
- * This class represents the backend functionality for the product page in the Extra Product Data for WooCommerce plugin.
- * It provides methods to add, remove, and retrieve items from the selection. The selection can be manipulated and queried
- * to perform various operations on the contained items.
- *
- * @package Exprdawc
+ * Handles product backend functionality and custom fields in admin.
  */
-class Exprdawc_Product_Page_Backend {
+class ProductBackend implements Hookable {
 
 	/**
 	 * Contructor.
 	 */
 	public function __construct() {
 
-		// Add custom tab in product edit page.
 		if ( is_admin() ) {
 			add_filter( 'woocommerce_product_data_tabs', array( $this, 'exprdawc_add_custom_product_tab' ) );
 			add_action( 'woocommerce_product_data_panels', array( $this, 'exprdawc_add_custom_product_fields' ) );
 
-			// Save custom fields.
 			add_action( 'woocommerce_process_product_meta', array( $this, 'exprdawc_save_extra_product_fields' ) );
 
-			// Add Scripts in head and footer.
 			add_action( 'admin_enqueue_scripts', array( $this, 'exprdawc_show_general_tab' ) );
 
-			// Import custom fields.
 			add_action( 'wp_ajax_exprdawc_import_custom_fields', array( $this, 'exprdawc_import_custom_fields' ) );
 		}
 	}
@@ -83,9 +65,6 @@ class Exprdawc_Product_Page_Backend {
 
 	/**
 	 * Add custom product fields to the product edit page.
-	 *
-	 * This function is hooked to the 'woocommerce_product_data_panels' action and is responsible for
-	 * rendering the HTML for the custom product fields panel in the product edit page.
 	 */
 	public function exprdawc_add_custom_product_fields(): void {
 		global $post;
@@ -115,7 +94,7 @@ class Exprdawc_Product_Page_Backend {
 		}
 
 		ob_start();
-		Exprdawc_Helper::render_template(
+		Helper::renderTemplate(
 			'html-tab-extra-attributes.php',
 			array(
 				'product'       => $product,
@@ -132,10 +111,8 @@ class Exprdawc_Product_Page_Backend {
 	 * @return void
 	 */
 	public function exprdawc_show_general_tab() {
-		// Enqueue main product meta boxes script.
 		wp_enqueue_script( 'exprdawc-wc-meta-boxes-js', EXPRDAWC_ASSETS_JS . 'wc-meta-boxes-product.min.js', array( 'jquery', 'jquery-ui-sortable' ), EXPRDAWC_VERSION, true );
 
-		// Enqueue import/export modal CSS and JS.
 		wp_enqueue_style( 'exprdawc-import-export-modal-css', EXPRDAWC_ASSETS_CSS . 'import-export-modal.css', array(), EXPRDAWC_VERSION );
 		wp_enqueue_script( 'exprdawc-import-export-modal-js', EXPRDAWC_ASSETS_JS . 'import-export-modal.min.js', array( 'jquery' ), EXPRDAWC_VERSION, true );
 
@@ -244,10 +221,10 @@ class Exprdawc_Product_Page_Backend {
 				'conditionals_description'             => esc_html__( 'Only show this field when conditional rules are true.', 'extra-product-data-for-woocommerce' ),
 				'pleaseSaveBeforeExportMsg'            => esc_html__( 'Please save your changes before exporting.', 'extra-product-data-for-woocommerce' ),
 				'enable_editable'                      => esc_html__( 'User can edit the field afterwards', 'extra-product-data-for-woocommerce' ),
-				'enable_price_adjustment'              => esc_html__( 'Enable price adjustment', 'extra-product-data-for-woocommerce' ),
+				'enablePriceAdjustment'                => esc_html__( 'Enable price adjustment', 'extra-product-data-for-woocommerce' ),
 				'price_adjustment_type'                => esc_html__( 'Price Adjustment Type', 'extra-product-data-for-woocommerce' ),
 				'validation_warning'                   => esc_html__( 'Warning! No label text (Labels) was found. Please fill all fields with label text before saving.', 'extra-product-data-for-woocommerce' ),
-				'price_adjustment_value'               => esc_html__( 'Price Adjustment Value', 'extra-product-data-for-woocommerce' ),
+				'priceAdjustmentValue'                 => esc_html__( 'Price Adjustment Value', 'extra-product-data-for-woocommerce' ),
 				'fixed'                                => esc_html__( 'Fixed Price', 'extra-product-data-for-woocommerce' ),
 				'percentage'                           => esc_html__( 'Percentage Price', 'extra-product-data-for-woocommerce' ),
 				'quantity'                             => esc_html__( 'Price per Quantity', 'extra-product-data-for-woocommerce' ),
@@ -263,42 +240,29 @@ class Exprdawc_Product_Page_Backend {
 	/**
 	 * Saves custom product fields for a WooCommerce product.
 	 *
-	 * This function is hooked to the save post action and is responsible for
-	 * saving custom product fields submitted via the product edit page.
-	 *
 	 * @param int $post_id The ID of the product being saved.
 	 */
 	public function exprdawc_save_extra_product_fields( $post_id ) {
-
-		// Check if extra product fields are set.
 		if ( isset( $_POST['extra_product_fields'] ) ) { // phpcs:ignore
-
-			// Get the product.
-			$product = wc_get_product( $post_id );
-
-			// UNSLASH: Remove slashes from the input data. Sanitized below.
+			$product              = wc_get_product( $post_id );
 			$extra_product_fields = wp_unslash( $_POST['extra_product_fields'] ); // phpcs:ignore
 
-			// SANITIZE: Clean the input data.
 			$custom_fields = array_map(
 				function ( $field ) {
+					$label                 = sanitize_text_field( $field['label'] );
+					$type                  = sanitize_text_field( $field['type'] );
+					$required              = isset( $field['required'] ) ? 1 : 0;
+					$conditional_logic     = isset( $field['conditional_logic'] ) ? 1 : 0;
+					$placeholder_text      = sanitize_text_field( $field['placeholder_text'] );
+					$help_text             = sanitize_text_field( $field['help_text'] );
+					$autocomplete          = isset( $field['autocomplete'] ) ? sanitize_text_field( $field['autocomplete'] ) : '';
+					$autofocus             = isset( $field['autofocus'] ) ? true : false;
+					$index                 = isset( $field['index'] ) ? absint( $field['index'] ) : 0;
+					$editable              = isset( $field['editable'] ) ? true : false;
+					$adjust_price          = isset( $field['adjust_price'] ) ? true : false;
+					$price_adjustment_type = sanitize_text_field( $field['price_adjustment_type'] );
+					$priceAdjustmentValue  = sanitize_text_field( $field['priceAdjustmentValue'] );
 
-					// SANITIZE: Clean the input data.
-					$label                  = sanitize_text_field( $field['label'] );
-					$type                   = sanitize_text_field( $field['type'] );
-					$required               = isset( $field['required'] ) ? 1 : 0;
-					$conditional_logic      = isset( $field['conditional_logic'] ) ? 1 : 0;
-					$placeholder_text       = sanitize_text_field( $field['placeholder_text'] );
-					$help_text              = sanitize_text_field( $field['help_text'] );
-					$autocomplete           = isset( $field['autocomplete'] ) ? sanitize_text_field( $field['autocomplete'] ) : '';
-					$autofocus              = isset( $field['autofocus'] ) ? true : false;
-					$index                  = isset( $field['index'] ) ? absint( $field['index'] ) : 0;
-					$editable               = isset( $field['editable'] ) ? true : false;
-					$adjust_price           = isset( $field['adjust_price'] ) ? true : false;
-					$price_adjustment_type  = sanitize_text_field( $field['price_adjustment_type'] );
-					$price_adjustment_value = sanitize_text_field( $field['price_adjustment_value'] );
-
-					// Conditional Logic.
 					if ( isset( $field['conditional_rules'] ) ) {
 						foreach ( $field['conditional_rules'] as $rule_group ) {
 							foreach ( $rule_group as $rule ) {
@@ -313,31 +277,25 @@ class Exprdawc_Product_Page_Backend {
 						$conditional_logic       = 0;
 					}
 
-					// For Checbox, Radio and Select.
 					$options = array();
 					if ( isset( $field['options'] ) && is_array( $field['options'] ) ) {
 						foreach ( $field['options'] as $key => $option ) {
 							$options[] = array(
-								'label'                  => ! empty( $option['label'] ) ? sanitize_text_field( $option['label'] ) : 'Option ' . $key,
-								'value'                  => ! empty( $option['value'] ) ? sanitize_text_field( $option['value'] ) : sanitize_text_field( $option['label'] ),
-								'price_adjustment_type'  => isset( $option['price_adjustment_type'] ) ? sanitize_text_field( $option['price_adjustment_type'] ) : '',
-								'price_adjustment_value' => isset( $option['price_adjustment_value'] ) ? sanitize_text_field( $option['price_adjustment_value'] ) : '',
-								'default'                => isset( $option['default'] ) ? sanitize_text_field( $option['default'] ) : 0,
+								'label'                 => ! empty( $option['label'] ) ? sanitize_text_field( $option['label'] ) : 'Option ' . $key,
+								'value'                 => ! empty( $option['value'] ) ? sanitize_text_field( $option['value'] ) : sanitize_text_field( $option['label'] ),
+								'price_adjustment_type' => isset( $option['price_adjustment_type'] ) ? sanitize_text_field( $option['price_adjustment_type'] ) : '',
+								'priceAdjustmentValue'  => isset( $option['priceAdjustmentValue'] ) ? sanitize_text_field( $option['priceAdjustmentValue'] ) : '',
+								'default'               => isset( $option['default'] ) ? sanitize_text_field( $option['default'] ) : 0,
 							);
 						}
 					}
 
-					$default = isset( $field['default'] ) ? sanitize_text_field( $field['default'] ) : '';
-
-					// For Text.
+					$default   = isset( $field['default'] ) ? sanitize_text_field( $field['default'] ) : '';
 					$minlength = isset( $field['minlength'] ) ? absint( $field['minlength'] ) : 0;
 					$maxlength = isset( $field['maxlength'] ) ? absint( $field['maxlength'] ) : 0;
+					$rows      = isset( $field['rows'] ) ? absint( $field['rows'] ) : 0;
+					$cols      = isset( $field['cols'] ) ? absint( $field['cols'] ) : 0;
 
-					// For Textarea.
-					$rows = isset( $field['rows'] ) ? absint( $field['rows'] ) : 0;
-					$cols = isset( $field['cols'] ) ? absint( $field['cols'] ) : 0;
-
-					// VALIDATE: Ensure the data meets the required criteria.
 					if ( empty( $label ) || ! is_string( $label ) ) {
 						return;
 					}
@@ -351,96 +309,82 @@ class Exprdawc_Product_Page_Backend {
 						$help_text = '';
 					}
 					return array(
-						'label'                  => $label,
-						'type'                   => $type,
-						'required'               => $required,
-						'conditional_logic'      => $conditional_logic,
-						'placeholder_text'       => $placeholder_text,
-						'help_text'              => $help_text,
-						'options'                => $options,
-						'default'                => $default,
-						'minlength'              => $minlength,
-						'maxlength'              => $maxlength,
-						'rows'                   => $rows,
-						'cols'                   => $cols,
-						'autocomplete'           => $autocomplete,
-						'autofocus'              => $autofocus,
-						'conditional_rules'      => $conditional_logic_rules,
-						'index'                  => $index,
-						'editable'               => $editable,
-						'adjust_price'           => $adjust_price,
-						'price_adjustment_type'  => $price_adjustment_type,
-						'price_adjustment_value' => $price_adjustment_value,
+						'label'                 => $label,
+						'type'                  => $type,
+						'required'              => $required,
+						'conditional_logic'     => $conditional_logic,
+						'placeholder_text'      => $placeholder_text,
+						'help_text'             => $help_text,
+						'options'               => $options,
+						'default'               => $default,
+						'minlength'             => $minlength,
+						'maxlength'             => $maxlength,
+						'rows'                  => $rows,
+						'cols'                  => $cols,
+						'autocomplete'          => $autocomplete,
+						'autofocus'             => $autofocus,
+						'conditional_rules'     => $conditional_logic_rules,
+						'index'                 => $index,
+						'editable'              => $editable,
+						'adjust_price'          => $adjust_price,
+						'price_adjustment_type' => $price_adjustment_type,
+						'priceAdjustmentValue'  => $priceAdjustmentValue,
 					);
 				},
 				$extra_product_fields
 			);
 
-			// Remove any empty values.
 			$custom_fields = array_filter( $custom_fields );
 
-			// Save the custom fields to the product.
 			$product->update_meta_data( '_extra_product_fields', $custom_fields );
 		} else {
-			// Get the product.
 			$product = wc_get_product( $post_id );
-
-			// Delete the custom fields from the product.
 			$product->delete_meta_data( '_extra_product_fields' );
 		}
 
-		// Save the product.
 		$product->save();
 	}
 
 	/**
 	 * Import custom fields.
-	 *
-	 * This function is responsible for importing custom fields from a JSON string
-	 * and saving them to the product meta data.
 	 */
 	public function exprdawc_import_custom_fields() {
-
-		// SECURITY: Check if the request is valid.
 		check_ajax_referer( 'edit_exprdawc_nonce', 'security' );
 
-		// VALIDATE: Ensure the product ID is set.
 		if ( ! current_user_can( 'edit_product', $_POST['product_id'] ) ) { // phpcs:ignore
 			wp_send_json_error( 'You do not have permission to edit this product.' );
 		}
 
-		// VALIDATE: Ensure the product ID is valid.
 		$product_id = intval( $_POST['product_id'] ); // phpcs:ignore
 
-		// VALIDATE: Ensure the product ID is valid.
 		if ( 0 === $product_id ) {
 			wp_send_json_error( 'Invalid product ID.' );
 		}
 
-		// Get Product.
 		$product = wc_get_product( $product_id );
 		if ( ! $product ) {
 			wp_send_json_error( 'Invalid product ID.' );
 		}
 
-		// UNSLASH: Remove slashes from the input data.
 		$export_string = wp_unslash( $_POST['export_string'] ); // phpcs:ignore
-
-		// SANITIZE: Clean the input data.
 		$custom_fields = json_decode( $export_string, true );
 
-		// Validate JSON string.
 		if ( json_last_error() !== JSON_ERROR_NONE ) {
 			wp_send_json_error( 'Invalid JSON string.' );
 		}
 
-		// Save the sanitized and validated data.
 		$product->update_meta_data( '_extra_product_fields', $custom_fields );
-
-		// Save the product.
 		$product->save();
 
-		// Return success message.
 		wp_send_json_success();
+	}
+
+	/**
+	 * Register WordPress hooks.
+	 *
+	 * @return void
+	 */
+	public function registerHooks(): void {
+		// Hooks are registered in constructor.
 	}
 }

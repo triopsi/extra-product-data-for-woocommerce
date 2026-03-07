@@ -1,12 +1,12 @@
 <?php
 declare( strict_types=1 );
 
-use Triopsi\Exprdawc\Order\Admin\Exprdawc_Admin_Order;
+use Triopsi\Exprdawc\Orders\Admin\AdminOrder;
 
 /**
  * Class TestExprdawcAdminOrder
  *
- * PHPUnit tests for Exprdawc_Admin_Order class.
+ * PHPUnit tests for AdminOrder class.
  *
  * @package Extra_Product_Data_For_WooCommerce\Tests\Unit
  */
@@ -15,7 +15,7 @@ class TestExprdawcAdminOrder extends WP_UnitTestCase {
 	/**
 	 * Instance of the class being tested.
 	 *
-	 * @var Exprdawc_Admin_Order
+	 * @var AdminOrder
 	 */
 	private $admin_order;
 
@@ -97,7 +97,7 @@ class TestExprdawcAdminOrder extends WP_UnitTestCase {
 		$this->order->set_status( 'pending' );
 		$this->order->save();
 
-		$this->admin_order = new Exprdawc_Admin_Order();
+		$this->admin_order = new AdminOrder();
 	}
 
 	/**
@@ -127,7 +127,7 @@ class TestExprdawcAdminOrder extends WP_UnitTestCase {
 	 * Verifies that the class can be instantiated without errors.
 	 */
 	public function test_can_instantiate() {
-		$this->assertInstanceOf( Exprdawc_Admin_Order::class, $this->admin_order );
+		$this->assertInstanceOf( AdminOrder::class, $this->admin_order );
 	}
 
 	/**
@@ -152,9 +152,9 @@ class TestExprdawcAdminOrder extends WP_UnitTestCase {
 	 * Verifies that the static order property is set correctly.
 	 */
 	public function test_set_order() {
-		Exprdawc_Admin_Order::set_order( $this->order );
+		AdminOrder::set_order( $this->order );
 
-		$reflection = new ReflectionClass( Exprdawc_Admin_Order::class );
+		$reflection = new ReflectionClass( AdminOrder::class );
 		$property   = $reflection->getProperty( 'order' );
 		$property->setAccessible( true );
 		$stored_order = $property->getValue();
@@ -188,7 +188,7 @@ class TestExprdawcAdminOrder extends WP_UnitTestCase {
 		$order->set_status( 'pending' );
 		$order->save();
 
-		Exprdawc_Admin_Order::set_order( $order );
+		AdminOrder::set_order( $order );
 
 		$item = $order->get_item( $item_id );
 
@@ -213,7 +213,7 @@ class TestExprdawcAdminOrder extends WP_UnitTestCase {
 
 		$order = $this->order;
 		$order->set_status( 'processing' );
-		Exprdawc_Admin_Order::set_order( $this->order );
+		AdminOrder::set_order( $this->order );
 
 		$items   = $this->order->get_items();
 		$item    = reset( $items );
@@ -237,7 +237,7 @@ class TestExprdawcAdminOrder extends WP_UnitTestCase {
 		$this->order->set_status( 'completed' );
 		$this->order->save();
 
-		Exprdawc_Admin_Order::set_order( $this->order );
+		AdminOrder::set_order( $this->order );
 
 		$items   = $this->order->get_items();
 		$item    = reset( $items );
@@ -301,7 +301,7 @@ class TestExprdawcAdminOrder extends WP_UnitTestCase {
 		$order->set_status( 'processing' );
 		$order->save();
 
-		Exprdawc_Admin_Order::set_order( $order );
+		AdminOrder::set_order( $order );
 
 		$item = $order->get_item( $item_id );
 

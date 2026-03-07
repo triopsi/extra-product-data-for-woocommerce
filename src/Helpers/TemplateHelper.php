@@ -1,49 +1,48 @@
 <?php
 /**
- * Template Helper Functions for Extra Product Data for WooCommerce
+ * Template Helper Class
  *
- * Provides helper functions for use in templates.
- *
- * @package Extra_Product_Data_For_WooCommerce
+ * @package ExtraProductDataForWooCommerce
  * @author Daniel Drevermann <info@triopsi.com>
- * @copyright Copyright (c) 2024-2026, IT-Dienstleistungen Drevermann
- * @since 1.9.0
+ * @copyright Copyright (c) 2024, IT-Dienstleistungen Drevermann
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 2 of the License, or
+ * (at your option) any later version.
  */
 
-declare( strict_types=1 );
-namespace Triopsi\Exprdawc\Helper;
+declare(strict_types=1);
+
+namespace Triopsi\Exprdawc\Helpers;
 
 if ( ! defined( 'ABSPATH' ) ) {
-	exit; // Exit if accessed directly.
+	exit;
 }
 
 /**
- * Class Exprdawc_Template_Helpers
+ * Template Helper Class
  *
  * Static helper functions for templates.
- *
- * @package Exprdawc\Helper
  */
-class Exprdawc_Template_Helpers {
+class TemplateHelper {
 
 	/**
-	 * Join array with glue.
+	 * Join array items into a string with a glue.
 	 *
-	 * @param array  $items Array to join.
-	 * @param string $glue Glue string.
-	 *
-	 * @return string Joined string.
+	 * @param array  $items The array of items to join.
+	 * @param string $glue The glue string to use between items.
+	 * @return string The joined string.
 	 */
 	public static function join( array $items, string $glue = ' ' ): string {
 		return implode( $glue, array_filter( $items ) );
 	}
 
 	/**
-	 * Build HTML attributes string.
+	 * Convert an associative array of attributes into a string for HTML tags.
 	 *
-	 * @param array $attributes Attributes array.
-	 *
-	 * @return string HTML attributes string.
+	 * @param array $attributes The associative array of attributes.
+	 * @return string The formatted string of attributes.
 	 */
 	public static function attrs( array $attributes ): string {
 		$output = array();
@@ -62,11 +61,10 @@ class Exprdawc_Template_Helpers {
 	}
 
 	/**
-	 * Build CSS class string from array.
+	 * Convert an array of CSS classes into a string for HTML tags.
 	 *
-	 * @param array|string $classes Classes array or string.
-	 *
-	 * @return string CSS class string.
+	 * @param array $classes The array of CSS classes.
+	 * @return string The formatted string of classes.
 	 */
 	public static function classes( $classes ): string {
 		if ( is_string( $classes ) ) {
@@ -88,7 +86,7 @@ class Exprdawc_Template_Helpers {
 	 *
 	 * @return bool Whether value is in array.
 	 */
-	public static function in_array( $needle, array $haystack ): bool {
+	public static function inArray( $needle, array $haystack ): bool {
 		return in_array( $needle, $haystack, true );
 	}
 
@@ -180,7 +178,7 @@ class Exprdawc_Template_Helpers {
 	 *
 	 * @return bool Whether value is empty.
 	 */
-	public static function is_empty( $value ): bool {
+	public static function isEmpty( $value ): bool {
 		if ( is_array( $value ) ) {
 			return empty( $value );
 		}
@@ -199,7 +197,7 @@ class Exprdawc_Template_Helpers {
 	 *
 	 * @return bool Whether value is set.
 	 */
-	public static function is_set( $value ): bool {
+	public static function isSet( $value ): bool {
 		return null !== $value;
 	}
 
@@ -247,7 +245,7 @@ class Exprdawc_Template_Helpers {
 	 *
 	 * @return string Data attributes string.
 	 */
-	public static function data_attrs( array $data ): string {
+	public static function dataAttrs( array $data ): string {
 		$output = array();
 
 		foreach ( $data as $key => $value ) {
@@ -266,7 +264,7 @@ class Exprdawc_Template_Helpers {
 	 *
 	 * @return string Unique ID.
 	 */
-	public static function unique_id( string $prefix = 'exprdawc' ): string {
+	public static function uniqueId( string $prefix = 'exprdawc' ): string {
 		static $counter = 0;
 		++$counter;
 
@@ -318,7 +316,7 @@ class Exprdawc_Template_Helpers {
 	 *
 	 * @return string Nonce field HTML.
 	 */
-	public static function nonce_field( string $action, string $name = '_wpnonce' ): string {
+	public static function nonceField( string $action, string $name = '_wpnonce' ): string {
 		return wp_nonce_field( $action, $name, true, false );
 	}
 }

@@ -1,10 +1,8 @@
 <?php
 /**
- * Created on Mon Nov 25 2024
+ * Admin Order Handler
  *
- * Copyright (c) 2024 IT-Dienstleistungen Drevermann - All Rights Reserved
- *
- * @package Extra Product Data for WooCommerce
+ * @package ExtraProductDataForWooCommerce
  * @author Daniel Drevermann <info@triopsi.com>
  * @copyright Copyright (c) 2024, IT-Dienstleistungen Drevermann
  *
@@ -12,43 +10,34 @@
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation, either version 2 of the License, or
  * (at your option) any later version.
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
- * GNU General Public License for more details.
- *
- * You should have received a copy of the GNU General Public License
- * along with this program. If not, see <https://www.gnu.org/licenses/>.
- *
- * This file is part of the development of WordPress plugins.
  */
 
-declare( strict_types=1 );
-namespace Triopsi\Exprdawc\Order\Admin;
+declare(strict_types=1);
 
-if ( ! defined( 'ABSPATH' ) ) {
-	exit; // Exit if accessed directly.
-}
+namespace Triopsi\Exprdawc\Orders\Admin;
 
 use Automattic\WooCommerce\Utilities\OrderUtil;
 use WC_Order;
 use WC_Order_Item;
+use WC_Order_Item_Product;
 use WC_Product;
-use Triopsi\Exprdawc\Order\Exprdawc_Base_Order_Class;
-use Triopsi\Exprdawc\Helper\Exprdawc_Helper;
+use Triopsi\Exprdawc\Helpers\Helper;
+use Triopsi\Exprdawc\Contracts\Hookable;
+use Triopsi\Exprdawc\Orders\BaseOrder;
+
+if ( ! defined( 'ABSPATH' ) ) {
+	exit;
+}
 
 /**
- * Class Exprdawc_Admin_Order
+ * Admin Order Handler
  *
- * This class is responsible for the admin order page.
- *
- * @package Exprdawc\Order\Admin
+ * Handles order management in WordPress admin.
  */
-class Exprdawc_Admin_Order extends Exprdawc_Base_Order_Class {
+class AdminOrder extends BaseOrder implements Hookable {
 
 	/**
-	 * Order Obejct
+	 * Order object.
 	 *
 	 * @var WC_Order
 	 */
@@ -58,42 +47,29 @@ class Exprdawc_Admin_Order extends Exprdawc_Base_Order_Class {
 	 * Setup Admin class.
 	 */
 	public function __construct() {
-		// Save order object to use in 'display_edit_button'.
 		add_action( 'woocommerce_admin_order_item_headers', array( $this, 'set_order' ) );
-
-		// Display "Configure/Edit" button next to configurable add-ons container items in the edit-order screen.
 		add_action( 'woocommerce_after_order_itemmeta', array( $this, 'display_edit_button' ), 10, 3 );
-
-		// Enqueue JS.
 		add_action( 'admin_enqueue_scripts', array( $this, 'js_meta_boxes_enqueue' ), 100 );
-
-		// Add JS template.
 		add_action( 'admin_footer', array( $this, 'add_js_template' ) );
-
-		// AJAX action for configuring addon order item.
 		add_action( 'wp_ajax_woocommerce_configure_exprdawc_order_item', array( $this, 'exprdawc_load_edit_modal_form' ) );
-
-		// Ajax handler used to store updated order item.
 		add_action( 'wp_ajax_woocommerce_edit_exprdawc_order_item', array( $this, 'exprdawc_save_edit_modal_form' ) );
 	}
 
 	/**
-	 * Save order object to use in 'display_edit_button'.
+	 * Save order object to use in display button.
 	 *
-	 * Although the order object can be retrieved via 'WC_Order_Item::get_order', we've seen a significant performance hit when using that method.
-	 *
-	 * @param  WC_Order $order WC Order.
+	 * @param WC_Order $order WC Order.
 	 */
 	public static function set_order( $order ) {
 		self::$order = $order;
 	}
 
 	/**
-	 * Display "Configure/Edit" button next to configurable addons in the edit-order screen.
+	 * Display edit button.
 	 *
-	 * @param  int           $item_id   ID of the order item.
-	 * @param  WC_Order_Item $item      Order item object.
-	 * @param  WC_Product    $product   Product object associated with the order item.
+	 * @param int           $item_id Item ID.
+	 * @param WC_Order_Item $item Order item object.
+	 * @param WC_Product    $product Product object.
 	 * @return void
 	 */
 	public function display_edit_button( $item_id, $item, $product ) {
@@ -111,7 +87,6 @@ class Exprdawc_Admin_Order extends Exprdawc_Base_Order_Class {
 			return;
 		}
 
-		// Get the product data.
 		if ( $product->is_type( 'variation' ) ) {
 			$product = wc_get_product( $product->get_parent_id() );
 		}
@@ -121,7 +96,6 @@ class Exprdawc_Admin_Order extends Exprdawc_Base_Order_Class {
 			return;
 		}
 
-		// Display "Configure/Edit" button next to configurable addons in the edit-order screen.
 		include EXPRDAWC_ADMIN_TEMPLATES_PATH . 'html-admin-order-edit-overview.php';
 	}
 
@@ -149,17 +123,15 @@ class Exprdawc_Admin_Order extends Exprdawc_Base_Order_Class {
 	 * Add JS template.
 	 */
 	public function add_js_template() {
-
 		if ( wp_script_is( 'woocommerce_exprdawc-admin-order-panel' ) ) {
-			// Add JS template.
 			include EXPRDAWC_ADMIN_TEMPLATES_PATH . 'html-admin-order-edit-overview-js.php';
 		}
 	}
 
 	/**
-	 * Check if the current screen is one of the given screens.
+	 * Check if current screen matches.
 	 *
-	 * @param  string|array $screen Screen ID or array of screen IDs to check against.
+	 * @param string|array $screen Screen IDs.
 	 * @return bool
 	 */
 	public function is_current_screen( $screen ) {
@@ -169,25 +141,20 @@ class Exprdawc_Admin_Order extends Exprdawc_Base_Order_Class {
 	}
 
 	/**
-	 * Load the edit form in a modal via ajax.
+	 * Load edit form modal.
 	 *
 	 * @return void
 	 */
 	public function exprdawc_load_edit_modal_form() {
-
-		// Check permissions and nonce.
 		check_ajax_referer( 'wc_exprdawc_edit_exprdawc', 'security' );
 
-		// Get the necessary parameters.
 		$item_id  = isset( $_POST['item_id'] ) ? intval( $_POST['item_id'] ) : 0;
 		$order_id = isset( $_POST['order_id'] ) ? intval( $_POST['order_id'] ) : 0;
 
-		// Check if the parameters are valid.
 		if ( ! $item_id || ! $order_id ) {
 			wp_send_json_error( array( 'message' => __( 'Invalid order or item ID.', 'extra-product-data-for-woocommerce' ) ) );
 		}
 
-		// Get the order and item.
 		$order = wc_get_order( $order_id );
 		$item  = $order ? $order->get_item( $item_id ) : false;
 
@@ -195,11 +162,13 @@ class Exprdawc_Admin_Order extends Exprdawc_Base_Order_Class {
 			wp_send_json_error( array( 'message' => __( 'Order or item not found.', 'extra-product-data-for-woocommerce' ) ) );
 		}
 
-		/**
-		 * Get the product data.
-		 *
-		 * @disregard
-		 */
+		if ( ! $item instanceof WC_Order_Item_Product ) {
+			wp_send_json_error(
+				array(
+					'message' => __( 'Order item is not a product item.', 'extra-product-data-for-woocommerce' ),
+				)
+			);
+		}
 		$product = $item->get_product();
 		if ( $product->is_type( 'variation' ) ) {
 			$product = wc_get_product( $product->get_parent_id() );
@@ -210,11 +179,9 @@ class Exprdawc_Admin_Order extends Exprdawc_Base_Order_Class {
 			wp_send_json_error( array( 'message' => __( 'No extra product data found.', 'extra-product-data-for-woocommerce' ) ) );
 		}
 
-		// Get Values of the custom fields.
 		$all_user_inputs = array();
 		$item_meta_data  = $item->get_meta_data();
 
-		// Loop through item meta data and store in mail template data array.
 		foreach ( $item_meta_data as $meta ) {
 			if ( isset( $meta->key ) && ! empty( $meta->value ) ) {
 				$all_user_inputs[ $meta->key ] = $meta;
@@ -226,15 +193,13 @@ class Exprdawc_Admin_Order extends Exprdawc_Base_Order_Class {
 			$post_data_product_item[ $label_id ] = isset( $all_user_inputs[ $input_field_array['label'] ] ) ? $all_user_inputs[ $input_field_array['label'] ]->value : '';
 		}
 
-		// Generate the HTML for the form.
 		ob_start();
 		foreach ( $custom_fields as $index => $field ) {
 			$value = isset( $post_data_product_item[ strtolower( str_replace( ' ', '_', $field['label'] ) ) ] ) ? $post_data_product_item[ strtolower( str_replace( ' ', '_', $field['label'] ) ) ] : '';
-			Exprdawc_Helper::generate_input_field( $field, $value, true );
+			Helper::generateInputField( $field, $value, true );
 		}
 		$html = ob_get_clean();
 
-		// Send the response back.
 		wp_send_json_success( array( 'html' => $html ) );
 	}
 
@@ -244,13 +209,10 @@ class Exprdawc_Admin_Order extends Exprdawc_Base_Order_Class {
 	 * @return void
 	 */
 	public function exprdawc_save_edit_modal_form() {
-		// Check permissions and nonce.
 		check_ajax_referer( 'wc_exprdawc_edit_exprdawc', 'security' );
 
-		// Process Data Save.
 		$order_id = $this->process_save_order( true );
 
-		// Generate the updated HTML for the order items and notes.
 		ob_start();
 		$order = wc_get_order( $order_id );
 		include WC_ABSPATH . 'includes/admin/meta-boxes/views/html-order-items.php';
@@ -268,5 +230,14 @@ class Exprdawc_Admin_Order extends Exprdawc_Base_Order_Class {
 				'notes_html' => $notes_html,
 			)
 		);
+	}
+
+	/**
+	 * Register WordPress hooks.
+	 *
+	 * @return void
+	 */
+	public function registerHooks(): void {
+		// Hooks are registered in constructor.
 	}
 }

@@ -1,54 +1,41 @@
 <?php
 /**
- * Created on Fri Nov 01 2024
+ * Customer Order Handler
  *
- * Copyright (c) 2024 IT-Dienstleistungen Drevermann - All Rights Reserved
- *
- * @package Extra Product Data for WooCommerce
+ * @package ExtraProductDataForWooCommerce
  * @author Daniel Drevermann <info@triopsi.com>
- * @copyright (c) 2024, IT-Dienstleistungen Drevermann
+ * @copyright Copyright (c) 2024, IT-Dienstleistungen Drevermann
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation, either version 2 of the License, or
  * (at your option) any later version.
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
- * GNU General Public License for more details.
- *
- * You should have received a copy of the GNU General Public License
- * along with this program. If not, see <https://www.gnu.org/licenses/>.
- *
- * This file is part of the development of WordPress plugins.
  */
 
-declare( strict_types=1 );
-namespace Triopsi\Exprdawc\Order\Customer;
+declare(strict_types=1);
+
+namespace Triopsi\Exprdawc\Orders\Customer;
+
+use Automattic\WooCommerce\Utilities\OrderUtil;
+use Triopsi\Exprdawc\Helpers\Helper;
+use Triopsi\Exprdawc\Contracts\Hookable;
+use Triopsi\Exprdawc\Orders\BaseOrder;
 
 if ( ! defined( 'ABSPATH' ) ) {
-	exit; // Exit if accessed directly.
+	exit;
 }
-use Automattic\WooCommerce\Utilities\OrderUtil;
-use Triopsi\Exprdawc\Order\Exprdawc_Base_Order_Class;
-use Triopsi\Exprdawc\Helper\Exprdawc_Helper;
 
 /**
- * Class Exprdawc_User_Order
+ * Customer Order Handler
  *
- * This class is responsible for the user order.
- *
- * @package Exprdawc\Order\Customer
+ * Handles customer-facing order functionality.
  */
-class Exprdawc_User_Order extends Exprdawc_Base_Order_Class {
+class CustomerOrder extends BaseOrder implements Hookable {
 
 	/**
-	 * Exprdawc_User_Order constructor.
+	 * CustomerOrder constructor.
 	 */
 	public function __construct() {
-
-		// Add "Edit"-Button on frontend in the user order section.
 		add_action( 'woocommerce_order_item_meta_end', array( $this, 'add_edit_button_to_order_item' ), 10, 3 );
 		add_action( 'wp_enqueue_scripts', array( $this, 'enqueue_scripts' ) );
 		add_action( 'wp_ajax_exprdawc_save_order_item_meta', array( $this, 'save_order_item_meta' ) );
@@ -83,7 +70,6 @@ class Exprdawc_User_Order extends Exprdawc_Base_Order_Class {
 	 * @param object $order The order object.
 	 */
 	public function add_edit_button_to_order_item( $item_id, $item, $order ) {
-		// Get the Product. If this type variation get the parent id of the product.
 		$product = $item->get_product();
 		if ( $product->is_type( 'variation' ) ) {
 			$product = wc_get_product( $product->get_parent_id() );
@@ -96,15 +82,12 @@ class Exprdawc_User_Order extends Exprdawc_Base_Order_Class {
 
 		$max_order_status = get_option( 'extra_product_data_max_order_status', 'processing' );
 
-		// Get item meta data and initialize flag.
 		$item_meta_data  = $item->get_meta_data();
 		$has_user_inputs = false;
 
-		// Check if item meta data and product user meta are not empty.
 		if ( ! empty( $item_meta_data ) && ! empty( $custom_fields ) ) {
 			$all_user_inputs = array();
 
-			// Loop through item meta data and store in mail template data array.
 			foreach ( $item_meta_data as $meta ) {
 				if ( isset( $meta->key ) && ! empty( $meta->value ) ) {
 					$all_user_inputs[ $meta->key ] = $meta;
@@ -117,7 +100,6 @@ class Exprdawc_User_Order extends Exprdawc_Base_Order_Class {
 				$post_data_product_item[ $label_id ] = isset( $all_user_inputs[ $input_field_array['label'] ] ) ? $all_user_inputs[ $input_field_array['label'] ]->value : '';
 			}
 
-			// Check if any label user data matches with product user meta.
 			foreach ( $all_user_inputs as $label_key => $user_data_value ) {
 				foreach ( $custom_fields as $html_value ) {
 					if ( 0 === strcasecmp( $html_value['label'], $label_key ) ) {
@@ -126,7 +108,7 @@ class Exprdawc_User_Order extends Exprdawc_Base_Order_Class {
 					}
 				}
 			}
-			// Display edit ticket section if on view-order endpoint.
+
 			if ( is_wc_endpoint_url( 'view-order' ) ) {
 				if ( $has_user_inputs && $order->has_status( OrderUtil::remove_status_prefix( $max_order_status ) ) ) {
 					echo '<button type="button" class="button alt wp-element-button exprdawc-edit-user-order-button exprdawc-edit-order-item" data-item-id="' . esc_attr( $item_id ) . '"><span class="dashicons dashicons-edit"></span> ' . esc_html__( 'Edit', 'extra-product-data-for-woocommerce' ) . '</button>';
@@ -135,7 +117,7 @@ class Exprdawc_User_Order extends Exprdawc_Base_Order_Class {
 					echo '<input type="hidden" name="order_id" value="' . esc_attr( $order->get_id() ) . '">';
 					foreach ( $custom_fields as $field ) {
 						$value = isset( $post_data_product_item[ strtolower( str_replace( ' ', '_', $field['label'] ) ) ] ) ? $post_data_product_item[ strtolower( str_replace( ' ', '_', $field['label'] ) ) ] : '';
-						Exprdawc_Helper::generate_input_field( $field, $value );
+						Helper::generateInputField( $field, $value );
 					}
 					echo '</form>';
 					echo '<button style="margin-top: 1em;" type="button" class="button alt wp-element-button exprdawc-save-order-item" data-item-id="' . esc_attr( $item_id ) . '"><span class="dashicons dashicons-yes"></span> ' . esc_html__( 'Save', 'extra-product-data-for-woocommerce' ) . '</button>';
@@ -149,10 +131,8 @@ class Exprdawc_User_Order extends Exprdawc_Base_Order_Class {
 	 * Save order item meta.
 	 */
 	public function save_order_item_meta() {
-		// Check permissions and nonce.
 		check_ajax_referer( 'exprdawc_save_order_item_meta', 'security' );
 
-		// Process Data Save.
 		if ( $this->process_save_order() ) {
 			wp_send_json_success(
 				array(
@@ -166,5 +146,14 @@ class Exprdawc_User_Order extends Exprdawc_Base_Order_Class {
 				)
 			);
 		}
+	}
+
+	/**
+	 * Register WordPress hooks.
+	 *
+	 * @return void
+	 */
+	public function registerHooks(): void {
+		// Hooks are registered in constructor.
 	}
 }
