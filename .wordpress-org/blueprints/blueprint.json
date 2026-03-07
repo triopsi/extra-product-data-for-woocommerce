@@ -20,7 +20,7 @@
     "intl": true,
     "networking": true
   },
-  "landingPage": "/wp-admin/post.php?post=17&action=edit",
+  "landingPage": "/wp-admin/post.php?post=14&action=edit",
   "preferredVersions": {
     "php": "8.4",
     "wp": "latest"
