@@ -24,7 +24,7 @@
   "author": "triopsi",
   "license": "ISC",
   "devDependencies": {
-    "@wordpress/env": "^11.0.0",
+    "@wordpress/env": "^11.1.0",
     "eslint": "^10.0.2",
     "sass": "1.97.3",
     "terser": "^5.46.0",
