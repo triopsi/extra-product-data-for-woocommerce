@@ -233,6 +233,7 @@ class ProductBackend implements Hookable {
 				'importTitle'                          => esc_html__( 'Import Custom Fields', 'extra-product-data-for-woocommerce' ),
 				'invalidJsonMsg'                       => esc_html__( 'Invalid JSON format. Please check your input.', 'extra-product-data-for-woocommerce' ),
 				'importingMsg'                         => esc_html__( 'Importing...', 'extra-product-data-for-woocommerce' ),
+				'enable_price_adjustment'              => esc_html__( 'Enable price adjustment', 'extra-product-data-for-woocommerce' ),
 			)
 		);
 	}
