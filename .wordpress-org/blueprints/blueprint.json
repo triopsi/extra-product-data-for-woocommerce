@@ -1,0 +1,76 @@
+{
+  "$schema": "https://playground.wordpress.net/blueprint-schema.json",
+  "meta": {
+    "title": "Minimal WooCommerce Setup with Sample Products, Extra Product Data, and Payment Method",
+    "description": "To create a WordPress Playground instance that installs WooCommerce, imports WooCommerce sample products XML to demonstrate the extra product data on the cart/checkout pages, and enables the Direct Bank Transfer payment method.",
+    "author": "triopsi",
+    "categories": [
+      "woocommerce",
+      "flat_rate",
+      "extra product data",
+      "sample products",
+      "payment method",
+      "direct bank transfer"
+    ]
+  },
+  "plugins": [
+    "woocommerce"
+  ],
+  "features": {
+    "intl": true
+  },
+  "landingPage": "/wp-admin/post.php?post=21&action=edit",
+  "preferredVersions": {
+    "php": "8.4",
+    "wp": "latest"
+  },
+  "features": {
+    "networking": true
+  },
+  "siteOptions": {
+    "blogName": "Extra Product Data for WooCommerce",
+    "blogDescription": "A WordPress Playground instance with WooCommerce, a custom flat rate shipping method, sample products, and the Direct Bank Transfer payment method enabled.",
+    "adminEmail": "admin@example.com"
+  },
+  "steps": [
+    {
+      "step": "importWxr",
+      "file": {
+        "resource": "url",
+        "url": "https://raw.githubusercontent.com/triopsi/extra-product-data-for-woocommerce/refs/heads/main/bin/data/e2e_product_data_import.xml"
+      }
+    },
+    {
+      "step": "mkdir",
+      "path": "/wordpress/wp-content/plugins/woo-shipping-method"
+    },
+    {
+      "step": "writeFile",
+      "path": "/wordpress/wp-content/plugins/woo-shipping-method/woo-shipping-method.php",
+      "data": {
+        "resource": "url",
+        "url": "https://raw.githubusercontent.com/wordpress/blueprints/trunk/blueprints/woo-shipping/woo-shipping-method/woo-shipping-method.php"
+      }
+    },
+    {
+      "step": "activatePlugin",
+      "pluginName": "woo-shipping-method",
+      "pluginPath": "woo-shipping-method/woo-shipping-method.php"
+    },
+    {
+      "step": "runPHP",
+      "code": "<?php include '/wordpress/wp-load.php'; delete_transient( '_wc_activation_redirect' );"
+    },
+    {
+      "step": "installPlugin",
+      "pluginData": {
+        "resource": "wordpress.org/plugins",
+        "slug": "extra-product-data-for-woocommerce"
+      },
+      "options": {
+        "activate": true
+      }
+    }
+  ],
+  "login": true 
+}
