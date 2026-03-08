@@ -292,11 +292,11 @@ class ProductBackend implements Hookable {
 					}
 
 					// Set default value, ensuring it's properly sanitized and of the correct type.
-					$default = ! isset( $field['default'] ) ? '' : $field['default'];
-					if ( is_array( $field['default'] ) ) {
-						$default = array_map( 'sanitize_text_field', $field['default'] );
+					$default_source = $field['default'] ?? '';
+					if ( is_array( $default_source ) ) {
+						$default = array_map( 'sanitize_text_field', $default_source );
 					} else {
-						$default = sanitize_text_field( $field['default'] );
+						$default = sanitize_text_field( $default_source );
 					}
 					$minlength = isset( $field['minlength'] ) ? absint( $field['minlength'] ) : 0;
 					$maxlength = isset( $field['maxlength'] ) ? absint( $field['maxlength'] ) : 0;
