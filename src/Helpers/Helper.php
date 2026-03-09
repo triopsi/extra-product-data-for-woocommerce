@@ -585,7 +585,12 @@ class Helper {
 			return;
 		}
 
-		load_template( $path, true, $args );
+		// Extract args to make them available as variables in the template.
+		// phpcs:ignore WordPress.PHP.DontExtract.extract_extract
+		extract( $args );
+
+		// Use require instead of load_template to avoid require_once issues in tests.
+		require $path;
 	}
 
 	/**
@@ -606,11 +611,11 @@ class Helper {
 	 */
 	public static function sanitizeFieldValue( $fieldValue ) {
 		if ( is_array( $fieldValue ) ) {
-			return array_map( 'sanitize_text_field', $fieldValue );
+			return array_map( 'sanitize_textarea_field', $fieldValue );
 		}
 
 		if ( is_string( $fieldValue ) || is_numeric( $fieldValue ) ) {
-			return sanitize_text_field( $fieldValue );
+			return sanitize_textarea_field( $fieldValue );
 		}
 
 		return $fieldValue;

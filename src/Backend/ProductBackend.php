@@ -298,6 +298,12 @@ class ProductBackend implements Hookable {
 					} else {
 						$default = sanitize_text_field( $default_source );
 					}
+
+					$long_text_default = isset( $field['long_text_default'] ) ? sanitize_textarea_field( $field['long_text_default'] ) : '';
+					if ( ! empty( $long_text_default ) ) {
+						$default = $long_text_default;
+					}
+
 					$minlength = isset( $field['minlength'] ) ? absint( $field['minlength'] ) : 0;
 					$maxlength = isset( $field['maxlength'] ) ? absint( $field['maxlength'] ) : 0;
 					$rows      = isset( $field['rows'] ) ? absint( $field['rows'] ) : 0;
@@ -324,6 +330,7 @@ class ProductBackend implements Hookable {
 						'help_text'             => $help_text,
 						'options'               => $options,
 						'default'               => $default,
+						'long_text_default'     => $long_text_default,
 						'minlength'             => $minlength,
 						'maxlength'             => $maxlength,
 						'rows'                  => $rows,

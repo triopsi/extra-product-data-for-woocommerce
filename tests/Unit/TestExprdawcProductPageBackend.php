@@ -261,6 +261,69 @@ class TestExprdawcProductPageBackend extends WP_UnitTestCase {
 	}
 
 	/**
+	 * Tests that template-pattern blocks are rendered for client-side cloning.
+	 *
+	 * Expects: Output contains hidden <template> tags for field, option and rule cloning.
+	 *
+	 * @return void
+	 */
+	public function test_exprdawc_add_custom_product_fields_renders_client_side_templates() {
+		$product = new WC_Product_Simple();
+		$product->set_name( 'Template Test Product' );
+		$product->set_regular_price( '10' );
+		$product->save();
+
+		$product_id = $product->get_id();
+
+		global $post;
+		$post = get_post( $product_id );
+
+		ob_start();
+		$this->product_page_backend->exprdawc_add_custom_product_fields();
+		$output = ob_get_clean();
+
+		$this->assertStringContainsString( 'id="exprdawc-field-template"', $output );
+		$this->assertStringContainsString( 'id="exprdawc-option-template-single"', $output );
+		$this->assertStringContainsString( 'id="exprdawc-option-template-multi"', $output );
+		$this->assertStringContainsString( 'id="exprdawc-rule-group-template"', $output );
+		$this->assertStringContainsString( 'id="exprdawc-rule-template"', $output );
+
+		wp_delete_post( $product_id, true );
+	}
+
+	/**
+	 * Tests that placeholders for JS replacement are present in rendered templates.
+	 *
+	 * Expects: Output contains index placeholders used by cloning/reindexing logic.
+	 *
+	 * @return void
+	 */
+	public function test_exprdawc_add_custom_product_fields_renders_template_placeholders() {
+		$product = new WC_Product_Simple();
+		$product->set_name( 'Template Placeholder Product' );
+		$product->set_regular_price( '10' );
+		$product->save();
+
+		$product_id = $product->get_id();
+
+		global $post;
+		$post = get_post( $product_id );
+
+		ob_start();
+		$this->product_page_backend->exprdawc_add_custom_product_fields();
+		$output = ob_get_clean();
+
+		$this->assertStringContainsString( '__INDEX__', $output );
+		$this->assertStringContainsString( '__FIELD_INDEX__', $output );
+		$this->assertStringContainsString( '__OPTION_INDEX__', $output );
+		$this->assertStringContainsString( '__RULE_GROUP_INDEX__', $output );
+		$this->assertStringContainsString( '__RULE_INDEX__', $output );
+		$this->assertStringContainsString( '__FIELD_OPTIONS__', $output );
+
+		wp_delete_post( $product_id, true );
+	}
+
+	/**
 	 * Tests that exprdawc_show_general_tab enqueues the required script.
 	 *
 	 * Expects: The script 'exprdawc-wc-meta-boxes-js' is registered after the method is called.

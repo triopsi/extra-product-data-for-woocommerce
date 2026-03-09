@@ -496,8 +496,10 @@ class ProductFrontend implements Hookable {
 				if ( isset( $field_value ) ) {
 					switch ( $input_field_array['type'] ) {
 						case 'text':
-						case 'textarea':
 							$user_input_value = sanitize_text_field( wp_unslash( $field_value ) );
+							break;
+						case 'long_text':
+							$user_input_value = sanitize_textarea_field( wp_unslash( $field_value ) );
 							break;
 						case 'number':
 							$user_input_value = floatval( wp_unslash( $field_value ) );
@@ -575,8 +577,8 @@ class ProductFrontend implements Hookable {
 					}
 					$item_data[] = array(
 						'key'     => esc_html( $user_data['field_raw']['label'] ),
-						'value'   => wc_clean( $user_data['value_cart'] ),
-						'display' => wc_clean( $user_data['value_cart'] ),
+						'value'   => $user_data['value_cart'],
+						'display' => $user_data['value_cart'],
 					);
 				}
 			}

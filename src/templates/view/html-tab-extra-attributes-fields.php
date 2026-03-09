@@ -253,7 +253,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 							</td>
 							<td>
 								<label class="exprdawc_label" for="exprdawc_long_text_default_<?php echo esc_html( $index ); ?>"><?php esc_html_e( 'Default Value', 'extra-product-data-for-woocommerce' ); ?></label>
-								<textarea id="exprdawc_long_text_default_<?php echo esc_html( $index ); ?>" class="exprdawc_textarea" rows="3" cols="30" placeholder="<?php esc_html_e( 'Enter a default text', 'extra-product-data-for-woocommerce' ); ?>" class="exprdawc_input exprdawc_long_text_cols" name="extra_product_fields[<?php echo esc_html( $index ); ?>][default]" value="<?php echo esc_attr( $field['default'] ?? '' ); ?>" ></textarea>
+								<textarea style="height: auto;" id="exprdawc_long_text_default_<?php echo esc_html( $index ); ?>" class="exprdawc_textarea exprdawc_input exprdawc_long_text_cols" rows="5" cols="30" placeholder="<?php esc_html_e( 'Enter a default text', 'extra-product-data-for-woocommerce' ); ?>" name="extra_product_fields[<?php echo esc_html( $index ); ?>][long_text_default]"><?php echo esc_attr( $field['long_text_default'] ?? '' ); ?></textarea>
 							</td>
 						</tr>
 					</tbody>
