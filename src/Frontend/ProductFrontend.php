@@ -51,8 +51,29 @@ class ProductFrontend implements Hookable {
 		add_filter( 'woocommerce_get_item_data', array( $this, 'exprdawc_display_fields_on_cart_and_checkout' ), 10, 2 );
 		add_action( 'woocommerce_before_calculate_totals', array( $this, 'exprdawc_adjust_cart_item_pricing' ) );
 		add_action( 'woocommerce_checkout_create_order_line_item', array( $this, 'exprdawc_add_extra_product_data_to_order' ), 10, 4 );
+		add_filter( 'woocommerce_cart_item_class', array( $this, 'exprdawc_add_cart_item_class' ), 10, 3 );
 
 		add_action( 'wp_enqueue_scripts', array( $this, 'exprdawc_add_frontend_styles_scripts' ) );
+	}
+
+	/**
+	 * Adds custom CSS classes to cart items that contain extra product fields.
+	 *
+	 * This filter modifies the CSS classes applied to a cart item row (`<tr>`)
+	 * in the WooCommerce cart table. It is used to mark products that contain
+	 * extra product fields added by this plugin.
+	 *
+	 * @param string $class         Existing CSS classes applied to the cart item row.
+	 * @param array  $cart_item     The cart item data.
+	 * @param string $cart_item_key Unique key identifying the cart item.
+	 *
+	 * @return string Modified CSS class string.
+	 */
+	public function exprdawc_add_cart_item_class( $class, $cart_item, $cart_item_key ): string {
+		if ( isset( $cart_item['post_data_product_item'] ) ) {
+			$class .= ' exprdawc-cart-item-has-extra-data';
+		}
+		return $class;
 	}
 
 	/**
@@ -553,36 +574,44 @@ class ProductFrontend implements Hookable {
 	 * @return array
 	 */
 	public function exprdawc_display_fields_on_cart_and_checkout( array $item_data, array $cart_item ): array {
-		if ( ! isset( $cart_item['post_data_product_item'] ) ) {
+		if ( empty( $cart_item['post_data_product_item'] ) || ! is_array( $cart_item['post_data_product_item'] ) ) {
 			return $item_data;
 		}
 
-		$product = wc_get_product( $cart_item['product_id'] );
-		if ( ! $product ) {
+		$show_empty_fields = get_option( 'exprdawc_show_empty_fields', 'yes' );
+		$show_in_cart      = get_option( 'exprdawc_show_in_cart', 'yes' );
+		$show_in_checkout  = get_option( 'exprdawc_show_in_checkout', 'yes' );
+
+		$should_display =
+			( is_cart() && 'yes' === $show_in_cart ) ||
+			( is_checkout() && 'yes' === $show_in_checkout ) ||
+			wp_doing_ajax() ||
+			wp_is_json_request();
+
+		if ( ! $should_display ) {
 			return $item_data;
 		}
 
-		$custom_fields = $product->get_meta( '_extra_product_fields', true );
+		foreach ( $cart_item['post_data_product_item'] as $user_data ) {
+			$label      = $user_data['field_raw']['label'] ?? '';
+			$value      = $user_data['value'] ?? '';
+			$value_cart = $user_data['value_cart'] ?? $value;
 
-		if ( ! empty( $custom_fields ) ) {
-			if (
-				( is_cart() && get_option( 'exprdawc_show_in_cart', 'yes' ) === 'yes' ) ||
-				( is_checkout() && get_option( 'exprdawc_show_in_checkout', 'yes' ) === 'yes' ) ||
-				( wp_doing_ajax() || wp_is_json_request() )
-			) {
-				foreach ( $cart_item['post_data_product_item'] as $user_data ) {
-					$show_empty_fields = get_option( 'exprdawc_show_empty_fields', 'yes' );
-					if ( true === empty( $user_data['value'] ) && 'yes' !== $show_empty_fields ) {
-						continue;
-					}
-					$item_data[] = array(
-						'key'     => esc_html( $user_data['field_raw']['label'] ),
-						'value'   => $user_data['value_cart'],
-						'display' => $user_data['value_cart'],
-					);
-				}
+			if ( '' === $label ) {
+				continue;
 			}
+
+			if ( '' === (string) $value && 'yes' !== $show_empty_fields ) {
+				continue;
+			}
+
+			$item_data[] = array(
+				'key'     => esc_html( $label ),
+				'value'   => $value_cart,
+				'display' => nl2br( esc_html( $value_cart ) ),
+			);
 		}
+
 		return $item_data;
 	}
 
