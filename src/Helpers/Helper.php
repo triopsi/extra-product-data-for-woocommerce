@@ -17,6 +17,8 @@ declare(strict_types=1);
 namespace Triopsi\Exprdawc\Helpers;
 
 use Automattic\WooCommerce\Enums\ProductType;
+use Automattic\WooCommerce\Utilities\OrderUtil;
+use WC_Order;
 
 if ( ! defined( 'ABSPATH' ) ) {
 	exit;
@@ -737,5 +739,38 @@ class Helper {
 			'valid'   => true,
 			'message' => '',
 		);
+	}
+
+	/**
+	 * Checks whether editing is allowed for the given order based on the plugin setting.
+	 *
+	 * The setting stores a list of allowed order statuses (e.g. wc-pending, wc-processing).
+	 * This method removes the `wc-` prefix and checks if the order has one of the allowed statuses.
+	 *
+	 * @param WC_Order $order The WooCommerce order object.
+	 * @return bool True if editing is allowed, false otherwise.
+	 */
+	public static function is_order_editable( WC_Order $order ): bool {
+
+		if ( ! $order ) {
+			return false;
+		}
+
+		$allowed_statuses = get_option(
+			'extra_product_data_allowed_order_statuses',
+			array( 'wc-pending', 'wc-on-hold', 'wc-processing' )
+		);
+
+		if ( ! is_array( $allowed_statuses ) || empty( $allowed_statuses ) ) {
+			return false;
+		}
+
+		// Remove wc- prefix.
+		$allowed_statuses = array_map(
+			array( OrderUtil::class, 'remove_status_prefix' ),
+			$allowed_statuses
+		);
+
+		return $order->has_status( $allowed_statuses );
 	}
 }

@@ -16,7 +16,6 @@ declare(strict_types=1);
 
 namespace Triopsi\Exprdawc\Orders\Customer;
 
-use Automattic\WooCommerce\Utilities\OrderUtil;
 use Triopsi\Exprdawc\Helpers\Helper;
 use Triopsi\Exprdawc\Contracts\Hookable;
 use Triopsi\Exprdawc\Orders\BaseOrder;
@@ -80,8 +79,6 @@ class CustomerOrder extends BaseOrder implements Hookable {
 			return;
 		}
 
-		$max_order_status = get_option( 'extra_product_data_max_order_status', 'processing' );
-
 		$item_meta_data  = $item->get_meta_data();
 		$has_user_inputs = false;
 
@@ -110,7 +107,7 @@ class CustomerOrder extends BaseOrder implements Hookable {
 			}
 
 			if ( is_wc_endpoint_url( 'view-order' ) ) {
-				if ( $has_user_inputs && $order->has_status( OrderUtil::remove_status_prefix( $max_order_status ) ) ) {
+				if ( $has_user_inputs && Helper::is_order_editable( $order ) ) {
 					echo '<button type="button" class="button alt wp-element-button exprdawc-edit-user-order-button exprdawc-edit-order-item" data-item-id="' . esc_attr( $item_id ) . '"><span class="dashicons dashicons-edit"></span> ' . esc_html__( 'Edit', 'extra-product-data-for-woocommerce' ) . '</button>';
 					echo '<div class="exprdawc-order-item-fields" id="exprdawc-order-item-fields-' . esc_attr( $item_id ) . '" style="display:none;">';
 					echo '<form action="" method="post" class="exprdawc-order-item-form">';

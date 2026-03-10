@@ -73,13 +73,12 @@ class AdminOrder extends BaseOrder implements Hookable {
 	 * @return void
 	 */
 	public function display_edit_button( $item_id, $item, $product ) {
-		$max_order_status = get_option( 'extra_product_data_max_order_status', 'processing' );
 
 		if ( ! ( self::$order && 'line_item' === $item->get_type() ) ) {
 			return;
 		}
 
-		if ( ! self::$order->has_status( OrderUtil::remove_status_prefix( $max_order_status ) ) ) {
+		if ( ! Helper::is_order_editable( self::$order ) ) {
 			return;
 		}
 

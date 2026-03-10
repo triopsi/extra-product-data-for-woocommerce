@@ -22,6 +22,7 @@ use WC_Order_Item;
 use WC_Order_Item_Product;
 use Triopsi\Exprdawc\Helpers\Helper;
 use Triopsi\Exprdawc\Helpers\OrderHelper;
+use Triopsi\Exprdawc\Helpers\Helpers;
 
 if ( ! defined( 'ABSPATH' ) ) {
 	exit;
@@ -76,14 +77,12 @@ class BaseOrder {
 
 		if ( $admin ) {
 			if ( ! current_user_can( 'manage_woocommerce' ) ) {
-				$max_order_status = get_option( 'extra_product_data_max_order_status', 'processing' );
-				if ( ! $order->has_status( OrderUtil::remove_status_prefix( $max_order_status ) ) ) {
+				if ( ! Helper::is_order_editable( $order ) ) {
 					wp_send_json_error( array( 'message' => __( 'You do not have permission to edit this order.', 'extra-product-data-for-woocommerce' ) ) );
 				}
 			}
-		} else {
-			$max_order_status = get_option( 'extra_product_data_max_order_status', 'processing' );
-			if ( ! $order->has_status( OrderUtil::remove_status_prefix( $max_order_status ) ) ) {
+		} else { // phpcs:ignore
+			if ( ! Helper::is_order_editable( $order ) ) {
 				wp_send_json_error( array( 'message' => __( 'You do not have permission to edit this order.', 'extra-product-data-for-woocommerce' ) ) );
 			}
 		}
