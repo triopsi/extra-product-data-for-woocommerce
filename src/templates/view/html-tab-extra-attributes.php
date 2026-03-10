@@ -67,12 +67,16 @@ $field_template_defaults = array(
 require EXPRDAWC_TEMPLATES . 'modal-import-export.php';
 ?>
 
-<div id="extra-product-data" class="panel woocommerce_options_panel exprdawc_panel_wrapper">
+<div id="extra-product-data" class="exprdawc_panel_wrapper">
 	<div class="toolbar toolbar-top">
 		
 	</div>
 	<div class="exprdawc_panel">
-		<h2><?php esc_html_e( 'Extra Attributes', 'extra-product-data-for-woocommerce' ); ?></h2>
+		<div class="exprdawc_panel_description">
+			<p>
+				<?php esc_html_e( 'Add extra attributes to your products to provide customers with more information and options. These attributes can be used to display additional product details, create variations, or offer customizable options.', 'extra-product-data-for-woocommerce' ); ?>
+			</p>
+		</div>
 		<div class="exprdawc_attributes">
 			<div class="exprdawc_no_entry_message">
 				<p>

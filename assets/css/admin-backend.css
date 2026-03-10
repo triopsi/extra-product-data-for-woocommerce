@@ -79,6 +79,25 @@ table.exprdawc_fields_table tbody td {
   width: auto;
   white-space: nowrap;
 }
+table.exprdawc_fields_table tbody td.move {
+  width: 20px;
+  max-width: 20px;
+}
+table.exprdawc_fields_table tbody td.cl-arr {
+  width: 35px;
+  max-width: 35px;
+}
+table.exprdawc_fields_table tbody td.cl-arr .dashicons {
+  font-size: 35px;
+  width: 35px;
+  height: 35px;
+  line-height: 35px;
+}
+table.exprdawc_fields_table tbody td.exprdawc_actions {
+  width: 80px;
+  max-width: 80px;
+  text-align: center;
+}
 table.exprdawc_fields_table tbody td input[type=text],
 table.exprdawc_fields_table tbody td input[type=number],
 table.exprdawc_fields_table tbody td textarea {

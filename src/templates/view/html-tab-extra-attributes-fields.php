@@ -49,7 +49,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 					<option value="select" <?php selected( $field['type'], 'select' ); ?>><?php esc_html_e( 'Select', 'extra-product-data-for-woocommerce' ); ?></option>
 				</select>
 			</td>
-			<td>
+			<td class="exprdawc_actions">
 				<button type="button" class="button exprdawc_remove_custom_field"><i class="dashicons dashicons-trash"></i></button>
 				<button type="button" class="button exprdawc_copy_custom_field"><i class="dashicons dashicons-admin-page"></i></button>
 				<input type="hidden" class="exprdawc_attribute_index" name="extra_product_fields[<?php echo esc_html( $index ); ?>][index]" value="<?php echo esc_attr( $field['index'] ?? $index ); ?>"/>
