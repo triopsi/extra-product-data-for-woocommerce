@@ -658,7 +658,12 @@ class ProductFrontend implements Hookable {
 
 		$field_meta = array();
 		foreach ( $values['post_data_product_item'] as $field ) {
-			$item->add_meta_data( sanitize_text_field( $field['field_raw']['label'] ), sanitize_text_field( $field['value'] ), true );
+			// Add each field as individual meta data for the order item.
+			$item->add_meta_data(
+				sanitize_text_field( $field['field_raw']['label'] ),
+				$field['value'], // phpcs:ignore
+				true
+			);
 			$field_meta[] = array(
 				'label'     => sanitize_text_field( $field['field_raw']['label'] ),
 				'value'     => sanitize_text_field( $field['value'] ),
