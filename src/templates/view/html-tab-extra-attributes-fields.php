@@ -35,6 +35,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 			<td class="cl-arr"><i class="dashicons dashicons-arrow-up toggle-options"></i></td>
 			<td class="exprdawc_attribute_input_name">								
 				<input type="text" class="exprdawc_input exprdawc_textinput exprdawc_label field_name" name="extra_product_fields[<?php echo esc_html( $index ); ?>][label]" value="<?php echo esc_attr( $field['label'] ); ?>" placeholder="<?php esc_html_e( 'Name of the label', 'extra-product-data-for-woocommerce' ); ?>" />
+				<input type="hidden" name="extra_product_fields[<?php echo esc_html( $index ); ?>][id]" value="<?php echo esc_attr( $field['id'] ?? wp_rand() ); ?>" />
 			</td>
 			<td>
 				<select id="exprdawc_attribute_type_<?php echo esc_html( $index ); ?>" name="extra_product_fields[<?php echo esc_html( $index ); ?>][type]" class="exprdawc_input exprdawc_attribute_type">
@@ -251,9 +252,19 @@ if ( ! defined( 'ABSPATH' ) ) {
 								<label class="exprdawc_label" for="exprdawc_long_text_cols_<?php echo esc_html( $index ); ?>"><?php esc_html_e( 'Columns', 'extra-product-data-for-woocommerce' ); ?></label>
 								<input type="number" id="exprdawc_long_text_cols_<?php echo esc_html( $index ); ?>" class="exprdawc_input exprdawc_long_text_cols" name="extra_product_fields[<?php echo esc_html( $index ); ?>][cols]" value="<?php echo esc_attr( $field['cols'] ?? '5' ); ?>" />
 							</td>
-							<td>
+							<td rowspan="2">
 								<label class="exprdawc_label" for="exprdawc_long_text_default_<?php echo esc_html( $index ); ?>"><?php esc_html_e( 'Default Value', 'extra-product-data-for-woocommerce' ); ?></label>
 								<textarea style="height: auto;" id="exprdawc_long_text_default_<?php echo esc_html( $index ); ?>" class="exprdawc_textarea exprdawc_input exprdawc_long_text_cols" rows="5" cols="30" placeholder="<?php esc_html_e( 'Enter a default text', 'extra-product-data-for-woocommerce' ); ?>" name="extra_product_fields[<?php echo esc_html( $index ); ?>][long_text_default]"><?php echo esc_attr( $field['long_text_default'] ?? '' ); ?></textarea>
+							</td>
+						</tr>
+						<tr>
+							<td>
+								<label class="exprdawc_label" for="exprdawc_long_text_min_length_<?php echo esc_html( $index ); ?>"><?php esc_html_e( 'Min length', 'extra-product-data-for-woocommerce' ); ?></label>
+								<input type="number" id="exprdawc_long_text_min_length_<?php echo esc_html( $index ); ?>" class="exprdawc_input exprdawc_long_text_min_length" name="extra_product_fields[<?php echo esc_html( $index ); ?>][min_length_longtext]" value="<?php echo esc_attr( $field['minlength'] ?? '0' ); ?>" />
+							</td>
+							<td>
+								<label class="exprdawc_label" for="exprdawc_long_text_max_length_<?php echo esc_html( $index ); ?>"><?php esc_html_e( 'Max length', 'extra-product-data-for-woocommerce' ); ?></label>
+								<input type="number" id="exprdawc_long_text_max_length_<?php echo esc_html( $index ); ?>" class="exprdawc_input exprdawc_long_text_max_length" name="extra_product_fields[<?php echo esc_html( $index ); ?>][max_length_longtext]" value="<?php echo esc_attr( $field['maxlength'] ?? '1000' ); ?>" />
 							</td>
 						</tr>
 					</tbody>

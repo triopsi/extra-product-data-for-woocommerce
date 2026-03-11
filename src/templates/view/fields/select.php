@@ -22,7 +22,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 $field = $field_args ?? array();
 ?>
 
-<label for="<?php echo H::attr( $field['id'] ); ?>" 
+<label for="<?php echo H::attr( $field['css_id'] ); ?>" 
 	class="<?php echo H::classes( $field['label_class'] ); ?>">
 	<?php echo H::e( $field['label'] ); ?>
 	<?php echo $required_string; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped ?>
@@ -31,7 +31,7 @@ $field = $field_args ?? array();
 <span class="<?php echo H::classes( $field['input_wrapper_class'] ); ?>">
 	<?php if ( ! empty( $field['options'] ) && is_array( $field['options'] ) ) : ?>
 		<select class="select <?php echo H::classes( $field['input_class'] ); ?>"
-			id="<?php echo H::attr( $field['id'] ); ?>"
+			id="<?php echo H::attr( $field['css_id'] ); ?>"
 			name="<?php echo H::attr( $field['name'] ); ?>"
 			<?php echo H::join( $custom_attributes ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped ?>
 		>
@@ -68,7 +68,7 @@ $field = $field_args ?? array();
 </span>
 
 <?php if ( ! empty( $field['description'] ) ) : ?>
-	<span id="<?php echo H::attr( $field['id'] ); ?>-description"
+	<span id="<?php echo H::attr( $field['css_id'] ); ?>-description"
 		class="<?php echo H::classes( $field['description_class'] ); ?>">
 		<?php echo H::e( $field['description'] ); ?>
 	</span>

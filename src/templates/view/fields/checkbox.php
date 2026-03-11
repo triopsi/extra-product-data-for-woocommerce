@@ -33,8 +33,10 @@ $field = $field_args ?? array();
 			<?php
 			$option_value = $option['value'] ?? '';
 			$option_label = $option['label'] ?? '';
+			$array = (array) $field['value'];
+			$in_array = in_array( (string) $option_value, (array) $field['value'], true );
 			$checked      = H::checked( in_array( (string) $option_value, (array) $field['value'], true ), true );
-			$option_id    = H::id( $field['id'] . '-' . $option_value );
+			$option_id    = H::id( $field['css_id'] . '-' . $option_value );
 
 			// Build data attributes for price adjustment.
 			$dataAttrs = array();
@@ -64,7 +66,7 @@ $field = $field_args ?? array();
 
 		<?php if ( isset( $field['unchecked_value'] ) ) : ?>
 			<input type="hidden"
-				name="<?php echo H::attr( $field['id'] ); ?>[]"
+				name="<?php echo H::attr( $field['css_id'] ); ?>[]"
 				value="<?php echo H::attr( $field['unchecked_value'] ); ?>"
 			/>
 		<?php endif; ?>
@@ -72,7 +74,7 @@ $field = $field_args ?? array();
 </span>
 
 <?php if ( ! empty( $field['description'] ) ) : ?>
-	<span id="<?php echo H::attr( $field['id'] ); ?>-description"
+	<span id="<?php echo H::attr( $field['css_id'] ); ?>-description"
 		class="<?php echo H::classes( $field['description_class'] ); ?>">
 		<?php echo H::e( $field['description'] ); ?>
 	</span>
@@ -81,7 +83,7 @@ $field = $field_args ?? array();
 <?php if ( ! empty( $field['required'] ) ) : ?>
 	<script>
 		jQuery(document).ready(function($) {
-			const $checkboxGroups = $('.<?php echo H::js( $field['id'] . '-input-wrapper' ); ?>, .exprdawc-field-input-wrapper-required');
+			const $checkboxGroups = $('.<?php echo H::js( $field['css_id'] . '-input-wrapper' ); ?>, .exprdawc-field-input-wrapper-required');
 			$checkboxGroups.each(function () {
 				const $checkboxes = $(this).find('input[type="checkbox"]');
 				$checkboxes.on('change', function() {

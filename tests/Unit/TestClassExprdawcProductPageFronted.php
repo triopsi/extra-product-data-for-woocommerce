@@ -126,7 +126,7 @@ class TestClassExprdawcProductPageFrontend extends WP_UnitTestCase {
 	 * - No required fields present
 	 */
 	public function test_exprdawc_has_options_returns_false_when_no_custom_fields() {
-		$result = $this->instance->exprdawc_has_options( false, $this->product );
+		$result = $this->instance->exprdawcHasOptions( false, $this->product );
 		$this->assertFalse( $result );
 	}
 
@@ -157,7 +157,7 @@ class TestClassExprdawcProductPageFrontend extends WP_UnitTestCase {
 		$this->product->update_meta_data( '_extra_product_fields', $custom_fields );
 		$this->product->save();
 
-		$result = $this->instance->exprdawc_has_options( false, $this->product );
+		$result = $this->instance->exprdawcHasOptions( false, $this->product );
 		$this->assertTrue( $result );
 	}
 
@@ -206,7 +206,7 @@ class TestClassExprdawcProductPageFrontend extends WP_UnitTestCase {
 		$grouped_product->set_children( array( $child_product_id ) );
 		$grouped_product->save();
 
-		$result = $this->instance->exprdawc_prevent_purchase_at_grouped_level( true, $grouped_product );
+		$result = $this->instance->exprdawcPreventPurchaseAtGroupedLevel( true, $grouped_product );
 		$this->assertFalse( $result );
 
 		// Clean up.
@@ -231,7 +231,7 @@ class TestClassExprdawcProductPageFrontend extends WP_UnitTestCase {
 	 * - No custom button text in settings
 	 */
 	public function test_exprdawc_change_add_to_cart_button_text_no_custom_fields() {
-		$result = $this->instance->exprdawc_change_add_to_cart_button_text( 'Add to cart', $this->product );
+		$result = $this->instance->exprdawcChangeAddToCartButtonText( 'Add to cart', $this->product );
 		$this->assertEquals( 'Add to cart', $result );
 	}
 
@@ -267,7 +267,7 @@ class TestClassExprdawcProductPageFrontend extends WP_UnitTestCase {
 		// Set custom button text.
 		update_option( 'exprdawc_custom_add_to_cart_text', 'Select Options' );
 
-		$result = $this->instance->exprdawc_change_add_to_cart_button_text( 'Add to cart', $this->product );
+		$result = $this->instance->exprdawcChangeAddToCartButtonText( 'Add to cart', $this->product );
 		$this->assertEquals( 'Select Options', $result );
 
 		// Clean up.
@@ -293,7 +293,7 @@ class TestClassExprdawcProductPageFrontend extends WP_UnitTestCase {
 		$this->product->set_stock_status( ProductStockStatus::OUT_OF_STOCK );
 		$this->product->save();
 
-		$result = $this->instance->exprdawc_change_add_to_cart_button_text( 'Add to cart', $this->product );
+		$result = $this->instance->exprdawcChangeAddToCartButtonText( 'Add to cart', $this->product );
 		$this->assertEquals( 'Add to cart', $result );
 	}
 
@@ -320,7 +320,7 @@ class TestClassExprdawcProductPageFrontend extends WP_UnitTestCase {
 		$product->set_button_text( 'Buy externally' );
 		$product->save();
 
-		$result = $this->instance->exprdawc_change_add_to_cart_button_text( 'Buy externally', $product );
+		$result = $this->instance->exprdawcChangeAddToCartButtonText( 'Buy externally', $product );
 		$this->assertEquals( 'Buy externally', $result );
 		$product->delete( true );
 	}
@@ -355,7 +355,7 @@ class TestClassExprdawcProductPageFrontend extends WP_UnitTestCase {
 		$this->product->save();
 
 		$original_url = '?add-to-cart=' . $this->product_id;
-		$result       = $this->instance->exprdawc_change_add_to_cart_url( $original_url, $this->product );
+		$result       = $this->instance->exprdawcChangeAddToCartUrl( $original_url, $this->product );
 		$expected_url = get_permalink( $this->product_id );
 
 		$this->assertEquals( $expected_url, $result );
@@ -377,7 +377,7 @@ class TestClassExprdawcProductPageFrontend extends WP_UnitTestCase {
 	 */
 	public function test_exprdawc_change_add_to_cart_url_returns_original_when_product_is_external(): void {
 		$url    = 'https://example.com/original';
-		$result = $this->instance->exprdawc_change_add_to_cart_url( $url, new WC_Product_External() );
+		$result = $this->instance->exprdawcChangeAddToCartUrl( $url, new WC_Product_External() );
 		$this->assertSame( $url, $result );
 	}
 
@@ -398,7 +398,7 @@ class TestClassExprdawcProductPageFrontend extends WP_UnitTestCase {
 	 */
 	public function test_exprdawc_change_add_to_cart_url_no_custom_fields() {
 		$original_url = '?add-to-cart=' . $this->product_id;
-		$result       = $this->instance->exprdawc_change_add_to_cart_url( $original_url, $this->product );
+		$result       = $this->instance->exprdawcChangeAddToCartUrl( $original_url, $this->product );
 		$this->assertEquals( $original_url, $result );
 	}
 
@@ -424,7 +424,7 @@ class TestClassExprdawcProductPageFrontend extends WP_UnitTestCase {
 		// Visit a normal page (Home).
 		$this->go_to( home_url( '/' ) );
 
-		$this->instance->exprdawc_add_frontend_styles_scripts();
+		$this->instance->exprdawcAddFrontendStylesScripts();
 
 		$this->assertFalse( wp_style_is( 'form-css', 'enqueued' ) );
 		$this->assertFalse( wp_script_is( 'wc-conditional-rules-js', 'enqueued' ) );
@@ -465,7 +465,7 @@ class TestClassExprdawcProductPageFrontend extends WP_UnitTestCase {
 		global $wp_query;
 		$wp_query->is_singular = true;
 
-		$this->instance->exprdawc_add_frontend_styles_scripts();
+		$this->instance->exprdawcAddFrontendStylesScripts();
 
 		// Enqueued?
 		$this->assertTrue( wp_style_is( 'form-css', 'enqueued' ) );
@@ -508,7 +508,7 @@ class TestClassExprdawcProductPageFrontend extends WP_UnitTestCase {
 		$product = $wc_product;
 
 		ob_start();
-		$this->instance->exprdawc_display_custom_fields_on_product_page();
+		$this->instance->exprdawcDisplayCustomFieldsOnProductPage();
 		$output = ob_get_clean();
 
 		$this->assertSame( '', trim( $output ), 'No fields => no output expected.' );
@@ -553,7 +553,7 @@ class TestClassExprdawcProductPageFrontend extends WP_UnitTestCase {
 		$product = $wc_product;
 
 		ob_start();
-		$this->instance->exprdawc_display_custom_fields_on_product_page();
+		$this->instance->exprdawcDisplayCustomFieldsOnProductPage();
 		$output = ob_get_clean();
 
 		// Wrapper.
@@ -606,7 +606,7 @@ class TestClassExprdawcProductPageFrontend extends WP_UnitTestCase {
 			'test_field' => '',
 		);
 
-		$result = $this->instance->exprdawc_validate_custom_fields( true, $this->product_id, 1 );
+		$result = $this->instance->exprdawcValidateCustomFields( true, $this->product_id, 1 );
 		$this->assertFalse( $result );
 	}
 
@@ -642,7 +642,7 @@ class TestClassExprdawcProductPageFrontend extends WP_UnitTestCase {
 			'test_field' => 'test value',
 		);
 
-		$result = $this->instance->exprdawc_validate_custom_fields( true, $this->product_id, 1 );
+		$result = $this->instance->exprdawcValidateCustomFields( true, $this->product_id, 1 );
 		$this->assertTrue( $result );
 	}
 
@@ -678,7 +678,7 @@ class TestClassExprdawcProductPageFrontend extends WP_UnitTestCase {
 			'email_field' => 'invalid-email',
 		);
 
-		$result = $this->instance->exprdawc_validate_custom_fields( true, $this->product_id, 1 );
+		$result = $this->instance->exprdawcValidateCustomFields( true, $this->product_id, 1 );
 		$this->assertFalse( $result );
 	}
 
@@ -713,7 +713,7 @@ class TestClassExprdawcProductPageFrontend extends WP_UnitTestCase {
 			'email_field' => 'test@example.com',
 		);
 
-		$result = $this->instance->exprdawc_validate_custom_fields( true, $this->product_id, 1 );
+		$result = $this->instance->exprdawcValidateCustomFields( true, $this->product_id, 1 );
 		$this->assertTrue( $result );
 	}
 
@@ -749,7 +749,7 @@ class TestClassExprdawcProductPageFrontend extends WP_UnitTestCase {
 			'number_field' => 'not-a-number',
 		);
 
-		$result = $this->instance->exprdawc_validate_custom_fields( true, $this->product_id, 1 );
+		$result = $this->instance->exprdawcValidateCustomFields( true, $this->product_id, 1 );
 		$this->assertFalse( $result );
 	}
 
@@ -785,7 +785,7 @@ class TestClassExprdawcProductPageFrontend extends WP_UnitTestCase {
 			'date_field' => 'not-a-date',
 		);
 
-		$result = $this->instance->exprdawc_validate_custom_fields( true, $this->product_id, 1 );
+		$result = $this->instance->exprdawcValidateCustomFields( true, $this->product_id, 1 );
 		$this->assertFalse( $result );
 	}
 
@@ -821,7 +821,7 @@ class TestClassExprdawcProductPageFrontend extends WP_UnitTestCase {
 			'date_field' => '2024-01-01',
 		);
 
-		$result = $this->instance->exprdawc_validate_custom_fields( true, $this->product_id, 1 );
+		$result = $this->instance->exprdawcValidateCustomFields( true, $this->product_id, 1 );
 		$this->assertTrue( $result );
 	}
 
@@ -907,7 +907,7 @@ class TestClassExprdawcProductPageFrontend extends WP_UnitTestCase {
 				),
 		);
 
-		$result = $this->instance->exprdawc_validate_custom_fields( true, $this->product_id, 1 );
+		$result = $this->instance->exprdawcValidateCustomFields( true, $this->product_id, 1 );
 		$this->assertFalse( $result );
 	}
 
@@ -994,7 +994,7 @@ class TestClassExprdawcProductPageFrontend extends WP_UnitTestCase {
 				),
 		);
 
-		$result = $this->instance->exprdawc_validate_custom_fields( true, $this->product_id, 1 );
+		$result = $this->instance->exprdawcValidateCustomFields( true, $this->product_id, 1 );
 		$this->assertTrue( $result );
 	}
 
@@ -1080,7 +1080,7 @@ class TestClassExprdawcProductPageFrontend extends WP_UnitTestCase {
 				),
 		);
 
-		$result = $this->instance->exprdawc_validate_custom_fields( true, $this->product_id, 1 );
+		$result = $this->instance->exprdawcValidateCustomFields( true, $this->product_id, 1 );
 		$this->assertFalse( $result );
 	}
 
@@ -1166,7 +1166,7 @@ class TestClassExprdawcProductPageFrontend extends WP_UnitTestCase {
 				),
 		);
 
-		$result = $this->instance->exprdawc_validate_custom_fields( true, $this->product_id, 1 );
+		$result = $this->instance->exprdawcValidateCustomFields( true, $this->product_id, 1 );
 		$this->assertTrue( $result );
 	}
 
@@ -1231,7 +1231,7 @@ class TestClassExprdawcProductPageFrontend extends WP_UnitTestCase {
 			'yes_no' => 'blub',
 		);
 
-		$result = $this->instance->exprdawc_validate_custom_fields( true, $this->product_id, 1 );
+		$result = $this->instance->exprdawcValidateCustomFields( true, $this->product_id, 1 );
 		$this->assertFalse( $result );
 	}
 
@@ -1296,7 +1296,7 @@ class TestClassExprdawcProductPageFrontend extends WP_UnitTestCase {
 			'yes_no' => 'yes',
 		);
 
-		$result = $this->instance->exprdawc_validate_custom_fields( true, $this->product_id, 1 );
+		$result = $this->instance->exprdawcValidateCustomFields( true, $this->product_id, 1 );
 		$this->assertTrue( $result );
 	}
 
@@ -1387,7 +1387,7 @@ class TestClassExprdawcProductPageFrontend extends WP_UnitTestCase {
 			'select_field' => 'Bam',
 		);
 
-		$result = $this->instance->exprdawc_validate_custom_fields( true, $this->product_id, 1 );
+		$result = $this->instance->exprdawcValidateCustomFields( true, $this->product_id, 1 );
 		$this->assertFalse( $result );
 	}
 
@@ -1478,7 +1478,7 @@ class TestClassExprdawcProductPageFrontend extends WP_UnitTestCase {
 			'select_field' => 'B',
 		);
 
-		$result = $this->instance->exprdawc_validate_custom_fields( true, $this->product_id, 1 );
+		$result = $this->instance->exprdawcValidateCustomFields( true, $this->product_id, 1 );
 		$this->assertTrue( $result );
 	}
 
@@ -1501,7 +1501,7 @@ class TestClassExprdawcProductPageFrontend extends WP_UnitTestCase {
 	public function test_exprdawc_validate_custom_fields_no_post_data() {
 		unset( $_POST['exprdawc_custom_field_input'] );
 
-		$result = $this->instance->exprdawc_validate_custom_fields( true, $this->product_id, 1 );
+		$result = $this->instance->exprdawcValidateCustomFields( true, $this->product_id, 1 );
 		$this->assertTrue( $result );
 	}
 
@@ -1534,7 +1534,7 @@ class TestClassExprdawcProductPageFrontend extends WP_UnitTestCase {
 		$this->product->update_meta_data( '_extra_product_fields', $custom_fields );
 		$this->product->save();
 
-		$result = $this->instance->exprdawc_check_product_support( true, 'ajax_add_to_cart', $this->product );
+		$result = $this->instance->exprdawcCheckProductSupport( true, 'ajax_add_to_cart', $this->product );
 		$this->assertFalse( $result );
 	}
 
@@ -1555,7 +1555,7 @@ class TestClassExprdawcProductPageFrontend extends WP_UnitTestCase {
 	 * - Original support status: true
 	 */
 	public function test_exprdawc_check_product_support_other_feature() {
-		$result = $this->instance->exprdawc_check_product_support( true, 'some_other_feature', $this->product );
+		$result = $this->instance->exprdawcCheckProductSupport( true, 'some_other_feature', $this->product );
 		$this->assertTrue( $result );
 	}
 
@@ -1596,7 +1596,7 @@ class TestClassExprdawcProductPageFrontend extends WP_UnitTestCase {
 		);
 
 		$cart_item_data = array();
-		$result         = $this->instance->exprdawc_save_extra_product_data_in_cart( $cart_item_data, $this->product_id, 0, 1 );
+		$result         = $this->instance->exprdawcSaveExtraProductDataInCart( $cart_item_data, $this->product_id, 0, 1 );
 
 		$this->assertArrayHasKey( 'post_data_product_item', $result );
 		$this->assertCount( 1, $result['post_data_product_item'] );
@@ -1639,7 +1639,7 @@ class TestClassExprdawcProductPageFrontend extends WP_UnitTestCase {
 		);
 
 		$cart_item_data = array();
-		$result         = $this->instance->exprdawc_save_extra_product_data_in_cart( $cart_item_data, $this->product_id, 0, 1 );
+		$result         = $this->instance->exprdawcSaveExtraProductDataInCart( $cart_item_data, $this->product_id, 0, 1 );
 
 		$this->assertArrayHasKey( 'post_data_product_item', $result );
 		$this->assertEquals( 'Test@Example.COM', $result['post_data_product_item'][0]['value'] );
@@ -1681,7 +1681,7 @@ class TestClassExprdawcProductPageFrontend extends WP_UnitTestCase {
 		);
 
 		$cart_item_data = array();
-		$result         = $this->instance->exprdawc_save_extra_product_data_in_cart( $cart_item_data, $this->product_id, 0, 1 );
+		$result         = $this->instance->exprdawcSaveExtraProductDataInCart( $cart_item_data, $this->product_id, 0, 1 );
 
 		$this->assertArrayHasKey( 'post_data_product_item', $result );
 		$this->assertEquals( 42.5, $result['post_data_product_item'][0]['value'] );
@@ -1722,7 +1722,7 @@ class TestClassExprdawcProductPageFrontend extends WP_UnitTestCase {
 		);
 
 		$cart_item_data = array();
-		$result         = $this->instance->exprdawc_save_extra_product_data_in_cart( $cart_item_data, $this->product_id, 0, 1 );
+		$result         = $this->instance->exprdawcSaveExtraProductDataInCart( $cart_item_data, $this->product_id, 0, 1 );
 
 		$this->assertArrayHasKey( 'post_data_product_item', $result );
 		$this->assertEquals( '2024-06-19', $result['post_data_product_item'][0]['value'] );
@@ -1763,7 +1763,7 @@ class TestClassExprdawcProductPageFrontend extends WP_UnitTestCase {
 		);
 
 		$cart_item_data = array();
-		$result         = $this->instance->exprdawc_save_extra_product_data_in_cart( $cart_item_data, $this->product_id, 0, 1 );
+		$result         = $this->instance->exprdawcSaveExtraProductDataInCart( $cart_item_data, $this->product_id, 0, 1 );
 
 		$this->assertArrayHasKey( 'post_data_product_item', $result );
 		$this->assertEquals( 'Title', $result['post_data_product_item'][0]['value'] );
@@ -1799,7 +1799,7 @@ class TestClassExprdawcProductPageFrontend extends WP_UnitTestCase {
 		);
 
 		$cart_item_data = array();
-		$result         = $this->instance->exprdawc_save_extra_product_data_in_cart( $cart_item_data, $this->product_id, 0, 1 );
+		$result         = $this->instance->exprdawcSaveExtraProductDataInCart( $cart_item_data, $this->product_id, 0, 1 );
 
 		$this->assertArrayHasKey( 'post_data_product_item', $result );
 		$this->assertEquals( 'test value', $result['post_data_product_item'][0]['value'] );
@@ -1844,7 +1844,7 @@ class TestClassExprdawcProductPageFrontend extends WP_UnitTestCase {
 		);
 
 		$cart_item_data = array();
-		$result         = $this->instance->exprdawc_save_extra_product_data_in_cart( $cart_item_data, $this->product_id, 0, 1 );
+		$result         = $this->instance->exprdawcSaveExtraProductDataInCart( $cart_item_data, $this->product_id, 0, 1 );
 
 		$this->assertArrayHasKey( 'post_data_product_item', $result );
 		$this->assertEquals( 'opt1', $result['post_data_product_item'][0]['value'] );
@@ -1889,7 +1889,7 @@ class TestClassExprdawcProductPageFrontend extends WP_UnitTestCase {
 		);
 
 		$cart_item_data = array();
-		$result         = $this->instance->exprdawc_save_extra_product_data_in_cart( $cart_item_data, $this->product_id, 0, 1 );
+		$result         = $this->instance->exprdawcSaveExtraProductDataInCart( $cart_item_data, $this->product_id, 0, 1 );
 
 		$this->assertArrayHasKey( 'post_data_product_item', $result );
 		$this->assertEquals( 'opt1, opt2', $result['post_data_product_item'][0]['value'] );
@@ -1922,7 +1922,7 @@ class TestClassExprdawcProductPageFrontend extends WP_UnitTestCase {
 		);
 
 		$cart_item_data = array();
-		$result         = $this->instance->exprdawc_save_extra_product_data_in_cart( $cart_item_data, $this->product_id, 0, 1 );
+		$result         = $this->instance->exprdawcSaveExtraProductDataInCart( $cart_item_data, $this->product_id, 0, 1 );
 
 		$this->assertArrayHasKey( 'post_data_product_item', $result );
 		$this->assertEquals( 'test value', $result['post_data_product_item'][0]['value'] );
@@ -1954,7 +1954,7 @@ class TestClassExprdawcProductPageFrontend extends WP_UnitTestCase {
 		);
 
 		$cart_item_data = array();
-		$result         = $this->instance->exprdawc_save_extra_product_data_in_cart( $cart_item_data, $this->product_id, 0, 1 );
+		$result         = $this->instance->exprdawcSaveExtraProductDataInCart( $cart_item_data, $this->product_id, 0, 1 );
 
 		$this->assertArrayHasKey( 'post_data_product_item', $result );
 		$this->assertEquals( 'test value', $result['post_data_product_item'][0]['value'] );
@@ -1992,7 +1992,7 @@ class TestClassExprdawcProductPageFrontend extends WP_UnitTestCase {
 		);
 
 		$cart_item_data = array();
-		$result         = $this->instance->exprdawc_save_extra_product_data_in_cart( $cart_item_data, $this->product_id, 0, 1 );
+		$result         = $this->instance->exprdawcSaveExtraProductDataInCart( $cart_item_data, $this->product_id, 0, 1 );
 
 		$this->assertArrayHasKey( 'post_data_product_item', $result );
 		$this->assertEquals( 'opt1', $result['post_data_product_item'][0]['value'] );
@@ -2031,7 +2031,7 @@ class TestClassExprdawcProductPageFrontend extends WP_UnitTestCase {
 		);
 
 		$cart_item_data = array();
-		$result         = $this->instance->exprdawc_save_extra_product_data_in_cart( $cart_item_data, $this->product_id, 0, 1 );
+		$result         = $this->instance->exprdawcSaveExtraProductDataInCart( $cart_item_data, $this->product_id, 0, 1 );
 
 		$this->assertArrayHasKey( 'post_data_product_item', $result );
 		$this->assertEquals( 'opt1', $result['post_data_product_item'][0]['value'] );
@@ -2076,7 +2076,7 @@ class TestClassExprdawcProductPageFrontend extends WP_UnitTestCase {
 		);
 
 		$cart_item_data = array();
-		$result         = $this->instance->exprdawc_save_extra_product_data_in_cart( $cart_item_data, $this->product_id, 0, 1 );
+		$result         = $this->instance->exprdawcSaveExtraProductDataInCart( $cart_item_data, $this->product_id, 0, 1 );
 
 		$this->assertArrayHasKey( 'post_data_product_item', $result );
 		$this->assertEquals( 'opt1, opt2', $result['post_data_product_item'][0]['value'] );
@@ -2121,7 +2121,7 @@ class TestClassExprdawcProductPageFrontend extends WP_UnitTestCase {
 		);
 
 		$cart_item_data = array();
-		$result         = $this->instance->exprdawc_save_extra_product_data_in_cart( $cart_item_data, $this->product_id, 0, 1 );
+		$result         = $this->instance->exprdawcSaveExtraProductDataInCart( $cart_item_data, $this->product_id, 0, 1 );
 
 		$this->assertArrayHasKey( 'post_data_product_item', $result );
 		$this->assertEquals( 'opt1, opt2', $result['post_data_product_item'][0]['value'] );
@@ -2154,7 +2154,7 @@ class TestClassExprdawcProductPageFrontend extends WP_UnitTestCase {
 		);
 
 		$cart_item_data = array();
-		$result         = $this->instance->exprdawc_save_extra_product_data_in_cart( $cart_item_data, $this->product_id, 0, 1 );
+		$result         = $this->instance->exprdawcSaveExtraProductDataInCart( $cart_item_data, $this->product_id, 0, 1 );
 
 		$this->assertEmpty( $result );
 	}
@@ -2217,7 +2217,7 @@ class TestClassExprdawcProductPageFrontend extends WP_UnitTestCase {
 		);
 
 		$item_data = array();
-		$result    = $this->instance->exprdawc_display_fields_on_cart_and_checkout( $item_data, $cart_item );
+		$result    = $this->instance->exprdawcDisplayFieldsOnCartAndCheckout( $item_data, $cart_item );
 
 		// Asserts.
 		$this->assertCount( 1, $result );
@@ -2282,7 +2282,7 @@ class TestClassExprdawcProductPageFrontend extends WP_UnitTestCase {
 		);
 
 		$item_data = array();
-		$result    = $this->instance->exprdawc_display_fields_on_cart_and_checkout( $item_data, $cart_item );
+		$result    = $this->instance->exprdawcDisplayFieldsOnCartAndCheckout( $item_data, $cart_item );
 
 		// The result should be an array (may be empty due to is_cart() context).
 		$this->assertIsArray( $result );
@@ -2315,7 +2315,7 @@ class TestClassExprdawcProductPageFrontend extends WP_UnitTestCase {
 		);
 
 		$item_data = array();
-		$result    = $this->instance->exprdawc_display_fields_on_cart_and_checkout( $item_data, $cart_item );
+		$result    = $this->instance->exprdawcDisplayFieldsOnCartAndCheckout( $item_data, $cart_item );
 
 		$this->assertEmpty( $result );
 	}
@@ -2415,7 +2415,7 @@ class TestClassExprdawcProductPageFrontend extends WP_UnitTestCase {
 		WC()->cart->cart_contents[ $cart_item_key ] = $cart_item;
 
 		// Trigger price calculation.
-		$this->instance->exprdawc_adjust_cart_item_pricing( WC()->cart );
+		$this->instance->exprdawcAdjustCartItemPricing( WC()->cart );
 
 		// Get the updated cart item.
 		$updated_cart = WC()->cart->get_cart();
@@ -2496,7 +2496,7 @@ class TestClassExprdawcProductPageFrontend extends WP_UnitTestCase {
 		WC()->cart->cart_contents[ $cart_item_key ] = $cart_item;
 
 		// Trigger price calculation.
-		$this->instance->exprdawc_adjust_cart_item_pricing( WC()->cart );
+		$this->instance->exprdawcAdjustCartItemPricing( WC()->cart );
 
 		// Get the updated cart item.
 		$updated_cart = WC()->cart->get_cart();
@@ -2543,7 +2543,7 @@ class TestClassExprdawcProductPageFrontend extends WP_UnitTestCase {
 			),
 		);
 
-		$this->instance->exprdawc_add_extra_product_data_to_order( $item, 'cart_item_key', $values, $order );
+		$this->instance->exprdawcAddExtraProductDataToOrder( $item, 'cart_item_key', $values, $order );
 
 		// Get meta data.
 		$meta_data = $item->get_meta_data();
@@ -2589,7 +2589,7 @@ class TestClassExprdawcProductPageFrontend extends WP_UnitTestCase {
 		// Prepare values without extra user data.
 		$values = array();
 
-		$this->instance->exprdawc_add_extra_product_data_to_order( $item, 'cart_item_key', $values, $order );
+		$this->instance->exprdawcAddExtraProductDataToOrder( $item, 'cart_item_key', $values, $order );
 
 		// Get meta data.
 		$meta_data = $item->get_meta_data();

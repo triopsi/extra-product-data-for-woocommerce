@@ -16,13 +16,11 @@ declare(strict_types=1);
 
 namespace Triopsi\Exprdawc\Orders;
 
-use Automattic\WooCommerce\Utilities\OrderUtil;
 use WC_Order;
 use WC_Order_Item;
 use WC_Order_Item_Product;
 use Triopsi\Exprdawc\Helpers\Helper;
 use Triopsi\Exprdawc\Helpers\OrderHelper;
-use Triopsi\Exprdawc\Helpers\Helpers;
 
 if ( ! defined( 'ABSPATH' ) ) {
 	exit;
@@ -41,7 +39,7 @@ class BaseOrder {
 	 * @param bool $admin Whether the save is triggered from admin or user side. Default false.
 	 * @return int|false The order ID on success, false on failure.
 	 */
-	protected function process_save_order( bool $admin = false ) {
+	protected function processSaveOrder( bool $admin = false ) {
 
 		$item_id  = isset( $_POST['item_id'] ) ? intval( $_POST['item_id'] ) : 0;// phpcs:ignore
 		$order_id = isset( $_POST['order_id'] ) ? intval( $_POST['order_id'] ) : 0;// phpcs:ignore
@@ -97,11 +95,11 @@ class BaseOrder {
 			);
 		}
 
-		// Save new meta data and update item price.
-		$this->save_new_meta_data( $order, $item );
+		// Save new meta data and collect normalized payloads for pricing.
+		$field_payloads = $this->saveNewMetaData( $order, $item );
 
 		// Calculate new price based on updated meta data.
-		$new_price = $this->calculate_new_price( $item );
+		$new_price = $this->calculateNewPrice( $item, $field_payloads );
 
 		// Update item price and totals.
 		$item->set_subtotal( $new_price * $item->get_quantity() );
@@ -120,91 +118,58 @@ class BaseOrder {
 	 *
 	 * @param WC_Order      $order The order object.
 	 * @param WC_Order_Item $item  The order item object.
-	 * @return void
+	 * @return array Normalized field payloads indexed by field key.
 	 */
-	protected function save_new_meta_data( WC_Order $order, WC_Order_Item $item ): void {
-		$product = OrderHelper::getProductFromItem( $item );
-		if ( ! $product ) {
-			wp_send_json_error( array( 'message' => __( 'Product not found.', 'extra-product-data-for-woocommerce' ) ) );
-		}
+	protected function saveNewMetaData( WC_Order $order, WC_Order_Item $item ): array {
+		$product        = $this->getOrderItemProductOrFail( $item );
+		$custom_fields  = $this->getOrderItemCustomFieldsOrFail( $product );
+		$item_metadata  = OrderHelper::getItemFieldMetadata( $item );
+		$field_payloads = $this->buildUpdatedOrderItemPayloads( $custom_fields, (float) $product->get_price() );
 
-		$custom_fields = $product->get_meta( '_extra_product_fields', true );
-		if ( ! is_array( $custom_fields ) || empty( $custom_fields ) ) {
-			wp_send_json_error( array( 'message' => __( 'No extra product data found.', 'extra-product-data-for-woocommerce' ) ) );
-		}
+		$this->syncOrderItemMetaData( $order, $item, $field_payloads, $item_metadata );
 
-		$item_metadata = OrderHelper::getItemFieldMetadata( $item );
-
-		$field_values = array();
-		foreach ( $custom_fields as $field ) {
-			$field_index = Helper::getFieldIndexFromLabel( $field['label'] );
-			$field_value = Helper::getFieldValueFromPost( $field_index );
-
-			if ( ! empty( $field['required'] ) && empty( $field_value ) ) {
-				wp_send_json_error(
-					array(
-						'message' => sprintf(
-							/* translators: %s is the field label */
-							__( '%s is a required field.', 'extra-product-data-for-woocommerce' ),
-							esc_html( $field['label'] )
-						),
-					)
-				);
-			}
-
-			$validation_result = Helper::validateFieldByType(
-				$field_value,
-				$field['type'],
-				$field['options'] ?? array()
-			);
-
-			if ( ! $validation_result['valid'] ) {
-				wp_send_json_error(
-					array(
-						'message' => sprintf(
-							/* translators: %1$s is the field label, %2$s is the error message */
-							__( '%1$s: %2$s', 'extra-product-data-for-woocommerce' ),
-							esc_html( $field['label'] ),
-							esc_html( $validation_result['message'] )
-						),
-					)
-				);
-			}
-
-			$field_values[ $field_index ] = $field_value;
-
-			$old_value = OrderHelper::getOldFieldValue( $item_metadata, $field_index );
-			OrderHelper::addOrderNoteForChange( $order, $field['label'], $old_value, $field_value );
-
-			$item->update_meta_data( $field['label'], $field_value );
-		}
-
-		$field_meta = OrderHelper::buildFieldMetadataArray( $custom_fields, $field_values );
-		$item->update_meta_data( '_meta_extra_product_data', $field_meta );
+		return $field_payloads;
 	}
 
 	/**
 	 * Calculates the new price for the order item.
 	 *
-	 * @param WC_Order_Item $item The order item.
+	 * When normalized payloads are provided, they are used directly so the order edit
+	 * flow does not need to read and normalize submitted request data twice.
+	 *
+	 * @param WC_Order_Item $item           The order item.
+	 * @param array         $field_payloads Optional normalized field payloads.
 	 * @return float The new price for the item.
 	 */
-	protected function calculate_new_price( WC_Order_Item $item ): float {
+	protected function calculateNewPrice( WC_Order_Item $item, array $field_payloads = array() ): float {
 		$product = OrderHelper::getProductFromItem( $item );
 		if ( ! $product ) {
 			return 0.0;
 		}
 
-		$custom_fields = $product->get_meta( '_extra_product_fields', true );
-		if ( ! is_array( $custom_fields ) || empty( $custom_fields ) ) {
+		$custom_fields = Helper::getExtraProductFields( $product );
+		if ( empty( $custom_fields ) ) {
 			return (float) $product->get_price();
 		}
 
 		$extra_costs = 0.0;
 		$base_price  = (float) $product->get_price();
 
+		if ( ! empty( $field_payloads ) ) {
+			foreach ( $field_payloads as $field_payload ) {
+				$field_config = $field_payload['field_raw'] ?? array();
+				$field_value  = $field_payload['raw_value'] ?? '';
+
+				if ( ! empty( $field_config['adjust_price'] ) && ! empty( $field_value ) ) {
+					$extra_costs += (float) OrderHelper::calculatePriceAdjustment( $field_config, $field_value, $base_price );
+				}
+			}
+
+			return $base_price + $extra_costs;
+		}
+
 		foreach ( $custom_fields as $field ) {
-			$field_index = Helper::getFieldIndexFromLabel( $field['label'] );
+			$field_index = Helper::getFieldKey( $field );
 			$field_value = Helper::getFieldValueFromPost( $field_index );
 
 			if ( ! empty( $field['adjust_price'] ) && ! empty( $field_value ) ) {
@@ -214,5 +179,178 @@ class BaseOrder {
 		}
 
 		return $base_price + $extra_costs;
+	}
+
+	/**
+	 * Get the product for an order item or stop the request with a JSON error.
+	 *
+	 * @param WC_Order_Item $item The order item.
+	 * @return \WC_Product The resolved product.
+	 */
+	protected function getOrderItemProductOrFail( WC_Order_Item $item ) {
+		$product = OrderHelper::getProductFromItem( $item );
+
+		if ( ! $product ) {
+			wp_send_json_error( array( 'message' => __( 'Product not found.', 'extra-product-data-for-woocommerce' ) ) );
+		}
+
+		return $product;
+	}
+
+	/**
+	 * Get configured extra product fields for a product or stop the request.
+	 *
+	 * @param mixed $product The resolved WooCommerce product.
+	 * @return array Product field configuration array.
+	 */
+	protected function getOrderItemCustomFieldsOrFail( $product ): array {
+		$custom_fields = Helper::getExtraProductFields( $product );
+
+		if ( empty( $custom_fields ) ) {
+			wp_send_json_error( array( 'message' => __( 'No extra product data found.', 'extra-product-data-for-woocommerce' ) ) );
+		}
+
+		return $custom_fields;
+	}
+
+	/**
+	 * Build normalized payloads for all submitted order item fields.
+	 *
+	 * This method centralizes request reading, validation and payload creation so the
+	 * order edit flow mirrors the frontend cart/order creation flow.
+	 *
+	 * @param array $custom_fields Product field definitions.
+	 * @param float $base_price    Product base price.
+	 * @return array Normalized field payloads indexed by resolved field key.
+	 */
+	protected function buildUpdatedOrderItemPayloads( array $custom_fields, float $base_price ): array {
+		$field_payloads = array();
+
+		foreach ( $custom_fields as $field ) {
+			$field_data  = OrderHelper::getSubmittedFieldData( $field );
+			$field_index = $field_data['index'];
+			$field_value = $field_data['value'];
+
+			$this->validateSubmittedOrderItemField( $field, $field_value );
+
+			$field_payloads[ $field_index ] = OrderHelper::buildSubmittedFieldPayload( $field, $field_value, $base_price );
+		}
+
+		return $field_payloads;
+	}
+
+	/**
+	 * Validate a submitted order item field value.
+	 *
+	 * Stops the current AJAX request with a JSON error when a required field is empty
+	 * or when the submitted value does not match the field type configuration.
+	 *
+	 * @param array $field       Field configuration array.
+	 * @param mixed $field_value Submitted field value.
+	 * @return void
+	 */
+	protected function validateSubmittedOrderItemField( array $field, $field_value ): void {
+		if ( ! empty( $field['required'] ) && empty( $field_value ) ) {
+			wp_send_json_error(
+				array(
+					'message' => sprintf(
+						/* translators: %s is the field label */
+						__( '%s is a required field.', 'extra-product-data-for-woocommerce' ),
+						esc_html( $field['label'] )
+					),
+				)
+			);
+		}
+
+		$validation_result = Helper::validateFieldByType(
+			$field_value,
+			$field['type'],
+			$field['options'] ?? array()
+		);
+
+		if ( ! $validation_result['valid'] ) {
+			wp_send_json_error(
+				array(
+					'message' => sprintf(
+						/* translators: %1$s is the field label, %2$s is the error message */
+						__( '%1$s: %2$s', 'extra-product-data-for-woocommerce' ),
+						esc_html( $field['label'] ),
+						esc_html( $validation_result['message'] )
+					),
+				)
+			);
+		}
+	}
+
+	/**
+	 * Synchronize updated field payloads back to the order item.
+	 *
+	 * Updates the per-label meta entries, rebuilds `_meta_extra_product_data` and adds
+	 * order notes only when a value actually changed.
+	 *
+	 * @param WC_Order      $order          The order object.
+	 * @param WC_Order_Item $item           The order item.
+	 * @param array         $field_payloads Normalized field payloads indexed by field key.
+	 * @param array         $item_metadata  Existing indexed item metadata.
+	 * @return void
+	 */
+	protected function syncOrderItemMetaData( WC_Order $order, WC_Order_Item $item, array $field_payloads, array $item_metadata ): void {
+		foreach ( $field_payloads as $field_index => $field_payload ) {
+			$field_index = (string) $field_index; // Prevent PHP int-cast of numeric string keys.
+			$field_label = $field_payload['field_raw']['label'] ?? '';
+			$new_value   = $field_payload['value'] ?? '';
+			$old_value   = OrderHelper::getOldFieldValue( $item_metadata, $field_index );
+
+			OrderHelper::addOrderNoteForChange( $order, $field_label, $old_value, $new_value );
+			$item->update_meta_data( $field_label, $new_value );
+		}
+
+		$item->update_meta_data( EXPRDAWC_META_EXTRA_PRODUCT_DATA, OrderHelper::buildFieldMetadataArray( $field_payloads ) );
+	}
+
+	/**
+	 * Extract order item meta data from raw field data stored in `_meta_extra_product_data`.
+	 *
+	 * Processes the raw field data and creates a normalized array keyed by resolved
+	 * field key. Key priority mirrors Helper::getFieldKey():
+	 *
+	 * 1. 'id' from raw_field (dashes normalized to underscores) if present
+	 * 2. 'index' from raw_field if present and no 'id'
+	 * 3. Original field key (string) or label-derived fallback
+	 *
+	 * @param mixed $order_item_data Order item meta value (expects an array).
+	 * @return array Normalized payload array keyed by resolved field key.
+	 */
+	protected function extractOrderItemMetaData( $order_item_data ): array {
+		$all_user_inputs = array();
+
+		if ( empty( $order_item_data ) || ! is_array( $order_item_data ) ) {
+			return $all_user_inputs;
+		}
+
+		foreach ( $order_item_data as $field_key => $field_data ) {
+			if ( ! isset( $field_data['raw_field'] ) ) {
+				continue;
+			}
+
+			// Resolve the key using the same priority as Helper::getFieldKey().
+			$raw_field = $field_data['raw_field'];
+			if ( ! empty( $raw_field['id'] ) ) {
+				$new_key = str_replace( '-', '_', $raw_field['id'] );
+			} elseif ( ! empty( $raw_field['index'] ) ) {
+				$new_key = $raw_field['index'];
+			} else {
+				$new_key = is_string( $field_key ) ? $field_key : Helper::getFieldIndexFromLabel( $raw_field['label'] ?? '' );
+			}
+
+			// Ensure key uniqueness by appending random suffix if needed.
+			if ( array_key_exists( $new_key, $all_user_inputs ) ) {
+				$new_key .= '_' . wp_rand();
+			}
+
+			$all_user_inputs[ $new_key ] = $field_data['raw_field'];
+		}
+
+		return $all_user_inputs;
 	}
 }

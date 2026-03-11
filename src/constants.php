@@ -49,3 +49,7 @@ define( 'EXPRDAWC_TEMPLATES', EXPRDAWC_SRC . 'templates/view/' );
 // Templates.
 define( 'EXPRDAWC_ADMIN_TEMPLATES_PATH', EXPRDAWC_TEMPLATES . 'admin/' );
 define( 'EXPRDAWC_FIELDS_TEMPLATES_PATH', EXPRDAWC_TEMPLATES . 'fields/' );
+
+// Meta keys.
+define( 'EXPRDAWC_META_EXTRA_PRODUCT_DATA', '_meta_extra_product_data' );
+define( 'EXPRDAWC_META_EXTRA_PRODUCT_FIELDS', '_extra_product_fields' );

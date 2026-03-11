@@ -35,15 +35,15 @@ class CustomerOrder extends BaseOrder implements Hookable {
 	 * CustomerOrder constructor.
 	 */
 	public function __construct() {
-		add_action( 'woocommerce_order_item_meta_end', array( $this, 'add_edit_button_to_order_item' ), 10, 3 );
-		add_action( 'wp_enqueue_scripts', array( $this, 'enqueue_scripts' ) );
-		add_action( 'wp_ajax_exprdawc_save_order_item_meta', array( $this, 'save_order_item_meta' ) );
+		add_action( 'woocommerce_order_item_meta_end', array( $this, 'addEditButtonToOrderItem' ), 10, 3 );
+		add_action( 'wp_enqueue_scripts', array( $this, 'enqueueScripts' ) );
+		add_action( 'wp_ajax_exprdawc_save_order_item_meta', array( $this, 'saveOrderItemMeta' ) );
 	}
 
 	/**
 	 * Enqueue scripts and styles.
 	 */
-	public function enqueue_scripts() {
+	public function enqueueScripts() {
 		if ( is_account_page() ) {
 			wp_enqueue_style( 'form-css', EXPRDAWC_ASSETS_CSS . 'forms.css', array(), EXPRDAWC_VERSION, 'all' );
 			wp_enqueue_style( 'order-frontend-css', EXPRDAWC_ASSETS_CSS . 'order-frontend.css', array(), EXPRDAWC_VERSION, 'all' );
@@ -68,69 +68,44 @@ class CustomerOrder extends BaseOrder implements Hookable {
 	 * @param object $item The item object.
 	 * @param object $order The order object.
 	 */
-	public function add_edit_button_to_order_item( $item_id, $item, $order ) {
+	public function addEditButtonToOrderItem( $item_id, $item, $order ) {
 		$product = $item->get_product();
 		if ( $product->is_type( 'variation' ) ) {
 			$product = wc_get_product( $product->get_parent_id() );
 		}
 
-		$custom_fields = $product->get_meta( '_extra_product_fields', true );
+		$custom_fields = Helper::getExtraProductFields( $product );
 		if ( empty( $custom_fields ) ) {
 			return;
 		}
 
-		$item_meta_data  = $item->get_meta_data();
-		$has_user_inputs = false;
+		// Read stored values from _meta_extra_product_data, same approach as AdminOrder.
+		$stored_field_map = $this->extractOrderItemMetaData( $item->get_meta( EXPRDAWC_META_EXTRA_PRODUCT_DATA, true ) );
+		$has_user_inputs  = ! empty( $stored_field_map );
 
-		if ( ! empty( $item_meta_data ) && ! empty( $custom_fields ) ) {
-			$all_user_inputs = array();
-
-			foreach ( $item_meta_data as $meta ) {
-				if ( isset( $meta->key ) && ! empty( $meta->value ) ) {
-					$all_user_inputs[ $meta->key ] = $meta;
-				}
+		if ( is_wc_endpoint_url( 'view-order' ) && $has_user_inputs && Helper::is_order_editable( $order ) ) {
+			echo '<button type="button" class="button alt wp-element-button exprdawc-edit-user-order-button exprdawc-edit-order-item" data-item-id="' . esc_attr( $item_id ) . '"><span class="dashicons dashicons-edit"></span> ' . esc_html__( 'Edit', 'extra-product-data-for-woocommerce' ) . '</button>';
+			echo '<div class="exprdawc-order-item-fields" id="exprdawc-order-item-fields-' . esc_attr( $item_id ) . '" style="display:none;">';
+			echo '<form action="" method="post" class="exprdawc-order-item-form">';
+			echo '<input type="hidden" name="order_id" value="' . esc_attr( $order->get_id() ) . '">';
+			foreach ( $custom_fields as $field ) {
+				$field_key = Helper::getFieldKey( $field );
+				$value     = $stored_field_map[ $field_key ]['raw_value'] ?? '';
+				Helper::generateInputField( $field, $value );
 			}
-
-			$post_data_product_item = array();
-			foreach ( $custom_fields as $index => $input_field_array ) {
-				$label_id                            = strtolower( str_replace( ' ', '_', $input_field_array['label'] ) );
-				$post_data_product_item[ $label_id ] = isset( $all_user_inputs[ $input_field_array['label'] ] ) ? $all_user_inputs[ $input_field_array['label'] ]->value : '';
-			}
-
-			foreach ( $all_user_inputs as $label_key => $user_data_value ) {
-				foreach ( $custom_fields as $html_value ) {
-					if ( 0 === strcasecmp( $html_value['label'], $label_key ) ) {
-						$has_user_inputs = true;
-						break;
-					}
-				}
-			}
-
-			if ( is_wc_endpoint_url( 'view-order' ) ) {
-				if ( $has_user_inputs && Helper::is_order_editable( $order ) ) {
-					echo '<button type="button" class="button alt wp-element-button exprdawc-edit-user-order-button exprdawc-edit-order-item" data-item-id="' . esc_attr( $item_id ) . '"><span class="dashicons dashicons-edit"></span> ' . esc_html__( 'Edit', 'extra-product-data-for-woocommerce' ) . '</button>';
-					echo '<div class="exprdawc-order-item-fields" id="exprdawc-order-item-fields-' . esc_attr( $item_id ) . '" style="display:none;">';
-					echo '<form action="" method="post" class="exprdawc-order-item-form">';
-					echo '<input type="hidden" name="order_id" value="' . esc_attr( $order->get_id() ) . '">';
-					foreach ( $custom_fields as $field ) {
-						$value = isset( $post_data_product_item[ strtolower( str_replace( ' ', '_', $field['label'] ) ) ] ) ? $post_data_product_item[ strtolower( str_replace( ' ', '_', $field['label'] ) ) ] : '';
-						Helper::generateInputField( $field, $value );
-					}
-					echo '</form>';
-					echo '<button style="margin-top: 1em;" type="button" class="button alt wp-element-button exprdawc-save-order-item" data-item-id="' . esc_attr( $item_id ) . '"><span class="dashicons dashicons-yes"></span> ' . esc_html__( 'Save', 'extra-product-data-for-woocommerce' ) . '</button>';
-					echo '</div>';
-				}
-			}
+			echo '</form>';
+			echo '<button style="margin-top: 1em;" type="button" class="button alt wp-element-button exprdawc-save-order-item" data-item-id="' . esc_attr( $item_id ) . '"><span class="dashicons dashicons-yes"></span> ' . esc_html__( 'Save', 'extra-product-data-for-woocommerce' ) . '</button>';
+			echo '</div>';
 		}
 	}
 
 	/**
 	 * Save order item meta.
 	 */
-	public function save_order_item_meta() {
+	public function saveOrderItemMeta() {
 		check_ajax_referer( 'exprdawc_save_order_item_meta', 'security' );
 
-		if ( $this->process_save_order() ) {
+		if ( $this->processSaveOrder() ) {
 			wp_send_json_success(
 				array(
 					'message' => __( 'Item updated successfully.', 'extra-product-data-for-woocommerce' ),

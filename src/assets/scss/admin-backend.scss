@@ -470,6 +470,12 @@ input.exprdawc-invalid-field {
     }
 }
 
+.exprdawc-unique-note {
+    color: #d63638;
+    font-size: 12px;
+    margin-top: 4px;
+}
+
 /**
  * Scrolle zum ersten Fehler bei Validierung
  * Hilft dem Nutzer das Problem schnell zu finden
@@ -489,7 +495,7 @@ input.exprdawc-invalid-field {
 
 .wc-pao-addons-container {
 
-    .exprdawc-input {
+    textarea {
         width: 100%;
     }
 }

@@ -37,23 +37,23 @@ class ProductFrontend implements Hookable {
 	 * Constructor for the class.
 	 */
 	public function __construct() {
-		add_filter( 'woocommerce_product_supports', array( $this, 'exprdawc_check_product_support' ), 10, 3 );
-		add_action( 'woocommerce_before_add_to_cart_button', array( $this, 'exprdawc_display_custom_fields_on_product_page' ) );
-		add_filter( 'woocommerce_add_to_cart_validation', array( $this, 'exprdawc_validate_custom_fields' ), 10, 3 );
+		add_filter( 'woocommerce_product_supports', array( $this, 'exprdawcCheckProductSupport' ), 10, 3 );
+		add_action( 'woocommerce_before_add_to_cart_button', array( $this, 'exprdawcDisplayCustomFieldsOnProductPage' ) );
+		add_filter( 'woocommerce_add_to_cart_validation', array( $this, 'exprdawcValidateCustomFields' ), 10, 3 );
 
-		add_filter( 'woocommerce_product_has_options', array( $this, 'exprdawc_has_options' ), 15, 2 );
-		add_filter( 'woocommerce_product_add_to_cart_text', array( $this, 'exprdawc_change_add_to_cart_button_text' ), 10, 2 );
-		add_filter( 'woocommerce_product_add_to_cart_url', array( $this, 'exprdawc_change_add_to_cart_url' ), 10, 2 );
+		add_filter( 'woocommerce_product_has_options', array( $this, 'exprdawcHasOptions' ), 15, 2 );
+		add_filter( 'woocommerce_product_add_to_cart_text', array( $this, 'exprdawcChangeAddToCartButtonText' ), 10, 2 );
+		add_filter( 'woocommerce_product_add_to_cart_url', array( $this, 'exprdawcChangeAddToCartUrl' ), 10, 2 );
 
-		add_filter( 'woocommerce_is_purchasable', array( $this, 'exprdawc_prevent_purchase_at_grouped_level' ), 10, 2 );
+		add_filter( 'woocommerce_is_purchasable', array( $this, 'exprdawcPreventPurchaseAtGroupedLevel' ), 10, 2 );
 
-		add_filter( 'woocommerce_add_cart_item_data', array( $this, 'exprdawc_save_extra_product_data_in_cart' ), 10, 4 );
-		add_filter( 'woocommerce_get_item_data', array( $this, 'exprdawc_display_fields_on_cart_and_checkout' ), 10, 2 );
-		add_action( 'woocommerce_before_calculate_totals', array( $this, 'exprdawc_adjust_cart_item_pricing' ) );
-		add_action( 'woocommerce_checkout_create_order_line_item', array( $this, 'exprdawc_add_extra_product_data_to_order' ), 10, 4 );
-		add_filter( 'woocommerce_cart_item_class', array( $this, 'exprdawc_add_cart_item_class' ), 10, 3 );
+		add_filter( 'woocommerce_add_cart_item_data', array( $this, 'exprdawcSaveExtraProductDataInCart' ), 10, 4 );
+		add_filter( 'woocommerce_get_item_data', array( $this, 'exprdawcDisplayFieldsOnCartAndCheckout' ), 10, 2 );
+		add_action( 'woocommerce_before_calculate_totals', array( $this, 'exprdawcAdjustCartItemPricing' ) );
+		add_action( 'woocommerce_checkout_create_order_line_item', array( $this, 'exprdawcAddExtraProductDataToOrder' ), 10, 4 );
+		add_filter( 'woocommerce_cart_item_class', array( $this, 'exprdawcAddCartItemClass' ), 10, 3 );
 
-		add_action( 'wp_enqueue_scripts', array( $this, 'exprdawc_add_frontend_styles_scripts' ) );
+		add_action( 'wp_enqueue_scripts', array( $this, 'exprdawcAddFrontendStylesScripts' ) );
 	}
 
 	/**
@@ -63,17 +63,17 @@ class ProductFrontend implements Hookable {
 	 * in the WooCommerce cart table. It is used to mark products that contain
 	 * extra product fields added by this plugin.
 	 *
-	 * @param string $class         Existing CSS classes applied to the cart item row.
+	 * @param string $className     Existing CSS classes applied to the cart item row.
 	 * @param array  $cart_item     The cart item data.
 	 * @param string $cart_item_key Unique key identifying the cart item.
 	 *
 	 * @return string Modified CSS class string.
 	 */
-	public function exprdawc_add_cart_item_class( $class, $cart_item, $cart_item_key ): string {
+	public function exprdawcAddCartItemClass( $className, $cart_item, $cart_item_key ): string {
 		if ( isset( $cart_item['post_data_product_item'] ) ) {
-			$class .= ' exprdawc-cart-item-has-extra-data';
+			$className .= ' exprdawc-cart-item-has-extra-data';
 		}
-		return $class;
+		return $className;
 	}
 
 	/**
@@ -83,7 +83,7 @@ class ProductFrontend implements Hookable {
 	 * @param WC_Product $product The WooCommerce product object.
 	 * @return bool Whether the product has options.
 	 */
-	public function exprdawc_has_options( bool $has_options, WC_Product $product ): bool {
+	public function exprdawcHasOptions( bool $has_options, WC_Product $product ): bool {
 		if ( Helper::checkRequiredFields( $product ) ) {
 			$has_options = true;
 		}
@@ -97,7 +97,7 @@ class ProductFrontend implements Hookable {
 	 * @param WC_Product $product The WooCommerce product object.
 	 * @return bool Whether the product is purchasable.
 	 */
-	public function exprdawc_prevent_purchase_at_grouped_level( bool $purchasable, WC_Product $product ): bool {
+	public function exprdawcPreventPurchaseAtGroupedLevel( bool $purchasable, WC_Product $product ): bool {
 		if ( ProductType::GROUPED === $product->get_type() ) {
 			$grouped_products = $product->get_children();
 			foreach ( $grouped_products as $grouped_product_id ) {
@@ -116,7 +116,7 @@ class ProductFrontend implements Hookable {
 	 * @param WC_Product $product The WooCommerce product object.
 	 * @return string
 	 */
-	public function exprdawc_change_add_to_cart_button_text( string $text, WC_Product $product ): string {
+	public function exprdawcChangeAddToCartButtonText( string $text, WC_Product $product ): string {
 		if ( ! $product->is_in_stock() ) {
 			return $text;
 		}
@@ -125,7 +125,7 @@ class ProductFrontend implements Hookable {
 			return $text;
 		}
 
-		$custom_fields = $product->get_meta( '_extra_product_fields', true );
+		$custom_fields = Helper::getExtraProductFields( $product );
 		if ( ! empty( $custom_fields ) ) {
 			$text_from_settings = get_option( 'exprdawc_custom_add_to_cart_text', __( 'Configure Product', 'extra-product-data-for-woocommerce' ) );
 			if ( ! empty( $text_from_settings ) ) {
@@ -142,7 +142,7 @@ class ProductFrontend implements Hookable {
 	 * @param WC_Product $product The WooCommerce product object.
 	 * @return string
 	 */
-	public function exprdawc_change_add_to_cart_url( string $url, WC_Product $product ): string {
+	public function exprdawcChangeAddToCartUrl( string $url, WC_Product $product ): string {
 		if ( in_array( $product->get_type(), array( ProductType::SIMPLE, ProductType::VARIATION ), true ) ) {
 			if ( Helper::checkRequiredFields( $product->get_id() ) ) {
 				$url = get_permalink( $product->get_id() );
@@ -156,7 +156,7 @@ class ProductFrontend implements Hookable {
 	 *
 	 * @return void
 	 */
-	public function exprdawc_add_frontend_styles_scripts(): void {
+	public function exprdawcAddFrontendStylesScripts(): void {
 		if ( is_product() ) {
 			wp_enqueue_style( 'form-css', EXPRDAWC_ASSETS_CSS . 'forms.css', array(), EXPRDAWC_VERSION, 'all' );
 			wp_enqueue_script( 'wc-conditional-rules-js', EXPRDAWC_ASSETS_JS . 'wc-conditional-rules-js.min.js', array( 'jquery' ), EXPRDAWC_VERSION, true );
@@ -187,9 +187,9 @@ class ProductFrontend implements Hookable {
 	 *
 	 * @return void
 	 */
-	public function exprdawc_display_custom_fields_on_product_page(): void {
+	public function exprdawcDisplayCustomFieldsOnProductPage(): void {
 		global $product;
-		$custom_fields = $product->get_meta( '_extra_product_fields', true );
+		$custom_fields = Helper::getExtraProductFields( $product );
 
 		if ( ! empty( $custom_fields ) ) {
 			echo '<div class="exprdawc-extra-fields">';
@@ -211,7 +211,7 @@ class ProductFrontend implements Hookable {
 	 * @param int  $quantity Quantity.
 	 * @return bool
 	 */
-	public function exprdawc_validate_custom_fields( bool $passed, int $product_id, int $quantity ): bool { // phpcs:ignore
+	public function exprdawcValidateCustomFields( bool $passed, int $product_id, int $quantity ): bool { // phpcs:ignore
 		if ( ! is_bool( $passed ) || ! is_numeric( $product_id ) || ! is_numeric( $quantity ) ) {
 			return $passed;
 		}
@@ -225,8 +225,8 @@ class ProductFrontend implements Hookable {
 			return $passed;
 		}
 
-		$custom_fields = $product->get_meta( '_extra_product_fields', true );
-		if ( ! is_array( $custom_fields ) || empty( $custom_fields ) ) {
+		$custom_fields = Helper::getExtraProductFields( $product );
+		if ( empty( $custom_fields ) ) {
 			return $passed;
 		}
 
@@ -239,9 +239,9 @@ class ProductFrontend implements Hookable {
 			$field_type  = isset( $input_field_array['type'] ) ? sanitize_text_field( $input_field_array['type'] ) : 'text';
 			$is_required = ! empty( $input_field_array['required'] );
 
-			$field_data  = $this->get_field_index_and_value( $input_field_array );
+			$field_data  = OrderHelper::getSubmittedFieldData( $input_field_array );
 			$field_value = $field_data['value'];
-			$field_value = $this->sanitize_field_value( $field_value );
+			$field_value = $this->sanitizeFieldValue( $field_value );
 
 			if ( $is_required && empty( $field_value ) ) {
 				wc_add_notice(
@@ -260,7 +260,7 @@ class ProductFrontend implements Hookable {
 				continue;
 			}
 
-			$validation_result = $this->validate_field_by_type( $field_value, $field_type, $input_field_array );
+			$validation_result = $this->validateFieldByType( $field_value, $field_type, $input_field_array );
 			if ( ! $validation_result['valid'] ) {
 				wc_add_notice( $validation_result['message'], 'error' );
 				$passed = false;
@@ -276,7 +276,7 @@ class ProductFrontend implements Hookable {
 	 * @param mixed $field_value The raw field value.
 	 * @return mixed
 	 */
-	private function sanitize_field_value( $field_value ) {
+	private function sanitizeFieldValue( $field_value ) {
 		if ( is_array( $field_value ) ) {
 			return array_map(
 				function ( $value ) {
@@ -301,7 +301,7 @@ class ProductFrontend implements Hookable {
 	 * @param array  $input_field_array The field configuration array.
 	 * @return array
 	 */
-	private function validate_field_by_type( $field_value, string $field_type, array $input_field_array ): array {
+	private function validateFieldByType( $field_value, string $field_type, array $input_field_array ): array {
 		$field_label = sanitize_text_field( $input_field_array['label'] );
 
 		switch ( $field_type ) {
@@ -358,7 +358,7 @@ class ProductFrontend implements Hookable {
 				break;
 
 			case 'radio':
-				if ( ! $this->validate_option_selection( $field_value, $input_field_array ) ) {
+				if ( ! $this->validateOptionSelection( $field_value, $input_field_array ) ) {
 					return array(
 						'valid'   => false,
 						'message' => esc_html__( 'Invalid option selected for radio button.', 'extra-product-data-for-woocommerce' ),
@@ -367,7 +367,7 @@ class ProductFrontend implements Hookable {
 				break;
 
 			case 'checkbox':
-				if ( ! $this->validate_option_selection( $field_value, $input_field_array ) ) {
+				if ( ! $this->validateOptionSelection( $field_value, $input_field_array ) ) {
 					return array(
 						'valid'   => false,
 						'message' => esc_html__( 'Invalid option selected for checkbox.', 'extra-product-data-for-woocommerce' ),
@@ -376,7 +376,7 @@ class ProductFrontend implements Hookable {
 				break;
 
 			case 'select':
-				if ( ! $this->validate_option_selection( $field_value, $input_field_array ) ) {
+				if ( ! $this->validateOptionSelection( $field_value, $input_field_array ) ) {
 					return array(
 						'valid'   => false,
 						'message' => esc_html__( 'Invalid option selected for select field.', 'extra-product-data-for-woocommerce' ),
@@ -395,7 +395,7 @@ class ProductFrontend implements Hookable {
 	 * @param array $input_field_array The field configuration array.
 	 * @return bool
 	 */
-	private function validate_option_selection( $field_value, array $input_field_array ): bool {
+	private function validateOptionSelection( $field_value, array $input_field_array ): bool {
 		if ( ! isset( $input_field_array['options'] ) || ! is_array( $input_field_array['options'] ) ) {
 			return false;
 		}
@@ -414,61 +414,6 @@ class ProductFrontend implements Hookable {
 	}
 
 	/**
-	 * Get field index/value from POST.
-	 *
-	 * @param array $input_field_array The field configuration array.
-	 * @return array
-	 */
-	private function get_field_index_and_value( array $input_field_array ): array {
-		$index = Helper::getFieldIndexFromLabel( $input_field_array['label'] );
-		$value = Helper::getFieldValueFromPost( $index );
-
-		return array(
-			'index' => $index,
-			'value' => $value,
-		);
-	}
-
-	/**
-	 * Calculate price adjustment.
-	 *
-	 * @param array $field_config The field configuration array.
-	 * @param mixed $field_value The field value.
-	 * @param float $base_price The base price.
-	 * @return float
-	 */
-	private function calculatePriceAdjustment( array $field_config, $field_value, float $base_price = 0.0 ): float {
-		return OrderHelper::calculatePriceAdjustment( $field_config, $field_value, $base_price );
-	}
-
-	/**
-	 * Format cart display value with price.
-	 *
-	 * @param mixed $user_input_value Input value.
-	 * @param float $price_adjustment Price adjustment.
-	 * @param array $field_config Field configuration.
-	 * @return string
-	 */
-	private function format_cart_value_with_price( $user_input_value, float $price_adjustment, array $field_config ): string {
-		$user_input_value = (string) $user_input_value;
-
-		if ( 0.0 === $price_adjustment ) {
-			return $user_input_value;
-		}
-
-		if ( in_array( $field_config['type'], array( 'checkbox', 'radio', 'select' ), true ) || 'fixed' === $field_config['price_adjustment_type'] ) {
-			$plus_minus = 0 < $price_adjustment ? '+' : '-';
-			return $user_input_value . ' (' . $plus_minus . wc_price( abs( $price_adjustment ) ) . ')';
-		}
-
-		if ( 'percentage' === $field_config['price_adjustment_type'] ) {
-			return $user_input_value . ' (+' . wc_price( $field_config['priceAdjustmentValue'] ) . '%)';
-		}
-
-		return $user_input_value;
-	}
-
-	/**
 	 * Checks product support.
 	 *
 	 * @param bool   $supports The supports.
@@ -476,7 +421,7 @@ class ProductFrontend implements Hookable {
 	 * @param object $product The product.
 	 * @return bool
 	 */
-	public function exprdawc_check_product_support( bool $supports, string $feature, WC_Product $product ): bool { // phpcs:ignore
+	public function exprdawcCheckProductSupport( bool $supports, string $feature, WC_Product $product ): bool { // phpcs:ignore
 		if ( 'ajax_add_to_cart' === $feature && Helper::checkRequiredFields( $product->get_id() ) ) {
 			$supports = false;
 		}
@@ -492,7 +437,7 @@ class ProductFrontend implements Hookable {
 	 * @param int   $quantity Quantity.
 	 * @return array
 	 */
-	public function exprdawc_save_extra_product_data_in_cart( array $cart_item_data, int $product_id, int $variation_id, int $quantity ): array { // phpcs:ignore
+	public function exprdawcSaveExtraProductDataInCart( array $cart_item_data, int $product_id, int $variation_id, int $quantity ): array { // phpcs:ignore
 		if ( isset( $_POST['exprdawc_nonce'] ) ) {
 			$post_nonce = sanitize_text_field( wp_unslash( $_POST['exprdawc_nonce'] ) );
 			if ( ! wp_verify_nonce( $post_nonce, 'exprdawc_save_custom_field' ) ) {
@@ -504,58 +449,20 @@ class ProductFrontend implements Hookable {
 		if ( ! $product ) {
 			return $cart_item_data;
 		}
-		$custom_fields = $product->get_meta( '_extra_product_fields', true );
+		$custom_fields = Helper::getExtraProductFields( $product );
 
 		$cart_item_data_user_inputs = array();
 
 		if ( ! empty( $custom_fields ) ) {
-			foreach ( $custom_fields as $index_num => $input_field_array ) {
-				$field_data  = $this->get_field_index_and_value( $input_field_array );
-				$index       = $field_data['index'];
+			foreach ( $custom_fields as $input_field_array ) {
+				$field_data  = OrderHelper::getSubmittedFieldData( $input_field_array );
 				$field_value = $field_data['value'];
 
 				if ( isset( $field_value ) ) {
-					switch ( $input_field_array['type'] ) {
-						case 'text':
-							$user_input_value = sanitize_text_field( wp_unslash( $field_value ) );
-							break;
-						case 'long_text':
-							$user_input_value = sanitize_textarea_field( wp_unslash( $field_value ) );
-							break;
-						case 'number':
-							$user_input_value = floatval( wp_unslash( $field_value ) );
-							break;
-						case 'email':
-							$user_input_value = sanitize_email( wp_unslash( $field_value ) );
-							break;
-						case 'select':
-						case 'radio':
-						case 'checkbox':
-							if ( is_array( $field_value ) ) {
-								$user_input_value = implode( ', ', array_map( 'sanitize_text_field', wp_unslash( $field_value ) ) );
-							} else {
-								$user_input_value = sanitize_text_field( wp_unslash( $field_value ) );
-							}
-							break;
-						case 'date':
-							$user_input_value = sanitize_text_field( wp_unslash( $field_value ) );
-							break;
-						default:
-							$user_input_value = sanitize_text_field( wp_unslash( $field_value ) );
-							break;
-					}
-
-					$price_adjustment      = $this->calculatePriceAdjustment( $input_field_array, $field_value, (float) $product->get_price() );
-					$user_input_value_cart = $this->format_cart_value_with_price( $user_input_value, $price_adjustment, $input_field_array );
-
-					$cart_item_data_user_inputs[] = array(
-						'index'                 => $index,
-						'value'                 => $user_input_value,
-						'field_raw'             => $input_field_array,
-						'value_cart'            => $user_input_value_cart,
-						'price_adjustment'      => $price_adjustment,
-						'price_adjustment_type' => $input_field_array['price_adjustment_type'] ?? 'fixed',
-						'raw_value'             => wp_unslash( $field_value ),
+					$cart_item_data_user_inputs[] = OrderHelper::buildSubmittedFieldPayload(
+						$input_field_array,
+						$field_value,
+						(float) $product->get_price()
 					);
 				}
 			}
@@ -573,7 +480,7 @@ class ProductFrontend implements Hookable {
 	 * @param array $cart_item The cart item.
 	 * @return array
 	 */
-	public function exprdawc_display_fields_on_cart_and_checkout( array $item_data, array $cart_item ): array {
+	public function exprdawcDisplayFieldsOnCartAndCheckout( array $item_data, array $cart_item ): array {
 		if ( empty( $cart_item['post_data_product_item'] ) || ! is_array( $cart_item['post_data_product_item'] ) ) {
 			return $item_data;
 		}
@@ -621,7 +528,7 @@ class ProductFrontend implements Hookable {
 	 * @param object $cart_object The cart object.
 	 * @return void
 	 */
-	public function exprdawc_adjust_cart_item_pricing( object $cart_object ): void {
+	public function exprdawcAdjustCartItemPricing( object $cart_object ): void {
 		if ( did_action( 'woocommerce_before_calculate_totals' ) > 1 ) {
 			return;
 		}
@@ -634,7 +541,7 @@ class ProductFrontend implements Hookable {
 					}
 
 					$base_price       = (float) $cart_item['data']->get_price();
-					$price_adjustment = $this->calculatePriceAdjustment( $user_data['field_raw'], $user_data['raw_value'], $base_price );
+					$price_adjustment = OrderHelper::calculatePriceAdjustment( $user_data['field_raw'], $user_data['raw_value'], $base_price );
 
 					$cart_item['data']->set_price( $base_price + $price_adjustment );
 				}
@@ -651,12 +558,11 @@ class ProductFrontend implements Hookable {
 	 * @param object $order The order object.
 	 * @return void
 	 */
-	public function exprdawc_add_extra_product_data_to_order( object $item, string $cart_item_key, array $values, object $order ): void { // phpcs:ignore
+	public function exprdawcAddExtraProductDataToOrder( object $item, string $cart_item_key, array $values, object $order ): void { // phpcs:ignore
 		if ( empty( $values['post_data_product_item'] ) ) {
 			return;
 		}
 
-		$field_meta = array();
 		foreach ( $values['post_data_product_item'] as $field ) {
 			// Add each field as individual meta data for the order item.
 			$item->add_meta_data(
@@ -664,15 +570,12 @@ class ProductFrontend implements Hookable {
 				$field['value'], // phpcs:ignore
 				true
 			);
-			$field_meta[] = array(
-				'label'     => sanitize_text_field( $field['field_raw']['label'] ),
-				'value'     => sanitize_text_field( $field['value'] ),
-				'raw_field' => $field,
-			);
 		}
 
+		$field_meta = OrderHelper::buildFieldMetadataArray( $values['post_data_product_item'] );
+
 		if ( ! empty( $field_meta ) ) {
-			$item->add_meta_data( '_meta_extra_product_data', $field_meta );
+			$item->add_meta_data( EXPRDAWC_META_EXTRA_PRODUCT_DATA, $field_meta );
 		}
 	}
 

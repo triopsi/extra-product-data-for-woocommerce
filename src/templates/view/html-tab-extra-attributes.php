@@ -38,6 +38,7 @@ if ( ! empty( $args['custom_fields'] ) && is_array( $args['custom_fields'] ) ) {
 }
 
 $field_template_defaults = array(
+	'id'                    => '__ID__',
 	'label'                 => '',
 	'type'                  => 'text',
 	'index'                 => '__INDEX__',

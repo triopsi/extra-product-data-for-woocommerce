@@ -67,6 +67,7 @@ jQuery(function ($) {
             $(document).on('change keyup keydown input', '.field_option_table_value_td input', this.syncOptionValueToDefault.bind(this));
             $(document).on('click', '.exprdawc_copy_custom_field', this.exprdawc_copy_custom_field.bind(this));
             $(document).on('change keyup keydown input', 'input.field_name', this.updateConditionalFieldOptions.bind(this));
+            $(document).on('input', '.exprdawc_label', this.validateUniqueLabels.bind(this));
 
             // Inits
             this.toggleConditionalValueFieldAll();
@@ -145,7 +146,8 @@ jQuery(function ($) {
                 return;
             }
 
-            const fieldHtml = template.replaceAll('__INDEX__', String(this.fieldIndex));
+            const fieldHtml = template.replaceAll('__INDEX__', String(this.fieldIndex)).replaceAll('__ID__', this.generateID());
+
             $('#exprdawc_field_body').append(fieldHtml);
             this.noEntryContent();
 
@@ -157,12 +159,21 @@ jQuery(function ($) {
             const $newField = $('#exprdawc_field_body tr.exprdawc_fields_wrapper').last();
             $newField.find('.exprdawc_attribute_type').trigger('change');
             this.togglePriceAdjustmentTableAll();
+            this.validateUniqueLabels();
+        }
+
+        /**
+         * Generate a unique ID.
+         * @returns {string} The generated ID.
+         */
+        generateID() {
+            return Math.floor(Math.random() * 10000000000).toString().padStart(10, '0');
         }
 
         /**
          * Remove a custom field.
          * @param {*} e
-         * @returns 
+         * @returns {boolean} False to prevent default action.
          */
         removeCustomField(e) {
             if (confirm(exprdawc_admin_meta_boxes.confirm_delete)) {
@@ -172,13 +183,14 @@ jQuery(function ($) {
                 // Update all field indices
                 this.updateFieldIndices();
                 this.noEntryContent();
+                this.validateUniqueLabels();
             }
             return false;
         }
 
         /**
          * Toggle options.
-         * @param {*} e 
+         * @param {*} e The event object.
          */
         toggleOptions(e) {
             this.setDirty();
@@ -651,6 +663,7 @@ jQuery(function ($) {
 
             this.toggleConditionalValueFieldAll();
             this.togglePriceAdjustmentTableAll();
+            this.validateUniqueLabels();
         }
 
         normalizeCopiedField($clone) {
@@ -695,6 +708,80 @@ jQuery(function ($) {
                 $select.html(`<option value="">${exprdawc_admin_meta_boxes.selectFieldNone}</option>${options}`);
                 $select.val(selectedValue);
             });
+        }
+
+        /**
+         * Validate that all non-empty labels are unique.
+         * Highlights duplicates and adds an inline note.
+         *
+         * @returns {boolean} True if labels are unique, false otherwise.
+         */
+        validateUniqueLabels() {
+            const labelGroups = new Map();
+            const $labelInputs = $('#exprdawc_field_body').find('input.exprdawc_label');
+
+            $labelInputs.each((index, element) => {
+                const $input = $(element);
+                this.clearUniqueLabelError($input);
+
+                const value = ($input.val() || '').toString().trim().toLowerCase();
+                if (!value) {
+                    return;
+                }
+
+                if (!labelGroups.has(value)) {
+                    labelGroups.set(value, []);
+                }
+
+                labelGroups.get(value).push($input);
+            });
+
+            let hasDuplicate = false;
+
+            labelGroups.forEach((group) => {
+                if (group.length <= 1) {
+                    return;
+                }
+
+                hasDuplicate = true;
+                group.forEach(($input) => {
+                    this.markUniqueLabelError($input);
+                });
+            });
+
+            return !hasDuplicate;
+        }
+
+        markUniqueLabelError($input) {
+            const $row = $input.closest('tr.exprdawc_fields_wrapper');
+            const warningText = exprdawc_admin_meta_boxes.validation_unique_warning_inline || 'Label must be unique.';
+
+            $row.addClass('exprdawc-validation-error exprdawc-duplicate-error');
+            $input.addClass('exprdawc-invalid-field exprdawc-duplicate-field');
+
+            if ($input.siblings('.exprdawc-unique-note').length === 0) {
+                $('<div />', {
+                    class: 'exprdawc-unique-note',
+                    text: warningText,
+                }).insertAfter($input);
+            }
+        }
+
+        clearUniqueLabelError($input) {
+            const $row = $input.closest('tr.exprdawc_fields_wrapper');
+            const hasValue = ($input.val() || '').toString().trim() !== '';
+
+            $row.removeClass('exprdawc-duplicate-error');
+            $input.removeClass('exprdawc-duplicate-field');
+            $input.siblings('.exprdawc-unique-note').remove();
+
+            if (hasValue) {
+                $input.removeClass('exprdawc-invalid-field');
+            }
+
+            if ($row.find('.exprdawc-invalid-field').length === 0) {
+                $row.removeClass('exprdawc-validation-error');
+            }
         }
 
         /**
@@ -833,13 +920,17 @@ jQuery(function ($) {
                 }
             });
 
+            const hasUniqueErrors = !this.validateUniqueLabels();
+
             if (hasErrors) {
-                const fieldCount = errorFields.length;
-                const fieldNumbersText = errorFields.join(', ');
-                const hasMultipleErrors = fieldCount > 1;
-                console.log(exprdawc_admin_meta_boxes.validation_warning)
                 const warningMessage = exprdawc_admin_meta_boxes.validation_warning;
                 alert(warningMessage);
+                return false;
+            }
+
+            if (hasUniqueErrors) {
+                const uniqueWarningMessage = exprdawc_admin_meta_boxes.validation_unique_warning || 'Labels must be unique. Please use different label names.';
+                alert(uniqueWarningMessage);
                 return false;
             }
 

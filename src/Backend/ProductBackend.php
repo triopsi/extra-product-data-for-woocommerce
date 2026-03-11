@@ -86,10 +86,7 @@ class ProductBackend implements Hookable {
 			return '';
 		}
 
-		$custom_fields = $product->get_meta( '_extra_product_fields', true );
-		if ( ! is_array( $custom_fields ) ) {
-			$custom_fields = array();
-		}
+		$custom_fields = Helper::getExtraProductFields( $product );
 
 		ob_start();
 		Helper::renderTemplate(
@@ -123,6 +120,8 @@ class ProductBackend implements Hookable {
 				'selectFieldNone'                      => esc_html__( 'None', 'extra-product-data-for-woocommerce' ),
 				'sureAnotherAutocompleCheckedQuestion' => esc_html__( 'Another autocomplete field is already checked. Do you want to uncheck it?', 'extra-product-data-for-woocommerce' ),
 				'validation_warning'                   => esc_html__( 'Warning! No label text (Labels) was found. Please fill all fields with label text before saving.', 'extra-product-data-for-woocommerce' ),
+				'validation_unique_warning'            => esc_html__( 'Warning! Label names must be unique. Please use different label names before saving.', 'extra-product-data-for-woocommerce' ),
+				'validation_unique_warning_inline'     => esc_html__( 'Label must be unique.', 'extra-product-data-for-woocommerce' ),
 			)
 		);
 	}
@@ -139,6 +138,7 @@ class ProductBackend implements Hookable {
 
 			$custom_fields = array_map(
 				function ( $field ) {
+					$id                    = sanitize_text_field( $field['id'] );
 					$label                 = sanitize_text_field( $field['label'] );
 					$type                  = sanitize_text_field( $field['type'] );
 					$required              = isset( $field['required'] ) ? 1 : 0;
@@ -193,10 +193,16 @@ class ProductBackend implements Hookable {
 						$default = $long_text_default;
 					}
 
-					$minlength = isset( $field['minlength'] ) ? absint( $field['minlength'] ) : 0;
-					$maxlength = isset( $field['maxlength'] ) ? absint( $field['maxlength'] ) : 0;
-					$rows      = isset( $field['rows'] ) ? absint( $field['rows'] ) : 0;
-					$cols      = isset( $field['cols'] ) ? absint( $field['cols'] ) : 0;
+					if ( 'long_text' === $type ) {
+						$minlength = isset( $field['min_length_longtext'] ) ? absint( $field['min_length_longtext'] ) : 0;
+						$maxlength = isset( $field['max_length_longtext'] ) ? absint( $field['max_length_longtext'] ) : 0;
+					} else {
+						$minlength = isset( $field['minlength'] ) ? absint( $field['minlength'] ) : 0;
+						$maxlength = isset( $field['maxlength'] ) ? absint( $field['maxlength'] ) : 0;
+					}
+
+					$rows = isset( $field['rows'] ) ? absint( $field['rows'] ) : 0;
+					$cols = isset( $field['cols'] ) ? absint( $field['cols'] ) : 0;
 
 					if ( empty( $label ) || ! is_string( $label ) ) {
 						return;
@@ -211,6 +217,7 @@ class ProductBackend implements Hookable {
 						$help_text = '';
 					}
 					return array(
+						'id'                    => $id,
 						'label'                 => $label,
 						'type'                  => $type,
 						'required'              => $required,
@@ -239,6 +246,13 @@ class ProductBackend implements Hookable {
 
 			$custom_fields = array_filter( $custom_fields );
 
+			if ( $this->has_duplicate_labels( $custom_fields ) ) {
+				if ( class_exists( 'WC_Admin_Meta_Boxes' ) ) {
+					\WC_Admin_Meta_Boxes::add_error( esc_html__( 'Label names must be unique. Please use different label names before saving.', 'extra-product-data-for-woocommerce' ) );
+				}
+				return;
+			}
+
 			$product->update_meta_data( '_extra_product_fields', $custom_fields );
 		} else {
 			$product = wc_get_product( $post_id );
@@ -246,6 +260,37 @@ class ProductBackend implements Hookable {
 		}
 
 		$product->save();
+	}
+
+	/**
+	 * Check if custom fields contain duplicate labels.
+	 *
+	 * @param array<int, array<string, mixed>> $custom_fields Custom fields to validate.
+	 * @return bool True if duplicate labels exist.
+	 */
+	private function has_duplicate_labels( array $custom_fields ): bool {
+		$seen = array();
+
+		foreach ( $custom_fields as $field ) {
+			if ( ! isset( $field['label'] ) || ! is_string( $field['label'] ) ) {
+				continue;
+			}
+
+			$label = trim( $field['label'] );
+			if ( '' === $label ) {
+				continue;
+			}
+
+			$normalized = function_exists( 'mb_strtolower' ) ? mb_strtolower( $label ) : strtolower( $label );
+
+			if ( isset( $seen[ $normalized ] ) ) {
+				return true;
+			}
+
+			$seen[ $normalized ] = true;
+		}
+
+		return false;
 	}
 
 	/**

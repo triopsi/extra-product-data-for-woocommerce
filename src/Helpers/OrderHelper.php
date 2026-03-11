@@ -98,7 +98,7 @@ class OrderHelper {
 	 * @return array Array of field data indexed by field key.
 	 */
 	public static function getItemFieldMetadata( WC_Order_Item $item ): array {
-		$item_meta_data = $item->get_meta( '_meta_extra_product_data', true );
+		$item_meta_data = $item->get_meta( EXPRDAWC_META_EXTRA_PRODUCT_DATA, true );
 
 		if ( ! is_array( $item_meta_data ) || empty( $item_meta_data ) ) {
 			return array();
@@ -106,9 +106,16 @@ class OrderHelper {
 
 		$indexed_data = array();
 		foreach ( $item_meta_data as $field_data ) {
-			$label = $field_data['label'] ?? '';
-			if ( ! empty( $label ) ) {
-				$index                  = Helper::getFieldIndexFromLabel( $label );
+			// Resolve key: prefer id from raw_field (same priority as getFieldKey()),
+			// fall back to deriving from the stored label.
+			$raw_field = $field_data['raw_field'] ?? array();
+			if ( ! empty( $raw_field ) ) {
+				$index = Helper::getFieldKey( $raw_field );
+			} else {
+				$label = $field_data['label'] ?? '';
+				$index = $label ? Helper::getFieldIndexFromLabel( $label ) : '';
+			}
+			if ( ! empty( $index ) ) {
 				$indexed_data[ $index ] = $field_data;
 			}
 		}
@@ -117,38 +124,163 @@ class OrderHelper {
 	}
 
 	/**
-	 * Build new field metadata array for order item.
+	 * Get submitted field data for a field configuration.
 	 *
-	 * @param array $custom_fields Field configuration array from product.
-	 * @param array $field_values  Field values indexed by field key.
-	 * @return array
+	 * Resolves the effective field key using the shared id-or-label logic and reads
+	 * the submitted value from the request payload.
+	 *
+	 * @param array  $field    Field configuration array.
+	 * @param string $post_key Request array key containing submitted field values.
+	 * @return array{index: string, value: mixed} Field key and submitted value.
 	 */
-	public static function buildFieldMetadataArray( array $custom_fields, array $field_values ): array {
+	public static function getSubmittedFieldData( array $field, string $post_key = 'exprdawc_custom_field_input' ): array {
+		$field_index = Helper::getFieldKey( $field );
+		$field_value = Helper::getFieldValueFromPost( $field_index, $post_key );
+
+		return array(
+			'index' => $field_index,
+			'value' => $field_value,
+		);
+	}
+
+	/**
+	 * Build normalized submitted field payload.
+	 *
+	 * The returned structure matches the payload used in cart item data and inside
+	 * the order item's `_meta_extra_product_data` entry. This keeps create and update
+	 * flows consistent and reduces maintenance effort.
+	 *
+	 * @param array $field_config Field configuration array.
+	 * @param mixed $field_value  Submitted field value.
+	 * @param float $base_price   Product base price used for price adjustments.
+	 * @return array Normalized field payload.
+	 */
+	public static function buildSubmittedFieldPayload( array $field_config, $field_value, float $base_price = 0.0 ): array {
+		$field_index      = Helper::getFieldKey( $field_config );
+		$display_value    = self::sanitizeFieldValueForStorage( $field_config, $field_value );
+		$price_adjustment = self::calculatePriceAdjustment( $field_config, $field_value, $base_price );
+		$value_cart       = self::formatFieldValueWithPrice( $display_value, $price_adjustment, $field_config );
+
+		return array(
+			'id'                    => $field_config['id'] ?? '',
+			'index'                 => $field_index,
+			'value'                 => $display_value,
+			'field_raw'             => $field_config,
+			'value_cart'            => $value_cart,
+			'price_adjustment'      => $price_adjustment,
+			'price_adjustment_type' => $field_config['price_adjustment_type'] ?? 'fixed',
+			'raw_value'             => $field_value,
+		);
+	}
+
+	/**
+	 * Build order item meta entry from a normalized field payload.
+	 *
+	 * @param array $field_payload Normalized field payload.
+	 * @return array Order item metadata entry.
+	 */
+	public static function buildOrderItemMetaEntry( array $field_payload ): array {
+		$field_label = $field_payload['field_raw']['label'] ?? '';
+		$field_value = $field_payload['value'] ?? '';
+
+		return array(
+			'label'     => sanitize_text_field( $field_label ),
+			'value'     => is_array( $field_value ) ? implode( ', ', array_map( 'sanitize_text_field', $field_value ) ) : sanitize_text_field( (string) $field_value ),
+			'raw_field' => $field_payload,
+		);
+	}
+
+	/**
+	 * Build new field metadata array for an order item.
+	 *
+	 * @param array $field_payloads Normalized field payloads.
+	 * @return array Field metadata entries for `_meta_extra_product_data`.
+	 */
+	public static function buildFieldMetadataArray( array $field_payloads ): array {
 		$field_meta = array();
 
-		foreach ( $custom_fields as $field ) {
-			$field_index = Helper::getFieldIndexFromLabel( $field['label'] );
-			$field_value = $field_values[ $field_index ] ?? '';
-
-			$field_meta[] = array(
-				'label'     => sanitize_text_field( $field['label'] ),
-				'value'     => is_array( $field_value ) ? implode( ', ', $field_value ) : sanitize_text_field( $field_value ),
-				'raw_field' => $field,
-			);
+		foreach ( $field_payloads as $field_payload ) {
+			$field_meta[] = self::buildOrderItemMetaEntry( $field_payload );
 		}
 
 		return $field_meta;
 	}
 
 	/**
+	 * Sanitize a submitted field value for storage/display.
+	 *
+	 * This mirrors the frontend cart payload generation so order updates use the same
+	 * normalized value format as newly created order items.
+	 *
+	 * @param array $field_config Field configuration array.
+	 * @param mixed $field_value  Submitted field value.
+	 * @return string Sanitized display value.
+	 */
+	public static function sanitizeFieldValueForStorage( array $field_config, $field_value ): string {
+		switch ( $field_config['type'] ?? 'text' ) {
+			case 'long_text':
+				return is_array( $field_value )
+					? implode( ', ', array_map( 'sanitize_textarea_field', $field_value ) )
+					: sanitize_textarea_field( (string) $field_value );
+
+			case 'number':
+				return (string) floatval( $field_value );
+
+			case 'email':
+				return sanitize_email( (string) $field_value );
+
+			case 'select':
+			case 'radio':
+			case 'checkbox':
+				if ( is_array( $field_value ) ) {
+					return implode( ', ', array_map( 'sanitize_text_field', $field_value ) );
+				}
+
+				return sanitize_text_field( (string) $field_value );
+
+			case 'date':
+			case 'text':
+			default:
+				return sanitize_text_field( (string) $field_value );
+		}
+	}
+
+	/**
+	 * Format a field value with price information for cart and order display.
+	 *
+	 * @param mixed $field_value       User submitted display value.
+	 * @param float $price_adjustment  Calculated price adjustment.
+	 * @param array $field_config      Field configuration.
+	 * @return string Display value with optional price suffix.
+	 */
+	public static function formatFieldValueWithPrice( $field_value, float $price_adjustment, array $field_config ): string {
+		$field_value = is_array( $field_value ) ? implode( ', ', array_map( 'sanitize_text_field', $field_value ) ) : (string) $field_value;
+
+		if ( 0.0 === $price_adjustment ) {
+			return $field_value;
+		}
+
+		if ( in_array( $field_config['type'] ?? 'text', array( 'checkbox', 'radio', 'select' ), true ) || 'fixed' === ( $field_config['price_adjustment_type'] ?? 'fixed' ) ) {
+			$plus_minus = 0 < $price_adjustment ? '+' : '-';
+			return $field_value . ' (' . $plus_minus . wc_price( abs( $price_adjustment ) ) . ')';
+		}
+
+		if ( 'percentage' === ( $field_config['price_adjustment_type'] ?? 'fixed' ) ) {
+			return $field_value . ' (+' . wc_price( $field_config['priceAdjustmentValue'] ?? 0 ) . '%)';
+		}
+
+		return $field_value;
+	}
+
+	/**
 	 * Get the old (current) value for a field from item metadata.
 	 *
-	 * @param array  $item_metadata Indexed item metadata.
-	 * @param string $field_index Field key.
+	 * @param array      $item_metadata Indexed item metadata.
+	 * @param int|string $field_index   Field key (PHP may cast numeric string keys to int).
 	 * @return mixed
 	 */
-	public static function getOldFieldValue( array $item_metadata, string $field_index ) {
-		return $item_metadata[ $field_index ]['value'] ?? '';
+	public static function getOldFieldValue( array $item_metadata, $field_index ) {
+		return $item_metadata[ (string) $field_index ]['value'] ?? '';
 	}
 
 	/**

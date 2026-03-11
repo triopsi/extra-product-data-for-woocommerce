@@ -386,6 +386,12 @@ input.exprdawc-invalid-field:focus {
   box-shadow: 0 0 0 3px rgba(214, 54, 56, 0.1) !important;
 }
 
+.exprdawc-unique-note {
+  color: #d63638;
+  font-size: 12px;
+  margin-top: 4px;
+}
+
 /**
  * Scrolle zum ersten Fehler bei Validierung
  * Hilft dem Nutzer das Problem schnell zu finden
@@ -402,7 +408,7 @@ input.exprdawc-invalid-field:focus {
     background-color: #ffcccc;
   }
 }
-.wc-pao-addons-container .exprdawc-input {
+.wc-pao-addons-container textarea {
   width: 100%;
 }
 

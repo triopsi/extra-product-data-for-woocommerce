@@ -19,6 +19,7 @@ namespace Triopsi\Exprdawc\Helpers;
 use Automattic\WooCommerce\Enums\ProductType;
 use Automattic\WooCommerce\Utilities\OrderUtil;
 use WC_Order;
+use WC_Product;
 
 if ( ! defined( 'ABSPATH' ) ) {
 	exit;
@@ -58,14 +59,14 @@ class Helper {
 	/**
 	 * Generate and render an input field.
 	 *
-	 * @param array  $field               The field arguments.
-	 * @param string $value               The field value.
-	 * @param bool   $skipRequiredCheck   Whether to skip the required check.
-	 * @param bool   $cartPage            Whether the field is rendered on the cart page.
+	 * @param array        $field               The field arguments.
+	 * @param string|array $value               The field value.
+	 * @param bool         $skipRequiredCheck   Whether to skip the required check.
+	 * @param bool         $cartPage            Whether the field is rendered on the cart page.
 	 *
 	 * @return void
 	 */
-	public static function generateInputField( array $field, string $value = '', bool $skipRequiredCheck = false, bool $cartPage = false ): void {
+	public static function generateInputField( array $field, $value = '', bool $skipRequiredCheck = false, bool $cartPage = false ): void {
 		$fieldArgs = self::prepareFieldArgs( $field, $value, $skipRequiredCheck, $cartPage );
 
 		if ( ! self::validateFieldArgs( $fieldArgs ) ) {
@@ -78,14 +79,14 @@ class Helper {
 	/**
 	 * Prepare field arguments by merging with defaults and processing.
 	 *
-	 * @param array  $field               The field arguments.
-	 * @param string $value               The field value.
-	 * @param bool   $skipRequiredCheck   Whether to skip required check.
-	 * @param bool   $cartPage            Whether rendered on cart page.
+	 * @param array        $field               The field arguments.
+	 * @param string|array $value               The field value.
+	 * @param bool         $skipRequiredCheck   Whether to skip required check.
+	 * @param bool         $cartPage            Whether rendered on cart page.
 	 *
 	 * @return array Processed field arguments.
 	 */
-	private static function prepareFieldArgs( array $field, string $value, bool $skipRequiredCheck, bool $cartPage ): array {
+	private static function prepareFieldArgs( array $field, $value, bool $skipRequiredCheck, bool $cartPage ): array {
 		$fieldArgs = wp_parse_args( $field, self::getDefaultFieldArgs() );
 
 		$fieldArgs                    = self::normalizeFieldProperties( $fieldArgs, $skipRequiredCheck, $cartPage );
@@ -113,6 +114,7 @@ class Helper {
 		return array(
 			'id_prefix'             => 'exprdawc_custom_field_input',
 			'id'                    => '',
+			'css_id'                => '',
 			'name'                  => '',
 			'type'                  => 'text',
 			'wrapper_class'         => array( 'form-row-wide' ),
@@ -178,35 +180,41 @@ class Helper {
 	private static function generateFieldIdAndName( array $fieldArgs ): array {
 		$index = sanitize_title( $fieldArgs['label'] );
 		$index = strtolower( str_replace( array( ' ', '_' ), '-', $index ) );
+		$id    = $fieldArgs['id'];
 
-		if ( empty( $fieldArgs['id'] ) ) {
-			$idPrefix        = str_replace( array( ' ', '_' ), '-', $fieldArgs['id_prefix'] );
-			$fieldArgs['id'] = $idPrefix . '-' . $index;
+		if ( empty( $fieldArgs['css_id'] ) ) {
+			$idPrefix = str_replace( array( ' ', '_' ), '-', $fieldArgs['id_prefix'] );
+
+			if ( ! empty( $id ) ) {
+				$index = $id;
+			}
+
+			$fieldArgs['css_id'] = $idPrefix . '-' . $index;
 		}
-		$fieldArgs['id'] = strtolower( $fieldArgs['id'] );
+		$fieldArgs['css_id'] = strtolower( $fieldArgs['css_id'] );
 
 		if ( empty( $fieldArgs['name'] ) ) {
 			$fieldArgs['name'] = str_replace( '-', '_', $index );
 		}
-		$fieldArgs['name'] = $fieldArgs['id_prefix'] . '[' . $fieldArgs['name'] . ']';
 
+		$fieldArgs['name'] = $fieldArgs['id_prefix'] . '[' . $fieldArgs['name'] . ']';
 		return $fieldArgs;
 	}
 
 	/**
 	 * Get the field value from request or default.
 	 *
-	 * @param array  $fieldArgs Field arguments.
-	 * @param string $value     Passed value.
+	 * @param array        $fieldArgs Field arguments.
+	 * @param string|array $value     Passed value.
 	 *
 	 * @return mixed Field value.
 	 */
-	private static function getFieldValue( array $fieldArgs, string $value ): mixed {
+	private static function getFieldValue( array $fieldArgs, $value ): mixed {
 		if ( ! empty( $value ) ) {
 			return $value;
 		}
 
-		$selectedKey = 'attribute_' . str_replace( '-', '_', $fieldArgs['id'] );
+		$selectedKey = 'attribute_' . str_replace( '-', '_', $fieldArgs['css_id'] );
 
 		// phpcs:ignore WordPress.Security.NonceVerification.Recommended
 		if ( isset( $_REQUEST[ $selectedKey ] ) ) {
@@ -229,31 +237,31 @@ class Helper {
 		$typeSlug   = str_replace( '_', '-', $fieldArgs['type'] );
 
 		$fieldArgs['wrapper_class'][] = 'exprdawc-field-wrapper';
-		$fieldArgs['wrapper_class'][] = $fieldArgs['id'] . '-wrapper';
+		$fieldArgs['wrapper_class'][] = $fieldArgs['css_id'] . '-wrapper';
 		$fieldArgs['wrapper_class'][] = 'exprdawc-field-wrapper-' . $typeSlug;
 		if ( $isRequired ) {
 			$fieldArgs['wrapper_class'][] = 'exprdawc-field-wrapper-required';
 		}
 
-		$fieldArgs['input_class'][] = $fieldArgs['id'] . '-input';
+		$fieldArgs['input_class'][] = $fieldArgs['css_id'] . '-input';
 		$fieldArgs['input_class'][] = 'exprdawc-field-input-' . $typeSlug;
 		if ( $isRequired ) {
 			$fieldArgs['input_class'][] = 'exprdawc-field-input-required';
 		}
 
-		$fieldArgs['label_class'][] = $fieldArgs['id'] . '-label';
+		$fieldArgs['label_class'][] = $fieldArgs['css_id'] . '-label';
 		$fieldArgs['label_class'][] = 'exprdawc-field-label-' . $typeSlug;
 		if ( $isRequired ) {
 			$fieldArgs['label_class'][] = 'exprdawc-field-label-required';
 		}
 
-		$fieldArgs['description_class'][] = $fieldArgs['id'] . '-description';
+		$fieldArgs['description_class'][] = $fieldArgs['css_id'] . '-description';
 		$fieldArgs['description_class'][] = 'exprdawc-field-description-' . $typeSlug;
 		if ( $isRequired ) {
 			$fieldArgs['description_class'][] = 'exprdawc-field-description-required';
 		}
 
-		$fieldArgs['input_wrapper_class'][] = $fieldArgs['id'] . '-input-wrapper';
+		$fieldArgs['input_wrapper_class'][] = $fieldArgs['css_id'] . '-input-wrapper';
 		$fieldArgs['input_wrapper_class'][] = 'exprdawc-field-input-wrapper-' . $typeSlug;
 		if ( $isRequired ) {
 			$fieldArgs['input_wrapper_class'][] = 'exprdawc-field-input-wrapper-required';
@@ -316,7 +324,7 @@ class Helper {
 		}
 
 		if ( ! empty( $fieldArgs['description'] ) ) {
-			$attrs['aria-describedby'] = $fieldArgs['id'] . '-description';
+			$attrs['aria-describedby'] = $fieldArgs['css_id'] . '-description';
 		}
 
 		if ( ! empty( $fieldArgs['data'] ) && is_array( $fieldArgs['data'] ) ) {
@@ -486,7 +494,7 @@ class Helper {
 	 * @return bool True if valid, false otherwise.
 	 */
 	private static function validateFieldArgs( array $fieldArgs ): bool {
-		return ! empty( $fieldArgs['id'] ) && ! empty( $fieldArgs['name'] );
+		return ! empty( $fieldArgs['css_id'] ) && ! empty( $fieldArgs['name'] );
 	}
 
 	/**
@@ -561,7 +569,7 @@ class Helper {
 			return false;
 		}
 
-		$customFields = $product->get_meta( '_extra_product_fields', true );
+		$customFields = self::getExtraProductFields( $product );
 
 		if ( ! empty( $customFields ) ) {
 			foreach ( $customFields as $inputFieldArray ) {
@@ -606,6 +614,43 @@ class Helper {
 	}
 
 	/**
+	 * Resolve the effective field key for a field definition.
+	 *
+	 * Uses the field's 'id' when available (normalizing dashes to underscores
+	 * to match the generated HTML name attribute), otherwise falls back to
+	 * deriving the key from the field label via getFieldIndexFromLabel().
+	 *
+	 * This key is used for:
+	 * - Reading POST data (exprdawc_custom_field_input[<key>])
+	 * - Indexing $field_values during save
+	 * - Matching stored metadata back to the field definition
+	 *
+	 * @param array $field The field definition array (must contain at least 'label').
+	 * @return string The resolved field key.
+	 */
+	public static function getFieldKey( array $field ): string {
+		if ( ! empty( $field['id'] ) ) {
+			return str_replace( '-', '_', $field['id'] );
+		}
+
+		return self::getFieldIndexFromLabel( $field['label'] ?? '' );
+	}
+
+	/**
+	 * Get the extra product fields defined for a product.
+	 *
+	 * Centralizes access to the `_extra_product_fields` product meta so that all
+	 * callers use a single, consistent entry point. Always returns an array.
+	 *
+	 * @param WC_Product $product The WooCommerce product.
+	 * @return array Field definition array, or empty array when none are configured.
+	 */
+	public static function getExtraProductFields( WC_Product $product ): array {
+		$fields = $product->get_meta( '_extra_product_fields', true );
+		return is_array( $fields ) ? $fields : array();
+	}
+
+	/**
 	 * Sanitize a field value based on its type.
 	 *
 	 * @param mixed $fieldValue The field value to sanitize.
@@ -631,6 +676,7 @@ class Helper {
 	 * @return mixed The field value or empty string.
 	 */
 	public static function getFieldValueFromPost( string $fieldIndex, string $postKey = 'exprdawc_custom_field_input' ) {
+
 		// phpcs:ignore WordPress.Security.ValidatedSanitizedInput.InputNotSanitized, WordPress.Security.NonceVerification.Missing
 		if ( isset( $_POST[ $postKey ][ $fieldIndex ] ) ) {
 			$value = wp_unslash( $_POST[ $postKey ][ $fieldIndex ] ); // phpcs:ignore WordPress.Security.ValidatedSanitizedInput.InputNotSanitized, WordPress.Security.NonceVerification.Missing

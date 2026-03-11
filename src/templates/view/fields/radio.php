@@ -34,7 +34,7 @@ $field = $field_args ?? array();
 			$option_value = $option['value'] ?? '';
 			$option_label = $option['label'] ?? '';
 			$checked      = H::checked( $field['value'] ?? '', $option_value );
-			$option_id    = H::id( $field['id'] . '-' . $option_value );
+			$option_id    = H::id( $field['css_id'] . '-' . $option_value );
 
 			// Build data attributes for price adjustment.
 			$dataAttrs = array();
@@ -65,7 +65,7 @@ $field = $field_args ?? array();
 </span>
 
 <?php if ( ! empty( $field['description'] ) ) : ?>
-	<span id="<?php echo H::attr( $field['id'] ); ?>-description"
+	<span id="<?php echo H::attr( $field['css_id'] ); ?>-description"
 		class="<?php echo H::classes( $field['description_class'] ); ?>">
 		<?php echo H::e( $field['description'] ); ?>
 	</span>
