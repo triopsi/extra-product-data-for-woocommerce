@@ -137,12 +137,12 @@ class TestExprdawcAdminOrder extends WP_UnitTestCase {
 	 * Verifies that all required WordPress/WooCommerce hooks are registered.
 	 */
 	public function test_constructor_registers_hooks() {
-		$this->assertIsInt( has_action( 'woocommerce_admin_order_item_headers', array( $this->admin_order, 'set_order' ) ) );
-		$this->assertIsInt( has_action( 'woocommerce_after_order_itemmeta', array( $this->admin_order, 'display_edit_button' ) ) );
-		$this->assertIsInt( has_action( 'admin_enqueue_scripts', array( $this->admin_order, 'js_meta_boxes_enqueue' ) ) );
-		$this->assertIsInt( has_action( 'admin_footer', array( $this->admin_order, 'add_js_template' ) ) );
-		$this->assertIsInt( has_action( 'wp_ajax_woocommerce_configure_exprdawc_order_item', array( $this->admin_order, 'exprdawc_load_edit_modal_form' ) ) );
-		$this->assertIsInt( has_action( 'wp_ajax_woocommerce_edit_exprdawc_order_item', array( $this->admin_order, 'exprdawc_save_edit_modal_form' ) ) );
+		$this->assertIsInt( has_action( 'woocommerce_admin_order_item_headers', array( $this->admin_order, 'setOrder' ) ) );
+		$this->assertIsInt( has_action( 'woocommerce_after_order_itemmeta', array( $this->admin_order, 'displayEditButton' ) ) );
+		$this->assertIsInt( has_action( 'admin_enqueue_scripts', array( $this->admin_order, 'jsMetaBoxesEnqueue' ) ) );
+		$this->assertIsInt( has_action( 'admin_footer', array( $this->admin_order, 'addJsTemplate' ) ) );
+		$this->assertIsInt( has_action( 'wp_ajax_woocommerce_configure_exprdawc_order_item', array( $this->admin_order, 'loadEditModalForm' ) ) );
+		$this->assertIsInt( has_action( 'wp_ajax_woocommerce_edit_exprdawc_order_item', array( $this->admin_order, 'saveEditModalForm' ) ) );
 	}
 
 	/**
@@ -152,7 +152,7 @@ class TestExprdawcAdminOrder extends WP_UnitTestCase {
 	 * Verifies that the static order property is set correctly.
 	 */
 	public function test_set_order() {
-		AdminOrder::set_order( $this->order );
+		AdminOrder::setOrder( $this->order );
 
 		$reflection = new ReflectionClass( AdminOrder::class );
 		$property   = $reflection->getProperty( 'order' );
@@ -188,12 +188,12 @@ class TestExprdawcAdminOrder extends WP_UnitTestCase {
 		$order->set_status( 'pending' );
 		$order->save();
 
-		AdminOrder::set_order( $order );
+		AdminOrder::setOrder( $order );
 
 		$item = $order->get_item( $item_id );
 
 		ob_start();
-		$this->admin_order->display_edit_button( $item_id, $item, $product );
+		$this->admin_order->displayEditButton( $item_id, $item, $product );
 		$output = ob_get_clean();
 
 		$this->assertEmpty( $output );
@@ -213,13 +213,13 @@ class TestExprdawcAdminOrder extends WP_UnitTestCase {
 
 		$order = $this->order;
 		$order->set_status( 'processing' );
-		AdminOrder::set_order( $this->order );
+		AdminOrder::setOrder( $this->order );
 
 		$items   = $this->order->get_items();
 		$item    = reset( $items );
 		$item_id = $item->get_id();
 		ob_start();
-		$this->admin_order->display_edit_button( $item_id, $item, $this->product );
+		$this->admin_order->displayEditButton( $item_id, $item, $this->product );
 		$output = ob_get_clean();
 
 		// CSS class of the button.
@@ -237,14 +237,14 @@ class TestExprdawcAdminOrder extends WP_UnitTestCase {
 		$this->order->set_status( 'completed' );
 		$this->order->save();
 
-		AdminOrder::set_order( $this->order );
+		AdminOrder::setOrder( $this->order );
 
 		$items   = $this->order->get_items();
 		$item    = reset( $items );
 		$item_id = $item->get_id();
 
 		ob_start();
-		$this->admin_order->display_edit_button( $item_id, $item, $this->product );
+		$this->admin_order->displayEditButton( $item_id, $item, $this->product );
 		$output = ob_get_clean();
 
 		// Should be empty as order status is beyond processing.
@@ -301,12 +301,12 @@ class TestExprdawcAdminOrder extends WP_UnitTestCase {
 		$order->set_status( 'processing' );
 		$order->save();
 
-		AdminOrder::set_order( $order );
+		AdminOrder::setOrder( $order );
 
 		$item = $order->get_item( $item_id );
 
 		ob_start();
-		$this->admin_order->display_edit_button( $item_id, $item, $variation );
+		$this->admin_order->displayEditButton( $item_id, $item, $variation );
 		$output = ob_get_clean();
 
 		// CSS class of the button.
@@ -328,10 +328,10 @@ class TestExprdawcAdminOrder extends WP_UnitTestCase {
 		// Mock current screen.
 		set_current_screen( 'edit-shop_order' );
 
-		$result = $this->admin_order->is_current_screen( array( 'edit-shop_order' ) );
+		$result = $this->admin_order->isCurrentScreen( array( 'edit-shop_order' ) );
 		$this->assertTrue( $result );
 
-		$result = $this->admin_order->is_current_screen( array( 'product' ) );
+		$result = $this->admin_order->isCurrentScreen( array( 'product' ) );
 		$this->assertFalse( $result );
 	}
 
@@ -344,7 +344,7 @@ class TestExprdawcAdminOrder extends WP_UnitTestCase {
 	public function test_js_meta_boxes_enqueue_on_order_screen() {
 		set_current_screen( 'edit-shop_order' );
 
-		$this->admin_order->js_meta_boxes_enqueue();
+		$this->admin_order->jsMetaBoxesEnqueue();
 
 		$this->assertTrue( wp_script_is( 'woocommerce_exprdawc-admin-order-panel', 'enqueued' ) );
 	}
@@ -359,7 +359,7 @@ class TestExprdawcAdminOrder extends WP_UnitTestCase {
 		global $wp_scripts;
 
 		set_current_screen( 'edit-shop_order' );
-		$this->admin_order->js_meta_boxes_enqueue();
+		$this->admin_order->jsMetaBoxesEnqueue();
 
 		$this->assertTrue( wp_script_is( 'woocommerce_exprdawc-admin-order-panel', 'enqueued' ) );
 
@@ -381,7 +381,7 @@ class TestExprdawcAdminOrder extends WP_UnitTestCase {
 		// Dequeue if already enqueued from other tests.
 		wp_dequeue_script( 'woocommerce_exprdawc-admin-order-panel' );
 
-		$this->admin_order->js_meta_boxes_enqueue();
+		$this->admin_order->jsMetaBoxesEnqueue();
 
 		// Script should not be enqueued on product screen.
 		$this->assertFalse( wp_script_is( 'woocommerce_exprdawc-admin-order-panel', 'enqueued' ) );
@@ -400,10 +400,10 @@ class TestExprdawcAdminOrder extends WP_UnitTestCase {
 		}
 
 		set_current_screen( 'edit-shop_order' );
-		$this->admin_order->js_meta_boxes_enqueue();
+		$this->admin_order->jsMetaBoxesEnqueue();
 
 		ob_start();
-		$this->admin_order->add_js_template();
+		$this->admin_order->addJsTemplate();
 		$output = ob_get_clean();
 
 		if ( file_exists( EXPRDAWC_ADMIN_TEMPLATES_PATH . 'html-admin-order-edit-overview-js.php' ) ) {
@@ -424,7 +424,7 @@ class TestExprdawcAdminOrder extends WP_UnitTestCase {
 		wp_dequeue_script( 'woocommerce_exprdawc-admin-order-panel' );
 
 		ob_start();
-		$this->admin_order->add_js_template();
+		$this->admin_order->addJsTemplate();
 		$output = ob_get_clean();
 
 		$this->assertEmpty( $output );
@@ -444,7 +444,7 @@ class TestExprdawcAdminOrder extends WP_UnitTestCase {
 			define( 'DOING_AJAX', true );
 		}
 		$this->expectException( RuntimeException::class );
-		$this->admin_order->exprdawc_load_edit_modal_form();
+		$this->admin_order->loadEditModalForm();
 	}
 
 	/**
@@ -472,7 +472,7 @@ class TestExprdawcAdminOrder extends WP_UnitTestCase {
 
 		ob_start();
 		try {
-			$this->admin_order->exprdawc_load_edit_modal_form();
+			$this->admin_order->loadEditModalForm();
 		} catch ( RuntimeException $e ) { // phpcs:ignore
 			// Expected.
 		}
@@ -528,7 +528,7 @@ class TestExprdawcAdminOrder extends WP_UnitTestCase {
 
 		ob_start();
 		try {
-			$this->admin_order->exprdawc_load_edit_modal_form();
+			$this->admin_order->loadEditModalForm();
 		} catch ( RuntimeException $e ) { // phpcs:ignore
 			// Expected.
 		}
@@ -570,7 +570,7 @@ class TestExprdawcAdminOrder extends WP_UnitTestCase {
 
 		ob_start();
 		try {
-			$this->admin_order->exprdawc_save_edit_modal_form();
+			$this->admin_order->saveEditModalForm();
 		} catch ( RuntimeException $e ) { // phpcs:ignore
 			// Expected.
 		}

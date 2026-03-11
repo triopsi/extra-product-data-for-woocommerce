@@ -138,7 +138,7 @@ class ProductBackend implements Hookable {
 
 			$custom_fields = array_map(
 				function ( $field ) {
-					$id                    = sanitize_text_field( $field['id'] );
+					$id                    = sanitize_text_field( $field['id'] ?? '' );
 					$label                 = sanitize_text_field( $field['label'] );
 					$type                  = sanitize_text_field( $field['type'] );
 					$required              = isset( $field['required'] ) ? 1 : 0;

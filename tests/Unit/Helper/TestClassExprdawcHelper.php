@@ -321,6 +321,8 @@ class TestClassExprdawcHelper extends WP_UnitTestCase {
 		}
 		$output = ob_get_clean();
 
+		// phpcs:ignore file_put_contents( dirname( __DIR__ ) . '/resources/soll_field_output_test_generateInputField.html', $output );
+
         $this->assertEquals( file_get_contents( dirname( __DIR__ ) . '/resources/soll_field_output_test_generateInputField.html' ), $output ); // phpcs:ignore
 	}
 

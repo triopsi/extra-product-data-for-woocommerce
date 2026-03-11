@@ -357,23 +357,24 @@ class TestExprdawcOrderHelper extends WP_UnitTestCase {
 	 * Verifies that field metadata array is built correctly.
 	 */
 	public function test_buildFieldMetadataArray() {
-		$custom_fields = array(
+		$field_payloads = array(
 			array(
-				'label' => 'Test Field 1',
-				'type'  => 'text',
+				'field_raw' => array(
+					'label' => 'Test Field 1',
+					'type'  => 'text',
+				),
+				'value'     => 'Value 1',
 			),
 			array(
-				'label' => 'Test Field 2',
-				'type'  => 'number',
+				'field_raw' => array(
+					'label' => 'Test Field 2',
+					'type'  => 'number',
+				),
+				'value'     => '42',
 			),
 		);
 
-		$field_values = array(
-			'test_field_1' => 'Value 1',
-			'test_field_2' => '42',
-		);
-
-		$result = OrderHelper::buildFieldMetadataArray( $custom_fields, $field_values );
+		$result = OrderHelper::buildFieldMetadataArray( $field_payloads );
 
 		$this->assertIsArray( $result );
 		$this->assertCount( 2, $result );
@@ -390,18 +391,17 @@ class TestExprdawcOrderHelper extends WP_UnitTestCase {
 	 * Verifies that array values are converted to comma-separated strings.
 	 */
 	public function test_buildFieldMetadataArray_with_array_values() {
-		$custom_fields = array(
+		$field_payloads = array(
 			array(
-				'label' => 'Checkbox Field',
-				'type'  => 'checkbox',
+				'field_raw' => array(
+					'label' => 'Checkbox Field',
+					'type'  => 'checkbox',
+				),
+				'value'     => array( 'opt1', 'opt2', 'opt3' ),
 			),
 		);
 
-		$field_values = array(
-			'checkbox_field' => array( 'opt1', 'opt2', 'opt3' ),
-		);
-
-		$result = OrderHelper::buildFieldMetadataArray( $custom_fields, $field_values );
+		$result = OrderHelper::buildFieldMetadataArray( $field_payloads );
 
 		$this->assertIsArray( $result );
 		$this->assertEquals( 'opt1, opt2, opt3', $result[0]['value'] );

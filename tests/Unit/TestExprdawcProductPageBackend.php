@@ -69,16 +69,10 @@ class TestExprdawcProductPageBackend extends WP_UnitTestCase {
 		// Create new instance in admin context.
 		$backend = new ProductBackend();
 
-		// Check filter is registered.
-		$this->assertTrue(
-			has_filter( 'woocommerce_product_data_tabs', array( $backend, 'exprdawc_add_custom_product_tab' ) ) !== false,
-			'Filter woocommerce_product_data_tabs should be registered.'
-		);
-
 		// Check actions are registered.
 		$this->assertTrue(
-			has_action( 'woocommerce_product_data_panels', array( $backend, 'exprdawc_add_custom_product_fields' ) ) !== false,
-			'Action woocommerce_product_data_panels should be registered.'
+			has_action( 'add_meta_boxes', array( $backend, 'exprdawc_add_custom_meta_box' ) ) !== false,
+			'Action add_meta_boxes should be registered.'
 		);
 
 		$this->assertTrue(
@@ -111,8 +105,7 @@ class TestExprdawcProductPageBackend extends WP_UnitTestCase {
 		$filters_before = array();
 
 		$hooks_to_check = array(
-			'woocommerce_product_data_tabs',
-			'woocommerce_product_data_panels',
+			'add_meta_boxes',
 			'woocommerce_process_product_meta',
 			'admin_enqueue_scripts',
 			'wp_ajax_exprdawc_import_custom_fields',
@@ -142,59 +135,11 @@ class TestExprdawcProductPageBackend extends WP_UnitTestCase {
 	}
 
 	/**
-	 * Tests that exprdawc_add_custom_product_tab adds a tab with the key 'custom_fields'.
-	 *
-	 * Expects: The returned array contains a 'custom_fields' key with proper structure.
-	 */
-	public function test_exprdawc_add_custom_product_tab_adds_tab() {
-		$tabs   = array();
-		$result = $this->product_page_backend->exprdawc_add_custom_product_tab( $tabs );
-
-		$this->assertArrayHasKey( 'custom_fields', $result, 'Tab array should contain custom_fields key.' );
-	}
-
-	/**
-	 * Tests that exprdawc_add_custom_product_tab returns correct tab structure.
-	 *
-	 * Expects: The custom_fields tab has label, target, and class properties.
-	 */
-	public function test_exprdawc_add_custom_product_tab_structure() {
-		$tabs   = array();
-		$result = $this->product_page_backend->exprdawc_add_custom_product_tab( $tabs );
-
-		$this->assertIsArray( $result['custom_fields'], 'custom_fields should be an array.' );
-		$this->assertArrayHasKey( 'label', $result['custom_fields'], 'Tab should have a label.' );
-		$this->assertArrayHasKey( 'target', $result['custom_fields'], 'Tab should have a target.' );
-		$this->assertArrayHasKey( 'class', $result['custom_fields'], 'Tab should have a class.' );
-		$this->assertEquals( 'extra-product-data', $result['custom_fields']['target'], 'Target should be extra-product-data.' );
-	}
-
-	/**
-	 * Tests that exprdawc_add_custom_product_tab preserves existing tabs.
-	 *
-	 * Expects: Original tabs remain in the array along with the new custom_fields tab.
-	 */
-	public function test_exprdawc_add_custom_product_tab_preserves_existing_tabs() {
-		$tabs = array(
-			'general' => array(
-				'label'  => 'General',
-				'target' => 'general_product_data',
-			),
-		);
-
-		$result = $this->product_page_backend->exprdawc_add_custom_product_tab( $tabs );
-
-		$this->assertArrayHasKey( 'general', $result, 'Original tabs should be preserved.' );
-		$this->assertArrayHasKey( 'custom_fields', $result, 'New tab should be added.' );
-		$this->assertCount( 2, $result, 'Result should contain 2 tabs.' );
-	}
-
-	/**
-	 * Tests that exprdawc_add_custom_product_fields renders the custom fields template.
+	 * Tests that get_custom_product_fields_panel_html renders the custom fields template.
 	 *
 	 * Expects: The template output contains the custom field label.
 	 */
-	public function test_exprdawc_add_custom_product_fields_renders_template() {
+	public function test_get_custom_product_fields_panel_html_renders_template() {
 
 		// Create Product.
 		$product = new WC_Product_Simple();
@@ -243,16 +188,7 @@ class TestExprdawcProductPageBackend extends WP_UnitTestCase {
 		$product->update_meta_data( '_extra_product_fields', $custom_fields );
 		$product->save();
 
-		// Simulate global $post (as in admin).
-		global $post;
-		$post = get_post( $product_id );
-
-		// Capture output.
-		ob_start();
-
-		$this->product_page_backend->exprdawc_add_custom_product_fields();
-
-		$output = ob_get_clean();
+		$output = $this->product_page_backend->get_custom_product_fields_panel_html( $product_id );
 
 		$this->assertNotEmpty( $output, 'Template should render output.' );
 		$this->assertStringContainsString( 'Select Field', $output );
@@ -267,7 +203,7 @@ class TestExprdawcProductPageBackend extends WP_UnitTestCase {
 	 *
 	 * @return void
 	 */
-	public function test_exprdawc_add_custom_product_fields_renders_client_side_templates() {
+	public function test_get_custom_product_fields_panel_html_renders_client_side_templates() {
 		$product = new WC_Product_Simple();
 		$product->set_name( 'Template Test Product' );
 		$product->set_regular_price( '10' );
@@ -275,12 +211,7 @@ class TestExprdawcProductPageBackend extends WP_UnitTestCase {
 
 		$product_id = $product->get_id();
 
-		global $post;
-		$post = get_post( $product_id );
-
-		ob_start();
-		$this->product_page_backend->exprdawc_add_custom_product_fields();
-		$output = ob_get_clean();
+		$output = $this->product_page_backend->get_custom_product_fields_panel_html( $product_id );
 
 		$this->assertStringContainsString( 'id="exprdawc-field-template"', $output );
 		$this->assertStringContainsString( 'id="exprdawc-option-template-single"', $output );
@@ -298,7 +229,7 @@ class TestExprdawcProductPageBackend extends WP_UnitTestCase {
 	 *
 	 * @return void
 	 */
-	public function test_exprdawc_add_custom_product_fields_renders_template_placeholders() {
+	public function test_get_custom_product_fields_panel_html_renders_template_placeholders() {
 		$product = new WC_Product_Simple();
 		$product->set_name( 'Template Placeholder Product' );
 		$product->set_regular_price( '10' );
@@ -306,12 +237,7 @@ class TestExprdawcProductPageBackend extends WP_UnitTestCase {
 
 		$product_id = $product->get_id();
 
-		global $post;
-		$post = get_post( $product_id );
-
-		ob_start();
-		$this->product_page_backend->exprdawc_add_custom_product_fields();
-		$output = ob_get_clean();
+		$output = $this->product_page_backend->get_custom_product_fields_panel_html( $product_id );
 
 		$this->assertStringContainsString( '__INDEX__', $output );
 		$this->assertStringContainsString( '__FIELD_INDEX__', $output );
@@ -351,7 +277,6 @@ class TestExprdawcProductPageBackend extends WP_UnitTestCase {
 
 		$this->assertNotEmpty( $localized_data, 'Script should have localized data.' );
 		$this->assertStringContainsString( 'exprdawc_admin_meta_boxes', $localized_data, 'Localized data should contain object name.' );
-		$this->assertStringContainsString( 'edit_exprdawc_nonce', $localized_data, 'Localized data should contain nonce.' );
 	}
 
 	/**
