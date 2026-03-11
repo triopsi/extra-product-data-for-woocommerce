@@ -100,6 +100,7 @@ table.exprdawc_fields_table tbody td.exprdawc_actions {
 }
 table.exprdawc_fields_table tbody td input[type=text],
 table.exprdawc_fields_table tbody td input[type=number],
+table.exprdawc_fields_table tbody td input[type=email],
 table.exprdawc_fields_table tbody td textarea {
   width: 100%;
   padding: 5px;

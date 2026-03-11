@@ -271,7 +271,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 				</table>
 
 				<!-- Text Option/Settings -->
-				<table class="exprdawc_settings_table exprdawc_text_table" style="display:<?php echo 'text' === $field['type'] ? 'table' : 'none'; ?>">
+				<table class="exprdawc_settings_table exprdawc_text_table" style="display:<?php echo in_array( $field['type'], array( 'text', 'date' ) ) ? 'table' : 'none'; ?>">
 					<tbody>
 						<tr>
 							<td>
@@ -290,7 +290,43 @@ if ( ! defined( 'ABSPATH' ) ) {
 					</tbody>
 				</table>
 
-				<!-- Checbox, Radio, Select Area Option/Settings -->
+				<!-- Number Option/Settings -->
+				<table class="exprdawc_settings_table exprdawc_number_table" style="display:<?php echo 'number' === $field['type'] ? 'table' : 'none'; ?>">
+					<tbody>
+						<tr>
+							<td>
+								<label class="exprdawc_label" for="exprdawc_number_min_<?php echo esc_html( $index ); ?>"><?php esc_html_e( 'Min value', 'extra-product-data-for-woocommerce' ); ?></label>
+								<input type="number" id="exprdawc_number_min_<?php echo esc_html( $index ); ?>" class="exprdawc_input exprdawc_number_min" name="extra_product_fields[<?php echo esc_html( $index ); ?>][min]" value="<?php echo esc_attr( $field['min'] ?? '0' ); ?>" />
+							</td>
+							<td>
+								<label class="exprdawc_label" for="exprdawc_number_max_<?php echo esc_html( $index ); ?>"><?php esc_html_e( 'Max value', 'extra-product-data-for-woocommerce' ); ?></label>
+								<input type="number" id="exprdawc_number_max_<?php echo esc_html( $index ); ?>" class="exprdawc_input exprdawc_number_max" name="extra_product_fields[<?php echo esc_html( $index ); ?>][max]" value="<?php echo esc_attr( $field['max'] ?? '100' ); ?>" />
+							</td>
+							<td>
+								<label class="exprdawc_label" for="exprdawc_number_step_<?php echo esc_html( $index ); ?>"><?php esc_html_e( 'Step', 'extra-product-data-for-woocommerce' ); ?></label>
+								<input type="number" id="exprdawc_number_step_<?php echo esc_html( $index ); ?>" class="exprdawc_input exprdawc_number_step" name="extra_product_fields[<?php echo esc_html( $index ); ?>][step]" value="<?php echo esc_attr( $field['step'] ?? '1' ); ?>" />
+							</td>
+							<td>
+								<label class="exprdawc_label" for="exprdawc_number_default_<?php echo esc_html( $index ); ?>"><?php esc_html_e( 'Default Value', 'extra-product-data-for-woocommerce' ); ?></label>
+								<input type="number" id="exprdawc_number_default_<?php echo esc_html( $index ); ?>" class="exprdawc_input exprdawc_number_default" placeholder="<?php esc_html_e( 'Enter a default number', 'extra-product-data-for-woocommerce' ); ?>" name="extra_product_fields[<?php echo esc_html( $index ); ?>][default]" value="<?php echo esc_attr( $field['default'] ?? '' ); ?>" />
+							</td>
+						</tr>
+					</tbody>
+				</table>
+
+				<!-- E-Mail Option/Settings -->
+				<table class="exprdawc_settings_table exprdawc_email_table" style="display:<?php echo 'email' === $field['type'] ? 'table' : 'none'; ?>">
+					<tbody>
+						<tr>
+							<td>
+								<label class="exprdawc_label" for="exprdawc_email_default_<?php echo esc_html( $index ); ?>"><?php esc_html_e( 'Default Value', 'extra-product-data-for-woocommerce' ); ?></label>
+								<input type="email" id="exprdawc_email_default_<?php echo esc_html( $index ); ?>" class="exprdawc_input exprdawc_email_default" placeholder="<?php esc_html_e( 'Enter a default email', 'extra-product-data-for-woocommerce' ); ?>" name="extra_product_fields[<?php echo esc_html( $index ); ?>][email_default]" value="<?php echo esc_attr( $field['email_default'] ?? '' ); ?>" />
+							</td>
+						</tr>
+					</tbody>
+				</table>
+
+				<!-- Checkbox, Radio, Select Area Option/Settings -->
 				<table class="exprdawc_options_table" style="display:<?php echo empty( $field['options'] ) ? 'none' : 'table'; ?>">
 					<thead>
 						<tr>

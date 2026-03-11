@@ -219,10 +219,22 @@ jQuery(function ($) {
                 $optionsRow.find('.exprdawc_long_text_table').hide();
             }
 
-            if ($(e.currentTarget).val() === 'text' || $(e.currentTarget).val() === 'email' || $(e.currentTarget).val() === 'number' || $(e.currentTarget).val() === 'date') {
+            if ($(e.currentTarget).val() === 'text' || $(e.currentTarget).val() === 'date') {
                 $optionsRow.find('.exprdawc_text_table').show();
             } else {
                 $optionsRow.find('.exprdawc_text_table').hide();
+            }
+
+            if ($(e.currentTarget).val() === 'number') {
+                $optionsRow.find('.exprdawc_number_table').show();
+            } else {
+                $optionsRow.find('.exprdawc_number_table').hide();
+            }
+
+            if ($(e.currentTarget).val() === 'email') {
+                $optionsRow.find('.exprdawc_email_table').show();
+            } else {
+                $optionsRow.find('.exprdawc_email_table').hide();
             }
 
             if ($adjustPriceCheckbox.length) {

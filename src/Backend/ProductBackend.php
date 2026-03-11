@@ -193,6 +193,11 @@ class ProductBackend implements Hookable {
 						$default = $long_text_default;
 					}
 
+					$email_default = isset( $field['email_default'] ) ? sanitize_email( $field['email_default'] ) : '';
+					if ( ! empty( $email_default ) ) {
+						$default = $email_default;
+					}
+
 					if ( 'long_text' === $type ) {
 						$minlength = isset( $field['min_length_longtext'] ) ? absint( $field['min_length_longtext'] ) : 0;
 						$maxlength = isset( $field['max_length_longtext'] ) ? absint( $field['max_length_longtext'] ) : 0;
@@ -203,6 +208,10 @@ class ProductBackend implements Hookable {
 
 					$rows = isset( $field['rows'] ) ? absint( $field['rows'] ) : 0;
 					$cols = isset( $field['cols'] ) ? absint( $field['cols'] ) : 0;
+
+					$step = isset( $field['step'] ) ? sanitize_text_field( $field['step'] ) : '';
+					$min  = isset( $field['min'] ) ? sanitize_text_field( $field['min'] ) : '';
+					$max  = isset( $field['max'] ) ? sanitize_text_field( $field['max'] ) : '';
 
 					if ( empty( $label ) || ! is_string( $label ) ) {
 						return;
@@ -239,6 +248,10 @@ class ProductBackend implements Hookable {
 						'adjust_price'          => $adjust_price,
 						'price_adjustment_type' => $price_adjustment_type,
 						'priceAdjustmentValue'  => $priceAdjustmentValue,
+						'step'                  => $step,
+						'min'                   => $min,
+						'max'                   => $max,
+						'email_default'         => $email_default,
 					);
 				},
 				$extra_product_fields

@@ -147,6 +147,9 @@ class Helper {
 			'conditional_rules'     => array(),
 			'rows'                  => 2,
 			'cols'                  => 5,
+			'step'                  => '',
+			'min'                   => '',
+			'max'                   => '',
 		);
 	}
 
@@ -332,6 +335,18 @@ class Helper {
 				$dataKey           = 'data-' . strtolower( str_replace( '_', '-', $key ) );
 				$attrs[ $dataKey ] = esc_attr( $val );
 			}
+		}
+
+		if ( ! empty( $fieldArgs['step'] ) ) {
+			$attrs['step'] = esc_attr( $fieldArgs['step'] );
+		}
+
+		if ( ! empty( $fieldArgs['min'] ) ) {
+			$attrs['min'] = esc_attr( $fieldArgs['min'] );
+		}
+
+		if ( ! empty( $fieldArgs['max'] ) ) {
+			$attrs['max'] = esc_attr( $fieldArgs['max'] );
 		}
 
 		$attrs                                 = array_filter( $attrs, 'strlen' );
