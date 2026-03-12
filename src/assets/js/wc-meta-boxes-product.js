@@ -29,7 +29,6 @@ jQuery(function ($) {
 
             const $fields = $('#exprdawc_field_body').find('tr.exprdawc_attribute');
             this.fieldIndex = $fields.length;
-            this.fieldIndex = $('#exprdawc_field_body tr.exprdawc_attribute').length;
 
             this.isDirty = false;
 
@@ -68,10 +67,12 @@ jQuery(function ($) {
             $(document).on('change keyup keydown input', '.field_option_table_value_td input', this.syncOptionValueToDefault.bind(this));
             $(document).on('click', '.exprdawc_copy_custom_field', this.exprdawc_copy_custom_field.bind(this));
             $(document).on('change keyup keydown input', 'input.field_name', this.updateConditionalFieldOptions.bind(this));
+            $(document).on('input', '.exprdawc_label', this.validateUniqueLabels.bind(this));
 
             // Inits
             this.toggleConditionalValueFieldAll();
             this.initFieldTypeSettings();
+            this.togglePriceAdjustmentTableAll();
 
             // Attribute ordering.
             $('.exprdawc_field_table tbody').sortable({
@@ -90,7 +91,7 @@ jQuery(function ($) {
                 stop: function (event, ui) {
                     ui.item.removeAttr('style');
                 },
-                update: function (event, ui) {
+                update: (event, ui) => {
                     this.updateFieldIndices();
                 },
             });
@@ -112,6 +113,9 @@ jQuery(function ($) {
                     },
                     stop: function (event, ui) {
                         ui.item.removeAttr('style');
+                    },
+                    update: (event, ui) => {
+                        this.updateFieldIndices();
                     },
                 });
             });
@@ -136,271 +140,40 @@ jQuery(function ($) {
         addCustomField() {
             this.fieldIndex++;
             this.setDirty();
-            $('#exprdawc_field_body').append(
-                `
-                <tr class="exprdawc_fields_wrapper">
-                <td colspan="5">
-                <table class="exprdawc_fields_table" data-index="${this.fieldIndex}">
-	                <tbody>
-                        <tr class="exprdawc_attribute">
-                            <td class="move"><i class="dashicons dashicons-move"></i></td>
-                            <td class="cl-arr"><i class="dashicons dashicons-arrow-up toggle-options"></i></td>
-                            <td class="exprdawc_attribute_input_name">
-                                <input type="text" class="exprdawc_input exprdawc_textinput exprdawc_label field_name" name="extra_product_fields[${this.fieldIndex}][label]" placeholder="${exprdawc_admin_meta_boxes.label_placeholder}" />
-                            </td>
-                            <td>
-                                <select id="exprdawc_attribute_type_${this.fieldIndex}" name="extra_product_fields[${this.fieldIndex}][type]" class="exprdawc_attribute_type">
-                                    <option value="text">${exprdawc_admin_meta_boxes.short_text}</option>
-                                    <option value="long_text">${exprdawc_admin_meta_boxes.long_text}</option>
-                                    <option value="email">${exprdawc_admin_meta_boxes.email}</option>
-                                    <option value="number">${exprdawc_admin_meta_boxes.number}</option>
-                                    <option value="date">${exprdawc_admin_meta_boxes.date}</option>
-                                    <option value="yes-no">${exprdawc_admin_meta_boxes.yes_no}</option>
-                                    <option value="radio">${exprdawc_admin_meta_boxes.radio}</option>
-                                    <option value="checkbox">${exprdawc_admin_meta_boxes.checkbox}</option>
-                                    <option value="select">${exprdawc_admin_meta_boxes.select}</option>
-                                </select>
-                            </td>
-                            <td>
-                                <button type="button" class="exprdawc_remove_custom_field button"><i class="dashicons dashicons-trash"></i></button>
-                                <button type="button" class="button exprdawc_copy_custom_field"><i class="dashicons dashicons-admin-page"></i></button>
-                                <input type="hidden" class="exprdawc_attribute_index" name="extra_product_fields[${this.fieldIndex}][index]" value="${this.fieldIndex}"/>
-                            </td>
-                        </tr>
-                        <tr class="exprdawc_options" style="display: none;">
-                            <td colspan="5">
+            const template = $('#exprdawc-field-template').html();
+            if (!template) {
+                console.error('exprdawc: field template not found');
+                return;
+            }
 
-                                <table class="exprdawc_settings_table exprdawc_general_table">
-                                    <tbody>
+            const fieldHtml = template.replaceAll('__INDEX__', String(this.fieldIndex)).replaceAll('__ID__', this.generateID());
 
-                                        <!-- Text Area Option/Settings -->
-                                        <tr>
-                                            <td class="exprdawc_attribute_require_checkbox">
-                                                <label class="exprdawc_label" for="exprdawc_text_required_${this.fieldIndex}">
-                                                    <input type="checkbox" id="exprdawc_text_required_${this.fieldIndex}" class="exprdawc_input exprdawc_checkbox checkbox" name="extra_product_fields[${this.fieldIndex}][required]" value="1" />
-                                                    ${exprdawc_admin_meta_boxes.require_input}
-                                                </label>                                       
-                                                <label class="exprdawc_label" for="exprdawc_text_autofocus_${this.fieldIndex}">
-                                                    <input type="checkbox" id="exprdawc_text_autofocus_${this.fieldIndex}" class="exprdawc_input exprdawc_checkbox checkbox" name="extra_product_fields[${this.fieldIndex}][autofocus]" value="1" />
-                                                    ${exprdawc_admin_meta_boxes.enable_autofocus}
-                                                </label>
-                                                <label class="exprdawc_label" for="exprdawc_text_editable_${this.fieldIndex}">
-                                                    <input type="checkbox" id="exprdawc_text_editable_${this.fieldIndex}" class="exprdawc_input exprdawc_checkbox exprdawc_editable_field checkbox" name="extra_product_fields[${this.fieldIndex}][editable]" value="1" />
-                                                    ${exprdawc_admin_meta_boxes.enable_editable}
-                                                </label>
-
-                                                <!-- Enable Conditional Logic and show table -->
-                                                <label class="exprdawc_label" for="exprdawc_text_conditional_logic_${this.fieldIndex}">
-                                                    <input type="checkbox" id="exprdawc_text_conditional_logic_${this.fieldIndex}" class="exprdawc_input exprdawc_checkbox exprdawc_conditional_logic_field checkbox" name="extra_product_fields[${this.fieldIndex}][conditional_logic]" value="1" />
-                                                    ${exprdawc_admin_meta_boxes.enable_conditional_logic}
-                                                </label>
-
-                                                <!-- Enable Price Adjustment and show table -->
-                                                <label class="exprdawc_label" for="exprdawc_text_price_adjustment_${this.fieldIndex}">
-                                                    <input type="checkbox" id="exprdawc_text_price_adjustment_${this.fieldIndex}" class="exprdawc_input exprdawc_checkbox exprdawc_adjust_price_field checkbox" name="extra_product_fields[${this.fieldIndex}][adjust_price]" value="1" />
-                                                    ${exprdawc_admin_meta_boxes.enable_price_adjustment}
-                                                </label>
-
-                                            </td>
-                                            <td class="exprdawc_attribute_placeholder_text">
-                                                <label class="exprdawc_label" for="exprdawc_text_placeholder_text_${this.fieldIndex}">${exprdawc_admin_meta_boxes.placeholder_text}</label>
-                                                <input type="text" id="exprdawc_text_placeholder_text_${this.fieldIndex}" class="exprdawc_input exprdawc_textinput exprdawc_placeholder" name="extra_product_fields[${this.fieldIndex}][placeholder_text]" placeholder="${exprdawc_admin_meta_boxes.placeholder_text}" />
-                                            </td>
-                                            <td class="exprdawc_attribute_help_text">
-                                                <label class="exprdawc_label" for="exprdawc_text_help_text_${this.fieldIndex}">${exprdawc_admin_meta_boxes.help_text}</label>
-                                                <input type="text" id="exprdawc_text_help_text_${this.fieldIndex}" class="exprdawc_input exprdawc_textinput exprdawc_helptext" name="extra_product_fields[${this.fieldIndex}][help_text]" placeholder="${exprdawc_admin_meta_boxes.help_text}" />
-                                            </td>
-                                            <td>
-                                                <label class="exprdawc_label" for="exprdawc_autocomplete_function_${this.fieldIndex}">${exprdawc_admin_meta_boxes.autocomplete_function}</label>
-                                                <select id="exprdawc_autocomplete_function_${this.fieldIndex}" name="extra_product_fields[${this.fieldIndex}][autocomplete]" class="exprdawc_input exprdawc_attribute_type">
-                                                    <option value="on">${exprdawc_admin_meta_boxes.autocomplete_on}</option>
-                                                    <option value="off">${exprdawc_admin_meta_boxes.autocomplete_off}</option>
-                                                    <option value="address-level1">${exprdawc_admin_meta_boxes.address_level1}</option>
-                                                    <option value="address-level2">${exprdawc_admin_meta_boxes.address_level2}</option>
-                                                    <option value="address-level3">${exprdawc_admin_meta_boxes.address_level3}</option>
-                                                    <option value="address-level4">${exprdawc_admin_meta_boxes.address_level4}</option>
-                                                    <option value="address-line1">${exprdawc_admin_meta_boxes.address_line1}</option>
-                                                    <option value="address-line2">${exprdawc_admin_meta_boxes.address_line2}</option>
-                                                    <option value="address-line3">${exprdawc_admin_meta_boxes.address_line3}</option>
-                                                    <option value="bday">${exprdawc_admin_meta_boxes.bday}</option>
-                                                    <option value="bday-day">${exprdawc_admin_meta_boxes.bday_day}</option>
-                                                    <option value="bday-month">${exprdawc_admin_meta_boxes.bday_month}</option>
-                                                    <option value="bday-year">${exprdawc_admin_meta_boxes.bday_year}</option>
-                                                    <option value="cc-additional-name">${exprdawc_admin_meta_boxes.cc_additional_name}</option>
-                                                    <option value="cc-csc">${exprdawc_admin_meta_boxes.cc_csc}</option>
-                                                    <option value="cc-exp">${exprdawc_admin_meta_boxes.cc_exp}</option>
-                                                    <option value="cc-exp-month">${exprdawc_admin_meta_boxes.cc_exp_month}</option>
-                                                    <option value="cc-exp-year">${exprdawc_admin_meta_boxes.cc_exp_year}</option>
-                                                    <option value="cc-family-name">${exprdawc_admin_meta_boxes.cc_family_name}</option>
-                                                    <option value="cc-given-name">${exprdawc_admin_meta_boxes.cc_given_name}</option>
-                                                    <option value="cc-name">${exprdawc_admin_meta_boxes.cc_name}</option>
-                                                    <option value="cc-number">${exprdawc_admin_meta_boxes.cc_number}</option>
-                                                    <option value="cc-type">${exprdawc_admin_meta_boxes.cc_type}</option>
-                                                    <option value="country">${exprdawc_admin_meta_boxes.country}</option>
-                                                    <option value="country-name">${exprdawc_admin_meta_boxes.country_name}</option>
-                                                    <option value="email">${exprdawc_admin_meta_boxes.email}</option>
-                                                    <option value="language">${exprdawc_admin_meta_boxes.language}</option>
-                                                    <option value="photo">${exprdawc_admin_meta_boxes.photo}</option>
-                                                    <option value="postal-code">${exprdawc_admin_meta_boxes.postal_code}</option>
-                                                    <option value="sex">${exprdawc_admin_meta_boxes.sex}</option>
-                                                    <option value="street-address">${exprdawc_admin_meta_boxes.street_address}</option>
-                                                    <option value="tel">${exprdawc_admin_meta_boxes.tel}</option>
-                                                    <option value="tel-area-code">${exprdawc_admin_meta_boxes.tel_area_code}</option>
-                                                    <option value="tel-country-code">${exprdawc_admin_meta_boxes.tel_country_code}</option>
-                                                    <option value="tel-extension">${exprdawc_admin_meta_boxes.tel_extension}</option>
-                                                    <option value="tel-local">${exprdawc_admin_meta_boxes.tel_local}</option>
-                                                    <option value="tel-local-prefix">${exprdawc_admin_meta_boxes.tel_local_prefix}</option>
-                                                    <option value="tel-local-suffix">${exprdawc_admin_meta_boxes.tel_local_suffix}</option>
-                                                    <option value="tel-national">${exprdawc_admin_meta_boxes.tel_national}</option>
-                                                    <option value="transaction-amount">${exprdawc_admin_meta_boxes.transaction_amount}</option>
-                                                    <option value="transaction-currency">${exprdawc_admin_meta_boxes.transaction_currency}</option>
-                                                    <option value="url">${exprdawc_admin_meta_boxes.url}</option>
-                                                </select>
-                                            </td>
-                                        </tr>
-                                    </tbody>
-                                </table>
-                                <hr>
-
-                                <!-- Price Adjustment -->
-                                <table class="exprdawc_settings_table exprdawc_price_adjustment_table" style="display:none;">
-                                    <tbody>
-                                        <tr>
-                                            <td>
-                                                <label class="exprdawc_label" for="exprdawc_price_adjustment_type_${this.fieldIndex}">${exprdawc_admin_meta_boxes.price_adjustment_type}</label>
-                                                <select id="exprdawc_price_adjustment_type_${this.fieldIndex}" name="extra_product_fields[${this.fieldIndex}][price_adjustment_type]" class="exprdawc_input exprdawc_price_adjustment_type">
-                                                    <option value="fixed">${exprdawc_admin_meta_boxes.fixed}</option>
-                                                    <option vlaue="quantity">${exprdawc_admin_meta_boxes.quantity}</option>
-                                                    <option value="percentage">${exprdawc_admin_meta_boxes.percentage}</option>
-                                                </select>
-                                            </td>
-                                            <td>
-                                                <label class="exprdawc_label" for="exprdawc_price_adjustment_value_${this.fieldIndex}">${exprdawc_admin_meta_boxes.price_adjustment_value}</label>
-                                                <input type="number" id="exprdawc_price_adjustment_value_${this.fieldIndex}" class="exprdawc_input exprdawc_price_adjustment_value" placeholder="0.00" name="extra_product_fields[${this.fieldIndex}][price_adjustment_value]" value="0" />
-                                            </td>
-                                        </tr>
-                                    </tbody>
-                                </table>
-
-                                <!-- Conditional Logic -->
-				                <table class="exprdawc_settings_table exprdawc_conditional_logic_table" style="display:none;">
-                                    <tbody>
-                                        <tr>
-                                           <td colspan="3">
-                                                <label class="exprdawc_label">${exprdawc_admin_meta_boxes.conditionals}</label>
-								                <p>${exprdawc_admin_meta_boxes.conditionals_description}</p>
-                                                <div class="exprdawc_conditional_rules">
-                                                    <div class="exprdawc_rule_group_container">
-                                                        <div class="exprdawc_rule_group">
-                                                            <div class="exprdawc_rule">
-                                                                <select name="extra_product_fields[${this.fieldIndex}][conditional_rules][0][0][field]" class="exprdawc_input exprdawc_conditional_field">
-                                                                <option value="">${exprdawc_admin_meta_boxes.selectFieldNone}</option>
-                                                                ${this.getAllFieldsOptions()}
-                                                                </select>
-                                                                <select name="extra_product_fields[${this.fieldIndex}][conditional_rules][0][0][operator]" class="exprdawc_input exprdawc_conditional_operator">
-                                                                    <option value="field_is_empty">${exprdawc_admin_meta_boxes.field_is_empty}</option>
-                                                                    <option value="field_is_not_empty">${exprdawc_admin_meta_boxes.field_is_not_empty}</option>
-                                                                    <option value="equals">${exprdawc_admin_meta_boxes.equals}</option>
-                                                                    <option value="not_equals">${exprdawc_admin_meta_boxes.notEquals}</option>
-                                                                    <option value="greater_than">${exprdawc_admin_meta_boxes.greaterThan}</option>
-                                                                    <option value="less_than">${exprdawc_admin_meta_boxes.lessThan}</option>
-                                                                </select>
-                                                                <input type="text" name="extra_product_fields[${this.fieldIndex}][conditional_rules][0][0][value]" class="exprdawc_input exprdawc_conditional_value" placeholder="${exprdawc_admin_meta_boxes.enterValue}" style="display:none;" />
-                                                                <button type="button" class="button remove_rule"><i class="dashicons dashicons-trash"></i></button>
-                                                                <button type="button" class="button add_rule">${exprdawc_admin_meta_boxes.and}</button>
-                                                            </div>
-                                                        </div>
-                                                    </div>
-                                                </div>
-                                            </td>                                            
-                                        </tr>
-                                    </tbody>
-                                </table>
-
-
-                                <!-- Text Area Option/Settings -->
-                                <table class="exprdawc_settings_table exprdawc_long_text_table" style="display:none;">
-                                    <tbody>
-                                        <tr>
-                                            <td>
-                                                <label class="exprdawc_label" for="exprdawc_long_text_rows_${this.fieldIndex}">${exprdawc_admin_meta_boxes.rows}</label>
-                                                <input type="number" id="exprdawc_long_text_rows_${this.fieldIndex}" class="exprdawc_input exprdawc_long_text_rows" name="extra_product_fields[${this.fieldIndex}][rows]" value="2" />
-                                            </td>
-                                            <td>
-                                                <label class="exprdawc_label" for="exprdawc_long_text_cols_${this.fieldIndex}">${exprdawc_admin_meta_boxes.columns}</label>
-                                                <input type="number" id="exprdawc_long_text_cols_${this.fieldIndex}" class="exprdawc_input exprdawc_long_text_cols" name="extra_product_fields[${this.fieldIndex}][cols]" value="5" />
-                                            </td>
-                                            <td>
-                                                <label class="exprdawc_label" for="exprdawc_long_text_default_${this.fieldIndex}">${exprdawc_admin_meta_boxes.default_value}</label>
-                                                <textarea id="exprdawc_long_text_default_${this.fieldIndex}" class="exprdawc_textarea" rows="3" cols="30" placeholder="${exprdawc_admin_meta_boxes.enter_default_text}" name="extra_product_fields[${this.fieldIndex}][default]"></textarea>
-                                            </td>
-                                        </tr>
-                                    </tbody>
-                                </table>
-
-                                <!-- Text Option/Settings for radio, checkboxes and selects -->
-                                <table class="exprdawc_settings_table exprdawc_text_table" style="display:none;">
-                                    <tbody>
-                                        <tr>
-                                            <td>
-                                                <label class="exprdawc_label" for="exprdawc_text_min_length_${this.fieldIndex}">${exprdawc_admin_meta_boxes.min_length}</label>
-                                                <input type="number" id="exprdawc_text_min_length_${this.fieldIndex}" class="exprdawc_input exprdawc_text_min_length" name="extra_product_fields[${this.fieldIndex}][minlength]" value="0" />
-                                            </td>
-                                            <td>
-                                                <label class="exprdawc_label" for="exprdawc_text_max_length_${this.fieldIndex}">${exprdawc_admin_meta_boxes.max_length}</label>
-                                                <input type="number" id="exprdawc_text_max_length_${this.fieldIndex}" class="exprdawc_input exprdawc_text_max_length" name="extra_product_fields[${this.fieldIndex}][maxlength]" value="255" />
-                                            </td>
-                                            <td>
-                                                <label class="exprdawc_label" for="exprdawc_text_default_${this.fieldIndex}">${exprdawc_admin_meta_boxes.default_value}</label>
-                                                <input type="text" id="exprdawc_text_default_${this.fieldIndex}" class="exprdawc_input exprdawc_text_default" placeholder="${exprdawc_admin_meta_boxes.enter_default_text}" name="extra_product_fields[${this.fieldIndex}][default]" />
-                                            </td>
-                                        </tr>
-                                    </tbody>
-                                </table>
-
-                                <table class="exprdawc_options_table" style="display:none;">
-                                    <thead>
-                                        <tr>
-                                            <th></th>
-                                            <th class="field_option_table_label_th">${exprdawc_admin_meta_boxes.option_label}</th>
-                                            <th class="field_option_table_value_th">${exprdawc_admin_meta_boxes.option_value}</th>
-                                            <th class="field_option_table_selected_th">${exprdawc_admin_meta_boxes.default_selected}</th>
-                                            <th class="field_option_table_action_th">${exprdawc_admin_meta_boxes.action}</th>
-                                        </tr>
-                                    </thead>
-                                    <tbody>
-                                        <!-- Options will be dynamically added here -->
-                                    </tbody>
-                                    <tfoot>
-                                        <tr>
-                                            <td colspan="6">
-                                                <button type="button" class="button add_option">${exprdawc_admin_meta_boxes.add_option}</button>
-                                            </td>
-                                        </tr>
-                                    </tfoot>
-                                </table>
-                                <p class="exprdawc_no_entry_message" style="display: none;">${exprdawc_admin_meta_boxes.no_options}</p>
-                            </td>
-                        </tr>
-                    </tbody>
-                </table>
-                </td>
-                </tr>
-                `
-            );
+            $('#exprdawc_field_body').append(fieldHtml);
             this.noEntryContent();
 
             // Update all field indices
             this.updateFieldIndices();
+            this.updateConditionalFieldOptions();
 
             // Trigger change event to show the options.
-            $('#exprdawc_attribute_type_' + this.fieldIndex).trigger('change');
+            const $newField = $('#exprdawc_field_body tr.exprdawc_fields_wrapper').last();
+            $newField.find('.exprdawc_attribute_type').trigger('change');
+            this.togglePriceAdjustmentTableAll();
+            this.validateUniqueLabels();
+        }
+
+        /**
+         * Generate a unique ID.
+         * @returns {string} The generated ID.
+         */
+        generateID() {
+            return Math.floor(Math.random() * 10000000000).toString().padStart(10, '0');
         }
 
         /**
          * Remove a custom field.
          * @param {*} e
-         * @returns 
+         * @returns {boolean} False to prevent default action.
          */
         removeCustomField(e) {
             if (confirm(exprdawc_admin_meta_boxes.confirm_delete)) {
@@ -410,13 +183,14 @@ jQuery(function ($) {
                 // Update all field indices
                 this.updateFieldIndices();
                 this.noEntryContent();
+                this.validateUniqueLabels();
             }
             return false;
         }
 
         /**
          * Toggle options.
-         * @param {*} e 
+         * @param {*} e The event object.
          */
         toggleOptions(e) {
             this.setDirty();
@@ -425,6 +199,7 @@ jQuery(function ($) {
             const $optionsRow = $row.next('.exprdawc_options');
             const $optionsTable = $optionsRow.find('.exprdawc_options_table');
             const $placeholderText = $optionsRow.find('.exprdawc_placeholder');
+            const $adjustPriceCheckbox = $optionsRow.find('.exprdawc_adjust_price_field');
 
             if ($type === 'radio' || $type === 'checkbox' || $type === 'select') {
                 $placeholderText.prop('disabled', true);
@@ -444,10 +219,26 @@ jQuery(function ($) {
                 $optionsRow.find('.exprdawc_long_text_table').hide();
             }
 
-            if ($(e.currentTarget).val() === 'text' || $(e.currentTarget).val() === 'email' || $(e.currentTarget).val() === 'number' || $(e.currentTarget).val() === 'date') {
+            if ($(e.currentTarget).val() === 'text' || $(e.currentTarget).val() === 'date') {
                 $optionsRow.find('.exprdawc_text_table').show();
             } else {
                 $optionsRow.find('.exprdawc_text_table').hide();
+            }
+
+            if ($(e.currentTarget).val() === 'number') {
+                $optionsRow.find('.exprdawc_number_table').show();
+            } else {
+                $optionsRow.find('.exprdawc_number_table').hide();
+            }
+
+            if ($(e.currentTarget).val() === 'email') {
+                $optionsRow.find('.exprdawc_email_table').show();
+            } else {
+                $optionsRow.find('.exprdawc_email_table').hide();
+            }
+
+            if ($adjustPriceCheckbox.length) {
+                this.togglePriceAdjustmentTable({ currentTarget: $adjustPriceCheckbox.get(0) });
             }
         }
 
@@ -483,7 +274,7 @@ jQuery(function ($) {
         addOption(e) {
             this.setDirty();
             const $optionsTable = $(e.currentTarget).closest('.exprdawc_options_table');
-            const actual_index = $optionsTable.closest('.exprdawc_fields_table').data('index')
+            const actual_index = $optionsTable.closest('.exprdawc_fields_table').data('index');
 
             // Guard: if actual_index is undefined or null, log and inform the user.
             if (typeof actual_index === 'undefined' || actual_index === null) {
@@ -493,67 +284,25 @@ jQuery(function ($) {
 
             const optionIndex = $optionsTable.find('tbody tr').length;
             const fieldType = $optionsTable.closest('.exprdawc_fields_table').find('.exprdawc_attribute_type').val();
+            const isMulti = fieldType === 'checkbox';
+            const templateId = isMulti ? '#exprdawc-option-template-multi' : '#exprdawc-option-template-single';
+            const optionTemplate = $(templateId).html();
+
+            if (!optionTemplate) {
+                console.error('exprdawc: option template not found');
+                return;
+            }
+
+            const optionHtml = optionTemplate
+                .replaceAll('__FIELD_INDEX__', String(actual_index))
+                .replaceAll('__OPTION_INDEX__', String(optionIndex));
+
+            $optionsTable.find('tbody').append(optionHtml);
+
+            const isOptionBased = fieldType === 'radio' || fieldType === 'checkbox' || fieldType === 'select';
             const isPriceAdjustmentEnabled = $optionsTable.closest('.exprdawc_options').find('.exprdawc_adjust_price_field').is(':checked');
-
-            let priceAdjustmentColumns = '';
-            if (isPriceAdjustmentEnabled) {
-                priceAdjustmentColumns = `
-                    <td class="field_price_adjustment_type_${optionIndex} field_price_adjustment_type">
-                    <select name="extra_product_fields[${actual_index}][options][${optionIndex}][price_adjustment_type]" class="exprdawc_input exprdawc_price_adjustment_type">
-                        <option value="fixed">${exprdawc_admin_meta_boxes.fixed}</option>
-                        <option value="quantity">${exprdawc_admin_meta_boxes.quantity}</option>
-                        <option value="percentage">${exprdawc_admin_meta_boxes.percentage}</option>
-                    </select>
-                    </td>
-                    <td class="field_price_adjustment_value_${optionIndex} field_price_adjustment_value">
-                        <input type="number" name="extra_product_fields[${actual_index}][options][${optionIndex}][price_adjustment_value]" class="exprdawc_input exprdawc_price_adjustment_value" step="0.01" placeholder="0.00" value="0" />
-                    </td>
-                `;
-            }
-
-            if (fieldType === 'radio' || fieldType === 'select') {
-                $optionsTable.find('tbody').append(
-                    `
-                    <tr>
-                    <td class="move"><i class="dashicons dashicons-move"></i></td>
-                    <td class="field_option_table_label_td">
-                        <input type="text" name="extra_product_fields[${actual_index}][options][${optionIndex}][label]" placeholder="${exprdawc_admin_meta_boxes.option_label_placeholder}" />
-                    </td>
-                    <td class="field_option_table_value_td">
-                        <input type="text" name="extra_product_fields[${actual_index}][options][${optionIndex}][value]" placeholder="${exprdawc_admin_meta_boxes.option_value_placeholder}" />
-                    </td>
-                    <td class="field_option_table_selected_td">
-                        <input type="radio" name="extra_product_fields[${actual_index}][default]" value="${optionIndex}" />
-                    </td>
-                    ${priceAdjustmentColumns}
-                    <td class="field_option_table_action_td">
-                        <button type="button" class="button remove_option">${exprdawc_admin_meta_boxes.remove}</button>
-                    </td>
-                    </tr>
-                    `
-                );
-            } else {
-                $optionsTable.find('tbody').append(
-                    `
-                    <tr>
-                    <td class="move"><i class="dashicons dashicons-move"></i></td>
-                    <td class="field_option_table_label_td">
-                        <input type="text" name="extra_product_fields[${actual_index}][options][${optionIndex}][label]" placeholder="${exprdawc_admin_meta_boxes.option_label_placeholder}" />
-                    </td>
-                    <td class="field_option_table_value_td">
-                        <input type="text" name="extra_product_fields[${actual_index}][options][${optionIndex}][value]" placeholder="${exprdawc_admin_meta_boxes.option_value_placeholder}" />
-                    </td>
-                    <td class="field_option_table_selected_td">
-                        <input type="checkbox" name="extra_product_fields[${actual_index}][options][${optionIndex}][default]" value="1" />
-                    </td>
-                    ${priceAdjustmentColumns}
-                    <td class="field_option_table_action_td">
-                        <button type="button" class="button remove_option">${exprdawc_admin_meta_boxes.remove}</button>
-                    </td>
-                    </tr>
-                    `
-                );
-            }
+            this.updateOptionPriceAdjustmentColumns($optionsTable, isOptionBased && isPriceAdjustmentEnabled);
+            this.updateFieldIndices();
 
             this.checkOptions($optionsTable.closest('.exprdawc_options'));
         }
@@ -567,6 +316,7 @@ jQuery(function ($) {
             if (confirm(exprdawc_admin_meta_boxes.confirm_delete)) {
                 this.setDirty();
                 $(e.currentTarget).closest('tr').remove();
+                this.updateFieldIndices();
                 this.checkOptions($(e.currentTarget).closest('.exprdawc_options'));
             }
             return false;
@@ -608,15 +358,15 @@ jQuery(function ($) {
             const fieldType = $optionsTable.closest('.exprdawc_fields_table').find('.exprdawc_attribute_type').val();
 
             // For radio/select types the default is a single value input (radio)
-            if (fieldType === 'radio' || fieldType === 'select') {
-                const $targetRadio = $optionsTable.find('tbody tr').eq(optionIndex).find('input[type="radio"]');
-                if ($targetRadio.length) {
-                    $targetRadio.val(newValue);
+            if (fieldType === 'radio' || fieldType === 'select' || fieldType === 'checkbox') {
+                const $targetRadioOrCheckbox = $optionsTable.find('tbody tr').eq(optionIndex).find('input[type="radio"], input[type="checkbox"]').first();
+                if ($targetRadioOrCheckbox.length) {
+                    $targetRadioOrCheckbox.val(newValue);
                 } else {
                     // Fallback: try to find radios by name pattern and set the matching index
-                    const $radios = $optionsTable.find('input[type="radio"][name^="extra_product_fields"]');
-                    if ($radios.length > optionIndex) {
-                        $radios.eq(optionIndex).val(newValue);
+                    const $targetRadioOrCheckbox = $optionsTable.find('input[type="radio"][name^="extra_product_fields"], input[type="checkbox"][name^="extra_product_fields"]');
+                    if ($targetRadioOrCheckbox.length > optionIndex) {
+                        $targetRadioOrCheckbox.eq(optionIndex).val(newValue);
                     }
                 }
             }
@@ -696,10 +446,16 @@ jQuery(function ($) {
          */
         addRuleGroup(e) {
             const $container = $(e.currentTarget).closest('.exprdawc_conditional_logic_table').find('.exprdawc_conditional_rules');
-            const ruleGroupIndex = $container.find('.exprdawc_rule_group').length;
+            const ruleGroupIndex = $container.find('.exprdawc_rule_group_container').length;
             const actualIndex = $(e.currentTarget).closest('.exprdawc_fields_table').data('index');
             const ruleGroupHtml = this.getRuleGroupHtml(actualIndex, ruleGroupIndex);
             $container.append(ruleGroupHtml);
+
+            const $newRuleGroup = $container.find('.exprdawc_rule_group_container').last().find('.exprdawc_rule_group');
+            const ruleHtml = this.getRuleHtml(actualIndex, ruleGroupIndex, 0);
+            $newRuleGroup.append(ruleHtml);
+            this.toggleConditionalValueFieldAll();
+            this.updateFieldIndices();
         }
 
         /**
@@ -707,12 +463,16 @@ jQuery(function ($) {
          * @param {*} e 
          */
         addRule(e) {
-            const $ruleGroup = $(e.currentTarget).closest('.exprdawc_rule_group');
-            const ruleGroupIndex = $ruleGroup.index();
+            const $ruleGroupContainer = $(e.currentTarget).closest('.exprdawc_rule_group_container');
+            const $ruleGroup = $ruleGroupContainer.find('.exprdawc_rule_group').first();
+            const $allRuleGroups = $ruleGroupContainer.closest('.exprdawc_conditional_rules').find('.exprdawc_rule_group_container');
+            const ruleGroupIndex = $allRuleGroups.index($ruleGroupContainer);
             const actualIndex = $(e.currentTarget).closest('.exprdawc_fields_table').data('index');
             const ruleIndex = $ruleGroup.find('.exprdawc_rule').length;
             const ruleHtml = this.getRuleHtml(actualIndex, ruleGroupIndex, ruleIndex);
             $ruleGroup.append(ruleHtml);
+            this.toggleConditionalValueFieldAll();
+            this.updateFieldIndices();
         }
 
         /**
@@ -721,14 +481,13 @@ jQuery(function ($) {
          * @returns {string}
          */
         getRuleGroupHtml(actualIndex, ruleGroupIndex) {
-            return `
-            <div class="exprdawc_rule_group_container">
-                <h2>${exprdawc_admin_meta_boxes.or}</h2>
-                <div class="exprdawc_rule_group">
-                    ${this.getRuleHtml(actualIndex, ruleGroupIndex, 0)}
-                </div>
-            </div>
-            `;
+            const template = $('#exprdawc-rule-group-template').html();
+            if (!template) {
+                console.error('exprdawc: rule group template not found');
+                return '';
+            }
+
+            return template;
         }
 
         /**
@@ -739,25 +498,19 @@ jQuery(function ($) {
          * @returns {string}
          */
         getRuleHtml(actualIndex, ruleGroupIndex, ruleIndex) {
-            return `
-            <div class="exprdawc_rule">
-                <select name="extra_product_fields[${actualIndex}][conditional_rules][${ruleGroupIndex}][${ruleIndex}][field]" class="exprdawc_input exprdawc_conditional_field">
-                <option value="">${exprdawc_admin_meta_boxes.selectFieldNone}</option>
-                ${this.getAllFieldsOptions()}
-                </select>
-                <select name="extra_product_fields[${actualIndex}][conditional_rules][${ruleGroupIndex}][${ruleIndex}][operator]" class="exprdawc_input exprdawc_conditional_operator">
-                    <option value="field_is_empty">${exprdawc_admin_meta_boxes.field_is_empty}</option>
-                    <option value="field_is_not_empty">${exprdawc_admin_meta_boxes.field_is_not_empty}</option>
-                    <option value="equals">${exprdawc_admin_meta_boxes.equals}</option>
-                    <option value="not_equals">${exprdawc_admin_meta_boxes.notEquals}</option>
-                    <option value="greater_than">${exprdawc_admin_meta_boxes.greaterThan}</option>
-                    <option value="less_than">${exprdawc_admin_meta_boxes.lessThan}</option>
-                </select>
-                <input type="text" name="extra_product_fields[${actualIndex}][conditional_rules][${ruleGroupIndex}][${ruleIndex}][value]" class="exprdawc_input exprdawc_conditional_value" placeholder="${exprdawc_admin_meta_boxes.enterValue}" style="display:none;" />
-                <button type="button" class="button remove_rule"><i class="dashicons dashicons-trash"></i></button>
-                <button type="button" class="button add_rule">+ ${exprdawc_admin_meta_boxes.and}</button>
-            </div>
-            `;
+            const template = $('#exprdawc-rule-template').html();
+            if (!template) {
+                console.error('exprdawc: rule template not found');
+                return '';
+            }
+
+            const fieldOptions = this.getAllFieldsOptions();
+
+            return template
+                .replaceAll('__FIELD_INDEX__', String(actualIndex))
+                .replaceAll('__RULE_GROUP_INDEX__', String(ruleGroupIndex))
+                .replaceAll('__RULE_INDEX__', String(ruleIndex))
+                .replaceAll('__FIELD_OPTIONS__', fieldOptions);
         }
 
         /**
@@ -783,8 +536,8 @@ jQuery(function ($) {
 
         // Init all Rules toggleConditionalValueField
         togglePriceAdjustmentTableAll() {
-            $('.exprdawc_conditional_operator').each((index, element) => {
-                this.toggleConditionalTable({ currentTarget: element });
+            $('.exprdawc_adjust_price_field').each((index, element) => {
+                this.togglePriceAdjustmentTable({ currentTarget: element });
             });
         }
 
@@ -800,6 +553,7 @@ jQuery(function ($) {
                 if ($ruleGroup.find('.exprdawc_rule').length === 0) {
                     $ruleGroup.remove();
                 }
+                this.updateFieldIndices();
             }
             return false;
         }
@@ -812,7 +566,8 @@ jQuery(function ($) {
             let options = '';
             $('#exprdawc_field_body tr.exprdawc_attribute').each(function () {
                 const label = $(this).find('.exprdawc_attribute_input_name input').val();
-                options += `<option value="${label}">${label}</option>`;
+                const safeLabel = $('<div>').text(label).html();
+                options += `<option value="${safeLabel}">${safeLabel}</option>`;
             });
             return options;
         }
@@ -837,72 +592,45 @@ jQuery(function ($) {
          */
         togglePriceAdjustmentTable(e) {
             const checkbox = $(e.currentTarget);
-            const $table_setting = $(e.currentTarget).closest('.exprdawc_options').find('.exprdawc_price_adjustment_table');
-            const fieldType = $(e.currentTarget).closest('.exprdawc_fields_table').find('.exprdawc_attribute_type').val();
+            const $optionsRow = checkbox.closest('.exprdawc_options');
+            const $tableSetting = $optionsRow.find('.exprdawcPriceAdjustment_table, .exprdawc_price_adjustment_table');
+            const $optionsTable = $optionsRow.find('.exprdawc_options_table');
+            const fieldType = checkbox.closest('.exprdawc_fields_table').find('.exprdawc_attribute_type').val();
+            const isOptionBased = fieldType === 'radio' || fieldType === 'checkbox' || fieldType === 'select';
+            const isEnabled = checkbox.is(':checked');
 
-            console.log(fieldType);
-
-            // Only show if type are not radio, checkbox or select.
-            if (fieldType !== 'radio' && fieldType !== 'checkbox' && fieldType !== 'select') {
-                if (checkbox.is(':checked')) {
-                    $table_setting.show();
-                } else {
-                    $table_setting.hide();
-                }
-
-                // Remove extra columns if they exist
-                $('.field_price_adjustment_type_th, .field_price_adjustment_val_th').remove();
-                $('.field_price_adjustment_type, .field_price_adjustment_value').remove();
-            } else {
-                $table_setting.hide();
-
-                if (!checkbox.is(':checked')) {
-                    $('.field_price_adjustment_type_th, .field_price_adjustment_val_th').hide();
-                    $('.field_price_adjustment_type, .field_price_adjustment_value').hide();
-                } else {
-                    $('.field_price_adjustment_type_th, .field_price_adjustment_val_th').show();
-                    $('.field_price_adjustment_type, .field_price_adjustment_value').show();
-                }
-
-                const $optionsTable = $(e.currentTarget).closest('.exprdawc_options').find('.exprdawc_options_table');
-                console.log($optionsTable);
-
-                const optionIndex = $optionsTable.find('tbody tr').length;
-
-                // Add extra columns if they don't exist
-                if ($optionsTable.find('thead th.field_price_adjustment_type_th').length === 0) {
-
-                    console.log('Adding extra columns');
-                    console.log($optionsTable.find('thead th.field_option_table_action_th'));
-
-                    $optionsTable.find('thead th.field_option_table_action_th').before(`
-                        <th class="field_price_adjustment_type_th">${exprdawc_admin_meta_boxes.price_adjustment_type}</th>
-                        <th class="field_price_adjustment_val_th">${exprdawc_admin_meta_boxes.price_adjustment_value}</th>
-                    `);
-                } else {
-                    console.log('Extra columns already exist');
-                }
-
-                // Add extra columns to each row if they don't exist
-                $optionsTable.find('tbody tr').each(function () {
-                    if ($(this).find('.field_price_adjustment_type').length === 0) {
-                        $(this).find('.field_option_table_action_td').before(
-                            `
-                            <td class="field_price_adjustment_type_${optionIndex} field_price_adjustment_type">
-                                <select name="extra_product_fields[${this.fieldIndex}][options][${optionIndex}][price_adjustment_type]" class="exprdawc_input exprdawc_price_adjustment_type">
-                                    <option value="fixed">${exprdawc_admin_meta_boxes.fixed}</option>
-                                    <option value="quantity">${exprdawc_admin_meta_boxes.quantity}</option>
-                                    <option value="percentage">${exprdawc_admin_meta_boxes.percentage}</option>
-                                </select>
-                            </td>
-                            <td class="field_price_adjustment_value_${optionIndex} field_price_adjustment_value">
-                                <input type="number" name="extra_product_fields[${this.fieldIndex}][options][${optionIndex}][price_adjustment_value]" class="exprdawc_input exprdawc_price_adjustment_value" placeholder="0.00" value="0" />
-                            </td>
-                            `
-                        );
-                    }
-                });
+            if (isOptionBased) {
+                $tableSetting.hide();
+                this.updateOptionPriceAdjustmentColumns($optionsTable, isEnabled);
+                return;
             }
+
+            this.updateOptionPriceAdjustmentColumns($optionsTable, false);
+            if (isEnabled) {
+                $tableSetting.show();
+            } else {
+                $tableSetting.hide();
+            }
+        }
+
+        updateOptionPriceAdjustmentColumns($optionsTable, shouldShow) {
+            const $headerType = $optionsTable.find('thead .fieldPriceAdjustment_type_th');
+            const $headerValue = $optionsTable.find('thead .fieldPriceAdjustment_val_th');
+            const $rowType = $optionsTable.find('tbody .fieldPriceAdjustment_type');
+            const $rowValue = $optionsTable.find('tbody .field_priceAdjustmentValue');
+
+            if (shouldShow) {
+                $headerType.show();
+                $headerValue.show();
+                $rowType.show();
+                $rowValue.show();
+                return;
+            }
+
+            $headerType.hide();
+            $headerValue.hide();
+            $rowType.hide();
+            $rowValue.hide();
         }
 
         /**
@@ -915,7 +643,7 @@ jQuery(function ($) {
                 // By exprdawc_attribute_type checkbox, radio and select hide placeholder text and show options.
                 const fieldType = $(element).find('.exprdawc_attribute_type').val() || 'text';
                 const $placeholderText = $(element).find('.exprdawc_attribute_placeholder_text');
-                if (fieldType === 'radio' || fieldType === 'checkbox') {
+                if (fieldType === 'radio' || fieldType === 'checkbox' || fieldType === 'select') {
                     $placeholderText.hide();
                 } else {
                     $placeholderText.show();
@@ -933,43 +661,52 @@ jQuery(function ($) {
             this.setDirty();
             const $row = $(e.currentTarget).closest('.exprdawc_fields_wrapper');
             const $clone = $row.clone();
+            this.normalizeCopiedField($clone);
 
-            // Reset input values in the cloned row and update the fieldIndex
-            $clone.find('input, select').each(function () {
-                const $input = $(this);
+            $row.after($clone);
+            this.updateFieldIndices();
+            this.updateConditionalFieldOptions();
 
-                // If the input is a field_name and contains a number, increment the number
-                if ($input.hasClass('field_name') || $input.hasClass('exprdawc_placeholder')) {
-                    const value = $input.val();
-                    const numberMatch = value.match(/\d+$/);
-                    if (numberMatch) {
-                        const newValue = value.replace(/\d+$/, (parseInt(numberMatch[0], 10) + 1));
-                        $input.val(newValue);
-                    }
-                }
+            $clone.find('.exprdawc_attribute_type').trigger('change');
 
-                // If the input is a select.exprdawc_conditional_field and has a value, select the last option
-                if ($input.is('select.exprdawc_conditional_field') && $input.val()) {
-                    $input.find('option:last').prop('selected', true);
-                }
-
-                // Remove validation error classes
-                $input.removeClass('exprdawc-invalid-field');
+            $clone.find('.field_option_table_value_td input').each((index, element) => {
+                this.syncOptionValueToDefault({ currentTarget: element });
             });
 
-            // Remove validation error class from the row
+            this.toggleConditionalValueFieldAll();
+            this.togglePriceAdjustmentTableAll();
+            this.validateUniqueLabels();
+        }
+
+        normalizeCopiedField($clone) {
+            const $labelInput = $clone.find('input.field_name').first();
+            const labelValue = ($labelInput.val() || '').toString().trim();
+            if (labelValue !== '') {
+                $labelInput.val(this.getIncrementedCopyText(labelValue));
+            }
+
+            const $placeholderInput = $clone.find('input.exprdawc_placeholder').first();
+            const placeholderValue = ($placeholderInput.val() || '').toString().trim();
+            if (placeholderValue !== '') {
+                $placeholderInput.val(this.getIncrementedCopyText(placeholderValue));
+            }
+
+            $clone.find('input.exprdawc-invalid-field').removeClass('exprdawc-invalid-field');
             $clone.removeClass('exprdawc-validation-error');
 
-            // Append the cloned row to the table
-            $row.after($clone);
+            $clone.find('.exprdawc_option_default').prop('checked', false);
+            $clone.find('.exprdawc_conditional_field').val('');
+            $clone.find('.exprdawc_conditional_operator').val('field_is_empty');
+            $clone.find('.exprdawc_conditional_value').val('');
+        }
 
-            $('.exprdawc_attribute_type').trigger('change');
+        getIncrementedCopyText(value) {
+            const numberMatch = value.match(/\d+$/);
+            if (numberMatch) {
+                return value.replace(/\d+$/, String(parseInt(numberMatch[0], 10) + 1));
+            }
 
-            // Update all field indices
-            this.updateFieldIndices();
-
-            // Update conditional field options
-            this.updateConditionalFieldOptions();
+            return `${value} 2`;
         }
 
         /**
@@ -980,9 +717,83 @@ jQuery(function ($) {
             $('select.exprdawc_conditional_field').each(function () {
                 const $select = $(this);
                 const selectedValue = $select.val();
-                $select.html(options);
+                $select.html(`<option value="">${exprdawc_admin_meta_boxes.selectFieldNone}</option>${options}`);
                 $select.val(selectedValue);
             });
+        }
+
+        /**
+         * Validate that all non-empty labels are unique.
+         * Highlights duplicates and adds an inline note.
+         *
+         * @returns {boolean} True if labels are unique, false otherwise.
+         */
+        validateUniqueLabels() {
+            const labelGroups = new Map();
+            const $labelInputs = $('#exprdawc_field_body').find('input.exprdawc_label');
+
+            $labelInputs.each((index, element) => {
+                const $input = $(element);
+                this.clearUniqueLabelError($input);
+
+                const value = ($input.val() || '').toString().trim().toLowerCase();
+                if (!value) {
+                    return;
+                }
+
+                if (!labelGroups.has(value)) {
+                    labelGroups.set(value, []);
+                }
+
+                labelGroups.get(value).push($input);
+            });
+
+            let hasDuplicate = false;
+
+            labelGroups.forEach((group) => {
+                if (group.length <= 1) {
+                    return;
+                }
+
+                hasDuplicate = true;
+                group.forEach(($input) => {
+                    this.markUniqueLabelError($input);
+                });
+            });
+
+            return !hasDuplicate;
+        }
+
+        markUniqueLabelError($input) {
+            const $row = $input.closest('tr.exprdawc_fields_wrapper');
+            const warningText = exprdawc_admin_meta_boxes.validation_unique_warning_inline || 'Label must be unique.';
+
+            $row.addClass('exprdawc-validation-error exprdawc-duplicate-error');
+            $input.addClass('exprdawc-invalid-field exprdawc-duplicate-field');
+
+            if ($input.siblings('.exprdawc-unique-note').length === 0) {
+                $('<div />', {
+                    class: 'exprdawc-unique-note',
+                    text: warningText,
+                }).insertAfter($input);
+            }
+        }
+
+        clearUniqueLabelError($input) {
+            const $row = $input.closest('tr.exprdawc_fields_wrapper');
+            const hasValue = ($input.val() || '').toString().trim() !== '';
+
+            $row.removeClass('exprdawc-duplicate-error');
+            $input.removeClass('exprdawc-duplicate-field');
+            $input.siblings('.exprdawc-unique-note').remove();
+
+            if (hasValue) {
+                $input.removeClass('exprdawc-invalid-field');
+            }
+
+            if ($row.find('.exprdawc-invalid-field').length === 0) {
+                $row.removeClass('exprdawc-validation-error');
+            }
         }
 
         /**
@@ -993,6 +804,7 @@ jQuery(function ($) {
                 // Update the field index
                 const $row = $(element);
                 $row.find('.exprdawc_fields_table').attr('data-index', index);
+                $row.find('.exprdawc_attribute_index').val(index);
                 $(element).find('input, select').each(function () {
                     const $input = $(this);
 
@@ -1007,6 +819,55 @@ jQuery(function ($) {
                     if (id) {
                         $input.attr('id', id.replace(/_\d+$/, `_${index}`));
                     }
+                });
+
+                this.reindexOptionRows($row, index);
+                this.reindexConditionalRules($row, index);
+
+                $row.find('.field_option_table_value_td input').each((optionIndex, optionElement) => {
+                    this.syncOptionValueToDefault({ currentTarget: optionElement });
+                });
+            });
+
+            this.fieldIndex = $('#exprdawc_field_body tr.exprdawc_fields_wrapper').length;
+        }
+
+        reindexOptionRows($row, fieldIndex) {
+            $row.find('.exprdawc_options_table tbody tr').each((optionIndex, rowElement) => {
+                $(rowElement).find('input, select, textarea').each(function () {
+                    const $input = $(this);
+                    const name = $input.attr('name');
+
+                    if (!name || !name.includes('[options]')) {
+                        return;
+                    }
+
+                    const optionName = name
+                        .replace(/extra_product_fields\[\d+\]/, `extra_product_fields[${fieldIndex}]`)
+                        .replace(/\[options\]\[\d+\]/, `[options][${optionIndex}]`);
+
+                    $input.attr('name', optionName);
+                });
+            });
+        }
+
+        reindexConditionalRules($row, fieldIndex) {
+            $row.find('.exprdawc_rule_group_container').each((ruleGroupIndex, groupElement) => {
+                $(groupElement).find('.exprdawc_rule').each((ruleIndex, ruleElement) => {
+                    $(ruleElement).find('input, select').each(function () {
+                        const $input = $(this);
+                        const name = $input.attr('name');
+
+                        if (!name || !name.includes('[conditional_rules]')) {
+                            return;
+                        }
+
+                        const conditionalName = name
+                            .replace(/extra_product_fields\[\d+\]/, `extra_product_fields[${fieldIndex}]`)
+                            .replace(/\[conditional_rules\]\[\d+\]\[\d+\]/, `[conditional_rules][${ruleGroupIndex}][${ruleIndex}]`);
+
+                        $input.attr('name', conditionalName);
+                    });
                 });
             });
         }
@@ -1071,13 +932,17 @@ jQuery(function ($) {
                 }
             });
 
+            const hasUniqueErrors = !this.validateUniqueLabels();
+
             if (hasErrors) {
-                const fieldCount = errorFields.length;
-                const fieldNumbersText = errorFields.join(', ');
-                const hasMultipleErrors = fieldCount > 1;
-                console.log(exprdawc_admin_meta_boxes.validation_warning)
                 const warningMessage = exprdawc_admin_meta_boxes.validation_warning;
                 alert(warningMessage);
+                return false;
+            }
+
+            if (hasUniqueErrors) {
+                const uniqueWarningMessage = exprdawc_admin_meta_boxes.validation_unique_warning || 'Labels must be unique. Please use different label names.';
+                alert(uniqueWarningMessage);
                 return false;
             }
 

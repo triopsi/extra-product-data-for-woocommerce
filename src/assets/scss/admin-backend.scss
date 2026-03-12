@@ -98,8 +98,31 @@ table.exprdawc_fields_table {
             width: auto;
             white-space: nowrap;
 
+            &.move {
+                width: 20px;
+                max-width: 20px;
+            }
+
+            &.cl-arr {
+                width: 35px;
+                max-width: 35px;
+                .dashicons {
+                    font-size: 35px;
+                    width: 35px;
+                    height: 35px;
+                    line-height: 35px;
+                }
+            }
+
+            &.exprdawc_actions {
+                width: 80px;
+                max-width: 80px;
+                text-align: center;
+            }
+
             input[type="text"],
             input[type="number"],
+            input[type="email"],
             textarea {
                 width: 100%;
                 padding: 5px;
@@ -448,6 +471,12 @@ input.exprdawc-invalid-field {
     }
 }
 
+.exprdawc-unique-note {
+    color: #d63638;
+    font-size: 12px;
+    margin-top: 4px;
+}
+
 /**
  * Scrolle zum ersten Fehler bei Validierung
  * Hilft dem Nutzer das Problem schnell zu finden
@@ -462,5 +491,12 @@ input.exprdawc-invalid-field {
     }
     50% {
         background-color: #ffcccc;
+    }
+}
+
+.wc-pao-addons-container {
+
+    textarea {
+        width: 100%;
     }
 }

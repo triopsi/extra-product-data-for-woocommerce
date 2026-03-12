@@ -8,7 +8,7 @@
 
 declare( strict_types=1 );
 
-use Triopsi\Exprdawc\Helper\Exprdawc_Template_Helpers as H;
+use Triopsi\Exprdawc\Helpers\TemplateHelper as H;
 
 /**
  * Class TestExprdawcTemplateHelpers
@@ -144,8 +144,8 @@ class TestExprdawcTemplateHelpers extends WP_UnitTestCase {
 	 * Verifies strict comparison in array check.
 	 */
 	public function test_in_array_strict_comparison() {
-		$this->assertTrue( H::in_array( 'test', array( 'test', 'other' ) ) );
-		$this->assertFalse( H::in_array( '1', array( 1, 2, 3 ) ) );
+		$this->assertTrue( H::inArray( 'test', array( 'test', 'other' ) ) );
+		$this->assertFalse( H::inArray( '1', array( 1, 2, 3 ) ) );
 	}
 
 	/**
@@ -236,11 +236,11 @@ class TestExprdawcTemplateHelpers extends WP_UnitTestCase {
 	 * Verifies empty check for different data types.
 	 */
 	public function test_is_empty_checks_values() {
-		$this->assertTrue( H::is_empty( '' ) );
-		$this->assertTrue( H::is_empty( '   ' ) );
-		$this->assertTrue( H::is_empty( array() ) );
-		$this->assertFalse( H::is_empty( 'content' ) );
-		$this->assertFalse( H::is_empty( array( 1, 2 ) ) );
+		$this->assertTrue( H::isEmpty( '' ) );
+		$this->assertTrue( H::isEmpty( '   ' ) );
+		$this->assertTrue( H::isEmpty( array() ) );
+		$this->assertFalse( H::isEmpty( 'content' ) );
+		$this->assertFalse( H::isEmpty( array( 1, 2 ) ) );
 	}
 
 	/**
@@ -250,10 +250,10 @@ class TestExprdawcTemplateHelpers extends WP_UnitTestCase {
 	 * Verifies null check.
 	 */
 	public function test_is_set_checks_null() {
-		$this->assertTrue( H::is_set( 'value' ) );
-		$this->assertTrue( H::is_set( 0 ) );
-		$this->assertTrue( H::is_set( '' ) );
-		$this->assertFalse( H::is_set( null ) );
+		$this->assertTrue( H::isSet( 'value' ) );
+		$this->assertTrue( H::isSet( 0 ) );
+		$this->assertTrue( H::isSet( '' ) );
+		$this->assertFalse( H::isSet( null ) );
 	}
 
 	/**
@@ -292,13 +292,13 @@ class TestExprdawcTemplateHelpers extends WP_UnitTestCase {
 	}
 
 	/**
-	 * Test data_attrs builds data attributes.
+	 * Test dataAttrs builds data attributes.
 	 *
 	 * Test Goal:
 	 * Verifies data attribute generation.
 	 */
-	public function test_data_attrs_builds_attributes() {
-		$result = H::data_attrs(
+	public function testDataAttrs_builds_attributes() {
+		$result = H::dataAttrs(
 			array(
 				'price-adjustment' => '10',
 				'price-type'       => 'fixed',
@@ -310,13 +310,13 @@ class TestExprdawcTemplateHelpers extends WP_UnitTestCase {
 	}
 
 	/**
-	 * Test data_attrs skips empty values.
+	 * Test dataAttrs skips empty values.
 	 *
 	 * Test Goal:
 	 * Verifies empty values are not rendered.
 	 */
-	public function test_data_attrs_skips_empty() {
-		$result = H::data_attrs(
+	public function testDataAttrs_skips_empty() {
+		$result = H::dataAttrs(
 			array(
 				'id'    => 'test',
 				'empty' => '',
@@ -336,8 +336,8 @@ class TestExprdawcTemplateHelpers extends WP_UnitTestCase {
 	 * Verifies unique ID generation.
 	 */
 	public function test_unique_id_generates_ids() {
-		$id1 = H::unique_id( 'test' );
-		$id2 = H::unique_id( 'test' );
+		$id1 = H::uniqueId( 'test' );
+		$id2 = H::uniqueId( 'test' );
 
 		$this->assertStringContainsString( 'test-', $id1 );
 		$this->assertStringContainsString( 'test-', $id2 );
@@ -415,7 +415,7 @@ class TestExprdawcTemplateHelpers extends WP_UnitTestCase {
 	 * Verifies nonce field HTML generation.
 	 */
 	public function test_nonce_field_generates_html() {
-		$result = H::nonce_field( 'test_action', 'test_nonce' );
+		$result = H::nonceField( 'test_action', 'test_nonce' );
 
 		$this->assertStringContainsString( '<input', $result );
 		$this->assertStringContainsString( 'test_nonce', $result );
@@ -452,13 +452,13 @@ class TestExprdawcTemplateHelpers extends WP_UnitTestCase {
 	}
 
 	/**
-	 * Test data_attrs with numeric keys.
+	 * Test dataAttrs with numeric keys.
 	 *
 	 * Test Goal:
 	 * Verifies data attributes work with numeric keys.
 	 */
-	public function test_data_attrs_with_numeric_keys() {
-		$result = H::data_attrs(
+	public function testDataAttrs_with_numeric_keys() {
+		$result = H::dataAttrs(
 			array(
 				'index' => 0,
 				'count' => 5,

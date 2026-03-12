@@ -1,12 +1,12 @@
 <?php
 declare( strict_types=1 );
 
-use Triopsi\Exprdawc\Helper\Exprdawc_Order_Helper;
+use Triopsi\Exprdawc\Helpers\OrderHelper;
 
 /**
  * Class TestExprdawcOrderHelper
  *
- * PHPUnit tests for Exprdawc_Order_Helper class.
+ * PHPUnit tests for OrderHelper class.
  *
  * @package Extra_Product_Data_For_WooCommerce\Tests\Unit
  */
@@ -85,224 +85,224 @@ class TestExprdawcOrderHelper extends WP_UnitTestCase {
 	}
 
 	/**
-	 * Tests calculate_price_adjustment with fixed type.
+	 * Tests calculatePriceAdjustment with fixed type.
 	 *
 	 * Test Goal:
 	 * Verifies that fixed price adjustments are calculated correctly.
 	 */
-	public function test_calculate_price_adjustment_fixed() {
+	public function test_calculatePriceAdjustment_fixed() {
 		$field_config = array(
-			'type'                   => 'text',
-			'adjust_price'           => true,
-			'price_adjustment_type'  => 'fixed',
-			'price_adjustment_value' => 10.0,
+			'type'                  => 'text',
+			'adjust_price'          => true,
+			'price_adjustment_type' => 'fixed',
+			'priceAdjustmentValue'  => 10.0,
 		);
 
-		$result = Exprdawc_Order_Helper::calculate_price_adjustment( $field_config, 'test', 100.0 );
+		$result = OrderHelper::calculatePriceAdjustment( $field_config, 'test', 100.0 );
 		$this->assertEquals( 10.0, $result );
 	}
 
 	/**
-	 * Tests calculate_price_adjustment with percentage type.
+	 * Tests calculatePriceAdjustment with percentage type.
 	 *
 	 * Test Goal:
 	 * Verifies that percentage-based price adjustments are calculated correctly.
 	 */
-	public function test_calculate_price_adjustment_percentage() {
+	public function test_calculatePriceAdjustment_percentage() {
 		$field_config = array(
-			'type'                   => 'text',
-			'adjust_price'           => true,
-			'price_adjustment_type'  => 'percentage',
-			'price_adjustment_value' => 15.0,
+			'type'                  => 'text',
+			'adjust_price'          => true,
+			'price_adjustment_type' => 'percentage',
+			'priceAdjustmentValue'  => 15.0,
 		);
 
-		$result = Exprdawc_Order_Helper::calculate_price_adjustment( $field_config, 'test', 100.0 );
+		$result = OrderHelper::calculatePriceAdjustment( $field_config, 'test', 100.0 );
 		$this->assertEquals( 15.0, $result ); // 15% of 100
 	}
 
 	/**
-	 * Tests calculate_price_adjustment with percent alias.
+	 * Tests calculatePriceAdjustment with percent alias.
 	 *
 	 * Test Goal:
 	 * Verifies that 'percent' type is handled same as 'percentage'.
 	 */
-	public function test_calculate_price_adjustment_percent_alias() {
+	public function test_calculatePriceAdjustment_percent_alias() {
 		$field_config = array(
-			'type'                   => 'text',
-			'adjust_price'           => true,
-			'price_adjustment_type'  => 'percent',
-			'price_adjustment_value' => 20.0,
+			'type'                  => 'text',
+			'adjust_price'          => true,
+			'price_adjustment_type' => 'percent',
+			'priceAdjustmentValue'  => 20.0,
 		);
 
-		$result = Exprdawc_Order_Helper::calculate_price_adjustment( $field_config, 'test', 100.0 );
+		$result = OrderHelper::calculatePriceAdjustment( $field_config, 'test', 100.0 );
 		$this->assertEquals( 20.0, $result ); // 20% of 100
 	}
 
 	/**
-	 * Tests calculate_price_adjustment with empty value.
+	 * Tests calculatePriceAdjustment with empty value.
 	 *
 	 * Test Goal:
 	 * Verifies that no adjustment is made when field value is empty.
 	 */
-	public function test_calculate_price_adjustment_empty_value() {
+	public function test_calculatePriceAdjustment_empty_value() {
 		$field_config = array(
-			'type'                   => 'text',
-			'adjust_price'           => true,
-			'price_adjustment_type'  => 'fixed',
-			'price_adjustment_value' => 10.0,
+			'type'                  => 'text',
+			'adjust_price'          => true,
+			'price_adjustment_type' => 'fixed',
+			'priceAdjustmentValue'  => 10.0,
 		);
 
-		$result = Exprdawc_Order_Helper::calculate_price_adjustment( $field_config, '', 100.0 );
+		$result = OrderHelper::calculatePriceAdjustment( $field_config, '', 100.0 );
 		$this->assertEquals( 0.0, $result );
 	}
 
 	/**
-	 * Tests calculate_price_adjustment with adjust_price disabled.
+	 * Tests calculatePriceAdjustment with adjust_price disabled.
 	 *
 	 * Test Goal:
 	 * Verifies that no adjustment is made when adjust_price is false.
 	 */
-	public function test_calculate_price_adjustment_disabled() {
+	public function test_calculatePriceAdjustment_disabled() {
 		$field_config = array(
-			'type'                   => 'text',
-			'adjust_price'           => false,
-			'price_adjustment_type'  => 'fixed',
-			'price_adjustment_value' => 10.0,
+			'type'                  => 'text',
+			'adjust_price'          => false,
+			'price_adjustment_type' => 'fixed',
+			'priceAdjustmentValue'  => 10.0,
 		);
 
-		$result = Exprdawc_Order_Helper::calculate_price_adjustment( $field_config, 'test', 100.0 );
+		$result = OrderHelper::calculatePriceAdjustment( $field_config, 'test', 100.0 );
 		$this->assertEquals( 0.0, $result );
 	}
 
 	/**
-	 * Tests calculate_price_adjustment with radio options.
+	 * Tests calculatePriceAdjustment with radio options.
 	 *
 	 * Test Goal:
 	 * Verifies that option-based fields calculate adjustments correctly.
 	 */
-	public function test_calculate_price_adjustment_radio_option() {
+	public function test_calculatePriceAdjustment_radio_option() {
 		$field_config = array(
 			'adjust_price' => true,
 			'type'         => 'radio',
 			'options'      => array(
 				array(
-					'value'                  => 'opt1',
-					'price_adjustment_type'  => 'fixed',
-					'price_adjustment_value' => 5.0,
+					'value'                 => 'opt1',
+					'price_adjustment_type' => 'fixed',
+					'priceAdjustmentValue'  => 5.0,
 				),
 				array(
-					'value'                  => 'opt2',
-					'price_adjustment_type'  => 'fixed',
-					'price_adjustment_value' => 8.0,
+					'value'                 => 'opt2',
+					'price_adjustment_type' => 'fixed',
+					'priceAdjustmentValue'  => 8.0,
 				),
 			),
 		);
 
-		$result = Exprdawc_Order_Helper::calculate_price_adjustment( $field_config, 'opt1', 100.0 );
+		$result = OrderHelper::calculatePriceAdjustment( $field_config, 'opt1', 100.0 );
 		$this->assertEquals( 5.0, $result );
 	}
 
 	/**
-	 * Tests calculate_price_adjustment with checkbox options (multiple).
+	 * Tests calculatePriceAdjustment with checkbox options (multiple).
 	 *
 	 * Test Goal:
 	 * Verifies that multiple selected options add up correctly.
 	 */
-	public function test_calculate_price_adjustment_checkbox_multiple() {
+	public function test_calculatePriceAdjustment_checkbox_multiple() {
 		$field_config = array(
 			'adjust_price' => true,
 			'type'         => 'checkbox',
 			'options'      => array(
 				array(
-					'value'                  => 'opt1',
-					'price_adjustment_type'  => 'fixed',
-					'price_adjustment_value' => 5.0,
+					'value'                 => 'opt1',
+					'price_adjustment_type' => 'fixed',
+					'priceAdjustmentValue'  => 5.0,
 				),
 				array(
-					'value'                  => 'opt2',
-					'price_adjustment_type'  => 'fixed',
-					'price_adjustment_value' => 8.0,
+					'value'                 => 'opt2',
+					'price_adjustment_type' => 'fixed',
+					'priceAdjustmentValue'  => 8.0,
 				),
 			),
 		);
 
-		$result = Exprdawc_Order_Helper::calculate_price_adjustment( $field_config, array( 'opt1', 'opt2' ), 100.0 );
+		$result = OrderHelper::calculatePriceAdjustment( $field_config, array( 'opt1', 'opt2' ), 100.0 );
 		$this->assertEquals( 13.0, $result ); // 5 + 8
 	}
 
 	/**
-	 * Tests calculate_price_adjustment with mixed option types.
+	 * Tests calculatePriceAdjustment with mixed option types.
 	 *
 	 * Test Goal:
 	 * Verifies that mixed fixed and percentage options work together.
 	 */
-	public function test_calculate_price_adjustment_mixed_options() {
+	public function test_calculatePriceAdjustment_mixed_options() {
 		$field_config = array(
 			'adjust_price' => true,
 			'type'         => 'checkbox',
 			'options'      => array(
 				array(
-					'value'                  => 'opt1',
-					'price_adjustment_type'  => 'fixed',
-					'price_adjustment_value' => 10.0,
+					'value'                 => 'opt1',
+					'price_adjustment_type' => 'fixed',
+					'priceAdjustmentValue'  => 10.0,
 				),
 				array(
-					'value'                  => 'opt2',
-					'price_adjustment_type'  => 'percentage',
-					'price_adjustment_value' => 5.0,
+					'value'                 => 'opt2',
+					'price_adjustment_type' => 'percentage',
+					'priceAdjustmentValue'  => 5.0,
 				),
 			),
 		);
 
-		$result = Exprdawc_Order_Helper::calculate_price_adjustment( $field_config, array( 'opt1', 'opt2' ), 100.0 );
+		$result = OrderHelper::calculatePriceAdjustment( $field_config, array( 'opt1', 'opt2' ), 100.0 );
 		$this->assertEquals( 15.0, $result ); // 10 fixed + 5% of 100
 	}
 
 	/**
-	 * Tests get_adjustment_value with fixed type.
+	 * Tests getAdjustmentValue with fixed type.
 	 *
 	 * Test Goal:
 	 * Verifies fixed adjustment value is returned correctly.
 	 */
-	public function test_get_adjustment_value_fixed() {
+	public function test_getAdjustmentValue_fixed() {
 		$config = array(
-			'price_adjustment_type'  => 'fixed',
-			'price_adjustment_value' => 12.5,
+			'price_adjustment_type' => 'fixed',
+			'priceAdjustmentValue'  => 12.5,
 		);
 
-		$result = Exprdawc_Order_Helper::get_adjustment_value( $config, 100.0 );
+		$result = OrderHelper::getAdjustmentValue( $config, 100.0 );
 		$this->assertEquals( 12.5, $result );
 	}
 
 	/**
-	 * Tests get_adjustment_value with percentage type.
+	 * Tests getAdjustmentValue with percentage type.
 	 *
 	 * Test Goal:
 	 * Verifies percentage adjustment value is calculated correctly.
 	 */
-	public function test_get_adjustment_value_percentage() {
+	public function test_getAdjustmentValue_percentage() {
 		$config = array(
-			'price_adjustment_type'  => 'percentage',
-			'price_adjustment_value' => 10.0,
+			'price_adjustment_type' => 'percentage',
+			'priceAdjustmentValue'  => 10.0,
 		);
 
-		$result = Exprdawc_Order_Helper::get_adjustment_value( $config, 200.0 );
+		$result = OrderHelper::getAdjustmentValue( $config, 200.0 );
 		$this->assertEquals( 20.0, $result ); // 10% of 200
 	}
 
 	/**
-	 * Tests get_adjustment_value with zero value.
+	 * Tests getAdjustmentValue with zero value.
 	 *
 	 * Test Goal:
 	 * Verifies that zero adjustment value returns zero.
 	 */
-	public function test_get_adjustment_value_zero() {
+	public function test_getAdjustmentValue_zero() {
 		$config = array(
-			'price_adjustment_type'  => 'fixed',
-			'price_adjustment_value' => 0.0,
+			'price_adjustment_type' => 'fixed',
+			'priceAdjustmentValue'  => 0.0,
 		);
 
-		$result = Exprdawc_Order_Helper::get_adjustment_value( $config, 100.0 );
+		$result = OrderHelper::getAdjustmentValue( $config, 100.0 );
 		$this->assertEquals( 0.0, $result );
 	}
 
@@ -327,7 +327,7 @@ class TestExprdawcOrderHelper extends WP_UnitTestCase {
 		$item->update_meta_data( '_meta_extra_product_data', $metadata );
 		$item->save();
 
-		$result = Exprdawc_Order_Helper::get_item_field_metadata( $item );
+		$result = OrderHelper::getItemFieldMetadata( $item );
 
 		$this->assertIsArray( $result );
 		$this->assertArrayHasKey( 'test_field', $result );
@@ -344,36 +344,37 @@ class TestExprdawcOrderHelper extends WP_UnitTestCase {
 		$item_id = $this->order->add_product( $this->product, 1 );
 		$item    = $this->order->get_item( $item_id );
 
-		$result = Exprdawc_Order_Helper::get_item_field_metadata( $item );
+		$result = OrderHelper::getItemFieldMetadata( $item );
 
 		$this->assertIsArray( $result );
 		$this->assertEmpty( $result );
 	}
 
 	/**
-	 * Tests build_field_metadata_array.
+	 * Tests buildFieldMetadataArray.
 	 *
 	 * Test Goal:
 	 * Verifies that field metadata array is built correctly.
 	 */
-	public function test_build_field_metadata_array() {
-		$custom_fields = array(
+	public function test_buildFieldMetadataArray() {
+		$field_payloads = array(
 			array(
-				'label' => 'Test Field 1',
-				'type'  => 'text',
+				'field_raw' => array(
+					'label' => 'Test Field 1',
+					'type'  => 'text',
+				),
+				'value'     => 'Value 1',
 			),
 			array(
-				'label' => 'Test Field 2',
-				'type'  => 'number',
+				'field_raw' => array(
+					'label' => 'Test Field 2',
+					'type'  => 'number',
+				),
+				'value'     => '42',
 			),
 		);
 
-		$field_values = array(
-			'test_field_1' => 'Value 1',
-			'test_field_2' => '42',
-		);
-
-		$result = Exprdawc_Order_Helper::build_field_metadata_array( $custom_fields, $field_values );
+		$result = OrderHelper::buildFieldMetadataArray( $field_payloads );
 
 		$this->assertIsArray( $result );
 		$this->assertCount( 2, $result );
@@ -384,24 +385,23 @@ class TestExprdawcOrderHelper extends WP_UnitTestCase {
 	}
 
 	/**
-	 * Tests build_field_metadata_array with array values.
+	 * Tests buildFieldMetadataArray with array values.
 	 *
 	 * Test Goal:
 	 * Verifies that array values are converted to comma-separated strings.
 	 */
-	public function test_build_field_metadata_array_with_array_values() {
-		$custom_fields = array(
+	public function test_buildFieldMetadataArray_with_array_values() {
+		$field_payloads = array(
 			array(
-				'label' => 'Checkbox Field',
-				'type'  => 'checkbox',
+				'field_raw' => array(
+					'label' => 'Checkbox Field',
+					'type'  => 'checkbox',
+				),
+				'value'     => array( 'opt1', 'opt2', 'opt3' ),
 			),
 		);
 
-		$field_values = array(
-			'checkbox_field' => array( 'opt1', 'opt2', 'opt3' ),
-		);
-
-		$result = Exprdawc_Order_Helper::build_field_metadata_array( $custom_fields, $field_values );
+		$result = OrderHelper::buildFieldMetadataArray( $field_payloads );
 
 		$this->assertIsArray( $result );
 		$this->assertEquals( 'opt1, opt2, opt3', $result[0]['value'] );
@@ -421,7 +421,7 @@ class TestExprdawcOrderHelper extends WP_UnitTestCase {
 			),
 		);
 
-		$result = Exprdawc_Order_Helper::get_old_field_value( $item_metadata, 'test_field' );
+		$result = OrderHelper::getOldFieldValue( $item_metadata, 'test_field' );
 		$this->assertEquals( 'Old Value', $result );
 	}
 
@@ -434,40 +434,40 @@ class TestExprdawcOrderHelper extends WP_UnitTestCase {
 	public function test_get_old_field_value_missing() {
 		$item_metadata = array();
 
-		$result = Exprdawc_Order_Helper::get_old_field_value( $item_metadata, 'nonexistent' );
+		$result = OrderHelper::getOldFieldValue( $item_metadata, 'nonexistent' );
 		$this->assertEquals( '', $result );
 	}
 
 	/**
-	 * Tests format_field_value_for_display with string.
+	 * Tests formatFieldValueForDisplay with string.
 	 *
 	 * Test Goal:
 	 * Verifies that string values are formatted correctly.
 	 */
-	public function test_format_field_value_for_display_string() {
-		$result = Exprdawc_Order_Helper::format_field_value_for_display( 'Test Value' );
+	public function test_formatFieldValueForDisplay_string() {
+		$result = OrderHelper::formatFieldValueForDisplay( 'Test Value' );
 		$this->assertEquals( 'Test Value', $result );
 	}
 
 	/**
-	 * Tests format_field_value_for_display with array.
+	 * Tests formatFieldValueForDisplay with array.
 	 *
 	 * Test Goal:
 	 * Verifies that array values are converted to comma-separated string.
 	 */
-	public function test_format_field_value_for_display_array() {
-		$result = Exprdawc_Order_Helper::format_field_value_for_display( array( 'val1', 'val2', 'val3' ) );
+	public function test_formatFieldValueForDisplay_array() {
+		$result = OrderHelper::formatFieldValueForDisplay( array( 'val1', 'val2', 'val3' ) );
 		$this->assertEquals( 'val1, val2, val3', $result );
 	}
 
 	/**
-	 * Tests add_order_note_for_change.
+	 * Tests addOrderNoteForChange.
 	 *
 	 * Test Goal:
 	 * Verifies that order note is added when field value changes.
 	 */
-	public function test_add_order_note_for_change() {
-		Exprdawc_Order_Helper::add_order_note_for_change(
+	public function test_addOrderNoteForChange() {
+		OrderHelper::addOrderNoteForChange(
 			$this->order,
 			'Test Field',
 			'Old Value',
@@ -488,13 +488,13 @@ class TestExprdawcOrderHelper extends WP_UnitTestCase {
 	}
 
 	/**
-	 * Tests add_order_note_for_change with no change.
+	 * Tests addOrderNoteForChange with no change.
 	 *
 	 * Test Goal:
 	 * Verifies that no order note is added when values are the same.
 	 */
-	public function test_add_order_note_for_change_no_change() {
-		Exprdawc_Order_Helper::add_order_note_for_change(
+	public function test_addOrderNoteForChange_no_change() {
+		OrderHelper::addOrderNoteForChange(
 			$this->order,
 			'Test Field',
 			'Same Value',
@@ -512,13 +512,13 @@ class TestExprdawcOrderHelper extends WP_UnitTestCase {
 	}
 
 	/**
-	 * Tests add_order_note_for_change with array values.
+	 * Tests addOrderNoteForChange with array values.
 	 *
 	 * Test Goal:
 	 * Verifies that order note handles array values correctly.
 	 */
-	public function test_add_order_note_for_change_array_values() {
-		Exprdawc_Order_Helper::add_order_note_for_change(
+	public function test_addOrderNoteForChange_array_values() {
+		OrderHelper::addOrderNoteForChange(
 			$this->order,
 			'Checkbox Field',
 			array( 'opt1', 'opt2' ),
@@ -537,28 +537,28 @@ class TestExprdawcOrderHelper extends WP_UnitTestCase {
 	}
 
 	/**
-	 * Tests get_product_from_item with simple product.
+	 * Tests getProductFromItem with simple product.
 	 *
 	 * Test Goal:
 	 * Verifies that product is retrieved correctly from order item.
 	 */
-	public function test_get_product_from_item() {
+	public function test_getProductFromItem() {
 		$item_id = $this->order->add_product( $this->product, 1 );
 		$item    = $this->order->get_item( $item_id );
 
-		$result = Exprdawc_Order_Helper::get_product_from_item( $item );
+		$result = OrderHelper::getProductFromItem( $item );
 
 		$this->assertInstanceOf( WC_Product::class, $result );
 		$this->assertEquals( $this->product_id, $result->get_id() );
 	}
 
 	/**
-	 * Tests get_product_from_item with variation.
+	 * Tests getProductFromItem with variation.
 	 *
 	 * Test Goal:
 	 * Verifies that parent product is retrieved for variations.
 	 */
-	public function test_get_product_from_item_variation() {
+	public function test_getProductFromItem_variation() {
 		// Create variable product.
 		$parent_id = wp_insert_post(
 			array(
@@ -587,7 +587,7 @@ class TestExprdawcOrderHelper extends WP_UnitTestCase {
 		$item_id = $this->order->add_product( $variation, 1 );
 		$item    = $this->order->get_item( $item_id );
 
-		$result = Exprdawc_Order_Helper::get_product_from_item( $item );
+		$result = OrderHelper::getProductFromItem( $item );
 
 		$this->assertInstanceOf( WC_Product::class, $result );
 		$this->assertEquals( $parent_id, $result->get_id() );
@@ -598,19 +598,19 @@ class TestExprdawcOrderHelper extends WP_UnitTestCase {
 	}
 
 	/**
-	 * Tests get_product_from_item with invalid item.
+	 * Tests getProductFromItem with invalid item.
 	 *
 	 * Test Goal:
 	 * Verifies that false is returned for invalid items.
 	 */
-	public function test_get_product_from_item_invalid() {
+	public function test_getProductFromItem_invalid() {
 		$item_id = $this->order->add_product( $this->product, 1 );
 		$item    = $this->order->get_item( $item_id );
 
 		// Delete product to make item invalid.
 		wp_delete_post( $this->product_id, true );
 
-		$result = Exprdawc_Order_Helper::get_product_from_item( $item );
+		$result = OrderHelper::getProductFromItem( $item );
 
 		$this->assertFalse( $result );
 	}

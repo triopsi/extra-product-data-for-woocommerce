@@ -1,12 +1,12 @@
 <?php
 declare( strict_types=1 );
 
-use Triopsi\Exprdawc\Exprdawc_Product_Page_Backend;
+use Triopsi\Exprdawc\Backend\ProductBackend;
 
 /**
  * Class TestExprdawcProductPageBackend
  *
- * PHPUnit tests for Exprdawc_Product_Page_Backend class.
+ * PHPUnit tests for ProductBackend class.
  *
  * @package Extra_Product_Data_For_WooCommerce\Tests\Unit
  */
@@ -15,7 +15,7 @@ class TestExprdawcProductPageBackend extends WP_UnitTestCase {
 	/**
 	 * Instance of the class being tested
 	 *
-	 * @var Exprdawc_Product_Page_Backend
+	 * @var ProductBackend
 	 */
 	private $product_page_backend;
 
@@ -28,7 +28,7 @@ class TestExprdawcProductPageBackend extends WP_UnitTestCase {
 	 */
 	public function setUp(): void {
 		parent::setUp();
-		$this->product_page_backend = new Exprdawc_Product_Page_Backend();
+		$this->product_page_backend = new ProductBackend();
 	}
 
 	/**
@@ -50,9 +50,9 @@ class TestExprdawcProductPageBackend extends WP_UnitTestCase {
 	 */
 	public function test_can_instantiate() {
 		$this->assertInstanceOf(
-			Exprdawc_Product_Page_Backend::class,
+			ProductBackend::class,
 			$this->product_page_backend,
-			'Instance should be of type Exprdawc_Product_Page_Backend.'
+			'Instance should be of type ProductBackend.'
 		);
 	}
 
@@ -67,18 +67,12 @@ class TestExprdawcProductPageBackend extends WP_UnitTestCase {
 		set_current_screen( 'edit-post' );
 
 		// Create new instance in admin context.
-		$backend = new Exprdawc_Product_Page_Backend();
-
-		// Check filter is registered.
-		$this->assertTrue(
-			has_filter( 'woocommerce_product_data_tabs', array( $backend, 'exprdawc_add_custom_product_tab' ) ) !== false,
-			'Filter woocommerce_product_data_tabs should be registered.'
-		);
+		$backend = new ProductBackend();
 
 		// Check actions are registered.
 		$this->assertTrue(
-			has_action( 'woocommerce_product_data_panels', array( $backend, 'exprdawc_add_custom_product_fields' ) ) !== false,
-			'Action woocommerce_product_data_panels should be registered.'
+			has_action( 'add_meta_boxes', array( $backend, 'exprdawc_add_custom_meta_box' ) ) !== false,
+			'Action add_meta_boxes should be registered.'
 		);
 
 		$this->assertTrue(
@@ -111,8 +105,7 @@ class TestExprdawcProductPageBackend extends WP_UnitTestCase {
 		$filters_before = array();
 
 		$hooks_to_check = array(
-			'woocommerce_product_data_tabs',
-			'woocommerce_product_data_panels',
+			'add_meta_boxes',
 			'woocommerce_process_product_meta',
 			'admin_enqueue_scripts',
 			'wp_ajax_exprdawc_import_custom_fields',
@@ -127,7 +120,7 @@ class TestExprdawcProductPageBackend extends WP_UnitTestCase {
 		}
 
 		// Create new instance in frontend context.
-		$backend = new Exprdawc_Product_Page_Backend();
+		$backend = new ProductBackend();
 
 		// Verify hooks were not added.
 		foreach ( $hooks_to_check as $hook ) {
@@ -142,59 +135,11 @@ class TestExprdawcProductPageBackend extends WP_UnitTestCase {
 	}
 
 	/**
-	 * Tests that exprdawc_add_custom_product_tab adds a tab with the key 'custom_fields'.
-	 *
-	 * Expects: The returned array contains a 'custom_fields' key with proper structure.
-	 */
-	public function test_exprdawc_add_custom_product_tab_adds_tab() {
-		$tabs   = array();
-		$result = $this->product_page_backend->exprdawc_add_custom_product_tab( $tabs );
-
-		$this->assertArrayHasKey( 'custom_fields', $result, 'Tab array should contain custom_fields key.' );
-	}
-
-	/**
-	 * Tests that exprdawc_add_custom_product_tab returns correct tab structure.
-	 *
-	 * Expects: The custom_fields tab has label, target, and class properties.
-	 */
-	public function test_exprdawc_add_custom_product_tab_structure() {
-		$tabs   = array();
-		$result = $this->product_page_backend->exprdawc_add_custom_product_tab( $tabs );
-
-		$this->assertIsArray( $result['custom_fields'], 'custom_fields should be an array.' );
-		$this->assertArrayHasKey( 'label', $result['custom_fields'], 'Tab should have a label.' );
-		$this->assertArrayHasKey( 'target', $result['custom_fields'], 'Tab should have a target.' );
-		$this->assertArrayHasKey( 'class', $result['custom_fields'], 'Tab should have a class.' );
-		$this->assertEquals( 'extra-product-data', $result['custom_fields']['target'], 'Target should be extra-product-data.' );
-	}
-
-	/**
-	 * Tests that exprdawc_add_custom_product_tab preserves existing tabs.
-	 *
-	 * Expects: Original tabs remain in the array along with the new custom_fields tab.
-	 */
-	public function test_exprdawc_add_custom_product_tab_preserves_existing_tabs() {
-		$tabs = array(
-			'general' => array(
-				'label'  => 'General',
-				'target' => 'general_product_data',
-			),
-		);
-
-		$result = $this->product_page_backend->exprdawc_add_custom_product_tab( $tabs );
-
-		$this->assertArrayHasKey( 'general', $result, 'Original tabs should be preserved.' );
-		$this->assertArrayHasKey( 'custom_fields', $result, 'New tab should be added.' );
-		$this->assertCount( 2, $result, 'Result should contain 2 tabs.' );
-	}
-
-	/**
-	 * Tests that exprdawc_add_custom_product_fields renders the custom fields template.
+	 * Tests that get_custom_product_fields_panel_html renders the custom fields template.
 	 *
 	 * Expects: The template output contains the custom field label.
 	 */
-	public function test_exprdawc_add_custom_product_fields_renders_template() {
+	public function test_get_custom_product_fields_panel_html_renders_template() {
 
 		// Create Product.
 		$product = new WC_Product_Simple();
@@ -207,34 +152,34 @@ class TestExprdawcProductPageBackend extends WP_UnitTestCase {
 		// Set custom fields meta for the product.
 		$custom_fields = array(
 			array(
-				'label'                  => 'Select Field',
-				'type'                   => 'select',
-				'required'               => 1,
-				'placeholder_text'       => 'Choose an option',
-				'help_text'              => 'Select one option',
-				'autocomplete'           => '',
-				'autofocus'              => false,
-				'index'                  => 0,
-				'price_adjustment_type'  => '',
-				'price_adjustment_value' => '',
-				'conditional_logic'      => 0,
-				'conditional_rules'      => array(),
-				'editable'               => true,
-				'adjust_price'           => false,
-				'options'                => array(
+				'label'                 => 'Select Field',
+				'type'                  => 'select',
+				'required'              => 1,
+				'placeholder_text'      => 'Choose an option',
+				'help_text'             => 'Select one option',
+				'autocomplete'          => '',
+				'autofocus'             => false,
+				'index'                 => 0,
+				'price_adjustment_type' => '',
+				'priceAdjustmentValue'  => '',
+				'conditional_logic'     => 0,
+				'conditional_rules'     => array(),
+				'editable'              => true,
+				'adjust_price'          => false,
+				'options'               => array(
 					array(
-						'label'                  => 'Option A',
-						'value'                  => 'a',
-						'price_adjustment_type'  => '',
-						'price_adjustment_value' => '',
-						'default'                => 0,
+						'label'                 => 'Option A',
+						'value'                 => 'a',
+						'price_adjustment_type' => '',
+						'priceAdjustmentValue'  => '',
+						'default'               => 0,
 					),
 					array(
-						'label'                  => 'Option B',
-						'value'                  => 'b',
-						'price_adjustment_type'  => '',
-						'price_adjustment_value' => '',
-						'default'                => 0,
+						'label'                 => 'Option B',
+						'value'                 => 'b',
+						'price_adjustment_type' => '',
+						'priceAdjustmentValue'  => '',
+						'default'               => 0,
 					),
 				),
 			),
@@ -243,19 +188,63 @@ class TestExprdawcProductPageBackend extends WP_UnitTestCase {
 		$product->update_meta_data( '_extra_product_fields', $custom_fields );
 		$product->save();
 
-		// Simulate global $post (as in admin).
-		global $post;
-		$post = get_post( $product_id );
-
-		// Capture output.
-		ob_start();
-
-		$this->product_page_backend->exprdawc_add_custom_product_fields();
-
-		$output = ob_get_clean();
+		$output = $this->product_page_backend->get_custom_product_fields_panel_html( $product_id );
 
 		$this->assertNotEmpty( $output, 'Template should render output.' );
 		$this->assertStringContainsString( 'Select Field', $output );
+
+		wp_delete_post( $product_id, true );
+	}
+
+	/**
+	 * Tests that template-pattern blocks are rendered for client-side cloning.
+	 *
+	 * Expects: Output contains hidden <template> tags for field, option and rule cloning.
+	 *
+	 * @return void
+	 */
+	public function test_get_custom_product_fields_panel_html_renders_client_side_templates() {
+		$product = new WC_Product_Simple();
+		$product->set_name( 'Template Test Product' );
+		$product->set_regular_price( '10' );
+		$product->save();
+
+		$product_id = $product->get_id();
+
+		$output = $this->product_page_backend->get_custom_product_fields_panel_html( $product_id );
+
+		$this->assertStringContainsString( 'id="exprdawc-field-template"', $output );
+		$this->assertStringContainsString( 'id="exprdawc-option-template-single"', $output );
+		$this->assertStringContainsString( 'id="exprdawc-option-template-multi"', $output );
+		$this->assertStringContainsString( 'id="exprdawc-rule-group-template"', $output );
+		$this->assertStringContainsString( 'id="exprdawc-rule-template"', $output );
+
+		wp_delete_post( $product_id, true );
+	}
+
+	/**
+	 * Tests that placeholders for JS replacement are present in rendered templates.
+	 *
+	 * Expects: Output contains index placeholders used by cloning/reindexing logic.
+	 *
+	 * @return void
+	 */
+	public function test_get_custom_product_fields_panel_html_renders_template_placeholders() {
+		$product = new WC_Product_Simple();
+		$product->set_name( 'Template Placeholder Product' );
+		$product->set_regular_price( '10' );
+		$product->save();
+
+		$product_id = $product->get_id();
+
+		$output = $this->product_page_backend->get_custom_product_fields_panel_html( $product_id );
+
+		$this->assertStringContainsString( '__INDEX__', $output );
+		$this->assertStringContainsString( '__FIELD_INDEX__', $output );
+		$this->assertStringContainsString( '__OPTION_INDEX__', $output );
+		$this->assertStringContainsString( '__RULE_GROUP_INDEX__', $output );
+		$this->assertStringContainsString( '__RULE_INDEX__', $output );
+		$this->assertStringContainsString( '__FIELD_OPTIONS__', $output );
 
 		wp_delete_post( $product_id, true );
 	}
@@ -288,7 +277,6 @@ class TestExprdawcProductPageBackend extends WP_UnitTestCase {
 
 		$this->assertNotEmpty( $localized_data, 'Script should have localized data.' );
 		$this->assertStringContainsString( 'exprdawc_admin_meta_boxes', $localized_data, 'Localized data should contain object name.' );
-		$this->assertStringContainsString( 'edit_exprdawc_nonce', $localized_data, 'Localized data should contain nonce.' );
 	}
 
 	/**
@@ -305,14 +293,14 @@ class TestExprdawcProductPageBackend extends WP_UnitTestCase {
 
 		$_POST['extra_product_fields'] = array(
 			array(
-				'label'                  => 'Test Field',
-				'type'                   => 'text',
-				'required'               => '1',
-				'placeholder_text'       => 'Enter text',
-				'help_text'              => 'Help text here',
-				'index'                  => '0',
-				'price_adjustment_type'  => '',
-				'price_adjustment_value' => '',
+				'label'                 => 'Test Field',
+				'type'                  => 'text',
+				'required'              => '1',
+				'placeholder_text'      => 'Enter text',
+				'help_text'             => 'Help text here',
+				'index'                 => '0',
+				'price_adjustment_type' => '',
+				'priceAdjustmentValue'  => '',
 			),
 		);
 
@@ -345,14 +333,14 @@ class TestExprdawcProductPageBackend extends WP_UnitTestCase {
 
 		$_POST['extra_product_fields'] = array(
 			array(
-				'label'                  => '<script>alert("xss")</script>Test Field',
-				'type'                   => 'text',
-				'required'               => '1',
-				'placeholder_text'       => '<b>Placeholder</b>',
-				'help_text'              => 'Help text',
-				'index'                  => '0',
-				'price_adjustment_type'  => '',
-				'price_adjustment_value' => '',
+				'label'                 => '<script>alert("xss")</script>Test Field',
+				'type'                  => 'text',
+				'required'              => '1',
+				'placeholder_text'      => '<b>Placeholder</b>',
+				'help_text'             => 'Help text',
+				'index'                 => '0',
+				'price_adjustment_type' => '',
+				'priceAdjustmentValue'  => '',
 			),
 		);
 
@@ -383,15 +371,15 @@ class TestExprdawcProductPageBackend extends WP_UnitTestCase {
 
 		$_POST['extra_product_fields'] = array(
 			array(
-				'label'                  => 'Select Field',
-				'type'                   => 'select',
-				'required'               => '0',
-				'placeholder_text'       => '',
-				'help_text'              => '',
-				'index'                  => '0',
-				'price_adjustment_type'  => '',
-				'price_adjustment_value' => '',
-				'options'                => array(
+				'label'                 => 'Select Field',
+				'type'                  => 'select',
+				'required'              => '0',
+				'placeholder_text'      => '',
+				'help_text'             => '',
+				'index'                 => '0',
+				'price_adjustment_type' => '',
+				'priceAdjustmentValue'  => '',
+				'options'               => array(
 					array(
 						'label'   => 'Option 1',
 						'value'   => 'opt1',
@@ -577,16 +565,16 @@ class TestExprdawcProductPageBackend extends WP_UnitTestCase {
 
 		$_POST['extra_product_fields'] = array(
 			array(
-				'label'                  => 'Conditional Field',
-				'type'                   => 'text',
-				'required'               => '0',
-				'placeholder_text'       => '',
-				'help_text'              => '',
-				'index'                  => '0',
-				'price_adjustment_type'  => '',
-				'price_adjustment_value' => '',
-				'conditional_logic'      => '1',
-				'conditional_rules'      => array(
+				'label'                 => 'Conditional Field',
+				'type'                  => 'text',
+				'required'              => '0',
+				'placeholder_text'      => '',
+				'help_text'             => '',
+				'index'                 => '0',
+				'price_adjustment_type' => '',
+				'priceAdjustmentValue'  => '',
+				'conditional_logic'     => '1',
+				'conditional_rules'     => array(
 					array(
 						array(
 							'field'    => 'other_field',

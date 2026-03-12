@@ -11,7 +11,7 @@
  * @since 1.9.0
  */
 
-use Triopsi\Exprdawc\Helper\Exprdawc_Template_Helpers as H;
+use Triopsi\Exprdawc\Helpers\TemplateHelper as H;
 
 // phpcs:ignoreFile
 if ( ! defined( 'ABSPATH' ) ) {
@@ -22,7 +22,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 $field = $field_args ?? array();
 ?>
 
-<label for="<?php echo H::attr( $field['id'] ); ?>" 
+<label for="<?php echo H::attr( $field['css_id'] ); ?>" 
 	class="<?php echo H::classes( $field['label_class'] ); ?>">
 	<?php echo H::e( $field['label'] ); ?>
 	<?php echo $required_string; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped ?>
@@ -31,13 +31,13 @@ $field = $field_args ?? array();
 <span class="<?php echo H::classes( $field['input_wrapper_class'] ); ?>">
 	<textarea name="<?php echo H::attr( $field['name'] ); ?>"
 		class="<?php echo H::classes( $field['input_class'] ); ?>"
-		id="<?php echo H::attr( $field['id'] ); ?>"
+		id="<?php echo H::attr( $field['css_id'] ); ?>"
 		placeholder="<?php echo H::attr( $field['placeholder'] ?? '' ); ?>"
 		<?php echo H::join( $custom_attributes ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped ?>
 	><?php echo H::textarea( $field['value'] ?? '' ); ?></textarea>
 
 	<?php if ( ! empty( $field['description'] ) ) : ?>
-		<span id="<?php echo H::attr( $field['id'] ); ?>-description"
+		<span id="<?php echo H::attr( $field['css_id'] ); ?>-description"
 			class="<?php echo H::classes( $field['description_class'] ); ?>">
 			<?php echo H::e( $field['description'] ); ?>
 		</span>

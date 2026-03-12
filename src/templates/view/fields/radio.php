@@ -11,7 +11,7 @@
  * @since 1.9.0
  */
 
-use Triopsi\Exprdawc\Helper\Exprdawc_Template_Helpers as H;
+use Triopsi\Exprdawc\Helpers\TemplateHelper as H;
 
 // phpcs:ignoreFile
 if ( ! defined( 'ABSPATH' ) ) {
@@ -34,14 +34,14 @@ $field = $field_args ?? array();
 			$option_value = $option['value'] ?? '';
 			$option_label = $option['label'] ?? '';
 			$checked      = H::checked( $field['value'] ?? '', $option_value );
-			$option_id    = H::id( $field['id'] . '-' . $option_value );
+			$option_id    = H::id( $field['css_id'] . '-' . $option_value );
 
 			// Build data attributes for price adjustment.
-			$data_attrs = array();
-			if ( ! empty( $option['price_adjustment_value'] ) ) {
-				$data_attrs['price-adjustment']      = $option['price_adjustment_value'];
-				$data_attrs['price-adjustment-type'] = $option['price_adjustment_type'] ?? 'fixed';
-				$data_attrs['label']                 = $option_label;
+			$dataAttrs = array();
+			if ( ! empty( $option['priceAdjustmentValue'] ) ) {
+				$dataAttrs['price-adjustment']      = $option['priceAdjustmentValue'];
+				$dataAttrs['price-adjustment-type'] = $option['price_adjustment_type'] ?? 'fixed';
+				$dataAttrs['label']                 = $option_label;
 			}
 			?>
 
@@ -53,7 +53,7 @@ $field = $field_args ?? array();
 					<?php echo $checked; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped ?>
 					class="<?php echo H::classes( $field['input_class'] ); ?>"
 					<?php echo H::join( $custom_attributes ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped ?>
-					<?php echo H::data_attrs( $data_attrs ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped ?>
+					<?php echo H::dataAttrs( $dataAttrs ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped ?>
 				/>
 				<label for="<?php echo H::attr( $option_id ); ?>" class="exprdawc-label-radio">
 					<?php echo H::e( $option_label ); ?>
@@ -65,7 +65,7 @@ $field = $field_args ?? array();
 </span>
 
 <?php if ( ! empty( $field['description'] ) ) : ?>
-	<span id="<?php echo H::attr( $field['id'] ); ?>-description"
+	<span id="<?php echo H::attr( $field['css_id'] ); ?>-description"
 		class="<?php echo H::classes( $field['description_class'] ); ?>">
 		<?php echo H::e( $field['description'] ); ?>
 	</span>

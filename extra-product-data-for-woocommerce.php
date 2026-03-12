@@ -1,12 +1,12 @@
 <?php
 /**
  * Plugin Name: Extra Product Data for WooCommerce
- * Description: Adds customizable input fields per product in WooCommerce, allowing users to enter extra details on the frontend .
- * Version: 2.0.2
+ * Description: Adds customizable input fields per product in WooCommerce, allowing users to enter extra details on the frontend.
+ * Version: 3.0.0
  * Author: Triopsi
- * Author URI: https:// triopsi.dev
+ * Author URI: https://triopsi.dev
  * License: GPLv2 or later
- * License URI: https:// www.gnu.org/licenses/gpl-2.0.html
+ * License URI: https://www.gnu.org/licenses/gpl-2.0.html
  * Text Domain: extra-product-data-for-woocommerce
  * WC requires at least: 3.9
  * WC tested up to: 9.4
@@ -22,7 +22,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 }
 
 use Automattic\WooCommerce\Utilities\FeaturesUtil;
-use Triopsi\Exprdawc\Exprdawc_Main;
+use Triopsi\Exprdawc\Core\Plugin;
 
 // Load Composer autoloader when available.
 $autoload_path = __DIR__ . '/vendor/autoload.php';
@@ -34,7 +34,7 @@ if ( file_exists( $autoload_path ) ) {
 require_once __DIR__ . '/src/constants.php';
 
 // Initiate the main class.
-Exprdawc_Main::get_instance();
+Plugin::getInstance();
 
 // Declare compatibility with WooCommerce HPOS.
 add_action(

@@ -23,6 +23,14 @@
 	<rule ref="WordPress">
 		<!--All PHP files contain a single class with a comment so a file comment is redundant -->
 		<exclude name="Squiz.Commenting.FileComment.Missing"/>
+		<!-- Allow modern OOP naming conventions (camelCase files and methods) -->
+		<exclude name="WordPress.Files.FileName.NotHyphenatedLowercase"/>
+		<exclude name="WordPress.Files.FileName.InvalidClassFileName"/>
+		<exclude name="WordPress.NamingConventions.ValidFunctionName.MethodNameInvalid"/>
+		<!-- Allow camelCase variables in modern code (PSR standards) -->
+		<exclude name="WordPress.NamingConventions.ValidVariableName.VariableNotSnakeCase"/>
+		<exclude name="WordPress.NamingConventions.ValidVariableName.PropertyNotSnakeCase"/>
+		<exclude name="WordPress.NamingConventions.ValidVariableName.UsedPropertyNotSnakeCase"/>
 	</rule>
 
 	<!-- I18n Set the appropriate text domain. -->
