@@ -271,7 +271,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 				</table>
 
 				<!-- Text Option/Settings -->
-				<table class="exprdawc_settings_table exprdawc_text_table" style="display:<?php echo in_array( $field['type'], array( 'text', 'date' ) ) ? 'table' : 'none'; ?>">
+				<table class="exprdawc_settings_table exprdawc_text_table" style="display:<?php echo in_array( $field['type'], array( 'text', 'date' ), true ) ? 'table' : 'none'; ?>">
 					<tbody>
 						<tr>
 							<td>
