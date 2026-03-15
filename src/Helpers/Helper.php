@@ -38,7 +38,7 @@ class Helper {
 	 *
 	 * @var array
 	 */
-	private const TEXT_FIELD_TYPES = array( 'text', 'date', 'url', 'email', 'tel', 'number', 'textarea', 'select', 'multiselect' );
+	private const TEXT_FIELD_TYPES = array( 'text', 'date', 'url', 'email', 'tel', 'number', 'textarea' );
 
 	/**
 	 * Price adjustment field types.

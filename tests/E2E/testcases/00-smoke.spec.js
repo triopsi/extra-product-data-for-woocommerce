@@ -32,7 +32,11 @@ test.describe('@P0 @SMOKE', () => {
 
     await expect(page).toHaveURL(/.*\/wp-admin\/?$/);
     await expect(page.locator('#wpadminbar')).toBeVisible();
-    await adminLoginPage.logout();
+
+    await adminLoginPage.goto(adminUrl + '/plugins.php');
+    await expect(page.locator('#the-list')).toContainText('Extra Product Data for WooCommerce');
+    await expect(page.getByLabel('Deactivate Extra Product Data')).toContainText('Deactivate');
+    await expect(page.locator('#the-list')).toContainText('Settings');
   });
 
   /**
@@ -49,8 +53,9 @@ test.describe('@P0 @SMOKE', () => {
   test('SMK-03 Product page loads', async ({ page }) => {
     const productPage = new ProductPage(page);
     await productPage.goToProductPage('Sunglasses');
-    await expect(page.locator('#exprdawc-custom-field-input-branding-wrapper-field')).toContainText('Branding *');
+    await expect(page.locator('[id="-wrapper-field"]')).toContainText('Branding *');
     await expect(page.locator('#exprdawc-custom-field-input-branding-description')).toContainText('Branding');
     await expect(page.getByRole('textbox', { name: 'Branding  *' })).toBeEmpty();
+    await expect(page.getByRole('button', { name: 'Add to cart', exact: true })).toBeVisible();
   });
 });

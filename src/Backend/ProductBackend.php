@@ -115,6 +115,7 @@ class ProductBackend implements Hookable {
 			'exprdawc-wc-meta-boxes-js',
 			'exprdawc_admin_meta_boxes',
 			array(
+				'edit_exprdawc_nonce'                  => wp_create_nonce( 'edit_exprdawc_nonce' ),
 				'confirm_delete'                       => esc_html__( 'Are you sure you want to delete this field?', 'extra-product-data-for-woocommerce' ),
 				'confirm_delete_rule'                  => esc_html__( 'Are you sure you want to delete this rule?', 'extra-product-data-for-woocommerce' ),
 				'selectFieldNone'                      => esc_html__( 'None', 'extra-product-data-for-woocommerce' ),

@@ -219,7 +219,7 @@ jQuery(function ($) {
                 $optionsRow.find('.exprdawc_long_text_table').hide();
             }
 
-            if ($(e.currentTarget).val() === 'text' || $(e.currentTarget).val() === 'date') {
+            if ($(e.currentTarget).val() === 'text') {
                 $optionsRow.find('.exprdawc_text_table').show();
             } else {
                 $optionsRow.find('.exprdawc_text_table').hide();
