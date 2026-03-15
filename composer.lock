@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "3551f8faa442d1d0055516d53b976700",
+    "content-hash": "b2d88f21354bd0c5a7d168a9a82f86f7",
     "packages": [],
     "packages-dev": [
         {
@@ -411,16 +411,16 @@
         },
         {
             "name": "php-stubs/woocommerce-stubs",
-            "version": "v10.5.2",
+            "version": "v10.6.1",
             "source": {
                 "type": "git",
                 "url": "https://github.com/php-stubs/woocommerce-stubs.git",
-                "reference": "4b01d69e3bd0e22e125973e3049b1cd7249a86f3"
+                "reference": "ef96143054f60a2f0b2cfe8351f5d78448729e98"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/php-stubs/woocommerce-stubs/zipball/4b01d69e3bd0e22e125973e3049b1cd7249a86f3",
-                "reference": "4b01d69e3bd0e22e125973e3049b1cd7249a86f3",
+                "url": "https://api.github.com/repos/php-stubs/woocommerce-stubs/zipball/ef96143054f60a2f0b2cfe8351f5d78448729e98",
+                "reference": "ef96143054f60a2f0b2cfe8351f5d78448729e98",
                 "shasum": ""
             },
             "require": {
@@ -449,9 +449,9 @@
             ],
             "support": {
                 "issues": "https://github.com/php-stubs/woocommerce-stubs/issues",
-                "source": "https://github.com/php-stubs/woocommerce-stubs/tree/v10.5.2"
+                "source": "https://github.com/php-stubs/woocommerce-stubs/tree/v10.6.1"
             },
-            "time": "2026-02-16T20:45:34+00:00"
+            "time": "2026-03-12T19:28:12+00:00"
         },
         {
             "name": "php-stubs/wordpress-stubs",
@@ -2531,7 +2531,7 @@
         },
         {
             "name": "wp-phpunit/wp-phpunit",
-            "version": "6.9.1",
+            "version": "6.9.4",
             "source": {
                 "type": "git",
                 "url": "https://github.com/wp-phpunit/wp-phpunit.git",
@@ -2653,5 +2653,5 @@
     "platform-overrides": {
         "php": "8.0.0"
     },
-    "plugin-api-version": "2.9.0"
+    "plugin-api-version": "2.6.0"
 }
