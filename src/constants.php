@@ -29,7 +29,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 }
 
 // Useful global constants.
-$version = '2.0.2';
+$version = '3.0.0';
 define( 'EXPRDAWC_VERSION', $version );
 define( 'EXPRDAWC_PLUGIN_MAIN_FILE', 'extra-product-data-for-woocommerce.php' );
 
@@ -49,3 +49,7 @@ define( 'EXPRDAWC_TEMPLATES', EXPRDAWC_SRC . 'templates/view/' );
 // Templates.
 define( 'EXPRDAWC_ADMIN_TEMPLATES_PATH', EXPRDAWC_TEMPLATES . 'admin/' );
 define( 'EXPRDAWC_FIELDS_TEMPLATES_PATH', EXPRDAWC_TEMPLATES . 'fields/' );
+
+// Meta keys.
+define( 'EXPRDAWC_META_EXTRA_PRODUCT_DATA', '_meta_extra_product_data' );
+define( 'EXPRDAWC_META_EXTRA_PRODUCT_FIELDS', '_extra_product_fields' );

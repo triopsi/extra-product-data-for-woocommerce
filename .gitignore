@@ -147,3 +147,4 @@ sample_products.csv
 playwright-report
 !.wp-env.json
 !.vscode
+release/

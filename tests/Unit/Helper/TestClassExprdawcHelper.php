@@ -1,24 +1,23 @@
 <?php
 declare( strict_types=1 );
 
-require_once dirname( __DIR__, 2 ) . '/../src/classes/helper/class-exprdawc-helper.php';
-use Triopsi\Exprdawc\Helper\Exprdawc_Helper;
+use Triopsi\Exprdawc\Helpers\Helper;
 
 /**
  * Class TestClassExprdawcHelper
  *
- * PHPUnit tests for Exprdawc_Helper class.
+ * PHPUnit tests for Helper class.
  *
  * @package Extra_Product_Data_For_WooCommerce\Tests\Unit
  */
 class TestClassExprdawcHelper extends WP_UnitTestCase {
 
 	/**
-	 * Tests generate_input_field with various fields.
+	 * Tests generateInputField with various fields.
 	 *
 	 * Expects the generated fields to match the HTML output in the comparison file.
 	 */
-	public function test_generate_input_field() {
+	public function test_generateInputField() {
 		$json_export_string = '{
             "0": {
             "label": "Input 1",
@@ -48,7 +47,7 @@ class TestClassExprdawcHelper extends WP_UnitTestCase {
             "editable": true,
             "adjust_price": true,
             "price_adjustment_type": "fixed",
-            "price_adjustment_value": "1.55"
+            "priceAdjustmentValue": "1.55"
             },
             "1": {
             "label": "Input 2",
@@ -78,7 +77,7 @@ class TestClassExprdawcHelper extends WP_UnitTestCase {
             "editable": true,
             "adjust_price": false,
             "price_adjustment_type": "fixed",
-            "price_adjustment_value": ""
+            "priceAdjustmentValue": ""
             },
             "2": {
             "label": "Input 3",
@@ -108,7 +107,7 @@ class TestClassExprdawcHelper extends WP_UnitTestCase {
             "editable": false,
             "adjust_price": false,
             "price_adjustment_type": "fixed",
-            "price_adjustment_value": ""
+            "priceAdjustmentValue": ""
             },
             "3": {
             "label": "Input 4",
@@ -138,7 +137,7 @@ class TestClassExprdawcHelper extends WP_UnitTestCase {
             "editable": false,
             "adjust_price": false,
             "price_adjustment_type": "fixed",
-            "price_adjustment_value": ""
+            "priceAdjustmentValue": ""
             },
             "4": {
             "label": "Input 5",
@@ -168,7 +167,7 @@ class TestClassExprdawcHelper extends WP_UnitTestCase {
             "editable": false,
             "adjust_price": false,
             "price_adjustment_type": "fixed",
-            "price_adjustment_value": ""
+            "priceAdjustmentValue": ""
             },
             "5": {
             "label": "Input 6",
@@ -198,7 +197,7 @@ class TestClassExprdawcHelper extends WP_UnitTestCase {
             "editable": false,
             "adjust_price": false,
             "price_adjustment_type": "fixed",
-            "price_adjustment_value": ""
+            "priceAdjustmentValue": ""
             },
             "7": {
             "label": "Input 7",
@@ -237,7 +236,7 @@ class TestClassExprdawcHelper extends WP_UnitTestCase {
             "editable": false,
             "adjust_price": false,
             "price_adjustment_type": "fixed",
-            "price_adjustment_value": ""
+            "priceAdjustmentValue": ""
             },
             "8": {
             "label": "Check",
@@ -280,7 +279,7 @@ class TestClassExprdawcHelper extends WP_UnitTestCase {
             "editable": false,
             "adjust_price": false,
             "price_adjustment_type": "fixed",
-            "price_adjustment_value": ""
+            "priceAdjustmentValue": ""
             },
             "9": {
             "label": "Name",
@@ -310,7 +309,7 @@ class TestClassExprdawcHelper extends WP_UnitTestCase {
             "editable": true,
             "adjust_price": false,
             "price_adjustment_type": "fixed",
-            "price_adjustment_value": ""
+            "priceAdjustmentValue": ""
             }
         }';
 
@@ -318,38 +317,40 @@ class TestClassExprdawcHelper extends WP_UnitTestCase {
 
 		ob_start();
 		foreach ( $fields as $field ) {
-			Exprdawc_Helper::generate_input_field( $field );
+			Helper::generateInputField( $field );
 		}
 		$output = ob_get_clean();
 
-        $this->assertEquals( file_get_contents( dirname( __DIR__ ) . '/resources/soll_field_output_test_generate_input_field.html' ), $output ); // phpcs:ignore
+		// phpcs:ignore file_put_contents( dirname( __DIR__ ) . '/resources/soll_field_output_test_generateInputField.html', $output );
+
+        $this->assertEquals( file_get_contents( dirname( __DIR__ ) . '/resources/soll_field_output_test_generateInputField.html' ), $output ); // phpcs:ignore
 	}
 
 	/**
-	 * Test check_required_fields method.
+	 * Test checkRequiredFields method.
 	 */
-	public function test_check_required_fields() {
+	public function test_checkRequiredFields() {
 		$product = $this->create_product_with_custom_fields( true );
 
-		$this->assertTrue( Exprdawc_Helper::check_required_fields( $product->get_id() ) );
+		$this->assertTrue( Helper::checkRequiredFields( $product->get_id() ) );
 
 		$product = $this->create_product_with_custom_fields( false );
 
-		$this->assertFalse( Exprdawc_Helper::check_required_fields( $product->get_id() ) );
+		$this->assertFalse( Helper::checkRequiredFields( $product->get_id() ) );
 	}
 
 	/**
 	 * Test WooCommerce active helper and function.
 	 */
 	public function test_woocommerce_active_check() {
-		$this->assertTrue( Exprdawc_Helper::is_woocommerce_active() );
+		$this->assertTrue( Helper::isWooCommerceActive() );
 	}
 
 	/**
 	 * Test validate_field_by_type with empty values.
 	 */
 	public function test_validate_field_by_type_allows_empty() {
-		$result = Exprdawc_Helper::validate_field_by_type( '', 'email' );
+		$result = Helper::validateFieldByType( '', 'email' );
 		$this->assertTrue( $result['valid'] );
 		$this->assertSame( '', $result['message'] );
 	}
@@ -358,10 +359,10 @@ class TestClassExprdawcHelper extends WP_UnitTestCase {
 	 * Test validate_field_by_type for email values.
 	 */
 	public function test_validate_field_by_type_email() {
-		$invalid = Exprdawc_Helper::validate_field_by_type( 'not-an-email', 'email' );
+		$invalid = Helper::validateFieldByType( 'not-an-email', 'email' );
 		$this->assertFalse( $invalid['valid'] );
 
-		$valid = Exprdawc_Helper::validate_field_by_type( 'user@example.com', 'email' );
+		$valid = Helper::validateFieldByType( 'user@example.com', 'email' );
 		$this->assertTrue( $valid['valid'] );
 	}
 
@@ -369,10 +370,10 @@ class TestClassExprdawcHelper extends WP_UnitTestCase {
 	 * Test validate_field_by_type for number values.
 	 */
 	public function test_validate_field_by_type_number() {
-		$invalid = Exprdawc_Helper::validate_field_by_type( 'abc', 'number' );
+		$invalid = Helper::validateFieldByType( 'abc', 'number' );
 		$this->assertFalse( $invalid['valid'] );
 
-		$valid = Exprdawc_Helper::validate_field_by_type( '123.45', 'number' );
+		$valid = Helper::validateFieldByType( '123.45', 'number' );
 		$this->assertTrue( $valid['valid'] );
 	}
 
@@ -380,10 +381,10 @@ class TestClassExprdawcHelper extends WP_UnitTestCase {
 	 * Test validate_field_by_type for date values.
 	 */
 	public function test_validate_field_by_type_date() {
-		$invalid = Exprdawc_Helper::validate_field_by_type( 'not-a-date', 'date' );
+		$invalid = Helper::validateFieldByType( 'not-a-date', 'date' );
 		$this->assertFalse( $invalid['valid'] );
 
-		$valid = Exprdawc_Helper::validate_field_by_type( '2026-02-20', 'date' );
+		$valid = Helper::validateFieldByType( '2026-02-20', 'date' );
 		$this->assertTrue( $valid['valid'] );
 	}
 
@@ -391,10 +392,10 @@ class TestClassExprdawcHelper extends WP_UnitTestCase {
 	 * Test validate_field_by_type for URL values.
 	 */
 	public function test_validate_field_by_type_url() {
-		$invalid = Exprdawc_Helper::validate_field_by_type( 'not-a-url', 'url' );
+		$invalid = Helper::validateFieldByType( 'not-a-url', 'url' );
 		$this->assertFalse( $invalid['valid'] );
 
-		$valid = Exprdawc_Helper::validate_field_by_type( 'https://example.com', 'url' );
+		$valid = Helper::validateFieldByType( 'https://example.com', 'url' );
 		$this->assertTrue( $valid['valid'] );
 	}
 
@@ -407,13 +408,13 @@ class TestClassExprdawcHelper extends WP_UnitTestCase {
 			array( 'value' => 'b' ),
 		);
 
-		$invalid = Exprdawc_Helper::validate_field_by_type( 'c', 'select', $options );
+		$invalid = Helper::validateFieldByType( 'c', 'select', $options );
 		$this->assertFalse( $invalid['valid'] );
 
-		$valid = Exprdawc_Helper::validate_field_by_type( 'a', 'radio', $options );
+		$valid = Helper::validateFieldByType( 'a', 'radio', $options );
 		$this->assertTrue( $valid['valid'] );
 
-		$valid_multi = Exprdawc_Helper::validate_field_by_type( array( 'a', 'b' ), 'multiselect', $options );
+		$valid_multi = Helper::validateFieldByType( array( 'a', 'b' ), 'multiselect', $options );
 		$this->assertTrue( $valid_multi['valid'] );
 	}
 
@@ -436,7 +437,7 @@ class TestClassExprdawcHelper extends WP_UnitTestCase {
 			),
 		);
 
-		$result = Exprdawc_Helper::get_option_values( $options );
+		$result = Helper::getOptionValues( $options );
 
 		$this->assertIsArray( $result );
 		$this->assertCount( 3, $result );
@@ -447,7 +448,7 @@ class TestClassExprdawcHelper extends WP_UnitTestCase {
 	 * Test get_option_values with empty array.
 	 */
 	public function test_get_option_values_empty() {
-		$result = Exprdawc_Helper::get_option_values( array() );
+		$result = Helper::getOptionValues( array() );
 
 		$this->assertIsArray( $result );
 		$this->assertEmpty( $result );
@@ -463,10 +464,10 @@ class TestClassExprdawcHelper extends WP_UnitTestCase {
 			array( 'value' => 'blue' ),
 		);
 
-		$result = Exprdawc_Helper::validate_option_selection( 'red', $options );
+		$result = Helper::validateOptionSelection( 'red', $options );
 		$this->assertTrue( $result );
 
-		$result = Exprdawc_Helper::validate_option_selection( 'green', $options );
+		$result = Helper::validateOptionSelection( 'green', $options );
 		$this->assertTrue( $result );
 	}
 
@@ -479,7 +480,7 @@ class TestClassExprdawcHelper extends WP_UnitTestCase {
 			array( 'value' => 'green' ),
 		);
 
-		$result = Exprdawc_Helper::validate_option_selection( 'yellow', $options );
+		$result = Helper::validateOptionSelection( 'yellow', $options );
 		$this->assertFalse( $result );
 	}
 
@@ -493,10 +494,10 @@ class TestClassExprdawcHelper extends WP_UnitTestCase {
 			array( 'value' => 'blue' ),
 		);
 
-		$result = Exprdawc_Helper::validate_option_selection( array( 'red', 'blue' ), $options );
+		$result = Helper::validateOptionSelection( array( 'red', 'blue' ), $options );
 		$this->assertTrue( $result );
 
-		$result = Exprdawc_Helper::validate_option_selection( array( 'red', 'green', 'blue' ), $options );
+		$result = Helper::validateOptionSelection( array( 'red', 'green', 'blue' ), $options );
 		$this->assertTrue( $result );
 	}
 
@@ -510,11 +511,11 @@ class TestClassExprdawcHelper extends WP_UnitTestCase {
 		);
 
 		// One valid, one invalid.
-		$result = Exprdawc_Helper::validate_option_selection( array( 'red', 'yellow' ), $options );
+		$result = Helper::validateOptionSelection( array( 'red', 'yellow' ), $options );
 		$this->assertFalse( $result );
 
 		// All invalid.
-		$result = Exprdawc_Helper::validate_option_selection( array( 'yellow', 'purple' ), $options );
+		$result = Helper::validateOptionSelection( array( 'yellow', 'purple' ), $options );
 		$this->assertFalse( $result );
 	}
 
@@ -522,33 +523,33 @@ class TestClassExprdawcHelper extends WP_UnitTestCase {
 	 * Test validate_option_selection with empty options array.
 	 */
 	public function test_validate_option_selection_empty_options() {
-		$result = Exprdawc_Helper::validate_option_selection( 'red', array() );
+		$result = Helper::validateOptionSelection( 'red', array() );
 		$this->assertFalse( $result );
 	}
 
 	/**
-	 * Test prepare_option_labels_with_prices for fixed price adjustments.
+	 * Test prepareOptionLabelsWithPrices for fixed price adjustments.
 	 */
-	public function test_prepare_option_labels_with_prices_fixed() {
+	public function test_prepareOptionLabelsWithPrices_fixed() {
 		$field_args = array(
 			'options' => array(
 				array(
-					'label'                  => 'Small',
-					'value'                  => 'small',
-					'price_adjustment_type'  => 'fixed',
-					'price_adjustment_value' => '5.00',
+					'label'                 => 'Small',
+					'value'                 => 'small',
+					'price_adjustment_type' => 'fixed',
+					'priceAdjustmentValue'  => '5.00',
 				),
 				array(
-					'label'                  => 'Large',
-					'value'                  => 'large',
-					'price_adjustment_type'  => 'fixed',
-					'price_adjustment_value' => '10.50',
+					'label'                 => 'Large',
+					'value'                 => 'large',
+					'price_adjustment_type' => 'fixed',
+					'priceAdjustmentValue'  => '10.50',
 				),
 			),
 		);
 
-		$reflection = new ReflectionClass( Exprdawc_Helper::class );
-		$method     = $reflection->getMethod( 'prepare_option_labels_with_prices' );
+		$reflection = new ReflectionClass( Helper::class );
+		$method     = $reflection->getMethod( 'prepareOptionLabelsWithPrices' );
 		$method->setAccessible( true );
 
 		$result = $method->invokeArgs( null, array( $field_args ) );
@@ -560,28 +561,28 @@ class TestClassExprdawcHelper extends WP_UnitTestCase {
 	}
 
 	/**
-	 * Test prepare_option_labels_with_prices for percentage adjustments.
+	 * Test prepareOptionLabelsWithPrices for percentage adjustments.
 	 */
-	public function test_prepare_option_labels_with_prices_percentage() {
+	public function test_prepareOptionLabelsWithPrices_percentage() {
 		$field_args = array(
 			'options' => array(
 				array(
-					'label'                  => 'Premium',
-					'value'                  => 'premium',
-					'price_adjustment_type'  => 'percentage',
-					'price_adjustment_value' => '20',
+					'label'                 => 'Premium',
+					'value'                 => 'premium',
+					'price_adjustment_type' => 'percentage',
+					'priceAdjustmentValue'  => '20',
 				),
 				array(
-					'label'                  => 'Discount',
-					'value'                  => 'discount',
-					'price_adjustment_type'  => 'percentage',
-					'price_adjustment_value' => '-10',
+					'label'                 => 'Discount',
+					'value'                 => 'discount',
+					'price_adjustment_type' => 'percentage',
+					'priceAdjustmentValue'  => '-10',
 				),
 			),
 		);
 
-		$reflection = new ReflectionClass( Exprdawc_Helper::class );
-		$method     = $reflection->getMethod( 'prepare_option_labels_with_prices' );
+		$reflection = new ReflectionClass( Helper::class );
+		$method     = $reflection->getMethod( 'prepareOptionLabelsWithPrices' );
 		$method->setAccessible( true );
 
 		$result = $method->invokeArgs( null, array( $field_args ) );
@@ -593,22 +594,22 @@ class TestClassExprdawcHelper extends WP_UnitTestCase {
 	}
 
 	/**
-	 * Test prepare_option_labels_with_prices skips zero values.
+	 * Test prepareOptionLabelsWithPrices skips zero values.
 	 */
-	public function test_prepare_option_labels_with_prices_zero_value() {
+	public function test_prepareOptionLabelsWithPrices_zero_value() {
 		$field_args = array(
 			'options' => array(
 				array(
-					'label'                  => 'Standard',
-					'value'                  => 'standard',
-					'price_adjustment_type'  => 'fixed',
-					'price_adjustment_value' => '0',
+					'label'                 => 'Standard',
+					'value'                 => 'standard',
+					'price_adjustment_type' => 'fixed',
+					'priceAdjustmentValue'  => '0',
 				),
 			),
 		);
 
-		$reflection = new ReflectionClass( Exprdawc_Helper::class );
-		$method     = $reflection->getMethod( 'prepare_option_labels_with_prices' );
+		$reflection = new ReflectionClass( Helper::class );
+		$method     = $reflection->getMethod( 'prepareOptionLabelsWithPrices' );
 		$method->setAccessible( true );
 
 		$result = $method->invokeArgs( null, array( $field_args ) );
@@ -618,22 +619,22 @@ class TestClassExprdawcHelper extends WP_UnitTestCase {
 	}
 
 	/**
-	 * Test prepare_option_labels_with_prices with empty values.
+	 * Test prepareOptionLabelsWithPrices with empty values.
 	 */
-	public function test_prepare_option_labels_with_prices_empty_value() {
+	public function test_prepareOptionLabelsWithPrices_empty_value() {
 		$field_args = array(
 			'options' => array(
 				array(
-					'label'                  => 'Basic',
-					'value'                  => 'basic',
-					'price_adjustment_type'  => 'fixed',
-					'price_adjustment_value' => '',
+					'label'                 => 'Basic',
+					'value'                 => 'basic',
+					'price_adjustment_type' => 'fixed',
+					'priceAdjustmentValue'  => '',
 				),
 			),
 		);
 
-		$reflection = new ReflectionClass( Exprdawc_Helper::class );
-		$method     = $reflection->getMethod( 'prepare_option_labels_with_prices' );
+		$reflection = new ReflectionClass( Helper::class );
+		$method     = $reflection->getMethod( 'prepareOptionLabelsWithPrices' );
 		$method->setAccessible( true );
 
 		$result = $method->invokeArgs( null, array( $field_args ) );
@@ -643,15 +644,15 @@ class TestClassExprdawcHelper extends WP_UnitTestCase {
 	}
 
 	/**
-	 * Test prepare_option_labels_with_prices with no options.
+	 * Test prepareOptionLabelsWithPrices with no options.
 	 */
-	public function test_prepare_option_labels_with_prices_no_options() {
+	public function test_prepareOptionLabelsWithPrices_no_options() {
 		$field_args = array(
 			'options' => array(),
 		);
 
-		$reflection = new ReflectionClass( Exprdawc_Helper::class );
-		$method     = $reflection->getMethod( 'prepare_option_labels_with_prices' );
+		$reflection = new ReflectionClass( Helper::class );
+		$method     = $reflection->getMethod( 'prepareOptionLabelsWithPrices' );
 		$method->setAccessible( true );
 
 		$result = $method->invokeArgs( null, array( $field_args ) );
@@ -660,7 +661,7 @@ class TestClassExprdawcHelper extends WP_UnitTestCase {
 	}
 
 	/**
-	 * Test prepare_price_adjustment with fixed price adjustment on text field.
+	 * Test preparePriceAdjustment with fixed price adjustment on text field.
 	 *
 	 * Test Goal:
 	 * Verifies that a text field with positive fixed price adjustment
@@ -673,19 +674,19 @@ class TestClassExprdawcHelper extends WP_UnitTestCase {
 	 * - required_string includes '(+10)'
 	 * - Price is formatted with currency symbol
 	 */
-	public function test_prepare_price_adjustment_fixed_positive() {
+	public function test_preparePriceAdjustment_fixed_positive() {
 		$field_args = array(
-			'type'                   => 'text',
-			'label'                  => 'Test Field',
-			'input_class'            => array(),
-			'custom_attributes'      => array(),
-			'required_string'        => ' <span class="optional">(Optional)</span>',
-			'price_adjustment_type'  => 'fixed',
-			'price_adjustment_value' => 10.50,
+			'type'                  => 'text',
+			'label'                 => 'Test Field',
+			'input_class'           => array(),
+			'custom_attributes'     => array(),
+			'required_string'       => ' <span class="optional">(Optional)</span>',
+			'price_adjustment_type' => 'fixed',
+			'priceAdjustmentValue'  => 10.50,
 		);
 
-		$reflection = new ReflectionClass( Exprdawc_Helper::class );
-		$method     = $reflection->getMethod( 'prepare_price_adjustment' );
+		$reflection = new ReflectionClass( Helper::class );
+		$method     = $reflection->getMethod( 'preparePriceAdjustment' );
 		$method->setAccessible( true );
 
 		$result = $method->invokeArgs( null, array( $field_args, false ) );
@@ -702,7 +703,7 @@ class TestClassExprdawcHelper extends WP_UnitTestCase {
 	}
 
 	/**
-	 * Test prepare_price_adjustment with percentage adjustment on text field.
+	 * Test preparePriceAdjustment with percentage adjustment on text field.
 	 *
 	 * Test Goal:
 	 * Verifies that a text field with percentage price adjustment
@@ -714,19 +715,19 @@ class TestClassExprdawcHelper extends WP_UnitTestCase {
 	 * - data-price-adjustment = '15'
 	 * - required_string includes '(+15%)'
 	 */
-	public function test_prepare_price_adjustment_percentage_positive() {
+	public function test_preparePriceAdjustment_percentage_positive() {
 		$field_args = array(
-			'type'                   => 'text',
-			'label'                  => 'Test Field',
-			'input_class'            => array(),
-			'custom_attributes'      => array(),
-			'required_string'        => '',
-			'price_adjustment_type'  => 'percentage',
-			'price_adjustment_value' => 15,
+			'type'                  => 'text',
+			'label'                 => 'Test Field',
+			'input_class'           => array(),
+			'custom_attributes'     => array(),
+			'required_string'       => '',
+			'price_adjustment_type' => 'percentage',
+			'priceAdjustmentValue'  => 15,
 		);
 
-		$reflection = new ReflectionClass( Exprdawc_Helper::class );
-		$method     = $reflection->getMethod( 'prepare_price_adjustment' );
+		$reflection = new ReflectionClass( Helper::class );
+		$method     = $reflection->getMethod( 'preparePriceAdjustment' );
 		$method->setAccessible( true );
 
 		$result = $method->invokeArgs( null, array( $field_args, false ) );
@@ -738,7 +739,7 @@ class TestClassExprdawcHelper extends WP_UnitTestCase {
 	}
 
 	/**
-	 * Test prepare_price_adjustment with negative fixed price adjustment.
+	 * Test preparePriceAdjustment with negative fixed price adjustment.
 	 *
 	 * Test Goal:
 	 * Verifies that negative price adjustments display with minus sign.
@@ -748,19 +749,19 @@ class TestClassExprdawcHelper extends WP_UnitTestCase {
 	 * - required_string includes '(-5.00)'
 	 * - Minus sign prefix is present
 	 */
-	public function test_prepare_price_adjustment_fixed_negative() {
+	public function test_preparePriceAdjustment_fixed_negative() {
 		$field_args = array(
-			'type'                   => 'text',
-			'label'                  => 'Discount Field',
-			'input_class'            => array(),
-			'custom_attributes'      => array(),
-			'required_string'        => '',
-			'price_adjustment_type'  => 'fixed',
-			'price_adjustment_value' => -5.00,
+			'type'                  => 'text',
+			'label'                 => 'Discount Field',
+			'input_class'           => array(),
+			'custom_attributes'     => array(),
+			'required_string'       => '',
+			'price_adjustment_type' => 'fixed',
+			'priceAdjustmentValue'  => -5.00,
 		);
 
-		$reflection = new ReflectionClass( Exprdawc_Helper::class );
-		$method     = $reflection->getMethod( 'prepare_price_adjustment' );
+		$reflection = new ReflectionClass( Helper::class );
+		$method     = $reflection->getMethod( 'preparePriceAdjustment' );
 		$method->setAccessible( true );
 
 		$result = $method->invokeArgs( null, array( $field_args, false ) );
@@ -770,29 +771,29 @@ class TestClassExprdawcHelper extends WP_UnitTestCase {
 	}
 
 	/**
-	 * Test prepare_price_adjustment with zero price adjustment.
+	 * Test preparePriceAdjustment with zero price adjustment.
 	 *
 	 * Test Goal:
-	 * Verifies behavior when price_adjustment_value is 0.
+	 * Verifies behavior when priceAdjustmentValue is 0.
 	 * Note: The current implementation DOES add price info even for 0 values.
 	 *
 	 * Expected Results:
 	 * - For non-choice fields, price (-$0.00) is appended to required_string
 	 * - Price adjustment class is added
 	 */
-	public function test_prepare_price_adjustment_zero_value() {
+	public function test_preparePriceAdjustment_zero_value() {
 		$field_args = array(
-			'type'                   => 'text',
-			'label'                  => 'Test Field',
-			'input_class'            => array( 'existing-class' ),
-			'custom_attributes'      => array(),
-			'required_string'        => ' (Original)',
-			'price_adjustment_type'  => 'fixed',
-			'price_adjustment_value' => 0,
+			'type'                  => 'text',
+			'label'                 => 'Test Field',
+			'input_class'           => array( 'existing-class' ),
+			'custom_attributes'     => array(),
+			'required_string'       => ' (Original)',
+			'price_adjustment_type' => 'fixed',
+			'priceAdjustmentValue'  => 0,
 		);
 
-		$reflection = new ReflectionClass( Exprdawc_Helper::class );
-		$method     = $reflection->getMethod( 'prepare_price_adjustment' );
+		$reflection = new ReflectionClass( Helper::class );
+		$method     = $reflection->getMethod( 'preparePriceAdjustment' );
 		$method->setAccessible( true );
 
 		$result = $method->invokeArgs( null, array( $field_args, false ) );
@@ -806,7 +807,7 @@ class TestClassExprdawcHelper extends WP_UnitTestCase {
 	}
 
 	/**
-	 * Test prepare_price_adjustment skips data attributes for choice fields.
+	 * Test preparePriceAdjustment skips data attributes for choice fields.
 	 *
 	 * Test Goal:
 	 * Verifies that choice fields (checkbox, radio, select)
@@ -817,19 +818,19 @@ class TestClassExprdawcHelper extends WP_UnitTestCase {
 	 * - No data-price-adjustment attributes
 	 * - required_string unchanged
 	 */
-	public function test_prepare_price_adjustment_choice_field_checkbox() {
+	public function test_preparePriceAdjustment_choice_field_checkbox() {
 		$field_args = array(
-			'type'                   => 'checkbox',
-			'label'                  => 'Checkbox Field',
-			'input_class'            => array(),
-			'custom_attributes'      => array(),
-			'required_string'        => '',
-			'price_adjustment_type'  => 'fixed',
-			'price_adjustment_value' => 10,
+			'type'                  => 'checkbox',
+			'label'                 => 'Checkbox Field',
+			'input_class'           => array(),
+			'custom_attributes'     => array(),
+			'required_string'       => '',
+			'price_adjustment_type' => 'fixed',
+			'priceAdjustmentValue'  => 10,
 		);
 
-		$reflection = new ReflectionClass( Exprdawc_Helper::class );
-		$method     = $reflection->getMethod( 'prepare_price_adjustment' );
+		$reflection = new ReflectionClass( Helper::class );
+		$method     = $reflection->getMethod( 'preparePriceAdjustment' );
 		$method->setAccessible( true );
 
 		$result = $method->invokeArgs( null, array( $field_args, false ) );
@@ -846,24 +847,24 @@ class TestClassExprdawcHelper extends WP_UnitTestCase {
 	}
 
 	/**
-	 * Test prepare_price_adjustment with radio field.
+	 * Test preparePriceAdjustment with radio field.
 	 *
 	 * Test Goal:
 	 * Verifies that radio fields skip data attributes like checkboxes.
 	 */
-	public function test_prepare_price_adjustment_choice_field_radio() {
+	public function test_preparePriceAdjustment_choice_field_radio() {
 		$field_args = array(
-			'type'                   => 'radio',
-			'label'                  => 'Radio Field',
-			'input_class'            => array(),
-			'custom_attributes'      => array(),
-			'required_string'        => '',
-			'price_adjustment_type'  => 'fixed',
-			'price_adjustment_value' => 20,
+			'type'                  => 'radio',
+			'label'                 => 'Radio Field',
+			'input_class'           => array(),
+			'custom_attributes'     => array(),
+			'required_string'       => '',
+			'price_adjustment_type' => 'fixed',
+			'priceAdjustmentValue'  => 20,
 		);
 
-		$reflection = new ReflectionClass( Exprdawc_Helper::class );
-		$method     = $reflection->getMethod( 'prepare_price_adjustment' );
+		$reflection = new ReflectionClass( Helper::class );
+		$method     = $reflection->getMethod( 'preparePriceAdjustment' );
 		$method->setAccessible( true );
 
 		$result = $method->invokeArgs( null, array( $field_args, false ) );
@@ -873,21 +874,21 @@ class TestClassExprdawcHelper extends WP_UnitTestCase {
 	}
 
 	/**
-	 * Test prepare_price_adjustment with select field.
+	 * Test preparePriceAdjustment with select field.
 	 */
-	public function test_prepare_price_adjustment_choice_field_select() {
+	public function test_preparePriceAdjustment_choice_field_select() {
 		$field_args = array(
-			'type'                   => 'select',
-			'label'                  => 'Select Field',
-			'input_class'            => array(),
-			'custom_attributes'      => array(),
-			'required_string'        => '',
-			'price_adjustment_type'  => 'percentage',
-			'price_adjustment_value' => 10,
+			'type'                  => 'select',
+			'label'                 => 'Select Field',
+			'input_class'           => array(),
+			'custom_attributes'     => array(),
+			'required_string'       => '',
+			'price_adjustment_type' => 'percentage',
+			'priceAdjustmentValue'  => 10,
 		);
 
-		$reflection = new ReflectionClass( Exprdawc_Helper::class );
-		$method     = $reflection->getMethod( 'prepare_price_adjustment' );
+		$reflection = new ReflectionClass( Helper::class );
+		$method     = $reflection->getMethod( 'preparePriceAdjustment' );
 		$method->setAccessible( true );
 
 		$result = $method->invokeArgs( null, array( $field_args, false ) );
@@ -897,7 +898,7 @@ class TestClassExprdawcHelper extends WP_UnitTestCase {
 	}
 
 	/**
-	 * Test prepare_price_adjustment with null price_adjustment_value.
+	 * Test preparePriceAdjustment with null priceAdjustmentValue.
 	 *
 	 * Test Goal:
 	 * Verifies that NULL values are handled safely (converted to 0).
@@ -906,19 +907,19 @@ class TestClassExprdawcHelper extends WP_UnitTestCase {
 	 * - No exception thrown
 	 * - Returns field_args unchanged since NULL coerces to 0
 	 */
-	public function test_prepare_price_adjustment_null_value() {
+	public function test_preparePriceAdjustment_null_value() {
 		$field_args = array(
-			'type'                   => 'text',
-			'label'                  => 'Test Field',
-			'input_class'            => array( 'original-class' ),
-			'custom_attributes'      => array(),
-			'required_string'        => '',
-			'price_adjustment_type'  => 'fixed',
-			'price_adjustment_value' => null,
+			'type'                  => 'text',
+			'label'                 => 'Test Field',
+			'input_class'           => array( 'original-class' ),
+			'custom_attributes'     => array(),
+			'required_string'       => '',
+			'price_adjustment_type' => 'fixed',
+			'priceAdjustmentValue'  => null,
 		);
 
-		$reflection = new ReflectionClass( Exprdawc_Helper::class );
-		$method     = $reflection->getMethod( 'prepare_price_adjustment' );
+		$reflection = new ReflectionClass( Helper::class );
+		$method     = $reflection->getMethod( 'preparePriceAdjustment' );
 		$method->setAccessible( true );
 
 		// Should not throw exception.
@@ -929,24 +930,24 @@ class TestClassExprdawcHelper extends WP_UnitTestCase {
 	}
 
 	/**
-	 * Test prepare_price_adjustment with large price adjustment.
+	 * Test preparePriceAdjustment with large price adjustment.
 	 *
 	 * Test Goal:
 	 * Verifies that large price adjustments are formatted correctly.
 	 */
-	public function test_prepare_price_adjustment_large_value() {
+	public function test_preparePriceAdjustment_large_value() {
 		$field_args = array(
-			'type'                   => 'text',
-			'label'                  => 'Premium Field',
-			'input_class'            => array(),
-			'custom_attributes'      => array(),
-			'required_string'        => '',
-			'price_adjustment_type'  => 'fixed',
-			'price_adjustment_value' => 999.99,
+			'type'                  => 'text',
+			'label'                 => 'Premium Field',
+			'input_class'           => array(),
+			'custom_attributes'     => array(),
+			'required_string'       => '',
+			'price_adjustment_type' => 'fixed',
+			'priceAdjustmentValue'  => 999.99,
 		);
 
-		$reflection = new ReflectionClass( Exprdawc_Helper::class );
-		$method     = $reflection->getMethod( 'prepare_price_adjustment' );
+		$reflection = new ReflectionClass( Helper::class );
+		$method     = $reflection->getMethod( 'preparePriceAdjustment' );
 		$method->setAccessible( true );
 
 		$result = $method->invokeArgs( null, array( $field_args, false ) );
@@ -956,21 +957,21 @@ class TestClassExprdawcHelper extends WP_UnitTestCase {
 	}
 
 	/**
-	 * Test prepare_price_adjustment with negative percentage.
+	 * Test preparePriceAdjustment with negative percentage.
 	 */
-	public function test_prepare_price_adjustment_negative_percentage() {
+	public function test_preparePriceAdjustment_negative_percentage() {
 		$field_args = array(
-			'type'                   => 'text',
-			'label'                  => 'Discount %',
-			'input_class'            => array(),
-			'custom_attributes'      => array(),
-			'required_string'        => '',
-			'price_adjustment_type'  => 'percentage',
-			'price_adjustment_value' => -25,
+			'type'                  => 'text',
+			'label'                 => 'Discount %',
+			'input_class'           => array(),
+			'custom_attributes'     => array(),
+			'required_string'       => '',
+			'price_adjustment_type' => 'percentage',
+			'priceAdjustmentValue'  => -25,
 		);
 
-		$reflection = new ReflectionClass( Exprdawc_Helper::class );
-		$method     = $reflection->getMethod( 'prepare_price_adjustment' );
+		$reflection = new ReflectionClass( Helper::class );
+		$method     = $reflection->getMethod( 'preparePriceAdjustment' );
 		$method->setAccessible( true );
 
 		$result = $method->invokeArgs( null, array( $field_args, false ) );

@@ -39,9 +39,8 @@ class ProductAdminPage {
      */
     async goToExtraProductDataTab() {
         await this.page.waitForLoadState('networkidle');
-        const tab = this.page.getByRole('link', { name: 'Extra Product Input' });
+        const tab = this.page.getByRole('heading', { name: 'Extra Product Input' });
         await expect(tab).toBeVisible();
-        await tab.click();
         await expect(this.page.locator('#extra-product-data')).toBeVisible();
 
         // await this.page.click('a:has-text("Extra Product Input")');
@@ -54,6 +53,10 @@ class ProductAdminPage {
      */
     async clickAddOptionButton() {
         await this.page.click(`button#exprdawc_add_custom_field`);
+    }
+
+    async clickImportButton() {
+        await this.page.click(`a.exprdawc-import`);
     }
 
     /**

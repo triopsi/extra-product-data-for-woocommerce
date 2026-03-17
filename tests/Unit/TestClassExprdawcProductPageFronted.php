@@ -1,16 +1,13 @@
 <?php
 declare( strict_types=1 );
 
-require_once dirname( __DIR__ ) . '/../src/classes/class-exprdawc-product-page-frontend.php';
-require_once dirname( __DIR__ ) . '/../src/classes/helper/class-exprdawc-helper.php';
-
 use Automattic\WooCommerce\Enums\ProductStockStatus;
-use Triopsi\Exprdawc\Exprdawc_Product_Page_Frontend;
+use Triopsi\Exprdawc\Frontend\ProductFrontend;
 
 /**
  * Class TestClassExprdawcProductPageFrontend
  *
- * PHPUnit tests for Exprdawc_Product_Page_Frontend class.
+ * PHPUnit tests for ProductFrontend class.
  *
  * @package Extra_Product_Data_For_WooCommerce\Tests\Unit
  */
@@ -19,7 +16,7 @@ class TestClassExprdawcProductPageFrontend extends WP_UnitTestCase {
 	/**
 	 * The instance of the class to test.
 	 *
-	 * @var Exprdawc_Product_Page_Frontend
+	 * @var ProductFrontend
 	 */
 	private $instance;
 
@@ -43,7 +40,7 @@ class TestClassExprdawcProductPageFrontend extends WP_UnitTestCase {
 	public function setUp(): void {
 		parent::setUp();
 
-		$this->instance = new Exprdawc_Product_Page_Frontend();
+		$this->instance = new ProductFrontend();
 
 		// Create a test product.
 		$this->product_id = $this->factory()->post->create(
@@ -129,7 +126,7 @@ class TestClassExprdawcProductPageFrontend extends WP_UnitTestCase {
 	 * - No required fields present
 	 */
 	public function test_exprdawc_has_options_returns_false_when_no_custom_fields() {
-		$result = $this->instance->exprdawc_has_options( false, $this->product );
+		$result = $this->instance->exprdawcHasOptions( false, $this->product );
 		$this->assertFalse( $result );
 	}
 
@@ -160,7 +157,7 @@ class TestClassExprdawcProductPageFrontend extends WP_UnitTestCase {
 		$this->product->update_meta_data( '_extra_product_fields', $custom_fields );
 		$this->product->save();
 
-		$result = $this->instance->exprdawc_has_options( false, $this->product );
+		$result = $this->instance->exprdawcHasOptions( false, $this->product );
 		$this->assertTrue( $result );
 	}
 
@@ -209,7 +206,7 @@ class TestClassExprdawcProductPageFrontend extends WP_UnitTestCase {
 		$grouped_product->set_children( array( $child_product_id ) );
 		$grouped_product->save();
 
-		$result = $this->instance->exprdawc_prevent_purchase_at_grouped_level( true, $grouped_product );
+		$result = $this->instance->exprdawcPreventPurchaseAtGroupedLevel( true, $grouped_product );
 		$this->assertFalse( $result );
 
 		// Clean up.
@@ -234,7 +231,7 @@ class TestClassExprdawcProductPageFrontend extends WP_UnitTestCase {
 	 * - No custom button text in settings
 	 */
 	public function test_exprdawc_change_add_to_cart_button_text_no_custom_fields() {
-		$result = $this->instance->exprdawc_change_add_to_cart_button_text( 'Add to cart', $this->product );
+		$result = $this->instance->exprdawcChangeAddToCartButtonText( 'Add to cart', $this->product );
 		$this->assertEquals( 'Add to cart', $result );
 	}
 
@@ -270,7 +267,7 @@ class TestClassExprdawcProductPageFrontend extends WP_UnitTestCase {
 		// Set custom button text.
 		update_option( 'exprdawc_custom_add_to_cart_text', 'Select Options' );
 
-		$result = $this->instance->exprdawc_change_add_to_cart_button_text( 'Add to cart', $this->product );
+		$result = $this->instance->exprdawcChangeAddToCartButtonText( 'Add to cart', $this->product );
 		$this->assertEquals( 'Select Options', $result );
 
 		// Clean up.
@@ -296,7 +293,7 @@ class TestClassExprdawcProductPageFrontend extends WP_UnitTestCase {
 		$this->product->set_stock_status( ProductStockStatus::OUT_OF_STOCK );
 		$this->product->save();
 
-		$result = $this->instance->exprdawc_change_add_to_cart_button_text( 'Add to cart', $this->product );
+		$result = $this->instance->exprdawcChangeAddToCartButtonText( 'Add to cart', $this->product );
 		$this->assertEquals( 'Add to cart', $result );
 	}
 
@@ -323,7 +320,7 @@ class TestClassExprdawcProductPageFrontend extends WP_UnitTestCase {
 		$product->set_button_text( 'Buy externally' );
 		$product->save();
 
-		$result = $this->instance->exprdawc_change_add_to_cart_button_text( 'Buy externally', $product );
+		$result = $this->instance->exprdawcChangeAddToCartButtonText( 'Buy externally', $product );
 		$this->assertEquals( 'Buy externally', $result );
 		$product->delete( true );
 	}
@@ -358,7 +355,7 @@ class TestClassExprdawcProductPageFrontend extends WP_UnitTestCase {
 		$this->product->save();
 
 		$original_url = '?add-to-cart=' . $this->product_id;
-		$result       = $this->instance->exprdawc_change_add_to_cart_url( $original_url, $this->product );
+		$result       = $this->instance->exprdawcChangeAddToCartUrl( $original_url, $this->product );
 		$expected_url = get_permalink( $this->product_id );
 
 		$this->assertEquals( $expected_url, $result );
@@ -380,7 +377,7 @@ class TestClassExprdawcProductPageFrontend extends WP_UnitTestCase {
 	 */
 	public function test_exprdawc_change_add_to_cart_url_returns_original_when_product_is_external(): void {
 		$url    = 'https://example.com/original';
-		$result = $this->instance->exprdawc_change_add_to_cart_url( $url, new WC_Product_External() );
+		$result = $this->instance->exprdawcChangeAddToCartUrl( $url, new WC_Product_External() );
 		$this->assertSame( $url, $result );
 	}
 
@@ -401,7 +398,7 @@ class TestClassExprdawcProductPageFrontend extends WP_UnitTestCase {
 	 */
 	public function test_exprdawc_change_add_to_cart_url_no_custom_fields() {
 		$original_url = '?add-to-cart=' . $this->product_id;
-		$result       = $this->instance->exprdawc_change_add_to_cart_url( $original_url, $this->product );
+		$result       = $this->instance->exprdawcChangeAddToCartUrl( $original_url, $this->product );
 		$this->assertEquals( $original_url, $result );
 	}
 
@@ -427,7 +424,7 @@ class TestClassExprdawcProductPageFrontend extends WP_UnitTestCase {
 		// Visit a normal page (Home).
 		$this->go_to( home_url( '/' ) );
 
-		$this->instance->exprdawc_add_frontend_styles_scripts();
+		$this->instance->exprdawcAddFrontendStylesScripts();
 
 		$this->assertFalse( wp_style_is( 'form-css', 'enqueued' ) );
 		$this->assertFalse( wp_script_is( 'wc-conditional-rules-js', 'enqueued' ) );
@@ -468,7 +465,7 @@ class TestClassExprdawcProductPageFrontend extends WP_UnitTestCase {
 		global $wp_query;
 		$wp_query->is_singular = true;
 
-		$this->instance->exprdawc_add_frontend_styles_scripts();
+		$this->instance->exprdawcAddFrontendStylesScripts();
 
 		// Enqueued?
 		$this->assertTrue( wp_style_is( 'form-css', 'enqueued' ) );
@@ -511,7 +508,7 @@ class TestClassExprdawcProductPageFrontend extends WP_UnitTestCase {
 		$product = $wc_product;
 
 		ob_start();
-		$this->instance->exprdawc_display_custom_fields_on_product_page();
+		$this->instance->exprdawcDisplayCustomFieldsOnProductPage();
 		$output = ob_get_clean();
 
 		$this->assertSame( '', trim( $output ), 'No fields => no output expected.' );
@@ -556,7 +553,7 @@ class TestClassExprdawcProductPageFrontend extends WP_UnitTestCase {
 		$product = $wc_product;
 
 		ob_start();
-		$this->instance->exprdawc_display_custom_fields_on_product_page();
+		$this->instance->exprdawcDisplayCustomFieldsOnProductPage();
 		$output = ob_get_clean();
 
 		// Wrapper.
@@ -609,7 +606,7 @@ class TestClassExprdawcProductPageFrontend extends WP_UnitTestCase {
 			'test_field' => '',
 		);
 
-		$result = $this->instance->exprdawc_validate_custom_fields( true, $this->product_id, 1 );
+		$result = $this->instance->exprdawcValidateCustomFields( true, $this->product_id, 1 );
 		$this->assertFalse( $result );
 	}
 
@@ -645,7 +642,7 @@ class TestClassExprdawcProductPageFrontend extends WP_UnitTestCase {
 			'test_field' => 'test value',
 		);
 
-		$result = $this->instance->exprdawc_validate_custom_fields( true, $this->product_id, 1 );
+		$result = $this->instance->exprdawcValidateCustomFields( true, $this->product_id, 1 );
 		$this->assertTrue( $result );
 	}
 
@@ -681,7 +678,7 @@ class TestClassExprdawcProductPageFrontend extends WP_UnitTestCase {
 			'email_field' => 'invalid-email',
 		);
 
-		$result = $this->instance->exprdawc_validate_custom_fields( true, $this->product_id, 1 );
+		$result = $this->instance->exprdawcValidateCustomFields( true, $this->product_id, 1 );
 		$this->assertFalse( $result );
 	}
 
@@ -716,7 +713,7 @@ class TestClassExprdawcProductPageFrontend extends WP_UnitTestCase {
 			'email_field' => 'test@example.com',
 		);
 
-		$result = $this->instance->exprdawc_validate_custom_fields( true, $this->product_id, 1 );
+		$result = $this->instance->exprdawcValidateCustomFields( true, $this->product_id, 1 );
 		$this->assertTrue( $result );
 	}
 
@@ -752,7 +749,7 @@ class TestClassExprdawcProductPageFrontend extends WP_UnitTestCase {
 			'number_field' => 'not-a-number',
 		);
 
-		$result = $this->instance->exprdawc_validate_custom_fields( true, $this->product_id, 1 );
+		$result = $this->instance->exprdawcValidateCustomFields( true, $this->product_id, 1 );
 		$this->assertFalse( $result );
 	}
 
@@ -788,7 +785,7 @@ class TestClassExprdawcProductPageFrontend extends WP_UnitTestCase {
 			'date_field' => 'not-a-date',
 		);
 
-		$result = $this->instance->exprdawc_validate_custom_fields( true, $this->product_id, 1 );
+		$result = $this->instance->exprdawcValidateCustomFields( true, $this->product_id, 1 );
 		$this->assertFalse( $result );
 	}
 
@@ -824,7 +821,7 @@ class TestClassExprdawcProductPageFrontend extends WP_UnitTestCase {
 			'date_field' => '2024-01-01',
 		);
 
-		$result = $this->instance->exprdawc_validate_custom_fields( true, $this->product_id, 1 );
+		$result = $this->instance->exprdawcValidateCustomFields( true, $this->product_id, 1 );
 		$this->assertTrue( $result );
 	}
 
@@ -848,39 +845,39 @@ class TestClassExprdawcProductPageFrontend extends WP_UnitTestCase {
 		$custom_fields = array(
 			0 =>
 				array(
-					'label'                  => 'Radio Test.:',
-					'type'                   => 'radio',
-					'required'               => 1,
-					'conditional_logic'      => 0,
-					'placeholder_text'       => '',
-					'help_text'              => '',
-					'options'                =>
+					'label'                 => 'Radio Test.:',
+					'type'                  => 'radio',
+					'required'              => 1,
+					'conditional_logic'     => 0,
+					'placeholder_text'      => '',
+					'help_text'             => '',
+					'options'               =>
 					array(
 						0 =>
 							array(
-								'label'                  => 'Option A',
-								'value'                  => 'A',
-								'price_adjustment_type'  => 'fixed',
-								'price_adjustment_value' => '',
-								'default'                => 0,
+								'label'                 => 'Option A',
+								'value'                 => 'A',
+								'price_adjustment_type' => 'fixed',
+								'priceAdjustmentValue'  => '',
+								'default'               => 0,
 							),
 						1 =>
 							array(
-								'label'                  => 'Option B',
-								'value'                  => 'B',
-								'price_adjustment_type'  => 'fixed',
-								'price_adjustment_value' => '',
-								'default'                => 0,
+								'label'                 => 'Option B',
+								'value'                 => 'B',
+								'price_adjustment_type' => 'fixed',
+								'priceAdjustmentValue'  => '',
+								'default'               => 0,
 							),
 					),
-					'default'                => 'B',
-					'minlength'              => 0,
-					'maxlength'              => 255,
-					'rows'                   => 2,
-					'cols'                   => 5,
-					'autocomplete'           => 'on',
-					'autofocus'              => false,
-					'conditional_rules'      =>
+					'default'               => 'B',
+					'minlength'             => 0,
+					'maxlength'             => 255,
+					'rows'                  => 2,
+					'cols'                  => 5,
+					'autocomplete'          => 'on',
+					'autofocus'             => false,
+					'conditional_rules'     =>
 					array(
 						0 =>
 						array(
@@ -892,11 +889,11 @@ class TestClassExprdawcProductPageFrontend extends WP_UnitTestCase {
 							),
 						),
 					),
-					'index'                  => 3,
-					'editable'               => false,
-					'adjust_price'           => false,
-					'price_adjustment_type'  => 'fixed',
-					'price_adjustment_value' => '0',
+					'index'                 => 3,
+					'editable'              => false,
+					'adjust_price'          => false,
+					'price_adjustment_type' => 'fixed',
+					'priceAdjustmentValue'  => '0',
 				),
 		);
 		$this->product->update_meta_data( '_extra_product_fields', $custom_fields );
@@ -910,7 +907,7 @@ class TestClassExprdawcProductPageFrontend extends WP_UnitTestCase {
 				),
 		);
 
-		$result = $this->instance->exprdawc_validate_custom_fields( true, $this->product_id, 1 );
+		$result = $this->instance->exprdawcValidateCustomFields( true, $this->product_id, 1 );
 		$this->assertFalse( $result );
 	}
 
@@ -935,39 +932,39 @@ class TestClassExprdawcProductPageFrontend extends WP_UnitTestCase {
 		$custom_fields = array(
 			0 =>
 				array(
-					'label'                  => 'Radio Test.:',
-					'type'                   => 'radio',
-					'required'               => 1,
-					'conditional_logic'      => 0,
-					'placeholder_text'       => '',
-					'help_text'              => '',
-					'options'                =>
+					'label'                 => 'Radio Test.:',
+					'type'                  => 'radio',
+					'required'              => 1,
+					'conditional_logic'     => 0,
+					'placeholder_text'      => '',
+					'help_text'             => '',
+					'options'               =>
 					array(
 						0 =>
 							array(
-								'label'                  => 'Option A',
-								'value'                  => 'A',
-								'price_adjustment_type'  => 'fixed',
-								'price_adjustment_value' => '',
-								'default'                => 0,
+								'label'                 => 'Option A',
+								'value'                 => 'A',
+								'price_adjustment_type' => 'fixed',
+								'priceAdjustmentValue'  => '',
+								'default'               => 0,
 							),
 						1 =>
 							array(
-								'label'                  => 'Option B',
-								'value'                  => 'B',
-								'price_adjustment_type'  => 'fixed',
-								'price_adjustment_value' => '',
-								'default'                => 0,
+								'label'                 => 'Option B',
+								'value'                 => 'B',
+								'price_adjustment_type' => 'fixed',
+								'priceAdjustmentValue'  => '',
+								'default'               => 0,
 							),
 					),
-					'default'                => 'B',
-					'minlength'              => 0,
-					'maxlength'              => 255,
-					'rows'                   => 2,
-					'cols'                   => 5,
-					'autocomplete'           => 'on',
-					'autofocus'              => false,
-					'conditional_rules'      =>
+					'default'               => 'B',
+					'minlength'             => 0,
+					'maxlength'             => 255,
+					'rows'                  => 2,
+					'cols'                  => 5,
+					'autocomplete'          => 'on',
+					'autofocus'             => false,
+					'conditional_rules'     =>
 					array(
 						0 =>
 						array(
@@ -979,11 +976,11 @@ class TestClassExprdawcProductPageFrontend extends WP_UnitTestCase {
 							),
 						),
 					),
-					'index'                  => 3,
-					'editable'               => false,
-					'adjust_price'           => false,
-					'price_adjustment_type'  => 'fixed',
-					'price_adjustment_value' => '0',
+					'index'                 => 3,
+					'editable'              => false,
+					'adjust_price'          => false,
+					'price_adjustment_type' => 'fixed',
+					'priceAdjustmentValue'  => '0',
 				),
 		);
 		$this->product->update_meta_data( '_extra_product_fields', $custom_fields );
@@ -997,7 +994,7 @@ class TestClassExprdawcProductPageFrontend extends WP_UnitTestCase {
 				),
 		);
 
-		$result = $this->instance->exprdawc_validate_custom_fields( true, $this->product_id, 1 );
+		$result = $this->instance->exprdawcValidateCustomFields( true, $this->product_id, 1 );
 		$this->assertTrue( $result );
 	}
 
@@ -1021,39 +1018,39 @@ class TestClassExprdawcProductPageFrontend extends WP_UnitTestCase {
 		$custom_fields = array(
 			0 =>
 				array(
-					'label'                  => 'Checkbox Test.:',
-					'type'                   => 'checkbox',
-					'required'               => 1,
-					'conditional_logic'      => 0,
-					'placeholder_text'       => '',
-					'help_text'              => '',
-					'options'                =>
+					'label'                 => 'Checkbox Test.:',
+					'type'                  => 'checkbox',
+					'required'              => 1,
+					'conditional_logic'     => 0,
+					'placeholder_text'      => '',
+					'help_text'             => '',
+					'options'               =>
 					array(
 						0 =>
 							array(
-								'label'                  => 'Option A',
-								'value'                  => 'A',
-								'price_adjustment_type'  => 'fixed',
-								'price_adjustment_value' => '',
-								'default'                => 0,
+								'label'                 => 'Option A',
+								'value'                 => 'A',
+								'price_adjustment_type' => 'fixed',
+								'priceAdjustmentValue'  => '',
+								'default'               => 0,
 							),
 						1 =>
 							array(
-								'label'                  => 'Option B',
-								'value'                  => 'B',
-								'price_adjustment_type'  => 'fixed',
-								'price_adjustment_value' => '',
-								'default'                => 0,
+								'label'                 => 'Option B',
+								'value'                 => 'B',
+								'price_adjustment_type' => 'fixed',
+								'priceAdjustmentValue'  => '',
+								'default'               => 0,
 							),
 					),
-					'default'                => 'B',
-					'minlength'              => 0,
-					'maxlength'              => 255,
-					'rows'                   => 2,
-					'cols'                   => 5,
-					'autocomplete'           => 'on',
-					'autofocus'              => false,
-					'conditional_rules'      =>
+					'default'               => 'B',
+					'minlength'             => 0,
+					'maxlength'             => 255,
+					'rows'                  => 2,
+					'cols'                  => 5,
+					'autocomplete'          => 'on',
+					'autofocus'             => false,
+					'conditional_rules'     =>
 					array(
 						0 =>
 						array(
@@ -1065,11 +1062,11 @@ class TestClassExprdawcProductPageFrontend extends WP_UnitTestCase {
 							),
 						),
 					),
-					'index'                  => 3,
-					'editable'               => false,
-					'adjust_price'           => false,
-					'price_adjustment_type'  => 'fixed',
-					'price_adjustment_value' => '0',
+					'index'                 => 3,
+					'editable'              => false,
+					'adjust_price'          => false,
+					'price_adjustment_type' => 'fixed',
+					'priceAdjustmentValue'  => '0',
 				),
 		);
 		$this->product->update_meta_data( '_extra_product_fields', $custom_fields );
@@ -1083,7 +1080,7 @@ class TestClassExprdawcProductPageFrontend extends WP_UnitTestCase {
 				),
 		);
 
-		$result = $this->instance->exprdawc_validate_custom_fields( true, $this->product_id, 1 );
+		$result = $this->instance->exprdawcValidateCustomFields( true, $this->product_id, 1 );
 		$this->assertFalse( $result );
 	}
 
@@ -1107,39 +1104,39 @@ class TestClassExprdawcProductPageFrontend extends WP_UnitTestCase {
 		$custom_fields = array(
 			0 =>
 				array(
-					'label'                  => 'Checkbox Test.:',
-					'type'                   => 'checkbox',
-					'required'               => 1,
-					'conditional_logic'      => 0,
-					'placeholder_text'       => '',
-					'help_text'              => '',
-					'options'                =>
+					'label'                 => 'Checkbox Test.:',
+					'type'                  => 'checkbox',
+					'required'              => 1,
+					'conditional_logic'     => 0,
+					'placeholder_text'      => '',
+					'help_text'             => '',
+					'options'               =>
 					array(
 						0 =>
 							array(
-								'label'                  => 'Option A',
-								'value'                  => 'A',
-								'price_adjustment_type'  => 'fixed',
-								'price_adjustment_value' => '',
-								'default'                => 0,
+								'label'                 => 'Option A',
+								'value'                 => 'A',
+								'price_adjustment_type' => 'fixed',
+								'priceAdjustmentValue'  => '',
+								'default'               => 0,
 							),
 						1 =>
 							array(
-								'label'                  => 'Option B',
-								'value'                  => 'B',
-								'price_adjustment_type'  => 'fixed',
-								'price_adjustment_value' => '',
-								'default'                => 0,
+								'label'                 => 'Option B',
+								'value'                 => 'B',
+								'price_adjustment_type' => 'fixed',
+								'priceAdjustmentValue'  => '',
+								'default'               => 0,
 							),
 					),
-					'default'                => 'B',
-					'minlength'              => 0,
-					'maxlength'              => 255,
-					'rows'                   => 2,
-					'cols'                   => 5,
-					'autocomplete'           => 'on',
-					'autofocus'              => false,
-					'conditional_rules'      =>
+					'default'               => 'B',
+					'minlength'             => 0,
+					'maxlength'             => 255,
+					'rows'                  => 2,
+					'cols'                  => 5,
+					'autocomplete'          => 'on',
+					'autofocus'             => false,
+					'conditional_rules'     =>
 					array(
 						0 =>
 						array(
@@ -1151,11 +1148,11 @@ class TestClassExprdawcProductPageFrontend extends WP_UnitTestCase {
 							),
 						),
 					),
-					'index'                  => 3,
-					'editable'               => false,
-					'adjust_price'           => false,
-					'price_adjustment_type'  => 'fixed',
-					'price_adjustment_value' => '0',
+					'index'                 => 3,
+					'editable'              => false,
+					'adjust_price'          => false,
+					'price_adjustment_type' => 'fixed',
+					'priceAdjustmentValue'  => '0',
 				),
 		);
 		$this->product->update_meta_data( '_extra_product_fields', $custom_fields );
@@ -1169,7 +1166,7 @@ class TestClassExprdawcProductPageFrontend extends WP_UnitTestCase {
 				),
 		);
 
-		$result = $this->instance->exprdawc_validate_custom_fields( true, $this->product_id, 1 );
+		$result = $this->instance->exprdawcValidateCustomFields( true, $this->product_id, 1 );
 		$this->assertTrue( $result );
 	}
 
@@ -1193,21 +1190,21 @@ class TestClassExprdawcProductPageFrontend extends WP_UnitTestCase {
 		$custom_fields = array(
 			0 =>
 				array(
-					'label'                  => 'Yes No',
-					'type'                   => 'yes-no',
-					'required'               => 1,
-					'conditional_logic'      => 0,
-					'placeholder_text'       => '',
-					'help_text'              => '',
-					'options'                => array(),
-					'default'                => '',
-					'minlength'              => 0,
-					'maxlength'              => 255,
-					'rows'                   => 2,
-					'cols'                   => 5,
-					'autocomplete'           => 'on',
-					'autofocus'              => false,
-					'conditional_rules'      =>
+					'label'                 => 'Yes No',
+					'type'                  => 'yes-no',
+					'required'              => 1,
+					'conditional_logic'     => 0,
+					'placeholder_text'      => '',
+					'help_text'             => '',
+					'options'               => array(),
+					'default'               => '',
+					'minlength'             => 0,
+					'maxlength'             => 255,
+					'rows'                  => 2,
+					'cols'                  => 5,
+					'autocomplete'          => 'on',
+					'autofocus'             => false,
+					'conditional_rules'     =>
 						array(
 							0 =>
 							array(
@@ -1219,11 +1216,11 @@ class TestClassExprdawcProductPageFrontend extends WP_UnitTestCase {
 								),
 							),
 						),
-					'index'                  => 0,
-					'editable'               => false,
-					'adjust_price'           => false,
-					'price_adjustment_type'  => 'fixed',
-					'price_adjustment_value' => '0',
+					'index'                 => 0,
+					'editable'              => false,
+					'adjust_price'          => false,
+					'price_adjustment_type' => 'fixed',
+					'priceAdjustmentValue'  => '0',
 				),
 		);
 		$this->product->update_meta_data( '_extra_product_fields', $custom_fields );
@@ -1234,7 +1231,7 @@ class TestClassExprdawcProductPageFrontend extends WP_UnitTestCase {
 			'yes_no' => 'blub',
 		);
 
-		$result = $this->instance->exprdawc_validate_custom_fields( true, $this->product_id, 1 );
+		$result = $this->instance->exprdawcValidateCustomFields( true, $this->product_id, 1 );
 		$this->assertFalse( $result );
 	}
 
@@ -1258,21 +1255,21 @@ class TestClassExprdawcProductPageFrontend extends WP_UnitTestCase {
 		$custom_fields = array(
 			0 =>
 				array(
-					'label'                  => 'Yes No',
-					'type'                   => 'yes-no',
-					'required'               => 1,
-					'conditional_logic'      => 0,
-					'placeholder_text'       => '',
-					'help_text'              => '',
-					'options'                => array(),
-					'default'                => '',
-					'minlength'              => 0,
-					'maxlength'              => 255,
-					'rows'                   => 2,
-					'cols'                   => 5,
-					'autocomplete'           => 'on',
-					'autofocus'              => false,
-					'conditional_rules'      =>
+					'label'                 => 'Yes No',
+					'type'                  => 'yes-no',
+					'required'              => 1,
+					'conditional_logic'     => 0,
+					'placeholder_text'      => '',
+					'help_text'             => '',
+					'options'               => array(),
+					'default'               => '',
+					'minlength'             => 0,
+					'maxlength'             => 255,
+					'rows'                  => 2,
+					'cols'                  => 5,
+					'autocomplete'          => 'on',
+					'autofocus'             => false,
+					'conditional_rules'     =>
 						array(
 							0 =>
 							array(
@@ -1284,11 +1281,11 @@ class TestClassExprdawcProductPageFrontend extends WP_UnitTestCase {
 								),
 							),
 						),
-					'index'                  => 0,
-					'editable'               => false,
-					'adjust_price'           => false,
-					'price_adjustment_type'  => 'fixed',
-					'price_adjustment_value' => '0',
+					'index'                 => 0,
+					'editable'              => false,
+					'adjust_price'          => false,
+					'price_adjustment_type' => 'fixed',
+					'priceAdjustmentValue'  => '0',
 				),
 		);
 		$this->product->update_meta_data( '_extra_product_fields', $custom_fields );
@@ -1299,7 +1296,7 @@ class TestClassExprdawcProductPageFrontend extends WP_UnitTestCase {
 			'yes_no' => 'yes',
 		);
 
-		$result = $this->instance->exprdawc_validate_custom_fields( true, $this->product_id, 1 );
+		$result = $this->instance->exprdawcValidateCustomFields( true, $this->product_id, 1 );
 		$this->assertTrue( $result );
 	}
 
@@ -1323,47 +1320,47 @@ class TestClassExprdawcProductPageFrontend extends WP_UnitTestCase {
 		$custom_fields = array(
 			0 =>
 				array(
-					'label'                  => 'Select Field',
-					'type'                   => 'select',
-					'required'               => 1,
-					'conditional_logic'      => 0,
-					'placeholder_text'       => '',
-					'help_text'              => '',
-					'options'                =>
+					'label'                 => 'Select Field',
+					'type'                  => 'select',
+					'required'              => 1,
+					'conditional_logic'     => 0,
+					'placeholder_text'      => '',
+					'help_text'             => '',
+					'options'               =>
 					array(
 						0 =>
 						array(
-							'label'                  => 'Option A',
-							'value'                  => 'A',
-							'price_adjustment_type'  => 'fixed',
-							'price_adjustment_value' => '',
-							'default'                => 0,
+							'label'                 => 'Option A',
+							'value'                 => 'A',
+							'price_adjustment_type' => 'fixed',
+							'priceAdjustmentValue'  => '',
+							'default'               => 0,
 						),
 						1 =>
 						array(
-							'label'                  => 'Option B',
-							'value'                  => 'B',
-							'price_adjustment_type'  => 'fixed',
-							'price_adjustment_value' => '',
-							'default'                => 0,
+							'label'                 => 'Option B',
+							'value'                 => 'B',
+							'price_adjustment_type' => 'fixed',
+							'priceAdjustmentValue'  => '',
+							'default'               => 0,
 						),
 						2 =>
 						array(
-							'label'                  => 'Option C',
-							'value'                  => 'C',
-							'price_adjustment_type'  => 'fixed',
-							'price_adjustment_value' => '',
-							'default'                => 0,
+							'label'                 => 'Option C',
+							'value'                 => 'C',
+							'price_adjustment_type' => 'fixed',
+							'priceAdjustmentValue'  => '',
+							'default'               => 0,
 						),
 					),
-					'default'                => '',
-					'minlength'              => 0,
-					'maxlength'              => 255,
-					'rows'                   => 2,
-					'cols'                   => 5,
-					'autocomplete'           => 'on',
-					'autofocus'              => false,
-					'conditional_rules'      =>
+					'default'               => '',
+					'minlength'             => 0,
+					'maxlength'             => 255,
+					'rows'                  => 2,
+					'cols'                  => 5,
+					'autocomplete'          => 'on',
+					'autofocus'             => false,
+					'conditional_rules'     =>
 						array(
 							0 =>
 							array(
@@ -1375,11 +1372,11 @@ class TestClassExprdawcProductPageFrontend extends WP_UnitTestCase {
 								),
 							),
 						),
-					'index'                  => 0,
-					'editable'               => false,
-					'adjust_price'           => false,
-					'price_adjustment_type'  => 'fixed',
-					'price_adjustment_value' => '0',
+					'index'                 => 0,
+					'editable'              => false,
+					'adjust_price'          => false,
+					'price_adjustment_type' => 'fixed',
+					'priceAdjustmentValue'  => '0',
 				),
 		);
 		$this->product->update_meta_data( '_extra_product_fields', $custom_fields );
@@ -1390,7 +1387,7 @@ class TestClassExprdawcProductPageFrontend extends WP_UnitTestCase {
 			'select_field' => 'Bam',
 		);
 
-		$result = $this->instance->exprdawc_validate_custom_fields( true, $this->product_id, 1 );
+		$result = $this->instance->exprdawcValidateCustomFields( true, $this->product_id, 1 );
 		$this->assertFalse( $result );
 	}
 
@@ -1414,47 +1411,47 @@ class TestClassExprdawcProductPageFrontend extends WP_UnitTestCase {
 		$custom_fields = array(
 			0 =>
 				array(
-					'label'                  => 'Select Field',
-					'type'                   => 'select',
-					'required'               => 1,
-					'conditional_logic'      => 0,
-					'placeholder_text'       => '',
-					'help_text'              => '',
-					'options'                =>
+					'label'                 => 'Select Field',
+					'type'                  => 'select',
+					'required'              => 1,
+					'conditional_logic'     => 0,
+					'placeholder_text'      => '',
+					'help_text'             => '',
+					'options'               =>
 					array(
 						0 =>
 						array(
-							'label'                  => 'Option A',
-							'value'                  => 'A',
-							'price_adjustment_type'  => 'fixed',
-							'price_adjustment_value' => '',
-							'default'                => 0,
+							'label'                 => 'Option A',
+							'value'                 => 'A',
+							'price_adjustment_type' => 'fixed',
+							'priceAdjustmentValue'  => '',
+							'default'               => 0,
 						),
 						1 =>
 						array(
-							'label'                  => 'Option B',
-							'value'                  => 'B',
-							'price_adjustment_type'  => 'fixed',
-							'price_adjustment_value' => '',
-							'default'                => 0,
+							'label'                 => 'Option B',
+							'value'                 => 'B',
+							'price_adjustment_type' => 'fixed',
+							'priceAdjustmentValue'  => '',
+							'default'               => 0,
 						),
 						2 =>
 						array(
-							'label'                  => 'Option C',
-							'value'                  => 'C',
-							'price_adjustment_type'  => 'fixed',
-							'price_adjustment_value' => '',
-							'default'                => 0,
+							'label'                 => 'Option C',
+							'value'                 => 'C',
+							'price_adjustment_type' => 'fixed',
+							'priceAdjustmentValue'  => '',
+							'default'               => 0,
 						),
 					),
-					'default'                => '',
-					'minlength'              => 0,
-					'maxlength'              => 255,
-					'rows'                   => 2,
-					'cols'                   => 5,
-					'autocomplete'           => 'on',
-					'autofocus'              => false,
-					'conditional_rules'      =>
+					'default'               => '',
+					'minlength'             => 0,
+					'maxlength'             => 255,
+					'rows'                  => 2,
+					'cols'                  => 5,
+					'autocomplete'          => 'on',
+					'autofocus'             => false,
+					'conditional_rules'     =>
 						array(
 							0 =>
 							array(
@@ -1466,11 +1463,11 @@ class TestClassExprdawcProductPageFrontend extends WP_UnitTestCase {
 								),
 							),
 						),
-					'index'                  => 0,
-					'editable'               => false,
-					'adjust_price'           => false,
-					'price_adjustment_type'  => 'fixed',
-					'price_adjustment_value' => '0',
+					'index'                 => 0,
+					'editable'              => false,
+					'adjust_price'          => false,
+					'price_adjustment_type' => 'fixed',
+					'priceAdjustmentValue'  => '0',
 				),
 		);
 		$this->product->update_meta_data( '_extra_product_fields', $custom_fields );
@@ -1481,7 +1478,7 @@ class TestClassExprdawcProductPageFrontend extends WP_UnitTestCase {
 			'select_field' => 'B',
 		);
 
-		$result = $this->instance->exprdawc_validate_custom_fields( true, $this->product_id, 1 );
+		$result = $this->instance->exprdawcValidateCustomFields( true, $this->product_id, 1 );
 		$this->assertTrue( $result );
 	}
 
@@ -1504,7 +1501,7 @@ class TestClassExprdawcProductPageFrontend extends WP_UnitTestCase {
 	public function test_exprdawc_validate_custom_fields_no_post_data() {
 		unset( $_POST['exprdawc_custom_field_input'] );
 
-		$result = $this->instance->exprdawc_validate_custom_fields( true, $this->product_id, 1 );
+		$result = $this->instance->exprdawcValidateCustomFields( true, $this->product_id, 1 );
 		$this->assertTrue( $result );
 	}
 
@@ -1537,7 +1534,7 @@ class TestClassExprdawcProductPageFrontend extends WP_UnitTestCase {
 		$this->product->update_meta_data( '_extra_product_fields', $custom_fields );
 		$this->product->save();
 
-		$result = $this->instance->exprdawc_check_product_support( true, 'ajax_add_to_cart', $this->product );
+		$result = $this->instance->exprdawcCheckProductSupport( true, 'ajax_add_to_cart', $this->product );
 		$this->assertFalse( $result );
 	}
 
@@ -1558,7 +1555,7 @@ class TestClassExprdawcProductPageFrontend extends WP_UnitTestCase {
 	 * - Original support status: true
 	 */
 	public function test_exprdawc_check_product_support_other_feature() {
-		$result = $this->instance->exprdawc_check_product_support( true, 'some_other_feature', $this->product );
+		$result = $this->instance->exprdawcCheckProductSupport( true, 'some_other_feature', $this->product );
 		$this->assertTrue( $result );
 	}
 
@@ -1599,7 +1596,7 @@ class TestClassExprdawcProductPageFrontend extends WP_UnitTestCase {
 		);
 
 		$cart_item_data = array();
-		$result         = $this->instance->exprdawc_save_extra_product_data_in_cart( $cart_item_data, $this->product_id, 0, 1 );
+		$result         = $this->instance->exprdawcSaveExtraProductDataInCart( $cart_item_data, $this->product_id, 0, 1 );
 
 		$this->assertArrayHasKey( 'post_data_product_item', $result );
 		$this->assertCount( 1, $result['post_data_product_item'] );
@@ -1642,7 +1639,7 @@ class TestClassExprdawcProductPageFrontend extends WP_UnitTestCase {
 		);
 
 		$cart_item_data = array();
-		$result         = $this->instance->exprdawc_save_extra_product_data_in_cart( $cart_item_data, $this->product_id, 0, 1 );
+		$result         = $this->instance->exprdawcSaveExtraProductDataInCart( $cart_item_data, $this->product_id, 0, 1 );
 
 		$this->assertArrayHasKey( 'post_data_product_item', $result );
 		$this->assertEquals( 'Test@Example.COM', $result['post_data_product_item'][0]['value'] );
@@ -1684,7 +1681,7 @@ class TestClassExprdawcProductPageFrontend extends WP_UnitTestCase {
 		);
 
 		$cart_item_data = array();
-		$result         = $this->instance->exprdawc_save_extra_product_data_in_cart( $cart_item_data, $this->product_id, 0, 1 );
+		$result         = $this->instance->exprdawcSaveExtraProductDataInCart( $cart_item_data, $this->product_id, 0, 1 );
 
 		$this->assertArrayHasKey( 'post_data_product_item', $result );
 		$this->assertEquals( 42.5, $result['post_data_product_item'][0]['value'] );
@@ -1725,7 +1722,7 @@ class TestClassExprdawcProductPageFrontend extends WP_UnitTestCase {
 		);
 
 		$cart_item_data = array();
-		$result         = $this->instance->exprdawc_save_extra_product_data_in_cart( $cart_item_data, $this->product_id, 0, 1 );
+		$result         = $this->instance->exprdawcSaveExtraProductDataInCart( $cart_item_data, $this->product_id, 0, 1 );
 
 		$this->assertArrayHasKey( 'post_data_product_item', $result );
 		$this->assertEquals( '2024-06-19', $result['post_data_product_item'][0]['value'] );
@@ -1766,7 +1763,7 @@ class TestClassExprdawcProductPageFrontend extends WP_UnitTestCase {
 		);
 
 		$cart_item_data = array();
-		$result         = $this->instance->exprdawc_save_extra_product_data_in_cart( $cart_item_data, $this->product_id, 0, 1 );
+		$result         = $this->instance->exprdawcSaveExtraProductDataInCart( $cart_item_data, $this->product_id, 0, 1 );
 
 		$this->assertArrayHasKey( 'post_data_product_item', $result );
 		$this->assertEquals( 'Title', $result['post_data_product_item'][0]['value'] );
@@ -1776,7 +1773,7 @@ class TestClassExprdawcProductPageFrontend extends WP_UnitTestCase {
 	 * Test exprdawc_save_extra_product_data_in_cart applies fixed price adjustment (text field).
 	 *
 	 * Test Goal:
-	 * Verifies that calculate_price_adjustment is applied for fixed adjustments
+	 * Verifies that calculatePriceAdjustment is applied for fixed adjustments
 	 * when saving cart data through exprdawc_save_extra_product_data_in_cart().
 	 *
 	 * Expected Result:
@@ -1786,11 +1783,11 @@ class TestClassExprdawcProductPageFrontend extends WP_UnitTestCase {
 	public function test_exprdawc_save_extra_product_data_in_cart_fixed_adjustment_text_field() {
 		$custom_fields = array(
 			array(
-				'label'                  => 'Adjustment Field',
-				'type'                   => 'text',
-				'adjust_price'           => true,
-				'price_adjustment_type'  => 'fixed',
-				'price_adjustment_value' => 10,
+				'label'                 => 'Adjustment Field',
+				'type'                  => 'text',
+				'adjust_price'          => true,
+				'price_adjustment_type' => 'fixed',
+				'priceAdjustmentValue'  => 10,
 			),
 		);
 		$this->product->update_meta_data( '_extra_product_fields', $custom_fields );
@@ -1802,7 +1799,7 @@ class TestClassExprdawcProductPageFrontend extends WP_UnitTestCase {
 		);
 
 		$cart_item_data = array();
-		$result         = $this->instance->exprdawc_save_extra_product_data_in_cart( $cart_item_data, $this->product_id, 0, 1 );
+		$result         = $this->instance->exprdawcSaveExtraProductDataInCart( $cart_item_data, $this->product_id, 0, 1 );
 
 		$this->assertArrayHasKey( 'post_data_product_item', $result );
 		$this->assertEquals( 'test value', $result['post_data_product_item'][0]['value'] );
@@ -1813,7 +1810,7 @@ class TestClassExprdawcProductPageFrontend extends WP_UnitTestCase {
 	 * Test exprdawc_save_extra_product_data_in_cart applies fixed price adjustment (select option).
 	 *
 	 * Test Goal:
-	 * Verifies that calculate_price_adjustment sums option-based fixed adjustments
+	 * Verifies that calculatePriceAdjustment sums option-based fixed adjustments
 	 * when a select option is chosen.
 	 */
 	public function test_exprdawc_save_extra_product_data_in_cart_fixed_adjustment_select_option() {
@@ -1824,16 +1821,16 @@ class TestClassExprdawcProductPageFrontend extends WP_UnitTestCase {
 				'adjust_price' => true,
 				'options'      => array(
 					array(
-						'label'                  => 'Option 1',
-						'value'                  => 'opt1',
-						'price_adjustment_type'  => 'fixed',
-						'price_adjustment_value' => 5,
+						'label'                 => 'Option 1',
+						'value'                 => 'opt1',
+						'price_adjustment_type' => 'fixed',
+						'priceAdjustmentValue'  => 5,
 					),
 					array(
-						'label'                  => 'Option 2',
-						'value'                  => 'opt2',
-						'price_adjustment_type'  => 'fixed',
-						'price_adjustment_value' => 3,
+						'label'                 => 'Option 2',
+						'value'                 => 'opt2',
+						'price_adjustment_type' => 'fixed',
+						'priceAdjustmentValue'  => 3,
 					),
 				),
 			),
@@ -1847,7 +1844,7 @@ class TestClassExprdawcProductPageFrontend extends WP_UnitTestCase {
 		);
 
 		$cart_item_data = array();
-		$result         = $this->instance->exprdawc_save_extra_product_data_in_cart( $cart_item_data, $this->product_id, 0, 1 );
+		$result         = $this->instance->exprdawcSaveExtraProductDataInCart( $cart_item_data, $this->product_id, 0, 1 );
 
 		$this->assertArrayHasKey( 'post_data_product_item', $result );
 		$this->assertEquals( 'opt1', $result['post_data_product_item'][0]['value'] );
@@ -1858,7 +1855,7 @@ class TestClassExprdawcProductPageFrontend extends WP_UnitTestCase {
 	 * Test exprdawc_save_extra_product_data_in_cart applies fixed price adjustment (checkbox options).
 	 *
 	 * Test Goal:
-	 * Verifies that calculate_price_adjustment sums multiple selected options
+	 * Verifies that calculatePriceAdjustment sums multiple selected options
 	 * for checkbox fields.
 	 */
 	public function test_exprdawc_save_extra_product_data_in_cart_fixed_adjustment_checkbox_options() {
@@ -1869,16 +1866,16 @@ class TestClassExprdawcProductPageFrontend extends WP_UnitTestCase {
 				'adjust_price' => true,
 				'options'      => array(
 					array(
-						'label'                  => 'Option 1',
-						'value'                  => 'opt1',
-						'price_adjustment_type'  => 'fixed',
-						'price_adjustment_value' => 5,
+						'label'                 => 'Option 1',
+						'value'                 => 'opt1',
+						'price_adjustment_type' => 'fixed',
+						'priceAdjustmentValue'  => 5,
 					),
 					array(
-						'label'                  => 'Option 2',
-						'value'                  => 'opt2',
-						'price_adjustment_type'  => 'fixed',
-						'price_adjustment_value' => 3,
+						'label'                 => 'Option 2',
+						'value'                 => 'opt2',
+						'price_adjustment_type' => 'fixed',
+						'priceAdjustmentValue'  => 3,
 					),
 				),
 			),
@@ -1892,7 +1889,7 @@ class TestClassExprdawcProductPageFrontend extends WP_UnitTestCase {
 		);
 
 		$cart_item_data = array();
-		$result         = $this->instance->exprdawc_save_extra_product_data_in_cart( $cart_item_data, $this->product_id, 0, 1 );
+		$result         = $this->instance->exprdawcSaveExtraProductDataInCart( $cart_item_data, $this->product_id, 0, 1 );
 
 		$this->assertArrayHasKey( 'post_data_product_item', $result );
 		$this->assertEquals( 'opt1, opt2', $result['post_data_product_item'][0]['value'] );
@@ -1909,11 +1906,11 @@ class TestClassExprdawcProductPageFrontend extends WP_UnitTestCase {
 	public function test_exprdawc_save_extra_product_data_in_cart_percent_adjustment_no_cart_display() {
 		$custom_fields = array(
 			array(
-				'label'                  => 'Percent Field',
-				'type'                   => 'text',
-				'adjust_price'           => true,
-				'price_adjustment_type'  => 'percent',
-				'price_adjustment_value' => 15,
+				'label'                 => 'Percent Field',
+				'type'                  => 'text',
+				'adjust_price'          => true,
+				'price_adjustment_type' => 'percent',
+				'priceAdjustmentValue'  => 15,
 			),
 		);
 		$this->product->update_meta_data( '_extra_product_fields', $custom_fields );
@@ -1925,7 +1922,7 @@ class TestClassExprdawcProductPageFrontend extends WP_UnitTestCase {
 		);
 
 		$cart_item_data = array();
-		$result         = $this->instance->exprdawc_save_extra_product_data_in_cart( $cart_item_data, $this->product_id, 0, 1 );
+		$result         = $this->instance->exprdawcSaveExtraProductDataInCart( $cart_item_data, $this->product_id, 0, 1 );
 
 		$this->assertArrayHasKey( 'post_data_product_item', $result );
 		$this->assertEquals( 'test value', $result['post_data_product_item'][0]['value'] );
@@ -1941,11 +1938,11 @@ class TestClassExprdawcProductPageFrontend extends WP_UnitTestCase {
 	public function test_exprdawc_save_extra_product_data_in_cart_negative_fixed_adjustment() {
 		$custom_fields = array(
 			array(
-				'label'                  => 'Negative Field',
-				'type'                   => 'text',
-				'adjust_price'           => true,
-				'price_adjustment_type'  => 'fixed',
-				'price_adjustment_value' => -5,
+				'label'                 => 'Negative Field',
+				'type'                  => 'text',
+				'adjust_price'          => true,
+				'price_adjustment_type' => 'fixed',
+				'priceAdjustmentValue'  => -5,
 			),
 		);
 		$this->product->update_meta_data( '_extra_product_fields', $custom_fields );
@@ -1957,7 +1954,7 @@ class TestClassExprdawcProductPageFrontend extends WP_UnitTestCase {
 		);
 
 		$cart_item_data = array();
-		$result         = $this->instance->exprdawc_save_extra_product_data_in_cart( $cart_item_data, $this->product_id, 0, 1 );
+		$result         = $this->instance->exprdawcSaveExtraProductDataInCart( $cart_item_data, $this->product_id, 0, 1 );
 
 		$this->assertArrayHasKey( 'post_data_product_item', $result );
 		$this->assertEquals( 'test value', $result['post_data_product_item'][0]['value'] );
@@ -1978,10 +1975,10 @@ class TestClassExprdawcProductPageFrontend extends WP_UnitTestCase {
 				'adjust_price' => true,
 				'options'      => array(
 					array(
-						'label'                  => 'Option 1',
-						'value'                  => 'opt1',
-						'price_adjustment_type'  => 'percent',
-						'price_adjustment_value' => 10,
+						'label'                 => 'Option 1',
+						'value'                 => 'opt1',
+						'price_adjustment_type' => 'percent',
+						'priceAdjustmentValue'  => 10,
 					),
 				),
 			),
@@ -1995,7 +1992,7 @@ class TestClassExprdawcProductPageFrontend extends WP_UnitTestCase {
 		);
 
 		$cart_item_data = array();
-		$result         = $this->instance->exprdawc_save_extra_product_data_in_cart( $cart_item_data, $this->product_id, 0, 1 );
+		$result         = $this->instance->exprdawcSaveExtraProductDataInCart( $cart_item_data, $this->product_id, 0, 1 );
 
 		$this->assertArrayHasKey( 'post_data_product_item', $result );
 		$this->assertEquals( 'opt1', $result['post_data_product_item'][0]['value'] );
@@ -2017,10 +2014,10 @@ class TestClassExprdawcProductPageFrontend extends WP_UnitTestCase {
 				'adjust_price' => true,
 				'options'      => array(
 					array(
-						'label'                  => 'Option 1',
-						'value'                  => 'opt1',
-						'price_adjustment_type'  => 'percent',
-						'price_adjustment_value' => 15,
+						'label'                 => 'Option 1',
+						'value'                 => 'opt1',
+						'price_adjustment_type' => 'percent',
+						'priceAdjustmentValue'  => 15,
 					),
 				),
 			),
@@ -2034,7 +2031,7 @@ class TestClassExprdawcProductPageFrontend extends WP_UnitTestCase {
 		);
 
 		$cart_item_data = array();
-		$result         = $this->instance->exprdawc_save_extra_product_data_in_cart( $cart_item_data, $this->product_id, 0, 1 );
+		$result         = $this->instance->exprdawcSaveExtraProductDataInCart( $cart_item_data, $this->product_id, 0, 1 );
 
 		$this->assertArrayHasKey( 'post_data_product_item', $result );
 		$this->assertEquals( 'opt1', $result['post_data_product_item'][0]['value'] );
@@ -2056,16 +2053,16 @@ class TestClassExprdawcProductPageFrontend extends WP_UnitTestCase {
 				'adjust_price' => true,
 				'options'      => array(
 					array(
-						'label'                  => 'Option 1',
-						'value'                  => 'opt1',
-						'price_adjustment_type'  => 'percent',
-						'price_adjustment_value' => 5,
+						'label'                 => 'Option 1',
+						'value'                 => 'opt1',
+						'price_adjustment_type' => 'percent',
+						'priceAdjustmentValue'  => 5,
 					),
 					array(
-						'label'                  => 'Option 2',
-						'value'                  => 'opt2',
-						'price_adjustment_type'  => 'percent',
-						'price_adjustment_value' => 7,
+						'label'                 => 'Option 2',
+						'value'                 => 'opt2',
+						'price_adjustment_type' => 'percent',
+						'priceAdjustmentValue'  => 7,
 					),
 				),
 			),
@@ -2079,7 +2076,7 @@ class TestClassExprdawcProductPageFrontend extends WP_UnitTestCase {
 		);
 
 		$cart_item_data = array();
-		$result         = $this->instance->exprdawc_save_extra_product_data_in_cart( $cart_item_data, $this->product_id, 0, 1 );
+		$result         = $this->instance->exprdawcSaveExtraProductDataInCart( $cart_item_data, $this->product_id, 0, 1 );
 
 		$this->assertArrayHasKey( 'post_data_product_item', $result );
 		$this->assertEquals( 'opt1, opt2', $result['post_data_product_item'][0]['value'] );
@@ -2101,16 +2098,16 @@ class TestClassExprdawcProductPageFrontend extends WP_UnitTestCase {
 				'adjust_price' => true,
 				'options'      => array(
 					array(
-						'label'                  => 'Option 1',
-						'value'                  => 'opt1',
-						'price_adjustment_type'  => 'fixed',
-						'price_adjustment_value' => 4,
+						'label'                 => 'Option 1',
+						'value'                 => 'opt1',
+						'price_adjustment_type' => 'fixed',
+						'priceAdjustmentValue'  => 4,
 					),
 					array(
-						'label'                  => 'Option 2',
-						'value'                  => 'opt2',
-						'price_adjustment_type'  => 'percent',
-						'price_adjustment_value' => 10,
+						'label'                 => 'Option 2',
+						'value'                 => 'opt2',
+						'price_adjustment_type' => 'percent',
+						'priceAdjustmentValue'  => 10,
 					),
 				),
 			),
@@ -2124,7 +2121,7 @@ class TestClassExprdawcProductPageFrontend extends WP_UnitTestCase {
 		);
 
 		$cart_item_data = array();
-		$result         = $this->instance->exprdawc_save_extra_product_data_in_cart( $cart_item_data, $this->product_id, 0, 1 );
+		$result         = $this->instance->exprdawcSaveExtraProductDataInCart( $cart_item_data, $this->product_id, 0, 1 );
 
 		$this->assertArrayHasKey( 'post_data_product_item', $result );
 		$this->assertEquals( 'opt1, opt2', $result['post_data_product_item'][0]['value'] );
@@ -2157,7 +2154,7 @@ class TestClassExprdawcProductPageFrontend extends WP_UnitTestCase {
 		);
 
 		$cart_item_data = array();
-		$result         = $this->instance->exprdawc_save_extra_product_data_in_cart( $cart_item_data, $this->product_id, 0, 1 );
+		$result         = $this->instance->exprdawcSaveExtraProductDataInCart( $cart_item_data, $this->product_id, 0, 1 );
 
 		$this->assertEmpty( $result );
 	}
@@ -2220,7 +2217,7 @@ class TestClassExprdawcProductPageFrontend extends WP_UnitTestCase {
 		);
 
 		$item_data = array();
-		$result    = $this->instance->exprdawc_display_fields_on_cart_and_checkout( $item_data, $cart_item );
+		$result    = $this->instance->exprdawcDisplayFieldsOnCartAndCheckout( $item_data, $cart_item );
 
 		// Asserts.
 		$this->assertCount( 1, $result );
@@ -2285,7 +2282,7 @@ class TestClassExprdawcProductPageFrontend extends WP_UnitTestCase {
 		);
 
 		$item_data = array();
-		$result    = $this->instance->exprdawc_display_fields_on_cart_and_checkout( $item_data, $cart_item );
+		$result    = $this->instance->exprdawcDisplayFieldsOnCartAndCheckout( $item_data, $cart_item );
 
 		// The result should be an array (may be empty due to is_cart() context).
 		$this->assertIsArray( $result );
@@ -2318,7 +2315,7 @@ class TestClassExprdawcProductPageFrontend extends WP_UnitTestCase {
 		);
 
 		$item_data = array();
-		$result    = $this->instance->exprdawc_display_fields_on_cart_and_checkout( $item_data, $cart_item );
+		$result    = $this->instance->exprdawcDisplayFieldsOnCartAndCheckout( $item_data, $cart_item );
 
 		$this->assertEmpty( $result );
 	}
@@ -2339,7 +2336,7 @@ class TestClassExprdawcProductPageFrontend extends WP_UnitTestCase {
 	 * - Product with base price 100
 	 * - Custom field with adjust_price = true
 	 * - price_adjustment_type = 'fixed'
-	 * - price_adjustment_value = 10
+	 * - priceAdjustmentValue = 10
 	 * - Hook: woocommerce_before_calculate_totals
 	 */
 	public function test_exprdawc_adjust_cart_item_pricing_fixed_adjustment() {
@@ -2355,43 +2352,43 @@ class TestClassExprdawcProductPageFrontend extends WP_UnitTestCase {
 				'index'                 => 'test_field',
 				'value'                 => 'test value',
 				'field_raw'             => array(
-					'label'                  => 'Optionen',
-					'type'                   => 'checkbox',
-					'required'               => 0,
-					'conditional_logic'      => 0,
-					'placeholder_text'       => '',
-					'help_text'              => 'Wähle eien Option',
-					'options'                => array(
+					'label'                 => 'Optionen',
+					'type'                  => 'checkbox',
+					'required'              => 0,
+					'conditional_logic'     => 0,
+					'placeholder_text'      => '',
+					'help_text'             => 'Wähle eien Option',
+					'options'               => array(
 						array(
-							'label'                  => 'Option A',
-							'value'                  => 'A',
-							'price_adjustment_type'  => 'fixed',
-							'price_adjustment_value' => '10',
-							'default'                => 0,
+							'label'                 => 'Option A',
+							'value'                 => 'A',
+							'price_adjustment_type' => 'fixed',
+							'priceAdjustmentValue'  => '10',
+							'default'               => 0,
 						),
 						array(
-							'label'                  => 'Option B',
-							'value'                  => 'B',
-							'price_adjustment_type'  => 'fixed',
-							'price_adjustment_value' => '1',
-							'default'                => 0,
+							'label'                 => 'Option B',
+							'value'                 => 'B',
+							'price_adjustment_type' => 'fixed',
+							'priceAdjustmentValue'  => '1',
+							'default'               => 0,
 						),
 						array(
-							'label'                  => 'Option C',
-							'value'                  => 'C',
-							'price_adjustment_type'  => 'fixed',
-							'price_adjustment_value' => '1',
-							'default'                => 0,
+							'label'                 => 'Option C',
+							'value'                 => 'C',
+							'price_adjustment_type' => 'fixed',
+							'priceAdjustmentValue'  => '1',
+							'default'               => 0,
 						),
 					),
-					'default'                => '',
-					'minlength'              => 0,
-					'maxlength'              => 255,
-					'rows'                   => 2,
-					'cols'                   => 5,
-					'autocomplete'           => 'on',
-					'autofocus'              => false,
-					'conditional_rules'      => array(
+					'default'               => '',
+					'minlength'             => 0,
+					'maxlength'             => 255,
+					'rows'                  => 2,
+					'cols'                  => 5,
+					'autocomplete'          => 'on',
+					'autofocus'             => false,
+					'conditional_rules'     => array(
 						array(
 							array(
 								'field'    => '',
@@ -2400,11 +2397,11 @@ class TestClassExprdawcProductPageFrontend extends WP_UnitTestCase {
 							),
 						),
 					),
-					'index'                  => 1,
-					'editable'               => false,
-					'adjust_price'           => true,
-					'price_adjustment_type'  => 'fixed',
-					'price_adjustment_value' => '0',
+					'index'                 => 1,
+					'editable'              => false,
+					'adjust_price'          => true,
+					'price_adjustment_type' => 'fixed',
+					'priceAdjustmentValue'  => '0',
 				),
 				'value_cart'            => 'A (+<span class="woocommerce-Price-amount amount"><bdi>1,00&nbsp;<span class="woocommerce-Price-currencySymbol">&euro;</span></bdi></span>)',
 				'price_adjustment'      => 1,
@@ -2418,7 +2415,7 @@ class TestClassExprdawcProductPageFrontend extends WP_UnitTestCase {
 		WC()->cart->cart_contents[ $cart_item_key ] = $cart_item;
 
 		// Trigger price calculation.
-		$this->instance->exprdawc_adjust_cart_item_pricing( WC()->cart );
+		$this->instance->exprdawcAdjustCartItemPricing( WC()->cart );
 
 		// Get the updated cart item.
 		$updated_cart = WC()->cart->get_cart();
@@ -2443,7 +2440,7 @@ class TestClassExprdawcProductPageFrontend extends WP_UnitTestCase {
 	 * - Product with base price 100
 	 * - Custom field with adjust_price = true
 	 * - price_adjustment_type = 'percent'
-	 * - price_adjustment_value = 20 (represents 20%)
+	 * - priceAdjustmentValue = 20 (represents 20%)
 	 * - Hook: woocommerce_before_calculate_totals
 	 */
 	public function test_exprdawc_adjust_cart_item_pricing_percentage_adjustment() {
@@ -2459,21 +2456,21 @@ class TestClassExprdawcProductPageFrontend extends WP_UnitTestCase {
 				'index'                 => 'short_text',
 				'value'                 => 'test value',
 				'field_raw'             => array(
-					'label'                  => 'Short Text',
-					'type'                   => 'text',
-					'required'               => 1,
-					'conditional_logic'      => 0,
-					'placeholder_text'       => '',
-					'help_text'              => '',
-					'options'                => array(),
-					'default'                => '',
-					'minlength'              => 0,
-					'maxlength'              => 255,
-					'rows'                   => 2,
-					'cols'                   => 5,
-					'autocomplete'           => 'on',
-					'autofocus'              => false,
-					'conditional_rules'      =>
+					'label'                 => 'Short Text',
+					'type'                  => 'text',
+					'required'              => 1,
+					'conditional_logic'     => 0,
+					'placeholder_text'      => '',
+					'help_text'             => '',
+					'options'               => array(),
+					'default'               => '',
+					'minlength'             => 0,
+					'maxlength'             => 255,
+					'rows'                  => 2,
+					'cols'                  => 5,
+					'autocomplete'          => 'on',
+					'autofocus'             => false,
+					'conditional_rules'     =>
 					array(
 						array(
 							array(
@@ -2483,11 +2480,11 @@ class TestClassExprdawcProductPageFrontend extends WP_UnitTestCase {
 							),
 						),
 					),
-					'index'                  => 1,
-					'editable'               => false,
-					'adjust_price'           => true,
-					'price_adjustment_type'  => 'percentage',
-					'price_adjustment_value' => '20',
+					'index'                 => 1,
+					'editable'              => false,
+					'adjust_price'          => true,
+					'price_adjustment_type' => 'percentage',
+					'priceAdjustmentValue'  => '20',
 				),
 				'value_cart'            => 'test value (+<span class="woocommerce-Price-amount amount"><bdi>20,00&nbsp;<span class="woocommerce-Price-currencySymbol">&euro;</span></bdi></span>%)',
 				'price_adjustment'      => 3.5999999999999996,
@@ -2499,7 +2496,7 @@ class TestClassExprdawcProductPageFrontend extends WP_UnitTestCase {
 		WC()->cart->cart_contents[ $cart_item_key ] = $cart_item;
 
 		// Trigger price calculation.
-		$this->instance->exprdawc_adjust_cart_item_pricing( WC()->cart );
+		$this->instance->exprdawcAdjustCartItemPricing( WC()->cart );
 
 		// Get the updated cart item.
 		$updated_cart = WC()->cart->get_cart();
@@ -2546,7 +2543,7 @@ class TestClassExprdawcProductPageFrontend extends WP_UnitTestCase {
 			),
 		);
 
-		$this->instance->exprdawc_add_extra_product_data_to_order( $item, 'cart_item_key', $values, $order );
+		$this->instance->exprdawcAddExtraProductDataToOrder( $item, 'cart_item_key', $values, $order );
 
 		// Get meta data.
 		$meta_data = $item->get_meta_data();
@@ -2592,7 +2589,7 @@ class TestClassExprdawcProductPageFrontend extends WP_UnitTestCase {
 		// Prepare values without extra user data.
 		$values = array();
 
-		$this->instance->exprdawc_add_extra_product_data_to_order( $item, 'cart_item_key', $values, $order );
+		$this->instance->exprdawcAddExtraProductDataToOrder( $item, 'cart_item_key', $values, $order );
 
 		// Get meta data.
 		$meta_data = $item->get_meta_data();

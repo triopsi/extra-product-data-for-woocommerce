@@ -1,6 +1,6 @@
 <?php
 /**
- * Tests for Exprdawc_Template_Engine class
+ * Tests for TemplateEngine class
  *
  * @package Extra_Product_Data_For_WooCommerce\Tests
  * @since 1.9.0
@@ -9,19 +9,19 @@
 // phpcs:ignoreFile
 declare( strict_types=1 );
 
-use Triopsi\Exprdawc\Exprdawc_Template_Engine;
+use Triopsi\Exprdawc\Template\TemplateEngine;
 
 /**
  * Class TestExprdawcTemplateEngine
  *
- * PHPUnit tests for Exprdawc_Template_Engine class.
+ * PHPUnit tests for TemplateEngine class.
  */
 class TestExprdawcTemplateEngine extends WP_UnitTestCase {
 
 	/**
 	 * Template engine instance.
 	 *
-	 * @var Exprdawc_Template_Engine
+	 * @var TemplateEngine
 	 */
 	private $engine;
 
@@ -44,7 +44,7 @@ class TestExprdawcTemplateEngine extends WP_UnitTestCase {
 		$this->temp_dir = sys_get_temp_dir() . '/exprdawc-templates-' . uniqid();
 		mkdir( $this->temp_dir );
 
-		$this->engine = new Exprdawc_Template_Engine( $this->temp_dir, false );
+		$this->engine = new TemplateEngine( $this->temp_dir, false );
 	}
 
 	/**
@@ -58,7 +58,7 @@ class TestExprdawcTemplateEngine extends WP_UnitTestCase {
 			$this->delete_directory( $this->temp_dir );
 		}
 
-		Exprdawc_Template_Engine::clear_cache();
+		TemplateEngine::clear_cache();
 
 		parent::tearDown();
 	}
@@ -92,7 +92,7 @@ class TestExprdawcTemplateEngine extends WP_UnitTestCase {
 	 * @return void
 	 */
 	public function test_can_instantiate() {
-		$this->assertInstanceOf( Exprdawc_Template_Engine::class, $this->engine );
+		$this->assertInstanceOf( TemplateEngine::class, $this->engine );
 	}
 
 	/**
@@ -336,7 +336,7 @@ class TestExprdawcTemplateEngine extends WP_UnitTestCase {
 	 * Verifies that caching works and improves performance.
 	 */
 	public function test_caching_works() {
-		$engine_with_cache = new Exprdawc_Template_Engine( $this->temp_dir, true );
+		$engine_with_cache = new TemplateEngine( $this->temp_dir, true );
 
 		$template = '{{ name }}';
 		file_put_contents( $this->temp_dir . '/cached.php', $template );
@@ -366,7 +366,7 @@ class TestExprdawcTemplateEngine extends WP_UnitTestCase {
 	 * Verifies that cache can be cleared.
 	 */
 	public function test_cache_can_be_cleared() {
-		Exprdawc_Template_Engine::clear_cache();
+		TemplateEngine::clear_cache();
 		// If this doesn't throw an error, the test passes.
 		$this->assertTrue( true );
 	}
@@ -379,7 +379,7 @@ class TestExprdawcTemplateEngine extends WP_UnitTestCase {
 	 */
 	public function test_missing_template_returns_empty() {
 		// Temporarily disable WP_DEBUG to prevent trigger_error.
-		$engine = new Exprdawc_Template_Engine( $this->temp_dir, false );
+		$engine = new TemplateEngine( $this->temp_dir, false );
 
 		// Suppress any warnings.
 		$output = @$engine->render( 'nonexistent.php', array(), false );

@@ -11,7 +11,7 @@
  * @since 1.9.0
  */
 
-use Triopsi\Exprdawc\Helper\Exprdawc_Template_Helpers as H;
+use Triopsi\Exprdawc\Helpers\TemplateHelper as H;
 
 // phpcs:ignoreFile
 if ( ! defined( 'ABSPATH' ) ) {
@@ -22,7 +22,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 $field = $field_args ?? array();
 ?>
 
-<label for="<?php echo H::attr( $field['id'] ); ?>" 
+<label for="<?php echo H::attr( $field['css_id'] ); ?>" 
 	class="<?php echo H::classes( $field['label_class'] ); ?>">
 	<?php echo H::e( $field['label'] ); ?>
 	<?php echo $required_string; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped ?>
@@ -31,7 +31,7 @@ $field = $field_args ?? array();
 <span class="<?php echo H::classes( $field['input_wrapper_class'] ); ?>">
 	<?php if ( ! empty( $field['options'] ) && is_array( $field['options'] ) ) : ?>
 		<select class="select <?php echo H::classes( $field['input_class'] ); ?>"
-			id="<?php echo H::attr( $field['id'] ); ?>"
+			id="<?php echo H::attr( $field['css_id'] ); ?>"
 			name="<?php echo H::attr( $field['name'] ); ?>"
 			<?php echo H::join( $custom_attributes ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped ?>
 		>
@@ -48,17 +48,17 @@ $field = $field_args ?? array();
 				$selected     = H::selected( $field['value'] ?? '', $option_value );
 
 				// Build data attributes for price adjustment.
-				$data_attrs = array();
-				if ( ! empty( $option['price_adjustment_value'] ) ) {
-					$data_attrs['price-adjustment']      = $option['price_adjustment_value'];
-					$data_attrs['price-adjustment-type'] = $option['price_adjustment_type'] ?? 'fixed';
-					$data_attrs['label']                 = $option_label;
+				$dataAttrs = array();
+				if ( ! empty( $option['priceAdjustmentValue'] ) ) {
+					$dataAttrs['price-adjustment']      = $option['priceAdjustmentValue'];
+					$dataAttrs['price-adjustment-type'] = $option['price_adjustment_type'] ?? 'fixed';
+					$dataAttrs['label']                 = $option_label;
 				}
 				?>
 
 				<option value="<?php echo H::attr( $option_value ); ?>"
 					<?php echo $selected; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped ?>
-					<?php echo H::data_attrs( $data_attrs ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped ?>
+					<?php echo H::dataAttrs( $dataAttrs ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped ?>
 				>
 					<?php echo H::e( $option_label ); ?>
 				</option>
@@ -68,7 +68,7 @@ $field = $field_args ?? array();
 </span>
 
 <?php if ( ! empty( $field['description'] ) ) : ?>
-	<span id="<?php echo H::attr( $field['id'] ); ?>-description"
+	<span id="<?php echo H::attr( $field['css_id'] ); ?>-description"
 		class="<?php echo H::classes( $field['description_class'] ); ?>">
 		<?php echo H::e( $field['description'] ); ?>
 	</span>

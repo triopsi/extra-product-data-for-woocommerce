@@ -26,16 +26,28 @@ test.describe('@P10 @ADMIN', () => {
         await productAdminPage.fillExtraField('Long Text', 1, 'long_text', false);
         await page.locator('#exprdawc_attribute_type_1').selectOption('long_text');
 
+        await page.getByRole('spinbutton', { name: 'Max length' }).click();
+        await page.getByRole('spinbutton', { name: 'Max length' }).fill('1000');
+        await page.getByRole('checkbox', { name: 'Require input', exact: true }).check();
+
         // Add Email field
         await productAdminPage.clickAddOptionButton();
         await productAdminPage.fillExtraField('Email', 2, 'email', false);
+        await page.getByRole('cell', { name: '  Email Email   Require' }).getByPlaceholder('Enter a default email').click();
+        await page.getByRole('cell', { name: '  Email Email   Require' }).getByPlaceholder('Enter a default email').fill('examle@example.org');
 
         // Add Number field
         await productAdminPage.clickAddOptionButton();
         await productAdminPage.fillExtraField('Number', 3, 'number', false);
-        await page.getByRole('cell', { name: '  Number Number   Require' }).getByLabel('Max Length').click();
-        await page.getByRole('cell', { name: '  Number Number   Require' }).getByLabel('Max Length').dblclick();
-        await page.getByRole('cell', { name: '  Number Number   Require' }).getByLabel('Max Length').fill('10');
+
+        await page.getByRole('spinbutton', { name: 'Min value' }).click();
+        await page.getByRole('spinbutton', { name: 'Min value' }).fill('5');
+        await page.getByRole('spinbutton', { name: 'Max value' }).click();
+        await page.getByRole('spinbutton', { name: 'Max value' }).fill('25');
+        await page.getByRole('spinbutton', { name: 'Step' }).click();
+        await page.getByRole('spinbutton', { name: 'Step' }).fill('5');
+        await page.getByRole('spinbutton', { name: 'Default Value' }).click();
+        await page.getByRole('spinbutton', { name: 'Default Value' }).fill('10');
 
         // Add Radio Button field
         await productAdminPage.clickAddOptionButton();
@@ -66,13 +78,21 @@ test.describe('@P10 @ADMIN', () => {
         await expect(page.locator('#exprdawc_text_required_0')).toBeChecked();
         await expect(page.locator('#exprdawc_attribute_type_1')).toHaveValue('long_text');
         await expect(page.getByRole('cell', { name: '  Long Text Long Text  ' }).getByPlaceholder('Name of the label')).toHaveValue('Long Text');
-        await expect(page.getByRole('cell', { name: '  Long Text Long Text  ' }).getByLabel('Require input')).not.toBeChecked();
+        await expect(page.getByRole('cell', { name: '  Long Text Long Text  ' }).getByLabel('Require input')).toBeChecked();
         await expect(page.getByRole('spinbutton', { name: 'Rows' })).toHaveValue('2');
+
+        await expect(page.getByRole('cell', { name: 'Max length 1000', exact: true }).getByLabel('Max length')).toHaveValue('1000');
         await expect(page.getByRole('cell', { name: '  Email Email   Require' }).getByPlaceholder('Name of the label')).toHaveValue('Email');
         await expect(page.locator('#exprdawc_attribute_type_2')).toHaveValue('email');
+        await expect(page.getByRole('cell', { name: '  Email Email   Require' }).getByPlaceholder('Enter a default email')).toHaveValue('examle@example.org');
+
         await expect(page.locator('#exprdawc_attribute_type_3')).toHaveValue('number');
         await expect(page.getByRole('cell', { name: '  Number Number   Require' }).getByPlaceholder('Name of the label')).toHaveValue('Number');
-        await expect(page.getByRole('cell', { name: '  Number Number   Require' }).getByLabel('Max Length')).toHaveValue('10');
+        await expect(page.getByRole('spinbutton', { name: 'Min value' })).toHaveValue('5');
+        await expect(page.getByRole('spinbutton', { name: 'Max value' })).toHaveValue('25');
+        await expect(page.getByRole('spinbutton', { name: 'Step' })).toHaveValue('5');
+        await expect(page.getByRole('spinbutton', { name: 'Default Value' })).toHaveValue('10');
+
         await expect(page.locator('#exprdawc_attribute_type_4')).toHaveValue('radio');
         await expect(page.getByRole('cell', { name: '  Radio Radio Button  ' }).getByPlaceholder('Name of the label')).toHaveValue('Radio');
         await expect(page.getByRole('row', { name: ' Option C Option C Remove', exact: true }).getByRole('radio')).toBeChecked();
@@ -106,9 +126,8 @@ test.describe('@P10 @ADMIN', () => {
         await expect(page.getByRole('link', { name: 'Import' })).toBeVisible();
         await expect(page.getByRole('link', { name: 'Export' })).toBeHidden();
         await page.getByRole('button', { name: 'Update' }).click();
-        await page.getByRole('link', { name: 'Extra Product Input' }).click();
+        await expect(page.getByRole('heading', { name: 'Extra Product Input' })).toBeVisible();
         await expect(page.locator('.exprdawc_no_entry_message')).toBeVisible();
-
     });
 
 });

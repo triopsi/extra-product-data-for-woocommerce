@@ -1,12 +1,12 @@
 <?php
 declare( strict_types=1 );
 
-use Triopsi\Exprdawc\Order\Customer\Exprdawc_User_Order;
+use Triopsi\Exprdawc\Orders\Customer\CustomerOrder;
 
 /**
  * Class TestExprdawcUserOrder
  *
- * PHPUnit tests for Exprdawc_User_Order class.
+ * PHPUnit tests for CustomerOrder class.
  *
  * @package Extra_Product_Data_For_WooCommerce\Tests\Unit
  */
@@ -15,7 +15,7 @@ class TestExprdawcUserOrder extends WP_UnitTestCase {
 	/**
 	 * Instance of the class being tested.
 	 *
-	 * @var Exprdawc_User_Order
+	 * @var CustomerOrder
 	 */
 	private $user_order;
 
@@ -28,7 +28,7 @@ class TestExprdawcUserOrder extends WP_UnitTestCase {
 	 */
 	public function setUp(): void {
 		parent::setUp();
-		$this->user_order = new Exprdawc_User_Order();
+		$this->user_order = new CustomerOrder();
 	}
 
 	/**
@@ -90,9 +90,9 @@ class TestExprdawcUserOrder extends WP_UnitTestCase {
 	 */
 	public function test_can_instantiate() {
 		$this->assertInstanceOf(
-			Exprdawc_User_Order::class,
+			CustomerOrder::class,
 			$this->user_order,
-			'Instance should be of type Exprdawc_User_Order.'
+			'Instance should be of type CustomerOrder.'
 		);
 	}
 
@@ -103,17 +103,17 @@ class TestExprdawcUserOrder extends WP_UnitTestCase {
 	 */
 	public function test_constructor_registers_hooks() {
 		$this->assertTrue(
-			has_action( 'woocommerce_order_item_meta_end', array( $this->user_order, 'add_edit_button_to_order_item' ) ) !== false,
+			has_action( 'woocommerce_order_item_meta_end', array( $this->user_order, 'addEditButtonToOrderItem' ) ) !== false,
 			'Hook woocommerce_order_item_meta_end should be registered.'
 		);
 
 		$this->assertTrue(
-			has_action( 'wp_enqueue_scripts', array( $this->user_order, 'enqueue_scripts' ) ) !== false,
+			has_action( 'wp_enqueue_scripts', array( $this->user_order, 'enqueueScripts' ) ) !== false,
 			'Hook wp_enqueue_scripts should be registered.'
 		);
 
 		$this->assertTrue(
-			has_action( 'wp_ajax_exprdawc_save_order_item_meta', array( $this->user_order, 'save_order_item_meta' ) ) !== false,
+			has_action( 'wp_ajax_exprdawc_save_order_item_meta', array( $this->user_order, 'saveOrderItemMeta' ) ) !== false,
 			'Hook wp_ajax_exprdawc_save_order_item_meta should be registered.'
 		);
 	}
@@ -135,7 +135,7 @@ class TestExprdawcUserOrder extends WP_UnitTestCase {
 		// Verify we are on the account page before testing enqueue.
 		$this->assertTrue( is_account_page(), 'Expected is_account_page() to be true in test.' );
 
-		$this->user_order->enqueue_scripts();
+		$this->user_order->enqueueScripts();
 
 		$this->assertTrue( wp_style_is( 'form-css', 'enqueued' ) );
 		$this->assertTrue( wp_style_is( 'order-frontend-css', 'enqueued' ) );
@@ -167,7 +167,7 @@ class TestExprdawcUserOrder extends WP_UnitTestCase {
 		global $wp;
 		$wp->main();
 
-		$this->user_order->enqueue_scripts();
+		$this->user_order->enqueueScripts();
 
 		$this->assertFalse( wp_style_is( 'form-css', 'enqueued' ) );
 		$this->assertFalse( wp_style_is( 'order-frontend-css', 'enqueued' ) );
@@ -191,8 +191,8 @@ class TestExprdawcUserOrder extends WP_UnitTestCase {
 		}
 
 		// Create new instance to avoid conflicts from previous tests.
-		$test_instance = new Exprdawc_User_Order();
-		$test_instance->enqueue_scripts();
+		$test_instance = new CustomerOrder();
+		$test_instance->enqueueScripts();
 
 		// Verify method executed successfully.
 		$this->assertTrue( true, 'Method should execute without errors.' );
@@ -220,7 +220,7 @@ class TestExprdawcUserOrder extends WP_UnitTestCase {
 
 		// Capture output.
 		ob_start();
-		$this->user_order->add_edit_button_to_order_item( $item_id, $item, $order );
+		$this->user_order->addEditButtonToOrderItem( $item_id, $item, $order );
 		$output = ob_get_clean();
 
 		$this->assertEmpty( $output, 'No output should be generated without custom fields.' );
@@ -266,7 +266,7 @@ class TestExprdawcUserOrder extends WP_UnitTestCase {
 
 		// Capture output.
 		ob_start();
-		$this->user_order->add_edit_button_to_order_item( $item_id, $item, $order );
+		$this->user_order->addEditButtonToOrderItem( $item_id, $item, $order );
 		$output = ob_get_clean();
 
 		// Should not show button without user inputs.
@@ -306,7 +306,21 @@ class TestExprdawcUserOrder extends WP_UnitTestCase {
 
 		$item_id = $order->add_product( $product, 1 );
 		$item    = $order->get_item( $item_id );
-		$item->add_meta_data( 'Custom Field', 'test value', true );
+		$item->add_meta_data(
+			EXPRDAWC_META_EXTRA_PRODUCT_DATA,
+			array(
+				array(
+					'label'     => 'Custom Field',
+					'value'     => 'test value',
+					'raw_field' => array(
+						'id'        => '',
+						'label'     => 'Custom Field',
+						'raw_value' => 'test value',
+					),
+				),
+			),
+			true
+		);
 		$item->save();
 
 		// Update order status to match max_order_status.
@@ -323,7 +337,7 @@ class TestExprdawcUserOrder extends WP_UnitTestCase {
 
 		// Method should run without errors.
 		ob_start();
-		$this->user_order->add_edit_button_to_order_item( $item_id, $item, $order );
+		$this->user_order->addEditButtonToOrderItem( $item_id, $item, $order );
 		$output = ob_get_clean();
 
 		// Verify method executed.
@@ -362,7 +376,21 @@ class TestExprdawcUserOrder extends WP_UnitTestCase {
 
 		$item_id = $order->add_product( $product, 1 );
 		$item    = $order->get_item( $item_id );
-		$item->add_meta_data( 'Custom Field', 'test value', true );
+		$item->add_meta_data(
+			EXPRDAWC_META_EXTRA_PRODUCT_DATA,
+			array(
+				array(
+					'label'     => 'Custom Field',
+					'value'     => 'test value',
+					'raw_field' => array(
+						'id'        => '',
+						'label'     => 'Custom Field',
+						'raw_value' => 'test value',
+					),
+				),
+			),
+			true
+		);
 		$item->save();
 
 		// Do not simulate view-order endpoint.
@@ -373,7 +401,7 @@ class TestExprdawcUserOrder extends WP_UnitTestCase {
 
 		// Capture output.
 		ob_start();
-		$this->user_order->add_edit_button_to_order_item( $item_id, $item, $order );
+		$this->user_order->addEditButtonToOrderItem( $item_id, $item, $order );
 		$output = ob_get_clean();
 
 		$this->assertStringNotContainsString( 'exprdawc-edit-order-item', $output, 'Edit button should not be rendered when not on view-order.' );
@@ -411,7 +439,21 @@ class TestExprdawcUserOrder extends WP_UnitTestCase {
 
 		$item_id = $order->add_product( $product, 1 );
 		$item    = $order->get_item( $item_id );
-		$item->add_meta_data( 'Custom Field', 'test value', true );
+		$item->add_meta_data(
+			EXPRDAWC_META_EXTRA_PRODUCT_DATA,
+			array(
+				array(
+					'label'     => 'Custom Field',
+					'value'     => 'test value',
+					'raw_field' => array(
+						'id'        => '',
+						'label'     => 'Custom Field',
+						'raw_value' => 'test value',
+					),
+				),
+			),
+			true
+		);
 		$item->save();
 
 		// Simulate view-order endpoint.
@@ -425,7 +467,7 @@ class TestExprdawcUserOrder extends WP_UnitTestCase {
 
 		// Capture output.
 		ob_start();
-		$this->user_order->add_edit_button_to_order_item( $item_id, $item, $order );
+		$this->user_order->addEditButtonToOrderItem( $item_id, $item, $order );
 		$output = ob_get_clean();
 
 		$this->assertStringNotContainsString( 'exprdawc-edit-order-item', $output, 'Edit button should not show for orders exceeding max status.' );
@@ -470,14 +512,28 @@ class TestExprdawcUserOrder extends WP_UnitTestCase {
 
 		$item_id = $order->add_product( $variation, 1 );
 		$item    = $order->get_item( $item_id );
-		$item->add_meta_data( 'Custom Field', 'test value', true );
+		$item->add_meta_data(
+			EXPRDAWC_META_EXTRA_PRODUCT_DATA,
+			array(
+				array(
+					'label'     => 'Custom Field',
+					'value'     => 'test value',
+					'raw_field' => array(
+						'id'        => '',
+						'label'     => 'Custom Field',
+						'raw_value' => 'test value',
+					),
+				),
+			),
+			true
+		);
 		$item->save();
 
 		update_option( 'extra_product_data_max_order_status', 'processing' );
 
 		// Method should run without errors.
 		ob_start();
-		$this->user_order->add_edit_button_to_order_item( $item_id, $item, $order );
+		$this->user_order->addEditButtonToOrderItem( $item_id, $item, $order );
 		$output = ob_get_clean();
 
 		// Verify method executed.
@@ -556,7 +612,7 @@ class TestExprdawcUserOrder extends WP_UnitTestCase {
 
 		ob_start();
 		try {
-			$this->user_order->save_order_item_meta();
+			$this->user_order->saveOrderItemMeta();
 		} catch ( RuntimeException $e ) { // phpcs:ignore
 			// Expected.
 		}
@@ -610,7 +666,7 @@ class TestExprdawcUserOrder extends WP_UnitTestCase {
 
 		ob_start();
 		try {
-			$this->user_order->save_order_item_meta();
+			$this->user_order->saveOrderItemMeta();
 		} catch ( RuntimeException $e ) { // phpcs:ignore
 			// Expected.
 		}

@@ -9,8 +9,8 @@ jQuery(document).ready(function ($) {
 
         // Initialize the class
         init() {
-            $(document).on('keyup change', '.exprdawc-input', this.updatePriceAdjustmentTable.bind(this));
-            $(".woocommerce").on("keyup change", "input.qty", this.updatePriceAdjustmentTable.bind(this));
+            $(document).on('change keyup keydown input', '.exprdawc-input', this.updatePriceAdjustmentTable.bind(this));
+            $(".woocommerce").on("change keyup keydown input", "input.qty", this.updatePriceAdjustmentTable.bind(this));
             $('input[name="variation_id"]').on("change", this.updatePriceAdjustmentTable.bind(this));
 
             // Inits.
