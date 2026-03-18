@@ -76,8 +76,10 @@ Yes, the plugin has been tested with the latest WordPress release and PHP 8.2.
 
 == Changelog ==
 
-= 3.0.0 (07.03.2026) =
+= 3.0.0 (18.03.2026) =
 * Refactor the plugin
+* Added new screenshots in the readme.txt
+* Fixes many bugs
 
 = 2.0.2 (04.03.2026) =
 * Fix: Radio default on admin product page now also listens to input event
