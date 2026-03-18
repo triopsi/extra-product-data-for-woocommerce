@@ -64,20 +64,15 @@ Yes, the plugin is designed to be extended, allowing developers to modify the fi
 Yes, the plugin has been tested with the latest WordPress release and PHP 8.2.
 
 == Screenshots ==
-1. WooCommerce > Product Editor
-2. Rearrange fields (change field's display order)
-3. Set field to require
-4. Remove field
-5. View Product on Frontend
-6. Validate the require field
-7. Display summary on cart
-8. Display summary on order summary
-9. Display summary on order details page
-10. Display summary on order details page (backend)
-11. Display summary on order details page (frontend)
-12. Display summary on thank your email
-13. Display summary on order email
-14. Set Conditional Logic
+1. WooCommerce Produkt Editor
+2. Export/Import Window
+3. Product View with extra/custom fields
+4. Cart/Checkout View
+5. Order Summary
+6. Order Details
+7. Order Edit Custom Field (Admin View)
+8. Order Edit Customer View
+9. Settings
 
 == Changelog ==
 
