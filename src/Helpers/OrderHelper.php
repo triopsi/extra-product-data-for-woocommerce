@@ -262,11 +262,11 @@ class OrderHelper {
 
 		if ( in_array( $field_config['type'] ?? 'text', array( 'checkbox', 'radio', 'select' ), true ) || 'fixed' === ( $field_config['price_adjustment_type'] ?? 'fixed' ) ) {
 			$plus_minus = 0 < $price_adjustment ? '+' : '-';
-			return $field_value . ' (' . $plus_minus . wc_price( abs( $price_adjustment ) ) . ')';
+			return $field_value . ' (' . $plus_minus . html_entity_decode( strip_tags( wc_price( abs( $price_adjustment ) ) ) ) . ')';
 		}
 
 		if ( 'percentage' === ( $field_config['price_adjustment_type'] ?? 'fixed' ) ) {
-			return $field_value . ' (+' . wc_price( $field_config['priceAdjustmentValue'] ?? 0 ) . '%)';
+			return $field_value . ' (+' . html_entity_decode( strip_tags( wc_price( $field_config['priceAdjustmentValue'] ?? 0 ) ) ) . '%)';
 		}
 
 		return $field_value;

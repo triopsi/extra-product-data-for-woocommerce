@@ -154,9 +154,10 @@ if ( ! defined( 'ABSPATH' ) ) {
 							<td>
 								<label class="exprdawc_label" for="exprdawcPriceAdjustment_type_<?php echo esc_html( $index ); ?>"><?php esc_html_e( 'Price Adjustment Type', 'extra-product-data-for-woocommerce' ); ?></label>
 								<select id="exprdawcPriceAdjustment_type_<?php echo esc_html( $index ); ?>" name="extra_product_fields[<?php echo esc_html( $index ); ?>][price_adjustment_type]" class="exprdawc_input exprdawcPriceAdjustment_type">
-									<option value="fixed" <?php selected( $field['price_adjustment_type'], 'fixed' ); ?>><?php esc_html_e( 'Fixed Price', 'extra-product-data-for-woocommerce' ); ?></option>
-									<option value="quantity" <?php selected( $field['price_adjustment_type'], 'quantity' ); ?>><?php esc_html_e( 'Price per Quantity', 'extra-product-data-for-woocommerce' ); ?></option>
-									<option value="percentage" <?php selected( $field['price_adjustment_type'], 'percentage' ); ?>><?php esc_html_e( 'Percentage Price', 'extra-product-data-for-woocommerce' ); ?></option>
+									<option value="fixed" <?php selected( $field['price_adjustment_type'], 'fixed' ); ?>><?php esc_html_e( 'Fixed Price +/-', 'extra-product-data-for-woocommerce' ); ?></option>
+									<option value="percentage" <?php selected( $field['price_adjustment_type'], 'percentage' ); ?>><?php esc_html_e( 'Percentage Price +/- (%)', 'extra-product-data-for-woocommerce' ); ?></option>
+									<option value="fixed_quantity" <?php selected( $field['price_adjustment_type'], 'fixed_quantity' ); ?>><?php esc_html_e( 'Fixed Price per Quantity +/-', 'extra-product-data-for-woocommerce' ); ?></option>
+									<option value="percentage_quantity" <?php selected( $field['price_adjustment_type'], 'percentage_quantity' ); ?>><?php esc_html_e( 'Percentage Price per Quantity +/- (%)', 'extra-product-data-for-woocommerce' ); ?></option>
 								</select>
 							</td>
 							<td>
@@ -375,9 +376,10 @@ if ( ! defined( 'ABSPATH' ) ) {
 										</td>
 										<td class="fieldPriceAdjustment_type" style="<?php echo ( $field['adjust_price'] ?? false ) ? '' : 'display:none'; ?>">
 											<select name="extra_product_fields[<?php echo esc_html( $index ); ?>][options][<?php echo esc_html( $option_index ); ?>][price_adjustment_type]" class="exprdawc_input exprdawcPriceAdjustment_type">
-												<option value="fixed" <?php selected( $option['price_adjustment_type'], 'fixed' ); ?>><?php esc_html_e( 'Fixed Price', 'extra-product-data-for-woocommerce' ); ?></option>
-												<option value="quantity" <?php selected( $option['price_adjustment_type'], 'quantity' ); ?>><?php esc_html_e( 'Price per Quantity', 'extra-product-data-for-woocommerce' ); ?></option>
-												<option value="percentage" <?php selected( $option['price_adjustment_type'], 'percentage' ); ?>><?php esc_html_e( 'Percentage Price', 'extra-product-data-for-woocommerce' ); ?></option>
+												<option value="fixed" <?php selected( $option['price_adjustment_type'], 'fixed' ); ?>><?php esc_html_e( 'Fixed Price +/-', 'extra-product-data-for-woocommerce' ); ?></option>
+												<option value="percentage" <?php selected( $option['price_adjustment_type'], 'percentage' ); ?>><?php esc_html_e( 'Percentage Price +/- (%)', 'extra-product-data-for-woocommerce' ); ?></option>
+												<option value="fixed_quantity" <?php selected( $option['price_adjustment_type'], 'fixed_quantity' ); ?>><?php esc_html_e( 'Price per Quantity +/-', 'extra-product-data-for-woocommerce' ); ?></option>
+												<option value="percentage_quantity" <?php selected( $option['price_adjustment_type'], 'percentage_quantity' ); ?>><?php esc_html_e( 'Percentage Price per Quantity +/- (%)', 'extra-product-data-for-woocommerce' ); ?></option>
 											</select>
 										</td>
 										<td class="field_priceAdjustmentValue" style="<?php echo ( $field['adjust_price'] ?? false ) ? '' : 'display:none'; ?>">

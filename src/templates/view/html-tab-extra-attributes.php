@@ -142,9 +142,10 @@ require EXPRDAWC_TEMPLATES . 'modal-import-export.php';
 		</td>
 		<td class="fieldPriceAdjustment_type" style="display:none;">
 			<select name="extra_product_fields[__FIELD_INDEX__][options][__OPTION_INDEX__][price_adjustment_type]" class="exprdawc_input exprdawcPriceAdjustment_type">
-				<option value="fixed"><?php esc_html_e( 'Fixed Price', 'extra-product-data-for-woocommerce' ); ?></option>
-				<option value="quantity"><?php esc_html_e( 'Price per Quantity', 'extra-product-data-for-woocommerce' ); ?></option>
-				<option value="percentage"><?php esc_html_e( 'Percentage Price', 'extra-product-data-for-woocommerce' ); ?></option>
+				<option value="fixed"><?php esc_html_e( 'Fixed Price +/-', 'extra-product-data-for-woocommerce' ); ?></option>
+				<option value="percentage"><?php esc_html_e( 'Percentage Price +/- (%)', 'extra-product-data-for-woocommerce' ); ?></option>
+				<option value="fixed_quantity"><?php esc_html_e( 'Fixed Price per Quantity +/-', 'extra-product-data-for-woocommerce' ); ?></option>
+				<option value="percentage_quantity"><?php esc_html_e( 'Percentage Price per Quantity +/- (%)', 'extra-product-data-for-woocommerce' ); ?></option>
 			</select>
 		</td>
 		<td class="field_priceAdjustmentValue" style="display:none;">
@@ -170,9 +171,10 @@ require EXPRDAWC_TEMPLATES . 'modal-import-export.php';
 		</td>
 		<td class="fieldPriceAdjustment_type" style="display:none;">
 			<select name="extra_product_fields[__FIELD_INDEX__][options][__OPTION_INDEX__][price_adjustment_type]" class="exprdawc_input exprdawcPriceAdjustment_type">
-				<option value="fixed"><?php esc_html_e( 'Fixed Price', 'extra-product-data-for-woocommerce' ); ?></option>
-				<option value="quantity"><?php esc_html_e( 'Price per Quantity', 'extra-product-data-for-woocommerce' ); ?></option>
-				<option value="percentage"><?php esc_html_e( 'Percentage Price', 'extra-product-data-for-woocommerce' ); ?></option>
+				<option value="fixed"><?php esc_html_e( 'Fixed Price +/-', 'extra-product-data-for-woocommerce' ); ?></option>
+				<option value="percentage"><?php esc_html_e( 'Percentage Price +/- (%)', 'extra-product-data-for-woocommerce' ); ?></option>
+				<option value="fixed_quantity"><?php esc_html_e( 'Fixed Price per Quantity +/-', 'extra-product-data-for-woocommerce' ); ?></option>
+				<option value="percentage_quantity"><?php esc_html_e( 'Percentage Price per Quantity +/- (%)', 'extra-product-data-for-woocommerce' ); ?></option>
 			</select>
 		</td>
 		<td class="field_priceAdjustmentValue" style="display:none;">

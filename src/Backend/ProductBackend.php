@@ -36,24 +36,24 @@ class ProductBackend implements Hookable {
 	public function __construct() {
 
 		if ( is_admin() ) {
-			add_action( 'add_meta_boxes', array( $this, 'exprdawc_add_custom_meta_box' ) );
+			add_action( 'add_meta_boxes', array( $this, 'exprdawcAddCustomMetaBox' ) );
 
-			add_action( 'woocommerce_process_product_meta', array( $this, 'exprdawc_save_extra_product_fields' ) );
+			add_action( 'woocommerce_process_product_meta', array( $this, 'exprdawcSaveExtraProductFields' ) );
 
-			add_action( 'admin_enqueue_scripts', array( $this, 'exprdawc_show_general_tab' ) );
+			add_action( 'admin_enqueue_scripts', array( $this, 'exprdawcShowGeneralTab' ) );
 
-			add_action( 'wp_ajax_exprdawc_import_custom_fields', array( $this, 'exprdawc_import_custom_fields' ) );
+			add_action( 'wp_ajax_exprdawc_import_custom_fields', array( $this, 'exprdawcImportCustomFields' ) );
 		}
 	}
 
 	/**
 	 * Add a custom meta box in the product edit page.
 	 */
-	public function exprdawc_add_custom_meta_box(): void {
+	public function exprdawcAddCustomMetaBox(): void {
 		add_meta_box(
 			'exprdawc_extra_product_fields',
 			__( 'Extra Product Input', 'extra-product-data-for-woocommerce' ),
-			array( $this, 'exprdawc_render_custom_meta_box' ),
+			array( $this, 'exprdawcRenderCustomMetaBox' ),
 			'product',
 			'normal',
 			'default'
@@ -65,13 +65,13 @@ class ProductBackend implements Hookable {
 	 *
 	 * @param \WP_Post $post The post object.
 	 */
-	public function exprdawc_render_custom_meta_box( \WP_Post $post ): void {
+	public function exprdawcRenderCustomMetaBox( \WP_Post $post ): void {
 		$post_id = (int) $post->ID;
 		if ( $post_id <= 0 ) {
 			return;
 		}
 
-		echo $this->get_custom_product_fields_panel_html( $post_id ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
+		echo $this->getCustomProductFieldsPanelHtml( $post_id ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
 	}
 
 	/**
@@ -80,7 +80,7 @@ class ProductBackend implements Hookable {
 	 * @param int $product_id The ID of the product for which to get the panel HTML.
 	 * @return string The HTML for the custom product fields panel.
 	 */
-	public function get_custom_product_fields_panel_html( int $product_id ): string {
+	public function getCustomProductFieldsPanelHtml( int $product_id ): string {
 		$product = wc_get_product( $product_id );
 		if ( ! $product ) {
 			return '';
@@ -105,7 +105,7 @@ class ProductBackend implements Hookable {
 	 *
 	 * @return void
 	 */
-	public function exprdawc_show_general_tab() {
+	public function exprdawcShowGeneralTab() {
 		wp_enqueue_script( 'exprdawc-wc-meta-boxes-js', EXPRDAWC_ASSETS_JS . 'wc-meta-boxes-product.min.js', array( 'jquery', 'jquery-ui-sortable' ), EXPRDAWC_VERSION, true );
 
 		wp_enqueue_style( 'exprdawc-import-export-modal-css', EXPRDAWC_ASSETS_CSS . 'import-export-modal.css', array(), EXPRDAWC_VERSION );
@@ -114,16 +114,20 @@ class ProductBackend implements Hookable {
 		wp_localize_script(
 			'exprdawc-wc-meta-boxes-js',
 			'exprdawc_admin_meta_boxes',
+			// phpcs:disable WordPress.Arrays.MultipleStatementAlignment.DoubleArrowNotAligned
 			array(
-				'edit_exprdawc_nonce'                  => wp_create_nonce( 'edit_exprdawc_nonce' ),
-				'confirm_delete'                       => esc_html__( 'Are you sure you want to delete this field?', 'extra-product-data-for-woocommerce' ),
-				'confirm_delete_rule'                  => esc_html__( 'Are you sure you want to delete this rule?', 'extra-product-data-for-woocommerce' ),
-				'selectFieldNone'                      => esc_html__( 'None', 'extra-product-data-for-woocommerce' ),
-				'sureAnotherAutocompleCheckedQuestion' => esc_html__( 'Another autocomplete field is already checked. Do you want to uncheck it?', 'extra-product-data-for-woocommerce' ),
-				'validation_warning'                   => esc_html__( 'Warning! No label text (Labels) was found. Please fill all fields with label text before saving.', 'extra-product-data-for-woocommerce' ),
-				'validation_unique_warning'            => esc_html__( 'Warning! Label names must be unique. Please use different label names before saving.', 'extra-product-data-for-woocommerce' ),
-				'validation_unique_warning_inline'     => esc_html__( 'Label must be unique.', 'extra-product-data-for-woocommerce' ),
+				'edit_exprdawc_nonce'                        => wp_create_nonce( 'edit_exprdawc_nonce' ),
+				'confirm_delete'                             => esc_html__( 'Are you sure you want to delete this field?', 'extra-product-data-for-woocommerce' ),
+				'confirm_delete_rule'                        => esc_html__( 'Are you sure you want to delete this rule?', 'extra-product-data-for-woocommerce' ),
+				'selectFieldNone'                            => esc_html__( 'None', 'extra-product-data-for-woocommerce' ),
+				'sureAnotherAutocompleCheckedQuestion'       => esc_html__( 'Another autocomplete field is already checked. Do you want to uncheck it?', 'extra-product-data-for-woocommerce' ),
+				'validation_warning'                         => esc_html__( 'Warning! No label text (Labels) was found. Please fill all fields with label text before saving.', 'extra-product-data-for-woocommerce' ),
+				'validation_unique_warning'                  => esc_html__( 'Warning! Label names must be unique. Please use different label names before saving.', 'extra-product-data-for-woocommerce' ),
+				'validation_unique_warning_inline'           => esc_html__( 'Label must be unique.', 'extra-product-data-for-woocommerce' ),
+				'validation_option_unique_warning'           => esc_html__( 'Warning! Option values within one field must be unique. Please use different option values before saving.', 'extra-product-data-for-woocommerce' ),
+				'validation_option_unique_warning_inline'    => esc_html__( 'Option value must be unique.', 'extra-product-data-for-woocommerce' ),
 			)
+			// phpcs:enable WordPress.Arrays.MultipleStatementAlignment.DoubleArrowNotAligned
 		);
 	}
 
@@ -132,7 +136,7 @@ class ProductBackend implements Hookable {
 	 *
 	 * @param int $post_id The ID of the product being saved.
 	 */
-	public function exprdawc_save_extra_product_fields( $post_id ) {
+	public function exprdawcSaveExtraProductFields( $post_id ) {
 		if ( isset( $_POST['extra_product_fields'] ) ) { // phpcs:ignore
 			$product              = wc_get_product( $post_id );
 			$extra_product_fields = wp_unslash( $_POST['extra_product_fields'] ); // phpcs:ignore
@@ -260,9 +264,16 @@ class ProductBackend implements Hookable {
 
 			$custom_fields = array_filter( $custom_fields );
 
-			if ( $this->has_duplicate_labels( $custom_fields ) ) {
+			if ( $this->hasDuplicateLabels( $custom_fields ) ) {
 				if ( class_exists( 'WC_Admin_Meta_Boxes' ) ) {
 					\WC_Admin_Meta_Boxes::add_error( esc_html__( 'Label names must be unique. Please use different label names before saving.', 'extra-product-data-for-woocommerce' ) );
+				}
+				return;
+			}
+
+			if ( $this->hasDuplicateOptionValues( $custom_fields ) ) {
+				if ( class_exists( 'WC_Admin_Meta_Boxes' ) ) {
+					\WC_Admin_Meta_Boxes::add_error( esc_html__( 'Option values within one field must be unique. Please use different option values before saving.', 'extra-product-data-for-woocommerce' ) );
 				}
 				return;
 			}
@@ -282,7 +293,7 @@ class ProductBackend implements Hookable {
 	 * @param array<int, array<string, mixed>> $custom_fields Custom fields to validate.
 	 * @return bool True if duplicate labels exist.
 	 */
-	private function has_duplicate_labels( array $custom_fields ): bool {
+	private function hasDuplicateLabels( array $custom_fields ): bool {
 		$seen = array();
 
 		foreach ( $custom_fields as $field ) {
@@ -308,9 +319,54 @@ class ProductBackend implements Hookable {
 	}
 
 	/**
+	 * Check if any field contains duplicate option values.
+	 *
+	 * Validation is scoped per field (not globally across all fields) and only
+	 * applies to option-based field types.
+	 *
+	 * @param array<int, array<string, mixed>> $custom_fields Custom fields to validate.
+	 * @return bool True if duplicate option values exist within any single field.
+	 */
+	private function hasDuplicateOptionValues( array $custom_fields ): bool {
+		foreach ( $custom_fields as $field ) {
+			$type = $field['type'] ?? '';
+			if ( ! in_array( $type, array( 'radio', 'checkbox', 'select' ), true ) ) {
+				continue;
+			}
+
+			$options = $field['options'] ?? array();
+			if ( ! is_array( $options ) || empty( $options ) ) {
+				continue;
+			}
+
+			$seen = array();
+			foreach ( $options as $option ) {
+				if ( ! is_array( $option ) ) {
+					continue;
+				}
+
+				$raw_value    = $option['value'] ?? '';
+				$option_value = trim( (string) $raw_value );
+				if ( '' === $option_value ) {
+					continue;
+				}
+
+				$normalized = function_exists( 'mb_strtolower' ) ? mb_strtolower( $option_value ) : strtolower( $option_value );
+				if ( isset( $seen[ $normalized ] ) ) {
+					return true;
+				}
+
+				$seen[ $normalized ] = true;
+			}
+		}
+
+		return false;
+	}
+
+	/**
 	 * Import custom fields.
 	 */
-	public function exprdawc_import_custom_fields() {
+	public function exprdawcImportCustomFields() {
 		check_ajax_referer( 'edit_exprdawc_nonce', 'security' );
 
 		if ( ! current_user_can( 'edit_product', $_POST['product_id'] ) ) { // phpcs:ignore
