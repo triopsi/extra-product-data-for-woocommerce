@@ -130,9 +130,4 @@ Yes, the plugin has been tested with the latest WordPress release and PHP > 8.2 
   <img src=".wordpress-org/screenshot-7.png" alt="Screenshot" />
   <img src=".wordpress-org/screenshot-8.png" alt="Screenshot" />
   <img src=".wordpress-org/screenshot-9.png" alt="Screenshot" />
-  <img src=".wordpress-org/screenshot-10.png" alt="Screenshot" />
-  <img src=".wordpress-org/screenshot-11.png" alt="Screenshot" />
-  <img src=".wordpress-org/screenshot-12.png" alt="Screenshot" />
-  <img src=".wordpress-org/screenshot-13.png" alt="Screenshot" />
-  <img src=".wordpress-org/screenshot-14.png" alt="Screenshot" />
 </p>
