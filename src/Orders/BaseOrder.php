@@ -195,11 +195,12 @@ class BaseOrder {
 	 */
 	protected function saveNewMetaData( WC_Order $order, WC_Order_Item $item ): array {
 		$product        = $this->getOrderItemProductOrFail( $item );
+		$base_price     = (float) $product->get_price();
 		$custom_fields  = $this->getOrderItemCustomFieldsOrFail( $product );
 		$item_metadata  = OrderHelper::getItemFieldMetadata( $item );
-		$field_payloads = $this->buildUpdatedOrderItemPayloads( $custom_fields, (float) $product->get_price() );
+		$field_payloads = $this->buildUpdatedOrderItemPayloads( $custom_fields, $base_price );
 
-		$this->syncOrderItemMetaData( $order, $item, $field_payloads, $item_metadata );
+		$this->syncOrderItemMetaData( $order, $item, $field_payloads, $item_metadata, $base_price );
 
 		return $field_payloads;
 	}
@@ -225,6 +226,7 @@ class BaseOrder {
 			return (float) $product->get_price();
 		}
 
+		$quantity    = max( 1, (int) $item->get_quantity() );
 		$extra_costs = 0.0;
 		$base_price  = (float) $product->get_price();
 
@@ -234,11 +236,13 @@ class BaseOrder {
 				$field_value  = $field_payload['raw_value'] ?? '';
 
 				if ( ! empty( $field_config['adjust_price'] ) && ! empty( $field_value ) ) {
-					$extra_costs += (float) OrderHelper::calculatePriceAdjustment( $field_config, $field_value, $base_price );
+					$extra_costs += (float) OrderHelper::calculatePriceAdjustment( $field_config, $field_value, $base_price, $quantity );
 				}
 			}
 
-			return $base_price + $extra_costs;
+			$unit_extra_costs = $extra_costs / $quantity;
+
+			return $base_price + $unit_extra_costs;
 		}
 
 		foreach ( $custom_fields as $field ) {
@@ -246,12 +250,14 @@ class BaseOrder {
 			$field_value = Helper::getFieldValueFromPost( $field_index );
 
 			if ( ! empty( $field['adjust_price'] ) && ! empty( $field_value ) ) {
-				$price_adjustment = OrderHelper::calculatePriceAdjustment( $field, $field_value, $base_price );
+				$price_adjustment = OrderHelper::calculatePriceAdjustment( $field, $field_value, $base_price, $quantity );
 				$extra_costs     += (float) $price_adjustment;
 			}
 		}
 
-		return $base_price + $extra_costs;
+		$unit_extra_costs = $extra_costs / $quantity;
+
+		return $base_price + $unit_extra_costs;
 	}
 
 	/**
@@ -365,13 +371,14 @@ class BaseOrder {
 	 * @param WC_Order_Item $item           The order item.
 	 * @param array         $field_payloads Normalized field payloads indexed by field key.
 	 * @param array         $item_metadata  Existing indexed item metadata.
+	 * @param float         $base_price     Original item base price.
 	 * @return void
 	 */
-	protected function syncOrderItemMetaData( WC_Order $order, WC_Order_Item $item, array $field_payloads, array $item_metadata ): void {
+	protected function syncOrderItemMetaData( WC_Order $order, WC_Order_Item $item, array $field_payloads, array $item_metadata, float $base_price ): void {
 		foreach ( $field_payloads as $field_index => $field_payload ) {
 			$field_index = (string) $field_index; // Prevent PHP int-cast of numeric string keys.
 			$field_label = $field_payload['field_raw']['label'] ?? '';
-			$new_value   = $field_payload['value'] ?? '';
+			$new_value   = $field_payload['display_value'] ?? '';
 			$old_value   = OrderHelper::getOldFieldValue( $item_metadata, $field_index );
 
 			OrderHelper::addOrderNoteForChange( $order, $field_label, $old_value, $new_value );
@@ -379,6 +386,7 @@ class BaseOrder {
 		}
 
 		$item->update_meta_data( EXPRDAWC_META_EXTRA_PRODUCT_DATA, OrderHelper::buildFieldMetadataArray( $field_payloads ) );
+		$item->update_meta_data( esc_html__( 'Original item price', 'extra-product-data-for-woocommerce' ), OrderHelper::formatPlainPrice( $base_price ) );
 	}
 
 	/**

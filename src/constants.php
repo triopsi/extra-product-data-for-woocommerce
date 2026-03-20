@@ -53,3 +53,5 @@ define( 'EXPRDAWC_FIELDS_TEMPLATES_PATH', EXPRDAWC_TEMPLATES . 'fields/' );
 // Meta keys.
 define( 'EXPRDAWC_META_EXTRA_PRODUCT_DATA', '_meta_extra_product_data' );
 define( 'EXPRDAWC_META_EXTRA_PRODUCT_FIELDS', '_extra_product_fields' );
+define( 'EXPRDAWC_META_ORIGINAL_ITEM_PRICE', 'exprdawc_original_item_price' );
+define( 'EXPRDAWC_CART_ITEM_CUSTOM_FIELDS_KEY', 'post_data_product_item' );

@@ -34,20 +34,26 @@ if ( ! defined( 'ABSPATH' ) ) {
 class OrderHelper {
 
 	/**
-	 * Calculate the price adjustment based on the field configuration and value.
+	 * Calculate the price adjustment based on the field configuration, value and quantity.
+	 *
+	 * Adjustment types:
+	 * - fixed:               Einmaliger Festbetrag, unabhängig von der Menge.
+	 * - fixed_quantity:      Festbetrag × Menge.
+	 * - percentage:          Prozentualer Aufschlag auf den Basispreis, einmalig.
+	 * - percentage_quantity: Prozentualer Aufschlag × Menge.
 	 *
 	 * @param array $field_config The field configuration array.
-	 * @param mixed $field_value The value of the field.
-	 * @param float $base_price The base price to calculate the adjustment from.
+	 * @param mixed $field_value  The value of the field.
+	 * @param float $base_price   The base price to calculate the adjustment from.
+	 * @param int   $quantity     Item quantity for quantity-based adjustment types.
 	 * @return float The calculated price adjustment.
 	 */
-	public static function calculatePriceAdjustment( array $field_config, $field_value, float $base_price = 0.0 ): float {
+	public static function calculatePriceAdjustment( array $field_config, $field_value, float $base_price = 0.0, int $quantity = 1 ): float {
 		if ( empty( $field_config['adjust_price'] ) || empty( $field_value ) ) {
 			return 0.0;
 		}
 
-		$adjustment_type = $field_config['price_adjustment_type'] ?? 'fixed';
-		$adjustment      = 0.0;
+		$adjustment = 0.0;
 
 		if ( in_array( $field_config['type'], array( 'checkbox', 'radio', 'select' ), true ) ) {
 			if ( empty( $field_config['options'] ) || ! is_array( $field_config['options'] ) ) {
@@ -58,37 +64,52 @@ class OrderHelper {
 
 			foreach ( $field_config['options'] as $option ) {
 				if ( in_array( $option['value'], $field_values, true ) ) {
-					$adjustment += self::getAdjustmentValue( $option, $base_price );
+					$adjustment += self::getAdjustmentValue( $option, $base_price, $quantity );
 				}
 			}
 		} else {
-			$adjustment = self::getAdjustmentValue( $field_config, $base_price );
+			$adjustment = self::getAdjustmentValue( $field_config, $base_price, $quantity );
 		}
 
 		return $adjustment;
 	}
 
 	/**
-	 * Get the calculated adjustment value based on the configuration and base price.
+	 * Get the calculated adjustment value based on the configuration, base price and quantity.
 	 *
-	 * @param array $config The configuration array for the adjustment.
+	 * - fixed:               Festbetrag, einmalig (unabhängig von Menge).
+	 * - fixed_quantity:      Festbetrag × Menge.
+	 * - percentage:          (Basispreis / 100) × Wert, einmalig.
+	 * - percentage_quantity: (Basispreis / 100) × Wert × Menge.
+	 *
+	 * @param array $config     The configuration array for the adjustment.
 	 * @param float $base_price The base price to calculate the adjustment from.
+	 * @param int   $quantity   Item quantity for quantity-based adjustment types.
 	 * @return float The calculated adjustment value.
 	 */
-	public static function getAdjustmentValue( array $config, float $base_price = 0.0 ): float {
+	public static function getAdjustmentValue( array $config, float $base_price = 0.0, int $quantity = 1 ): float {
 		$adjustment_value = (float) ( $config['priceAdjustmentValue'] ?? 0.0 );
 
 		if ( 0.0 === $adjustment_value ) {
 			return 0.0;
 		}
 
+		$quantity        = max( 1, $quantity );
 		$adjustment_type = $config['price_adjustment_type'] ?? 'fixed';
 
-		if ( in_array( $adjustment_type, array( 'percentage' ), true ) && $base_price > 0 ) {
-			return ( $base_price / 100 ) * $adjustment_value;
-		}
+		switch ( $adjustment_type ) {
+			case 'percentage':
+				return $base_price > 0 ? ( $base_price / 100 ) * $adjustment_value : 0.0;
 
-		return $adjustment_value;
+			case 'percentage_quantity':
+				return $base_price > 0 ? ( $base_price / 100 ) * $adjustment_value * $quantity : 0.0;
+
+			case 'fixed_quantity':
+				return $adjustment_value * $quantity;
+
+			default: // fixed – einmaliger Festbetrag, unabhängig von der Menge.
+				return $adjustment_value;
+		}
 	}
 
 	/**
@@ -159,14 +180,14 @@ class OrderHelper {
 		$field_index      = Helper::getFieldKey( $field_config );
 		$display_value    = self::sanitizeFieldValueForStorage( $field_config, $field_value );
 		$price_adjustment = self::calculatePriceAdjustment( $field_config, $field_value, $base_price );
-		$value_cart       = self::formatFieldValueWithPrice( $display_value, $price_adjustment, $field_config );
+		$display_value    = self::formatFieldValueWithPrice( $display_value, $price_adjustment, $field_config );
 
 		return array(
 			'id'                    => $field_config['id'] ?? '',
 			'index'                 => $field_index,
 			'value'                 => $display_value,
 			'field_raw'             => $field_config,
-			'value_cart'            => $value_cart,
+			'display_value'         => $display_value,
 			'price_adjustment'      => $price_adjustment,
 			'price_adjustment_type' => $field_config['price_adjustment_type'] ?? 'fixed',
 			'raw_value'             => $field_value,
@@ -262,14 +283,24 @@ class OrderHelper {
 
 		if ( in_array( $field_config['type'] ?? 'text', array( 'checkbox', 'radio', 'select' ), true ) || 'fixed' === ( $field_config['price_adjustment_type'] ?? 'fixed' ) ) {
 			$plus_minus = 0 < $price_adjustment ? '+' : '-';
-			return $field_value . ' (' . $plus_minus . html_entity_decode( strip_tags( wc_price( abs( $price_adjustment ) ) ) ) . ')';
+			return $field_value . ' (' . $plus_minus . self::formatPlainPrice( abs( $price_adjustment ) ) . ')';
 		}
 
 		if ( 'percentage' === ( $field_config['price_adjustment_type'] ?? 'fixed' ) ) {
-			return $field_value . ' (+' . html_entity_decode( strip_tags( wc_price( $field_config['priceAdjustmentValue'] ?? 0 ) ) ) . '%)';
+			return $field_value . ' (+' . self::formatPlainPrice( (float) ( $field_config['priceAdjustmentValue'] ?? 0 ) ) . '%)';
 		}
 
 		return $field_value;
+	}
+
+	/**
+	 * Convert a WooCommerce formatted price HTML to plain text.
+	 *
+	 * @param float $amount The amount to format.
+	 * @return string Plain text formatted price.
+	 */
+	public static function formatPlainPrice( float $amount ): string {
+		return html_entity_decode( wp_strip_all_tags( wc_price( $amount ) ) );
 	}
 
 	/**

@@ -16,6 +16,7 @@ declare(strict_types=1);
 
 namespace Triopsi\Exprdawc\Frontend;
 
+use Automattic\WooCommerce\Admin\Overrides\Order;
 use Automattic\WooCommerce\Enums\ProductType;
 use Triopsi\Exprdawc\Helpers\Helper;
 use Triopsi\Exprdawc\Helpers\OrderHelper;
@@ -70,7 +71,7 @@ class ProductFrontend implements Hookable {
 	 * @return string Modified CSS class string.
 	 */
 	public function exprdawcAddCartItemClass( $className, $cart_item, $cart_item_key ): string {
-		if ( isset( $cart_item['post_data_product_item'] ) ) {
+		if ( isset( $cart_item[ EXPRDAWC_CART_ITEM_CUSTOM_FIELDS_KEY ] ) ) {
 			$className .= ' exprdawc-cart-item-has-extra-data';
 		}
 		return $className;
@@ -467,7 +468,11 @@ class ProductFrontend implements Hookable {
 				}
 			}
 			if ( ! empty( $cart_item_data_user_inputs ) ) {
-				$cart_item_data['post_data_product_item'] = $cart_item_data_user_inputs;
+				$cart_item_data[ EXPRDAWC_CART_ITEM_CUSTOM_FIELDS_KEY ] = $cart_item_data_user_inputs;
+
+				// Save original price for display in cart and checkout.
+				$formatted_original_price                            = OrderHelper::formatPlainPrice( (float) $product->get_price() );
+				$cart_item_data[ EXPRDAWC_META_ORIGINAL_ITEM_PRICE ] = $formatted_original_price;
 			}
 		}
 		return $cart_item_data;
@@ -481,7 +486,7 @@ class ProductFrontend implements Hookable {
 	 * @return array
 	 */
 	public function exprdawcDisplayFieldsOnCartAndCheckout( array $item_data, array $cart_item ): array {
-		if ( empty( $cart_item['post_data_product_item'] ) || ! is_array( $cart_item['post_data_product_item'] ) ) {
+		if ( empty( $cart_item[ EXPRDAWC_CART_ITEM_CUSTOM_FIELDS_KEY ] ) || ! is_array( $cart_item[ EXPRDAWC_CART_ITEM_CUSTOM_FIELDS_KEY ] ) ) {
 			return $item_data;
 		}
 
@@ -499,10 +504,16 @@ class ProductFrontend implements Hookable {
 			return $item_data;
 		}
 
-		foreach ( $cart_item['post_data_product_item'] as $user_data ) {
-			$label      = $user_data['field_raw']['label'] ?? '';
-			$value      = $user_data['value'] ?? '';
-			$value_cart = $user_data['value_cart'] ?? $value;
+		$item_data[] = array(
+			'key'     => esc_html__( 'Original item price', 'extra-product-data-for-woocommerce' ),
+			'value'   => esc_html( $cart_item[ EXPRDAWC_META_ORIGINAL_ITEM_PRICE ] ),
+			'display' => esc_html( $cart_item[ EXPRDAWC_META_ORIGINAL_ITEM_PRICE ] ),
+		);
+
+		foreach ( $cart_item[ EXPRDAWC_CART_ITEM_CUSTOM_FIELDS_KEY ] as $user_data ) {
+			$label         = $user_data['field_raw']['label'] ?? '';
+			$value         = $user_data['value'] ?? '';
+			$display_value = $user_data['display_value'] ?? $value;
 
 			if ( '' === $label ) {
 				continue;
@@ -514,8 +525,8 @@ class ProductFrontend implements Hookable {
 
 			$item_data[] = array(
 				'key'     => esc_html( $label ),
-				'value'   => $value_cart,
-				'display' => nl2br( esc_html( $value_cart ) ),
+				'value'   => $display_value,
+				'display' => nl2br( esc_html( $display_value ) ),
 			);
 		}
 
@@ -534,17 +545,26 @@ class ProductFrontend implements Hookable {
 		}
 
 		foreach ( $cart_object->get_cart() as $cart_item_key => $cart_item ) {
-			if ( isset( $cart_item['post_data_product_item'] ) ) {
-				foreach ( $cart_item['post_data_product_item'] as $user_data ) {
+			if ( isset( $cart_item[ EXPRDAWC_CART_ITEM_CUSTOM_FIELDS_KEY ] ) ) {
+				$base_price            = (float) $cart_item['data']->get_price();
+				$quantity              = max( 1, (int) $cart_item['quantity'] );
+				$line_price_adjustment = 0.0;
+
+				foreach ( $cart_item[ EXPRDAWC_CART_ITEM_CUSTOM_FIELDS_KEY ] as $user_data ) {
 					if ( empty( $user_data['value'] ) ) {
 						continue;
 					}
 
-					$base_price       = (float) $cart_item['data']->get_price();
-					$price_adjustment = OrderHelper::calculatePriceAdjustment( $user_data['field_raw'], $user_data['raw_value'], $base_price );
-
-					$cart_item['data']->set_price( $base_price + $price_adjustment );
+					$line_price_adjustment += (float) OrderHelper::calculatePriceAdjustment(
+						$user_data['field_raw'],
+						$user_data['raw_value'],
+						$base_price,
+						$quantity
+					);
 				}
+
+				$unit_price_adjustment = $line_price_adjustment / $quantity;
+				$cart_item['data']->set_price( $base_price + $unit_price_adjustment );
 			}
 		}
 	}
@@ -559,20 +579,28 @@ class ProductFrontend implements Hookable {
 	 * @return void
 	 */
 	public function exprdawcAddExtraProductDataToOrder( object $item, string $cart_item_key, array $values, object $order ): void { // phpcs:ignore
-		if ( empty( $values['post_data_product_item'] ) ) {
+		if ( empty( $values[ EXPRDAWC_CART_ITEM_CUSTOM_FIELDS_KEY ] ) ) {
 			return;
 		}
 
-		foreach ( $values['post_data_product_item'] as $field ) {
-			// Add each field as individual meta data for the order item.
+		if ( isset( $values[ EXPRDAWC_META_ORIGINAL_ITEM_PRICE ] ) ) {
 			$item->add_meta_data(
-				sanitize_text_field( $field['field_raw']['label'] ),
-				$field['value'], // phpcs:ignore
+				esc_html__( 'Original item price', 'extra-product-data-for-woocommerce' ),
+				esc_html( $values[ EXPRDAWC_META_ORIGINAL_ITEM_PRICE ] ),
 				true
 			);
 		}
 
-		$field_meta = OrderHelper::buildFieldMetadataArray( $values['post_data_product_item'] );
+		foreach ( $values[ EXPRDAWC_CART_ITEM_CUSTOM_FIELDS_KEY ] as $field ) {
+			// Add each field as individual meta data for the order item.
+			$item->add_meta_data(
+				sanitize_text_field( $field['field_raw']['label'] ),
+				$field['display_value'], // phpcs:ignore
+				true
+			);
+		}
+
+		$field_meta = OrderHelper::buildFieldMetadataArray( $values[ EXPRDAWC_CART_ITEM_CUSTOM_FIELDS_KEY ] );
 
 		if ( ! empty( $field_meta ) ) {
 			$item->add_meta_data( EXPRDAWC_META_EXTRA_PRODUCT_DATA, $field_meta );

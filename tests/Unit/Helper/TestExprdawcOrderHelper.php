@@ -307,6 +307,121 @@ class TestExprdawcOrderHelper extends WP_UnitTestCase {
 	}
 
 	/**
+	 * Tests getAdjustmentValue with fixed_quantity type.
+	 *
+	 * Test Goal:
+	 * Verifies that fixed_quantity multiplies the adjustment value by the given quantity.
+	 * With quantity=1 the result equals the plain fixed value.
+	 */
+	public function test_getAdjustmentValue_fixed_quantity() {
+		$config = array(
+			'price_adjustment_type' => 'fixed_quantity',
+			'priceAdjustmentValue'  => 5.0,
+		);
+
+		// Quantity 1: same as fixed.
+		$this->assertEquals( 5.0, OrderHelper::getAdjustmentValue( $config, 100.0, 1 ) );
+		// Quantity 3: 5 * 3.
+		$this->assertEquals( 15.0, OrderHelper::getAdjustmentValue( $config, 100.0, 3 ) );
+	}
+
+	/**
+	 * Tests getAdjustmentValue with percentage_quantity type.
+	 *
+	 * Test Goal:
+	 * Verifies that percentage_quantity applies the percentage on the base price
+	 * and then multiplies the result by the given quantity.
+	 */
+	public function test_getAdjustmentValue_percentage_quantity() {
+		$config = array(
+			'price_adjustment_type' => 'percentage_quantity',
+			'priceAdjustmentValue'  => 10.0,
+		);
+
+		// Quantity 1: 10% of 100 = 10.
+		$this->assertEquals( 10.0, OrderHelper::getAdjustmentValue( $config, 100.0, 1 ) );
+		// Quantity 3: (10% of 100) * 3 = 30.
+		$this->assertEquals( 30.0, OrderHelper::getAdjustmentValue( $config, 100.0, 3 ) );
+		// Quantity 2 with base 200: (10% of 200) * 2 = 40.
+		$this->assertEquals( 40.0, OrderHelper::getAdjustmentValue( $config, 200.0, 2 ) );
+	}
+
+	/**
+	 * Tests calculatePriceAdjustment with fixed_quantity type for a text field.
+	 *
+	 * Test Goal:
+	 * Verifies quantity multiplier is applied end-to-end through calculatePriceAdjustment.
+	 */
+	public function test_calculatePriceAdjustment_fixed_quantity() {
+		$field_config = array(
+			'type'                  => 'text',
+			'adjust_price'          => true,
+			'price_adjustment_type' => 'fixed_quantity',
+			'priceAdjustmentValue'  => 3.0,
+		);
+
+		$this->assertEquals( 3.0, OrderHelper::calculatePriceAdjustment( $field_config, 'x', 100.0, 1 ) );
+		$this->assertEquals( 9.0, OrderHelper::calculatePriceAdjustment( $field_config, 'x', 100.0, 3 ) );
+	}
+
+	/**
+	 * Tests calculatePriceAdjustment with percentage_quantity type for a text field.
+	 *
+	 * Test Goal:
+	 * Verifies percentage is applied on base price and then multiplied by quantity.
+	 */
+	public function test_calculatePriceAdjustment_percentage_quantity() {
+		$field_config = array(
+			'type'                  => 'text',
+			'adjust_price'          => true,
+			'price_adjustment_type' => 'percentage_quantity',
+			'priceAdjustmentValue'  => 5.0,
+		);
+
+		// Quantity 1: 5% of 100 = 5.
+		$this->assertEquals( 5.0, OrderHelper::calculatePriceAdjustment( $field_config, 'x', 100.0, 1 ) );
+		// Quantity 4: (5% of 100) * 4 = 20.
+		$this->assertEquals( 20.0, OrderHelper::calculatePriceAdjustment( $field_config, 'x', 100.0, 4 ) );
+	}
+
+	/**
+	 * Tests that fixed type ignores quantity entirely.
+	 *
+	 * Test Goal:
+	 * Verifies quantity has no effect on plain fixed adjustments.
+	 */
+	public function test_calculatePriceAdjustment_fixed_ignores_quantity() {
+		$field_config = array(
+			'type'                  => 'text',
+			'adjust_price'          => true,
+			'price_adjustment_type' => 'fixed',
+			'priceAdjustmentValue'  => 8.0,
+		);
+
+		$this->assertEquals( 8.0, OrderHelper::calculatePriceAdjustment( $field_config, 'x', 100.0, 1 ) );
+		$this->assertEquals( 8.0, OrderHelper::calculatePriceAdjustment( $field_config, 'x', 100.0, 5 ) );
+	}
+
+	/**
+	 * Tests that percentage type ignores quantity entirely.
+	 *
+	 * Test Goal:
+	 * Verifies quantity has no effect on plain percentage adjustments.
+	 */
+	public function test_calculatePriceAdjustment_percentage_ignores_quantity() {
+		$field_config = array(
+			'type'                  => 'text',
+			'adjust_price'          => true,
+			'price_adjustment_type' => 'percentage',
+			'priceAdjustmentValue'  => 10.0,
+		);
+
+		// Always 10% of 100 = 10, regardless of quantity.
+		$this->assertEquals( 10.0, OrderHelper::calculatePriceAdjustment( $field_config, 'x', 100.0, 1 ) );
+		$this->assertEquals( 10.0, OrderHelper::calculatePriceAdjustment( $field_config, 'x', 100.0, 7 ) );
+	}
+
+	/**
 	 * Tests get_item_field_metadata.
 	 *
 	 * Test Goal:

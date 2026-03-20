@@ -2204,8 +2204,9 @@ class TestClassExprdawcProductPageFrontend extends WP_UnitTestCase {
 
 		// Prepare cart item with extra user data.
 		$cart_item = array(
-			'product_id'             => $this->product_id,
-			'post_data_product_item' => array(
+			'product_id'                      => $this->product_id,
+			EXPRDAWC_META_ORIGINAL_ITEM_PRICE => '100',
+			'post_data_product_item'          => array(
 				array(
 					'value'      => 'test value',  // raw value (for internal use).
 					'value_cart' => 'test value', // display value (for cart display).
@@ -2220,10 +2221,12 @@ class TestClassExprdawcProductPageFrontend extends WP_UnitTestCase {
 		$result    = $this->instance->exprdawcDisplayFieldsOnCartAndCheckout( $item_data, $cart_item );
 
 		// Asserts.
-		$this->assertCount( 1, $result );
-		$this->assertSame( 'Test Field', $result[0]['key'] );
-		$this->assertSame( 'test value', $result[0]['value'] );
-		$this->assertSame( 'test value', $result[0]['display'] );
+		$this->assertCount( 2, $result );
+		$this->assertSame( 'Original item price', $result[0]['key'] );
+		$this->assertNotEmpty( $result[0]['value'] );
+		$this->assertSame( 'Test Field', $result[1]['key'] );
+		$this->assertSame( 'test value', $result[1]['value'] );
+		$this->assertSame( 'test value', $result[1]['display'] );
 
 		// Clean up.
 		wp_reset_postdata();
@@ -2506,6 +2509,102 @@ class TestClassExprdawcProductPageFrontend extends WP_UnitTestCase {
 	}
 
 	/**
+	 * Test exprdawc_adjust_cart_item_pricing keeps fixed checkbox surcharge one-time for quantity > 1.
+	 *
+	 * Test Goal:
+	 * Verifies that a one-time fixed checkbox surcharge is applied once per line item,
+	 * not once per unit, by distributing the line surcharge across unit price.
+	 *
+	 * Expected Result:
+	 * - Base unit price: 100
+	 * - Quantity: 2
+	 * - Fixed checkbox surcharge: 1 (one-time)
+	 * - Unit price after recalculation: 100 + (1 / 2) = 100.5
+	 */
+	public function test_exprdawc_adjust_cart_item_pricing_fixed_checkbox_once_with_quantity() {
+		$cart_item_key = WC()->cart->add_to_cart( $this->product_id, 2 );
+
+		$cart_items = WC()->cart->get_cart();
+		$cart_item  = $cart_items[ $cart_item_key ];
+
+		$cart_item['post_data_product_item'] = array(
+			array(
+				'index'     => 'checkbox_test',
+				'value'     => 'Option A',
+				'field_raw' => array(
+					'label'                 => 'Checkbox Test',
+					'type'                  => 'checkbox',
+					'adjust_price'          => true,
+					'price_adjustment_type' => 'fixed',
+					'priceAdjustmentValue'  => '0',
+					'options'               => array(
+						array(
+							'label'                 => 'Option A',
+							'value'                 => 'A',
+							'price_adjustment_type' => 'fixed',
+							'priceAdjustmentValue'  => '1',
+						),
+					),
+				),
+				'raw_value' => array( 'A' ),
+			),
+		);
+
+		WC()->cart->cart_contents[ $cart_item_key ] = $cart_item;
+
+		$this->instance->exprdawcAdjustCartItemPricing( WC()->cart );
+
+		$updated_cart = WC()->cart->get_cart();
+		$updated_item = $updated_cart[ $cart_item_key ];
+
+		$this->assertEquals( 100.5, $updated_item['data']->get_price() );
+	}
+
+	/**
+	 * Test exprdawc_adjust_cart_item_pricing keeps percentage surcharge one-time for quantity > 1.
+	 *
+	 * Test Goal:
+	 * Verifies that percentage (without _quantity) is applied once per cart line item,
+	 * not once per unit.
+	 *
+	 * Expected Result:
+	 * - Base unit price: 100
+	 * - Quantity: 2
+	 * - Percentage surcharge: 10% of base price = 10 (one-time line surcharge)
+	 * - Unit price after recalculation: 100 + (10 / 2) = 105
+	 */
+	public function test_exprdawc_adjust_cart_item_pricing_percentage_once_with_quantity() {
+		$cart_item_key = WC()->cart->add_to_cart( $this->product_id, 2 );
+
+		$cart_items = WC()->cart->get_cart();
+		$cart_item  = $cart_items[ $cart_item_key ];
+
+		$cart_item['post_data_product_item'] = array(
+			array(
+				'index'     => 'percentage_test',
+				'value'     => 'yes',
+				'field_raw' => array(
+					'label'                 => 'Percentage Test',
+					'type'                  => 'text',
+					'adjust_price'          => true,
+					'price_adjustment_type' => 'percentage',
+					'priceAdjustmentValue'  => '10',
+				),
+				'raw_value' => 'yes',
+			),
+		);
+
+		WC()->cart->cart_contents[ $cart_item_key ] = $cart_item;
+
+		$this->instance->exprdawcAdjustCartItemPricing( WC()->cart );
+
+		$updated_cart = WC()->cart->get_cart();
+		$updated_item = $updated_cart[ $cart_item_key ];
+
+		$this->assertEquals( 105.0, $updated_item['data']->get_price() );
+	}
+
+	/**
 	 * Test exprdawc_add_extra_product_data_to_order adds meta data to order item.
 	 *
 	 * Test Goal:
@@ -2550,14 +2649,19 @@ class TestClassExprdawcProductPageFrontend extends WP_UnitTestCase {
 		$this->assertNotEmpty( $meta_data );
 
 		// Check if the meta was added.
-		$found = false;
+		$found                = false;
+		$found_original_price = false;
 		foreach ( $meta_data as $meta ) {
 			if ( 'Test Field' === $meta->key && 'test value' === $meta->value ) {
 				$found = true;
-				break;
+			}
+
+			if ( EXPRDAWC_META_ORIGINAL_ITEM_PRICE === $meta->key && 100.0 === (float) $meta->value ) {
+				$found_original_price = true;
 			}
 		}
 		$this->assertTrue( $found );
+		$this->assertTrue( $found_original_price );
 
 		// Clean up.
 		$order->delete( true );
