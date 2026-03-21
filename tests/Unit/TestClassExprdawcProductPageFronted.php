@@ -1800,10 +1800,11 @@ class TestClassExprdawcProductPageFrontend extends WP_UnitTestCase {
 
 		$cart_item_data = array();
 		$result         = $this->instance->exprdawcSaveExtraProductDataInCart( $cart_item_data, $this->product_id, 0, 1 );
+		$price_text     = html_entity_decode( wp_strip_all_tags( wc_price( 10 ) ) );
 
 		$this->assertArrayHasKey( 'post_data_product_item', $result );
-		$this->assertEquals( 'test value', $result['post_data_product_item'][0]['value'] );
-		$this->assertEquals( 'test value (+' . wc_price( 10 ) . ')', $result['post_data_product_item'][0]['value_cart'] );
+		$this->assertEquals( 'test value (+' . $price_text . ')', $result['post_data_product_item'][0]['value'] );
+		$this->assertEquals( 'test value (+' . $price_text . ')', $result['post_data_product_item'][0]['display_value'] );
 	}
 
 	/**
@@ -1845,10 +1846,11 @@ class TestClassExprdawcProductPageFrontend extends WP_UnitTestCase {
 
 		$cart_item_data = array();
 		$result         = $this->instance->exprdawcSaveExtraProductDataInCart( $cart_item_data, $this->product_id, 0, 1 );
+		$price_text     = html_entity_decode( wp_strip_all_tags( wc_price( 5 ) ) );
 
 		$this->assertArrayHasKey( 'post_data_product_item', $result );
-		$this->assertEquals( 'opt1', $result['post_data_product_item'][0]['value'] );
-		$this->assertEquals( 'opt1 (+' . wc_price( 5 ) . ')', $result['post_data_product_item'][0]['value_cart'] );
+		$this->assertEquals( 'opt1 (+' . $price_text . ')', $result['post_data_product_item'][0]['value'] );
+		$this->assertEquals( 'opt1 (+' . $price_text . ')', $result['post_data_product_item'][0]['display_value'] );
 	}
 
 	/**
@@ -1890,10 +1892,11 @@ class TestClassExprdawcProductPageFrontend extends WP_UnitTestCase {
 
 		$cart_item_data = array();
 		$result         = $this->instance->exprdawcSaveExtraProductDataInCart( $cart_item_data, $this->product_id, 0, 1 );
+		$price_text     = html_entity_decode( wp_strip_all_tags( wc_price( 8 ) ) );
 
 		$this->assertArrayHasKey( 'post_data_product_item', $result );
-		$this->assertEquals( 'opt1, opt2', $result['post_data_product_item'][0]['value'] );
-		$this->assertEquals( 'opt1, opt2 (+' . wc_price( 8 ) . ')', $result['post_data_product_item'][0]['value_cart'] );
+		$this->assertEquals( 'opt1, opt2 (+' . $price_text . ')', $result['post_data_product_item'][0]['value'] );
+		$this->assertEquals( 'opt1, opt2 (+' . $price_text . ')', $result['post_data_product_item'][0]['display_value'] );
 	}
 
 	/**
@@ -1926,7 +1929,7 @@ class TestClassExprdawcProductPageFrontend extends WP_UnitTestCase {
 
 		$this->assertArrayHasKey( 'post_data_product_item', $result );
 		$this->assertEquals( 'test value', $result['post_data_product_item'][0]['value'] );
-		$this->assertEquals( 'test value', $result['post_data_product_item'][0]['value_cart'] );
+		$this->assertEquals( 'test value', $result['post_data_product_item'][0]['display_value'] );
 	}
 
 	/**
@@ -1955,10 +1958,11 @@ class TestClassExprdawcProductPageFrontend extends WP_UnitTestCase {
 
 		$cart_item_data = array();
 		$result         = $this->instance->exprdawcSaveExtraProductDataInCart( $cart_item_data, $this->product_id, 0, 1 );
+		$price_text     = html_entity_decode( wp_strip_all_tags( wc_price( 5 ) ) );
 
 		$this->assertArrayHasKey( 'post_data_product_item', $result );
-		$this->assertEquals( 'test value', $result['post_data_product_item'][0]['value'] );
-		$this->assertEquals( 'test value (-' . wc_price( 5 ) . ')', $result['post_data_product_item'][0]['value_cart'] );
+		$this->assertEquals( 'test value (-' . $price_text . ')', $result['post_data_product_item'][0]['value'] );
+		$this->assertEquals( 'test value (-' . $price_text . ')', $result['post_data_product_item'][0]['display_value'] );
 	}
 
 	/**
@@ -1995,9 +1999,9 @@ class TestClassExprdawcProductPageFrontend extends WP_UnitTestCase {
 		$result         = $this->instance->exprdawcSaveExtraProductDataInCart( $cart_item_data, $this->product_id, 0, 1 );
 
 		$this->assertArrayHasKey( 'post_data_product_item', $result );
-		$this->assertEquals( 'opt1', $result['post_data_product_item'][0]['value'] );
+		$this->assertStringContainsString( 'opt1 (+', $result['post_data_product_item'][0]['value'] );
 		// Price adjustment should be displayed in cart for select with percent.
-		$this->assertStringContainsString( 'opt1 (+', $result['post_data_product_item'][0]['value_cart'] );
+		$this->assertStringContainsString( 'opt1 (+', $result['post_data_product_item'][0]['display_value'] );
 	}
 
 	/**
@@ -2034,9 +2038,9 @@ class TestClassExprdawcProductPageFrontend extends WP_UnitTestCase {
 		$result         = $this->instance->exprdawcSaveExtraProductDataInCart( $cart_item_data, $this->product_id, 0, 1 );
 
 		$this->assertArrayHasKey( 'post_data_product_item', $result );
-		$this->assertEquals( 'opt1', $result['post_data_product_item'][0]['value'] );
+		$this->assertStringContainsString( 'opt1 (+', $result['post_data_product_item'][0]['value'] );
 		// Price adjustment should be displayed in cart.
-		$this->assertStringContainsString( 'opt1 (+', $result['post_data_product_item'][0]['value_cart'] );
+		$this->assertStringContainsString( 'opt1 (+', $result['post_data_product_item'][0]['display_value'] );
 	}
 
 	/**
@@ -2079,9 +2083,9 @@ class TestClassExprdawcProductPageFrontend extends WP_UnitTestCase {
 		$result         = $this->instance->exprdawcSaveExtraProductDataInCart( $cart_item_data, $this->product_id, 0, 1 );
 
 		$this->assertArrayHasKey( 'post_data_product_item', $result );
-		$this->assertEquals( 'opt1, opt2', $result['post_data_product_item'][0]['value'] );
+		$this->assertStringContainsString( 'opt1, opt2 (+', $result['post_data_product_item'][0]['value'] );
 		// Price adjustment should be displayed in cart for checkbox with percent.
-		$this->assertStringContainsString( 'opt1, opt2 (+', $result['post_data_product_item'][0]['value_cart'] );
+		$this->assertStringContainsString( 'opt1, opt2 (+', $result['post_data_product_item'][0]['display_value'] );
 	}
 
 	/**
@@ -2124,9 +2128,9 @@ class TestClassExprdawcProductPageFrontend extends WP_UnitTestCase {
 		$result         = $this->instance->exprdawcSaveExtraProductDataInCart( $cart_item_data, $this->product_id, 0, 1 );
 
 		$this->assertArrayHasKey( 'post_data_product_item', $result );
-		$this->assertEquals( 'opt1, opt2', $result['post_data_product_item'][0]['value'] );
+		$this->assertStringContainsString( 'opt1, opt2 (+', $result['post_data_product_item'][0]['value'] );
 		// Mixed adjustments: fixed 4 + percent 10% = 4 + 10 = 14.
-		$this->assertStringContainsString( 'opt1, opt2 (+', $result['post_data_product_item'][0]['value_cart'] );
+		$this->assertStringContainsString( 'opt1, opt2 (+', $result['post_data_product_item'][0]['display_value'] );
 	}
 
 	/**
@@ -2270,8 +2274,9 @@ class TestClassExprdawcProductPageFrontend extends WP_UnitTestCase {
 
 		// Prepare cart item with empty field.
 		$cart_item = array(
-			'product_id'             => $this->product_id,
-			'post_data_product_item' => array(
+			'product_id'                      => $this->product_id,
+			EXPRDAWC_META_ORIGINAL_ITEM_PRICE => '100',
+			'post_data_product_item'          => array(
 				array(
 					'index'      => 'test_field',
 					'value'      => '',
@@ -2630,11 +2635,13 @@ class TestClassExprdawcProductPageFrontend extends WP_UnitTestCase {
 
 		// Prepare values with extra user data.
 		$values = array(
-			'post_data_product_item' => array(
+			EXPRDAWC_META_ORIGINAL_ITEM_PRICE => '100',
+			'post_data_product_item'          => array(
 				array(
-					'index'     => 'test_field',
-					'value'     => 'test value',
-					'field_raw' => array(
+					'index'         => 'test_field',
+					'value'         => 'test value',
+					'display_value' => 'test value',
+					'field_raw'     => array(
 						'label' => 'Test Field',
 						'type'  => 'text',
 					),
@@ -2656,7 +2663,7 @@ class TestClassExprdawcProductPageFrontend extends WP_UnitTestCase {
 				$found = true;
 			}
 
-			if ( EXPRDAWC_META_ORIGINAL_ITEM_PRICE === $meta->key && 100.0 === (float) $meta->value ) {
+			if ( 'Original item price' === $meta->key && '100' === (string) $meta->value ) {
 				$found_original_price = true;
 			}
 		}
