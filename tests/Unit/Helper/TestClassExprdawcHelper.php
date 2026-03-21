@@ -555,9 +555,11 @@ class TestClassExprdawcHelper extends WP_UnitTestCase {
 		$result = $method->invokeArgs( null, array( $field_args ) );
 
 		$currency_symbol = get_woocommerce_currency_symbol();
-		$this->assertStringContainsString( '+5.00', $result['options'][0]['label'] );
+		$price_small     = html_entity_decode( wp_strip_all_tags( wc_price( 5.00 ) ) );
+		$price_large     = html_entity_decode( wp_strip_all_tags( wc_price( 10.50 ) ) );
+		$this->assertStringContainsString( '+' . $price_small, html_entity_decode( wp_strip_all_tags( $result['options'][0]['label'] ) ) );
 		$this->assertStringContainsString( $currency_symbol, $result['options'][0]['label'] );
-		$this->assertStringContainsString( '+10.50', $result['options'][1]['label'] );
+		$this->assertStringContainsString( '+' . $price_large, html_entity_decode( wp_strip_all_tags( $result['options'][1]['label'] ) ) );
 	}
 
 	/**
@@ -587,9 +589,9 @@ class TestClassExprdawcHelper extends WP_UnitTestCase {
 
 		$result = $method->invokeArgs( null, array( $field_args ) );
 
-		$this->assertStringContainsString( '+20%', $result['options'][0]['label'] );
+		$this->assertStringContainsString( '+20 %', $result['options'][0]['label'] );
 		$this->assertStringContainsString( 'Premium', $result['options'][0]['label'] );
-		$this->assertStringContainsString( '-10%', $result['options'][1]['label'] );
+		$this->assertStringContainsString( '-10 %', $result['options'][1]['label'] );
 		$this->assertStringContainsString( 'Discount', $result['options'][1]['label'] );
 	}
 

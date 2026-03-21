@@ -115,14 +115,14 @@ jQuery(document).ready(function ($) {
             if ($('.exprdawc-price-adjustment-field').length) {
                 $table.empty();
                 $table.append(`
-                    <table class="exprdawc_price_adjustment_table">
-                        <thead>
-                            <tr>
-                                <th>${exprdawc_frontend_settings.option}</th>
-                                <th>${exprdawc_frontend_settings.price}</th>
+                    <table class="exprdawc_price_adjustment_table" id="exprdawc_price_adjustment_table">
+                        <thead class="exprdawc_price_adjustment_table_head" id="exprdawc_price_adjustment_table_head">
+                            <tr class="exprdawc_price_adjustment_table_head" id="exprdawc_price_adjustment_table_head_tr">
+                                <th class="exprdawc_price_adjustment_table_option">${exprdawc_frontend_settings.option}</th>
+                                <th class="exprdawc_price_adjustment_table_price">${exprdawc_frontend_settings.price}</th>
                             </tr>
                         </thead>
-                        <tbody></tbody>
+                        <tbody class="exprdawc_price_adjustment_table_body" id="exprdawc_price_adjustment_table_body"></tbody>
                     </table>
                 `);
 
@@ -133,6 +133,7 @@ jQuery(document).ready(function ($) {
                 const productName = $('.exprdawc-price-adjustment').data('product-name') || '';
                 const $tableBody = $table.find('tbody');
                 $tableBody.empty();
+
                 // Get the Product base price and Product name as td
                 $tableBody.append(`
                     <tr>
@@ -142,6 +143,7 @@ jQuery(document).ready(function ($) {
                 `);
 
                 const self = this;
+
                 $('.exprdawc-input').each(function () {
                     //only then input have a value
                     if ($(this).val() == '') {
@@ -209,21 +211,23 @@ jQuery(document).ready(function ($) {
                         adjustmentType = $(this).data('price-adjustment-type') || 'fixed';
                     }
 
+                    if (adjustmentType === 'fixed_quantity' && fieldPrice !== 0) {
+                        fieldPrice = fieldPrice * qty;
+                    }
+
                     // Calculate percentage-based price adjustments
                     if (adjustmentType === 'percentage' && fieldPrice !== 0) {
                         fieldPrice = (basePrice * fieldPrice) / 100;
                     }
 
-                    if ($("[data-qty-based]").length) {
-                        fieldPrice = fieldPrice * qty;
+                    if (adjustmentType === 'percentage_quantity' && fieldPrice !== 0) {
+                        fieldPrice = ((basePrice * fieldPrice) / 100) * qty;
                     }
 
                     // get the right plus/minus symbol for the price
                     let plus_minus_symbol = '';
                     if (fieldPrice > 0) {
                         plus_minus_symbol = '+';
-                    } else if (fieldPrice < 0) {
-                        plus_minus_symbol = '-';
                     }
 
                     subtotal += fieldPrice;

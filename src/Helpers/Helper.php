@@ -451,11 +451,22 @@ class Helper {
 				$sign     = $adjustmentValue > 0 ? '+' : '-';
 				$absValue = abs( $adjustmentValue );
 
+				if ( 'fixed' === $adjustmentType ) {
+					$sign      = $adjustmentValue > 0 ? '+' : '';
+					$priceText = $sign . wc_price( $adjustmentValue );
+				}
+
+				if ( 'fixed_quantity' === $adjustmentType ) {
+					$sign      = $adjustmentValue > 0 ? '+' : '';
+					$priceText = $sign . wc_price( $adjustmentValue ) . ' x qty';
+				}
+
 				if ( 'percentage' === $adjustmentType ) {
-					$priceText = sprintf( '%s%d%%', $sign, $absValue );
-				} else {
-					$currencySymbol = get_woocommerce_currency_symbol();
-					$priceText      = sprintf( '%s%.2f %s', $sign, $absValue, $currencySymbol );
+					$priceText = sprintf( '%s%d %%', $sign, $absValue );
+				}
+
+				if ( 'percentage_quantity' === $adjustmentType ) {
+					$priceText = sprintf( '%s%d %% x qty', $sign, $absValue );
 				}
 
 				$option['label'] = $option['label'] . ' (' . $priceText . ')';
