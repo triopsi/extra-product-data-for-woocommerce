@@ -282,7 +282,7 @@ class AdminOrder extends BaseOrder implements Hookable {
 			$field_key = Helper::getFieldKey( $field_args );
 			$value     = $stored_field_map[ $field_key ]['raw_value'] ?? '';
 
-			Helper::generateInputField( $field_args, $value, true );
+			Helper::generateInputField( $field_args, $value, false, true );
 		}
 
 		return (string) ob_get_clean();

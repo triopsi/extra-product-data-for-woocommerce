@@ -42,6 +42,8 @@ jQuery(function ($) {
             this.bindEvents();
             this.noEntryContent();
             this.bindFormValidation();
+            this.validateUniqueLabels();
+            this.validateUniqueOptionValues();
         }
 
         /**
@@ -65,6 +67,7 @@ jQuery(function ($) {
             $(document).on('change', '.exprdawc_conditional_logic_field', this.toggleConditionalTable.bind(this));
             $(document).on('click', '.exprdawc_adjust_price_field', this.togglePriceAdjustmentTable.bind(this));
             $(document).on('change keyup keydown input', '.field_option_table_value_td input', this.syncOptionValueToDefault.bind(this));
+            $(document).on('input', '.field_option_table_value_td input', this.validateUniqueOptionValues.bind(this));
             $(document).on('click', '.exprdawc_copy_custom_field', this.exprdawc_copy_custom_field.bind(this));
             $(document).on('change keyup keydown input', 'input.field_name', this.updateConditionalFieldOptions.bind(this));
             $(document).on('input', '.exprdawc_label', this.validateUniqueLabels.bind(this));
@@ -160,6 +163,7 @@ jQuery(function ($) {
             $newField.find('.exprdawc_attribute_type').trigger('change');
             this.togglePriceAdjustmentTableAll();
             this.validateUniqueLabels();
+            this.validateUniqueOptionValues();
         }
 
         /**
@@ -184,6 +188,7 @@ jQuery(function ($) {
                 this.updateFieldIndices();
                 this.noEntryContent();
                 this.validateUniqueLabels();
+                this.validateUniqueOptionValues();
             }
             return false;
         }
@@ -240,6 +245,8 @@ jQuery(function ($) {
             if ($adjustPriceCheckbox.length) {
                 this.togglePriceAdjustmentTable({ currentTarget: $adjustPriceCheckbox.get(0) });
             }
+
+            this.validateUniqueOptionValues();
         }
 
         /**
@@ -305,6 +312,7 @@ jQuery(function ($) {
             this.updateFieldIndices();
 
             this.checkOptions($optionsTable.closest('.exprdawc_options'));
+            this.validateUniqueOptionValues();
         }
 
         /**
@@ -318,6 +326,7 @@ jQuery(function ($) {
                 $(e.currentTarget).closest('tr').remove();
                 this.updateFieldIndices();
                 this.checkOptions($(e.currentTarget).closest('.exprdawc_options'));
+                this.validateUniqueOptionValues();
             }
             return false;
         }
@@ -676,6 +685,7 @@ jQuery(function ($) {
             this.toggleConditionalValueFieldAll();
             this.togglePriceAdjustmentTableAll();
             this.validateUniqueLabels();
+            this.validateUniqueOptionValues();
         }
 
         normalizeCopiedField($clone) {
@@ -797,6 +807,98 @@ jQuery(function ($) {
         }
 
         /**
+         * Validate that option values are unique within each exprdawc_options_table.
+         * Applies to select, checkbox and radio fields only.
+         *
+         * @returns {boolean} True if option values are unique per table, false otherwise.
+         */
+        validateUniqueOptionValues() {
+            const $optionsRows = $('#exprdawc_field_body').find('tr.exprdawc_options');
+            let hasDuplicate = false;
+
+            $optionsRows.each((index, rowElement) => {
+                const $optionsRow = $(rowElement);
+                const wrapper = $optionsRow.closest('tr.exprdawc_fields_wrapper');
+                const fieldType = wrapper.find('.exprdawc_attribute_type').val();
+                const $valueInputs = $optionsRow.find('.exprdawc_options_table tbody .field_option_table_value_td input');
+
+                $valueInputs.each((inputIndex, inputElement) => {
+                    this.clearUniqueOptionValueError($(inputElement), wrapper);
+                });
+
+                if (!this.isOptionBasedFieldType(fieldType)) {
+                    return;
+                }
+
+                const valueGroups = new Map();
+                $valueInputs.each((inputIndex, inputElement) => {
+                    const $input = $(inputElement);
+                    const value = ($input.val() || '').toString().trim().toLowerCase();
+
+                    if (!value) {
+                        return;
+                    }
+
+                    if (!valueGroups.has(value)) {
+                        valueGroups.set(value, []);
+                    }
+
+                    valueGroups.get(value).push($input);
+                });
+
+                valueGroups.forEach((group) => {
+                    if (group.length <= 1) {
+                        return;
+                    }
+
+                    hasDuplicate = true;
+                    group.forEach(($input) => {
+                        this.markUniqueOptionValueError($input, wrapper);
+                    });
+                });
+            });
+
+            return !hasDuplicate;
+        }
+
+        isOptionBasedFieldType(fieldType) {
+            return fieldType === 'radio' || fieldType === 'checkbox' || fieldType === 'select';
+        }
+
+        markUniqueOptionValueError($input, wrapper) {
+            const $row = $input.closest('tr');
+            const warningText = exprdawc_admin_meta_boxes.validation_option_unique_warning_inline || 'Option value must be unique.';
+            wrapper.addClass('exprdawc-validation-error exprdawc-duplicate-error');
+            $row.addClass('exprdawc-validation-error exprdawc-duplicate-error');
+            $input.addClass('exprdawc-invalid-field exprdawc-duplicate-field');
+
+            if ($input.siblings('.exprdawc-option-unique-note').length === 0) {
+                $('<div />', {
+                    class: 'exprdawc-option-unique-note exprdawc-unique-note',
+                    text: warningText,
+                }).insertAfter($input);
+            }
+        }
+
+        clearUniqueOptionValueError($input, wrapper) {
+            const $row = $input.closest('tr');
+            const hasValue = ($input.val() || '').toString().trim() !== '';
+
+            wrapper.removeClass('exprdawc-validation-error exprdawc-duplicate-error');
+            $row.removeClass('exprdawc-duplicate-error');
+            $input.removeClass('exprdawc-duplicate-field');
+            $input.siblings('.exprdawc-option-unique-note').remove();
+
+            if (hasValue) {
+                $input.removeClass('exprdawc-invalid-field');
+            }
+
+            if ($row.find('.exprdawc-invalid-field').length === 0) {
+                $row.removeClass('exprdawc-validation-error');
+            }
+        }
+
+        /**
          * Updates the indices of all fields.
          */
         updateFieldIndices() {
@@ -830,6 +932,7 @@ jQuery(function ($) {
             });
 
             this.fieldIndex = $('#exprdawc_field_body tr.exprdawc_fields_wrapper').length;
+            this.validateUniqueOptionValues();
         }
 
         reindexOptionRows($row, fieldIndex) {
@@ -933,6 +1036,7 @@ jQuery(function ($) {
             });
 
             const hasUniqueErrors = !this.validateUniqueLabels();
+            const hasOptionUniqueErrors = !this.validateUniqueOptionValues();
 
             if (hasErrors) {
                 const warningMessage = exprdawc_admin_meta_boxes.validation_warning;
@@ -943,6 +1047,12 @@ jQuery(function ($) {
             if (hasUniqueErrors) {
                 const uniqueWarningMessage = exprdawc_admin_meta_boxes.validation_unique_warning || 'Labels must be unique. Please use different label names.';
                 alert(uniqueWarningMessage);
+                return false;
+            }
+
+            if (hasOptionUniqueErrors) {
+                const uniqueOptionWarningMessage = exprdawc_admin_meta_boxes.validation_option_unique_warning || 'Option values within one field must be unique. Please use different option values.';
+                alert(uniqueOptionWarningMessage);
                 return false;
             }
 

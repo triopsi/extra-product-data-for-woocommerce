@@ -71,22 +71,22 @@ class TestExprdawcProductPageBackend extends WP_UnitTestCase {
 
 		// Check actions are registered.
 		$this->assertTrue(
-			has_action( 'add_meta_boxes', array( $backend, 'exprdawc_add_custom_meta_box' ) ) !== false,
+			has_action( 'add_meta_boxes', array( $backend, 'exprdawcAddCustomMetaBox' ) ) !== false,
 			'Action add_meta_boxes should be registered.'
 		);
 
 		$this->assertTrue(
-			has_action( 'woocommerce_process_product_meta', array( $backend, 'exprdawc_save_extra_product_fields' ) ) !== false,
+			has_action( 'woocommerce_process_product_meta', array( $backend, 'exprdawcSaveExtraProductFields' ) ) !== false,
 			'Action woocommerce_process_product_meta should be registered.'
 		);
 
 		$this->assertTrue(
-			has_action( 'admin_enqueue_scripts', array( $backend, 'exprdawc_show_general_tab' ) ) !== false,
+			has_action( 'admin_enqueue_scripts', array( $backend, 'exprdawcShowGeneralTab' ) ) !== false,
 			'Action admin_enqueue_scripts should be registered.'
 		);
 
 		$this->assertTrue(
-			has_action( 'wp_ajax_exprdawc_import_custom_fields', array( $backend, 'exprdawc_import_custom_fields' ) ) !== false,
+			has_action( 'wp_ajax_exprdawc_import_custom_fields', array( $backend, 'exprdawcImportCustomFields' ) ) !== false,
 			'Action wp_ajax_exprdawc_import_custom_fields should be registered.'
 		);
 	}
@@ -188,7 +188,7 @@ class TestExprdawcProductPageBackend extends WP_UnitTestCase {
 		$product->update_meta_data( '_extra_product_fields', $custom_fields );
 		$product->save();
 
-		$output = $this->product_page_backend->get_custom_product_fields_panel_html( $product_id );
+		$output = $this->product_page_backend->getCustomProductFieldsPanelHtml( $product_id );
 
 		$this->assertNotEmpty( $output, 'Template should render output.' );
 		$this->assertStringContainsString( 'Select Field', $output );
@@ -211,7 +211,7 @@ class TestExprdawcProductPageBackend extends WP_UnitTestCase {
 
 		$product_id = $product->get_id();
 
-		$output = $this->product_page_backend->get_custom_product_fields_panel_html( $product_id );
+		$output = $this->product_page_backend->getCustomProductFieldsPanelHtml( $product_id );
 
 		$this->assertStringContainsString( 'id="exprdawc-field-template"', $output );
 		$this->assertStringContainsString( 'id="exprdawc-option-template-single"', $output );
@@ -237,7 +237,7 @@ class TestExprdawcProductPageBackend extends WP_UnitTestCase {
 
 		$product_id = $product->get_id();
 
-		$output = $this->product_page_backend->get_custom_product_fields_panel_html( $product_id );
+		$output = $this->product_page_backend->getCustomProductFieldsPanelHtml( $product_id );
 
 		$this->assertStringContainsString( '__INDEX__', $output );
 		$this->assertStringContainsString( '__FIELD_INDEX__', $output );
@@ -255,7 +255,7 @@ class TestExprdawcProductPageBackend extends WP_UnitTestCase {
 	 * Expects: The script 'exprdawc-wc-meta-boxes-js' is registered after the method is called.
 	 */
 	public function test_exprdawc_show_general_tab_enqueues_script() {
-		$this->product_page_backend->exprdawc_show_general_tab();
+		$this->product_page_backend->exprdawcShowGeneralTab();
 
 		global $wp_scripts;
 		$this->assertTrue(
@@ -270,7 +270,7 @@ class TestExprdawcProductPageBackend extends WP_UnitTestCase {
 	 * Expects: The script has localization data including edit_exprdawc_nonce and other strings.
 	 */
 	public function test_exprdawc_show_general_tab_localizes_script() {
-		$this->product_page_backend->exprdawc_show_general_tab();
+		$this->product_page_backend->exprdawcShowGeneralTab();
 
 		global $wp_scripts;
 		$localized_data = $wp_scripts->get_data( 'exprdawc-wc-meta-boxes-js', 'data' );
@@ -304,7 +304,7 @@ class TestExprdawcProductPageBackend extends WP_UnitTestCase {
 			),
 		);
 
-		$this->product_page_backend->exprdawc_save_extra_product_fields( $post_id );
+		$this->product_page_backend->exprdawcSaveExtraProductFields( $post_id );
 
 		$product       = wc_get_product( $post_id );
 		$custom_fields = $product->get_meta( '_extra_product_fields', true );
@@ -344,7 +344,7 @@ class TestExprdawcProductPageBackend extends WP_UnitTestCase {
 			),
 		);
 
-		$this->product_page_backend->exprdawc_save_extra_product_fields( $post_id );
+		$this->product_page_backend->exprdawcSaveExtraProductFields( $post_id );
 
 		$product       = wc_get_product( $post_id );
 		$custom_fields = $product->get_meta( '_extra_product_fields', true );
@@ -393,7 +393,7 @@ class TestExprdawcProductPageBackend extends WP_UnitTestCase {
 			),
 		);
 
-		$this->product_page_backend->exprdawc_save_extra_product_fields( $post_id );
+		$this->product_page_backend->exprdawcSaveExtraProductFields( $post_id );
 
 		$product       = wc_get_product( $post_id );
 		$custom_fields = $product->get_meta( '_extra_product_fields', true );
@@ -404,6 +404,131 @@ class TestExprdawcProductPageBackend extends WP_UnitTestCase {
 		$this->assertEquals( 'opt1', $custom_fields[0]['options'][0]['value'], 'Option value should match.' );
 
 		// Clean up.
+		unset( $_POST['extra_product_fields'] );
+		$product->delete();
+	}
+
+	/**
+	 * Tests that duplicate option values within a single field are rejected.
+	 *
+	 * Expects: Existing meta remains unchanged when duplicate option values are submitted.
+	 */
+	public function test_exprdawc_save_extra_product_fields_rejects_duplicate_option_values_within_field() {
+		$product = new WC_Product_Simple();
+		$product->set_name( 'Test Product' );
+		$product->set_regular_price( '10' );
+		$product->save();
+		$post_id = $product->get_id();
+
+		$existing_fields = array(
+			array(
+				'label' => 'Existing Field',
+				'type'  => 'text',
+			),
+		);
+
+		$product->update_meta_data( '_extra_product_fields', $existing_fields );
+		$product->save();
+
+		$_POST['extra_product_fields'] = array(
+			array(
+				'label'                 => 'Select Field',
+				'type'                  => 'select',
+				'required'              => '0',
+				'placeholder_text'      => '',
+				'help_text'             => '',
+				'index'                 => '0',
+				'price_adjustment_type' => '',
+				'priceAdjustmentValue'  => '',
+				'options'               => array(
+					array(
+						'label' => 'Option 1',
+						'value' => 'dup',
+					),
+					array(
+						'label' => 'Option 2',
+						'value' => 'DUP',
+					),
+				),
+			),
+		);
+
+		$this->product_page_backend->exprdawcSaveExtraProductFields( $post_id );
+
+		$product       = wc_get_product( $post_id );
+		$custom_fields = $product->get_meta( '_extra_product_fields', true );
+
+		$this->assertEquals( $existing_fields, $custom_fields, 'Duplicate option values should prevent saving new field data.' );
+
+		unset( $_POST['extra_product_fields'] );
+		$product->delete();
+	}
+
+	/**
+	 * Tests that identical option values across different fields are allowed.
+	 *
+	 * Expects: Save succeeds when each individual field has unique option values.
+	 */
+	public function test_exprdawc_save_extra_product_fields_allows_same_option_values_across_different_fields() {
+		$product = new WC_Product_Simple();
+		$product->set_name( 'Test Product' );
+		$product->set_regular_price( '10' );
+		$product->save();
+		$post_id = $product->get_id();
+
+		$_POST['extra_product_fields'] = array(
+			array(
+				'label'                 => 'Select Field One',
+				'type'                  => 'select',
+				'required'              => '0',
+				'placeholder_text'      => '',
+				'help_text'             => '',
+				'index'                 => '0',
+				'price_adjustment_type' => '',
+				'priceAdjustmentValue'  => '',
+				'options'               => array(
+					array(
+						'label' => 'A',
+						'value' => 'same',
+					),
+					array(
+						'label' => 'B',
+						'value' => 'one_only',
+					),
+				),
+			),
+			array(
+				'label'                 => 'Select Field Two',
+				'type'                  => 'select',
+				'required'              => '0',
+				'placeholder_text'      => '',
+				'help_text'             => '',
+				'index'                 => '1',
+				'price_adjustment_type' => '',
+				'priceAdjustmentValue'  => '',
+				'options'               => array(
+					array(
+						'label' => 'C',
+						'value' => 'same',
+					),
+					array(
+						'label' => 'D',
+						'value' => 'two_only',
+					),
+				),
+			),
+		);
+
+		$this->product_page_backend->exprdawcSaveExtraProductFields( $post_id );
+
+		$product       = wc_get_product( $post_id );
+		$custom_fields = $product->get_meta( '_extra_product_fields', true );
+
+		$this->assertIsArray( $custom_fields );
+		$this->assertCount( 2, $custom_fields );
+		$this->assertEquals( 'same', $custom_fields[0]['options'][0]['value'] );
+		$this->assertEquals( 'same', $custom_fields[1]['options'][0]['value'] );
+
 		unset( $_POST['extra_product_fields'] );
 		$product->delete();
 	}
@@ -426,7 +551,7 @@ class TestExprdawcProductPageBackend extends WP_UnitTestCase {
 
 		// Now save without POST data.
 		unset( $_POST['extra_product_fields'] );
-		$this->product_page_backend->exprdawc_save_extra_product_fields( $post_id );
+		$this->product_page_backend->exprdawcSaveExtraProductFields( $post_id );
 
 		$product       = wc_get_product( $post_id );
 		$custom_fields = $product->get_meta( '_extra_product_fields', true );
@@ -481,7 +606,7 @@ class TestExprdawcProductPageBackend extends WP_UnitTestCase {
 		$_POST['action'] = 'exprdawc_import_custom_fields';
 		ob_start();
 		try {
-			$this->product_page_backend->exprdawc_import_custom_fields();
+			$this->product_page_backend->exprdawcImportCustomFields();
 		} catch ( Exception $e ) { // phpcs:ignore
 			// WP Die expected.
 		}
@@ -536,7 +661,7 @@ class TestExprdawcProductPageBackend extends WP_UnitTestCase {
 		// Capture JSON output to check error.
 		ob_start();
 		try {
-			$this->product_page_backend->exprdawc_import_custom_fields();
+			$this->product_page_backend->exprdawcImportCustomFields();
 		} catch ( Exception $e ) { // phpcs:ignore
 			// Error expected.
 		}
@@ -586,7 +711,7 @@ class TestExprdawcProductPageBackend extends WP_UnitTestCase {
 			),
 		);
 
-		$this->product_page_backend->exprdawc_save_extra_product_fields( $post_id );
+		$this->product_page_backend->exprdawcSaveExtraProductFields( $post_id );
 
 		$product       = wc_get_product( $post_id );
 		$custom_fields = $product->get_meta( '_extra_product_fields', true );

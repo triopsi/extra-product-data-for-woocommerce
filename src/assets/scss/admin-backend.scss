@@ -209,6 +209,12 @@ table.exprdawc_options_table {
         &:hover {
             background-color: #f9f9f9;
         }
+
+        &.exprdawc-validation-error {           
+                border: 2px solid #f00 !important;
+        }
+
+
     }
 
     .button {

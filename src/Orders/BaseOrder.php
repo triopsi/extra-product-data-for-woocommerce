@@ -21,6 +21,7 @@ use WC_Order_Item;
 use WC_Order_Item_Product;
 use Triopsi\Exprdawc\Helpers\Helper;
 use Triopsi\Exprdawc\Helpers\OrderHelper;
+use WC_Product;
 
 if ( ! defined( 'ABSPATH' ) ) {
 	exit;
@@ -41,51 +42,79 @@ class BaseOrder {
 	 */
 	protected function processSaveOrder( bool $admin = false ) {
 
-		$item_id  = isset( $_POST['item_id'] ) ? intval( $_POST['item_id'] ) : 0;// phpcs:ignore
-		$order_id = isset( $_POST['order_id'] ) ? intval( $_POST['order_id'] ) : 0;// phpcs:ignore
+		$item_id  = isset( $_POST['item_id'] ) ? intval( $_POST['item_id'] ) : 0; // phpcs:ignore
+		$order_id = isset( $_POST['order_id'] ) ? intval( $_POST['order_id'] ) : 0; // phpcs:ignore
 
 		if ( ! $item_id || ! $order_id ) {
-			wp_send_json_error( array( 'message' => __( 'Invalid order or item ID.', 'extra-product-data-for-woocommerce' ) ) );
+			wp_send_json_error(
+				array(
+					'message' => __( 'Invalid order or item ID.', 'extra-product-data-for-woocommerce' ),
+				)
+			);
 		}
 
 		if ( ! is_user_logged_in() ) {
-			wp_send_json_error( array( 'message' => __( 'You must be logged in to edit this order.', 'extra-product-data-for-woocommerce' ) ) );
+			wp_send_json_error(
+				array(
+					'message' => __( 'You must be logged in to edit this order.', 'extra-product-data-for-woocommerce' ),
+				)
+			);
 		}
 
-		// Check user permissions.
+		// Get the current user ID for permission checks.
 		$current_user_id = get_current_user_id();
 
-		// Load the order and check if it exists.
+		// Load the order and ensure it exists.
 		$order = wc_get_order( $order_id );
 		if ( ! $order || ! ( $order instanceof WC_Order ) ) {
-			wp_send_json_error( array( 'message' => __( 'Order not found.', 'extra-product-data-for-woocommerce' ) ) );
+			wp_send_json_error(
+				array(
+					'message' => __( 'Order not found.', 'extra-product-data-for-woocommerce' ),
+				)
+			);
 		}
-		// Check if the user has permission to edit the order.
+
+		// Check whether the current user is allowed to edit this order.
 		if ( $admin ) {
-			// For admin users, check if they have the capability to edit shop orders.
+			// Admin-side requests require the capability to edit shop orders.
 			if ( ! current_user_can( 'edit_shop_orders' ) ) { // phpcs:ignore
-				wp_send_json_error( array( 'message' => __( 'You do not have permission to edit this order.', 'extra-product-data-for-woocommerce' ) ) );
+				wp_send_json_error(
+					array(
+						'message' => __( 'You do not have permission to edit this order.', 'extra-product-data-for-woocommerce' ),
+					)
+				);
 			}
 		} else { // phpcs:ignore
-			// For non-admin users, check if they are the owner of the order or have permission to edit it based on order status.
+			// Frontend users may only edit their own orders.
 			if ( $order->get_user_id() !== $current_user_id ) { // phpcs:ignore
-				wp_send_json_error( array( 'message' => __( 'You do not have permission to edit this order.', 'extra-product-data-for-woocommerce' ) ) );
+				wp_send_json_error(
+					array(
+						'message' => __( 'You do not have permission to edit this order.', 'extra-product-data-for-woocommerce' ),
+					)
+				);
 			}
 		}
 
+		// Check whether the order is still editable according to plugin/business rules.
 		if ( $admin ) {
 			if ( ! current_user_can( 'manage_woocommerce' ) ) {
 				if ( ! Helper::is_order_editable( $order ) ) {
-					wp_send_json_error( array( 'message' => __( 'You do not have permission to edit this order.', 'extra-product-data-for-woocommerce' ) ) );
+					wp_send_json_error(
+						array(
+							'message' => __( 'You do not have permission to edit this order.', 'extra-product-data-for-woocommerce' ),
+						)
+					);
 				}
 			}
-		} else { // phpcs:ignore
-			if ( ! Helper::is_order_editable( $order ) ) {
-				wp_send_json_error( array( 'message' => __( 'You do not have permission to edit this order.', 'extra-product-data-for-woocommerce' ) ) );
-			}
+		} elseif ( ! Helper::is_order_editable( $order ) ) {
+				wp_send_json_error(
+					array(
+						'message' => __( 'You do not have permission to edit this order.', 'extra-product-data-for-woocommerce' ),
+					)
+				);
 		}
 
-		// Load the order item and check if it exists and is a product item.
+		// Load the order item and ensure it is a product line item.
 		$item = $order->get_item( $item_id );
 		if ( ! $item instanceof WC_Order_Item_Product ) {
 			wp_send_json_error(
@@ -95,21 +124,65 @@ class BaseOrder {
 			);
 		}
 
-		// Save new meta data and collect normalized payloads for pricing.
+		// Save the submitted meta data and get the normalized payloads used for price calculation.
 		$field_payloads = $this->saveNewMetaData( $order, $item );
 
-		// Calculate new price based on updated meta data.
-		$new_price = $this->calculateNewPrice( $item, $field_payloads );
+		// Calculate the new unit price based on the updated item meta data.
+		// This price is assumed to be gross if your pricing logic already includes tax.
+		$new_price_gross = (float) $this->calculateNewPrice( $item, $field_payloads );
 
-		// Update item price and totals.
-		$item->set_subtotal( $new_price * $item->get_quantity() );
-		$item->set_total( $new_price * $item->get_quantity() );
+		// Make sure quantity is at least 1 to avoid invalid line totals.
+		$quantity = max( 1, (int) $item->get_quantity() );
 
-		// Save the item to update the price changes.
+		// Get the related product from the order item.
+		$product = $item->get_product();
+
+		// Default to a direct multiplication in case no product is available.
+		$line_total_net = $new_price_gross * $quantity;
+
+		// Convert the gross unit price to a net line total when the order stores prices including tax.
+		// WooCommerce order item totals must always be stored excluding tax.
+		if (
+		$product instanceof WC_Product &&
+		$order->get_prices_include_tax() &&
+		wc_tax_enabled() &&
+		'taxable' === $item->get_tax_status()
+		) {
+			$line_total_net = (float) wc_get_price_excluding_tax(
+				$product,
+				array(
+					'qty'   => $quantity,
+					'price' => $new_price_gross,
+				)
+			);
+		}
+
+		// Set the order item totals as net values.
+		$item->set_subtotal( $line_total_net );
+		$item->set_total( $line_total_net );
+
+		// Recalculate taxes for this item using the order address context.
+		if ( wc_tax_enabled() && 'taxable' === $item->get_tax_status() ) {
+			$item->calculate_taxes(
+				array(
+					'country'  => $order->get_shipping_country() ? $order->get_shipping_country() : $order->get_billing_country(),
+					'state'    => $order->get_shipping_state() ? $order->get_shipping_state() : $order->get_billing_state(),
+					'postcode' => $order->get_shipping_postcode() ? $order->get_shipping_postcode() : $order->get_billing_postcode(),
+					'city'     => $order->get_shipping_city() ? $order->get_shipping_city() : $order->get_billing_city(),
+				)
+			);
+		}
+
+		// Persist the updated order item values.
 		$item->save();
 
-		// Recalculate order totals after updating item price.
-		$order->calculate_totals();
+		// Recalculate order taxes based on the updated item values.
+		$order->calculate_taxes();
+
+		// Recalculate order totals without recalculating taxes a second time.
+		$order->calculate_totals( false );
+
+		// Save and return the updated order.
 		return $order->save();
 	}
 
@@ -122,11 +195,12 @@ class BaseOrder {
 	 */
 	protected function saveNewMetaData( WC_Order $order, WC_Order_Item $item ): array {
 		$product        = $this->getOrderItemProductOrFail( $item );
+		$base_price     = (float) $product->get_price();
 		$custom_fields  = $this->getOrderItemCustomFieldsOrFail( $product );
 		$item_metadata  = OrderHelper::getItemFieldMetadata( $item );
-		$field_payloads = $this->buildUpdatedOrderItemPayloads( $custom_fields, (float) $product->get_price() );
+		$field_payloads = $this->buildUpdatedOrderItemPayloads( $custom_fields, $base_price );
 
-		$this->syncOrderItemMetaData( $order, $item, $field_payloads, $item_metadata );
+		$this->syncOrderItemMetaData( $order, $item, $field_payloads, $item_metadata, $base_price );
 
 		return $field_payloads;
 	}
@@ -152,6 +226,7 @@ class BaseOrder {
 			return (float) $product->get_price();
 		}
 
+		$quantity    = max( 1, (int) $item->get_quantity() );
 		$extra_costs = 0.0;
 		$base_price  = (float) $product->get_price();
 
@@ -161,11 +236,13 @@ class BaseOrder {
 				$field_value  = $field_payload['raw_value'] ?? '';
 
 				if ( ! empty( $field_config['adjust_price'] ) && ! empty( $field_value ) ) {
-					$extra_costs += (float) OrderHelper::calculatePriceAdjustment( $field_config, $field_value, $base_price );
+					$extra_costs += (float) OrderHelper::calculatePriceAdjustment( $field_config, $field_value, $base_price, $quantity );
 				}
 			}
 
-			return $base_price + $extra_costs;
+			$unit_extra_costs = $extra_costs / $quantity;
+
+			return $base_price + $unit_extra_costs;
 		}
 
 		foreach ( $custom_fields as $field ) {
@@ -173,12 +250,14 @@ class BaseOrder {
 			$field_value = Helper::getFieldValueFromPost( $field_index );
 
 			if ( ! empty( $field['adjust_price'] ) && ! empty( $field_value ) ) {
-				$price_adjustment = OrderHelper::calculatePriceAdjustment( $field, $field_value, $base_price );
+				$price_adjustment = OrderHelper::calculatePriceAdjustment( $field, $field_value, $base_price, $quantity );
 				$extra_costs     += (float) $price_adjustment;
 			}
 		}
 
-		return $base_price + $extra_costs;
+		$unit_extra_costs = $extra_costs / $quantity;
+
+		return $base_price + $unit_extra_costs;
 	}
 
 	/**
@@ -292,13 +371,14 @@ class BaseOrder {
 	 * @param WC_Order_Item $item           The order item.
 	 * @param array         $field_payloads Normalized field payloads indexed by field key.
 	 * @param array         $item_metadata  Existing indexed item metadata.
+	 * @param float         $base_price     Original item base price.
 	 * @return void
 	 */
-	protected function syncOrderItemMetaData( WC_Order $order, WC_Order_Item $item, array $field_payloads, array $item_metadata ): void {
+	protected function syncOrderItemMetaData( WC_Order $order, WC_Order_Item $item, array $field_payloads, array $item_metadata, float $base_price ): void {
 		foreach ( $field_payloads as $field_index => $field_payload ) {
 			$field_index = (string) $field_index; // Prevent PHP int-cast of numeric string keys.
 			$field_label = $field_payload['field_raw']['label'] ?? '';
-			$new_value   = $field_payload['value'] ?? '';
+			$new_value   = $field_payload['display_value'] ?? '';
 			$old_value   = OrderHelper::getOldFieldValue( $item_metadata, $field_index );
 
 			OrderHelper::addOrderNoteForChange( $order, $field_label, $old_value, $new_value );
@@ -306,6 +386,7 @@ class BaseOrder {
 		}
 
 		$item->update_meta_data( EXPRDAWC_META_EXTRA_PRODUCT_DATA, OrderHelper::buildFieldMetadataArray( $field_payloads ) );
+		$item->update_meta_data( esc_html__( 'Original item price', 'extra-product-data-for-woocommerce' ), OrderHelper::formatPlainPrice( $base_price ) );
 	}
 
 	/**
