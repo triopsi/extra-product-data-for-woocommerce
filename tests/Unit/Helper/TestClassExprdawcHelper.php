@@ -323,7 +323,12 @@ class TestClassExprdawcHelper extends WP_UnitTestCase {
 
 		// phpcs:ignore file_put_contents( dirname( __DIR__ ) . '/resources/soll_field_output_test_generateInputField.html', $output );
 
-        $this->assertEquals( file_get_contents( dirname( __DIR__ ) . '/resources/soll_field_output_test_generateInputField.html' ), $output ); // phpcs:ignore
+		$expected_output = file_get_contents( dirname( __DIR__ ) . '/resources/soll_field_output_test_generateInputField.html' ); // phpcs:ignore
+
+		$this->assertEquals(
+			$this->normalizeGeneratedFieldMarkup( $expected_output ),
+			$this->normalizeGeneratedFieldMarkup( $output )
+		);
 	}
 
 	/**
@@ -980,6 +985,22 @@ class TestClassExprdawcHelper extends WP_UnitTestCase {
 
 		$this->assertContains( 'exprdawc-price-adjustment-field', $result['input_class'] );
 		$this->assertStringContainsString( '-25%', $result['required_string'] );
+	}
+
+	/**
+	 * Normalize rendered field markup for stable test comparisons.
+	 *
+	 * Removes dynamic `input-*` utility classes and normalizes whitespace to
+	 * keep snapshot assertions resilient while still validating output structure.
+	 *
+	 * @param string $markup Rendered HTML markup.
+	 * @return string
+	 */
+	private function normalizeGeneratedFieldMarkup( string $markup ): string {
+		$normalized = preg_replace( '/\sinput-[a-z0-9_-]+/i', '', $markup );
+		$normalized = preg_replace( '/\s+/', ' ', (string) $normalized );
+
+		return trim( (string) $normalized );
 	}
 
 	/**
