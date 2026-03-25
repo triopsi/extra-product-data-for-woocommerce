@@ -2,7 +2,7 @@
 Contributors: triopsi
 Tags: WooCommerce Product Addons, WooCommerce product options, WooCommerce custom fields, WooCommerce product fields
 Requires at least: 5.0
-Tested up to: 6.7
+Tested up to: 6.9
 Requires PHP: 8.2
 Stable tag: 3.0.0
 License: GPLv2 or later
