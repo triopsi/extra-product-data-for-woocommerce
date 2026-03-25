@@ -130,4 +130,44 @@ test.describe('@P10 @ADMIN', () => {
         await expect(page.locator('.exprdawc_no_entry_message')).toBeVisible();
     });
 
+    test('ADM-03 Add Color Picker field on product page', async ({ page }) => {
+        const adminUrl = env.wpAdminURL;
+        const username = env.adminUser;
+        const password = env.adminPass;
+
+        const adminLogin = new AdminLoginPage(page);
+        const productAdminPage = new ProductAdminPage(page);
+
+        await adminLogin.goto(adminUrl);
+        await adminLogin.login(username, password);
+        await productAdminPage.goToProductPage('Cap');
+        await productAdminPage.goToExtraProductDataTab();
+
+        // Add Color Picker field
+        await productAdminPage.clickAddOptionButton();
+        await productAdminPage.fillExtraField('Color', 0, 'color', false);
+
+        await page.locator('#exprdawc_text_required_0').check();
+        await page.locator('#exprdawc_text_editable_0').check();
+        await page.getByPlaceholder('Select a default color').click();
+        await page.getByPlaceholder('Select a default color').fill('#ff0000');
+        await page.getByRole('textbox', { name: 'Help Text' }).click();
+        await page.getByRole('textbox', { name: 'Help Text' }).fill('Color?');
+
+
+        // Save changes
+        await page.getByRole('button', { name: 'Update' }).click();
+
+        // Verify that the fields are saved correctly
+        await productAdminPage.goToExtraProductDataTab();
+
+
+        await page.locator('.dashicons.toggle-options').click();
+        await expect(page.getByRole('checkbox', { name: 'Require input' })).toBeChecked();
+        await expect(page.getByRole('checkbox', { name: 'User can edit the field' })).toBeChecked();
+        await expect(page.getByRole('textbox', { name: 'Default Value' })).toHaveValue('#ff0000');
+        await expect(page.getByRole('textbox', { name: 'Help Text' })).toHaveValue('Color?');
+
+    });
+
 });
