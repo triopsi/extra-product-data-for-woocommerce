@@ -13,9 +13,7 @@
       "direct bank transfer"
     ]
   },
-  "plugins": [
-    "woocommerce"
-  ],
+  "plugins": ["woocommerce"],
   "features": {
     "intl": true,
     "networking": true
@@ -68,7 +66,17 @@
       "options": {
         "activate": true
       }
+    },
+    {
+      "step": "installTheme",
+      "themeData": {
+        "resource": "wordpress.org/themes",
+        "slug": "storefront"
+      },
+      "options": {
+        "activate": true
+      }
     }
   ],
-  "login": true 
+  "login": true
 }
