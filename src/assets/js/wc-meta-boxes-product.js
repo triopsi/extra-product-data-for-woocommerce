@@ -242,6 +242,12 @@ jQuery(function ($) {
                 $optionsRow.find('.exprdawc_email_table').hide();
             }
 
+            if ($(e.currentTarget).val() === 'color') {
+                $optionsRow.find('.exprdawc_color_table').show();
+            } else {
+                $optionsRow.find('.exprdawc_color_table').hide();
+            }
+
             if ($adjustPriceCheckbox.length) {
                 this.togglePriceAdjustmentTable({ currentTarget: $adjustPriceCheckbox.get(0) });
             }
@@ -652,7 +658,7 @@ jQuery(function ($) {
                 // By exprdawc_attribute_type checkbox, radio and select hide placeholder text and show options.
                 const fieldType = $(element).find('.exprdawc_attribute_type').val() || 'text';
                 const $placeholderText = $(element).find('.exprdawc_attribute_placeholder_text');
-                if (fieldType === 'radio' || fieldType === 'checkbox' || fieldType === 'select') {
+                if (fieldType === 'radio' || fieldType === 'checkbox' || fieldType === 'select' || fieldType === 'color') {
                     $placeholderText.hide();
                 } else {
                     $placeholderText.show();

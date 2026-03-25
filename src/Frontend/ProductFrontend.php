@@ -345,6 +345,20 @@ class ProductFrontend implements Hookable {
 				}
 				break;
 
+			case 'color':
+				// Validate hex color format (#RRGGBB or #RGB).
+				if ( ! preg_match( '/^#([A-Fa-f0-9]{6}|[A-Fa-f0-9]{3})$/', $field_value ) ) {
+					return array(
+						'valid'   => false,
+						'message' => sprintf(
+							/* translators: %s is the field label */
+							esc_html__( '%s must be a valid color (hex format).', 'extra-product-data-for-woocommerce' ),
+							esc_html( $field_label )
+						),
+					);
+				}
+				break;
+
 			case 'yes-no':
 				if ( ! in_array( $field_value, array( 'yes', 'no' ), true ) ) {
 					return array(

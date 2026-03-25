@@ -44,6 +44,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 					<option value="email" <?php selected( $field['type'], 'email' ); ?>><?php esc_html_e( 'Email', 'extra-product-data-for-woocommerce' ); ?></option>
 					<option value="number" <?php selected( $field['type'], 'number' ); ?>><?php esc_html_e( 'Number', 'extra-product-data-for-woocommerce' ); ?></option>
 					<option value="date" <?php selected( $field['type'], 'date' ); ?>><?php esc_html_e( 'Date', 'extra-product-data-for-woocommerce' ); ?></option>
+					<option value="color" <?php selected( $field['type'], 'color' ); ?>><?php esc_html_e( 'Color', 'extra-product-data-for-woocommerce' ); ?></option>
 					<option value="yes-no" <?php selected( $field['type'], 'yes-no' ); ?>><?php esc_html_e( 'Yes/No', 'extra-product-data-for-woocommerce' ); ?></option>
 					<option value="radio" <?php selected( $field['type'], 'radio' ); ?>><?php esc_html_e( 'Radio Button', 'extra-product-data-for-woocommerce' ); ?></option>
 					<option value="checkbox" <?php selected( $field['type'], 'checkbox' ); ?>><?php esc_html_e( 'Checkbox', 'extra-product-data-for-woocommerce' ); ?></option>
@@ -322,6 +323,18 @@ if ( ! defined( 'ABSPATH' ) ) {
 							<td>
 								<label class="exprdawc_label" for="exprdawc_email_default_<?php echo esc_html( $index ); ?>"><?php esc_html_e( 'Default Value', 'extra-product-data-for-woocommerce' ); ?></label>
 								<input type="email" id="exprdawc_email_default_<?php echo esc_html( $index ); ?>" class="exprdawc_input exprdawc_email_default" placeholder="<?php esc_html_e( 'Enter a default email', 'extra-product-data-for-woocommerce' ); ?>" name="extra_product_fields[<?php echo esc_html( $index ); ?>][email_default]" value="<?php echo esc_attr( $field['email_default'] ?? '' ); ?>" />
+							</td>
+						</tr>
+					</tbody>
+				</table>
+
+				<!-- Color Option/Settings -->
+				<table class="exprdawc_settings_table exprdawc_color_table" style="display:<?php echo 'color' === $field['type'] ? 'table' : 'none'; ?>">
+					<tbody>
+						<tr>
+							<td>
+								<label class="exprdawc_label" for="exprdawc_color_default_<?php echo esc_html( $index ); ?>"><?php esc_html_e( 'Default Value', 'extra-product-data-for-woocommerce' ); ?></label>
+								<input type="color" id="exprdawc_color_default_<?php echo esc_html( $index ); ?>" class="exprdawc_input exprdawc_color_default" placeholder="<?php esc_html_e( 'Select a default color', 'extra-product-data-for-woocommerce' ); ?>" name="extra_product_fields[<?php echo esc_html( $index ); ?>][default]" value="<?php echo esc_attr( $field['default'] ?? '#000000' ); ?>" />
 							</td>
 						</tr>
 					</tbody>

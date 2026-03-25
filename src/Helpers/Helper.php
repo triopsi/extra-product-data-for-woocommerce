@@ -38,7 +38,7 @@ class Helper {
 	 *
 	 * @var array
 	 */
-	private const TEXT_FIELD_TYPES = array( 'text', 'date', 'url', 'email', 'tel', 'number', 'textarea' );
+	private const TEXT_FIELD_TYPES = array( 'text', 'date', 'url', 'email', 'tel', 'number', 'textarea', 'color' );
 
 	/**
 	 * Price adjustment field types.
@@ -274,6 +274,10 @@ class Helper {
 			$fieldArgs['input_class'][] = 'input-text';
 		}
 
+		if ( ! empty( $fieldArgs['type'] ) ) {
+			$fieldArgs['input_class'][] = 'input-' . $fieldArgs['type'];
+		}
+
 		if ( ! empty( $fieldArgs['validate'] ) ) {
 			foreach ( $fieldArgs['validate'] as $validate ) {
 				$fieldArgs['input_class'][] = 'validate-' . sanitize_html_class( $validate );
@@ -404,7 +408,7 @@ class Helper {
 	private static function preparePriceAdjustment( array $fieldArgs, bool $skipRequiredCheck ): array { // phpcs:ignore
 		$adjustmentValue = (float) ( $fieldArgs['priceAdjustmentValue'] ?? 0 );
 
-		if ( 0 !== $adjustmentValue ) {
+		if ( 0.0 !== $adjustmentValue ) {
 			$fieldArgs['input_class'][] = 'exprdawc-price-adjustment-field';
 
 			if ( ! in_array( $fieldArgs['type'], self::PRICE_ADJUSTMENT_TYPES, true ) ) {
@@ -412,6 +416,9 @@ class Helper {
 				$fieldArgs['custom_attributes']['data-price-adjustment']      = esc_attr( $fieldArgs['priceAdjustmentValue'] );
 
 				$plusMinus = ( $adjustmentValue > 0 ) ? '+' : '-';
+				if ( 0.0 === $adjustmentValue ) {
+					$plusMinus = '';
+				}
 				if ( 'percentage' === $fieldArgs['price_adjustment_type'] ) {
 					$fieldArgs['required_string'] .= ' (' . $plusMinus . abs( $adjustmentValue ) . '%)';
 				} else {
@@ -448,7 +455,10 @@ class Helper {
 					return $option;
 				}
 
-				$sign     = $adjustmentValue > 0 ? '+' : '-';
+				$sign = $adjustmentValue > 0 ? '+' : '-';
+				if ( 0 === $adjustmentValue ) {
+					$sign = '';
+				}
 				$absValue = abs( $adjustmentValue );
 
 				if ( 'fixed' === $adjustmentType ) {
