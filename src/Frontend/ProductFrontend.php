@@ -196,7 +196,7 @@ class ProductFrontend implements Hookable {
 			echo '<div class="exprdawc-extra-fields">';
 			wp_nonce_field( 'exprdawc_save_custom_field', 'exprdawc_nonce' );
 			foreach ( $custom_fields as $index => $field ) {
-				Helper::generateInputField( $field, '', false, true );
+				Helper::generateInputField( $index, $field, '', false, true );
 			}
 			echo '</div>';
 
@@ -339,6 +339,20 @@ class ProductFrontend implements Hookable {
 						'message' => sprintf(
 							/* translators: %s is the field label */
 							esc_html__( '%s is not a valid date.', 'extra-product-data-for-woocommerce' ),
+							esc_html( $field_label )
+						),
+					);
+				}
+				break;
+
+			case 'color':
+				// Validate hex color format (#RRGGBB or #RGB).
+				if ( ! preg_match( '/^#([A-Fa-f0-9]{6}|[A-Fa-f0-9]{3})$/', $field_value ) ) {
+					return array(
+						'valid'   => false,
+						'message' => sprintf(
+							/* translators: %s is the field label */
+							esc_html__( '%s must be a valid color (hex format).', 'extra-product-data-for-woocommerce' ),
 							esc_html( $field_label )
 						),
 					);
@@ -603,7 +617,7 @@ class ProductFrontend implements Hookable {
 		$field_meta = OrderHelper::buildFieldMetadataArray( $values[ EXPRDAWC_CART_ITEM_CUSTOM_FIELDS_KEY ] );
 
 		if ( ! empty( $field_meta ) ) {
-			$item->add_meta_data( EXPRDAWC_META_EXTRA_PRODUCT_DATA, $field_meta );
+			$item->add_meta_data( EXPRDAWC_ORDER_META_EXTRA_PRODUCT_DATA, $field_meta );
 		}
 	}
 

@@ -150,7 +150,7 @@ class AdminOrder extends BaseOrder implements Hookable {
 		$item             = $load_data['item'];
 		$product          = $this->getAdminOrderItemProductOrFail( $item );
 		$custom_fields    = $this->getCustomFieldsOrFail( $product );
-		$stored_field_map = $this->extractOrderItemMetaData( $item->get_meta( EXPRDAWC_META_EXTRA_PRODUCT_DATA, true ) );
+		$stored_field_map = $this->extractOrderItemMetaData( $item->get_meta( EXPRDAWC_ORDER_META_EXTRA_PRODUCT_DATA, true ) );
 		$html             = $this->buildAdminModalFieldsHtml( $custom_fields, $stored_field_map );
 
 		wp_send_json_success( array( 'html' => $html ) );
@@ -278,11 +278,11 @@ class AdminOrder extends BaseOrder implements Hookable {
 	private function buildAdminModalFieldsHtml( array $custom_fields, array $stored_field_map ): string {
 		ob_start();
 
-		foreach ( $custom_fields as $field_args ) {
+		foreach ( $custom_fields as $index => $field_args ) {
 			$field_key = Helper::getFieldKey( $field_args );
 			$value     = $stored_field_map[ $field_key ]['raw_value'] ?? '';
 
-			Helper::generateInputField( $field_args, $value, false, true );
+			Helper::generateInputField( $index, $field_args, $value, false, true );
 		}
 
 		return (string) ob_get_clean();

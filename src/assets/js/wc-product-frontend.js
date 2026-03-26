@@ -12,8 +12,12 @@ jQuery(document).ready(function ($) {
             $(document).on('change keyup keydown input', '.exprdawc-input', this.updatePriceAdjustmentTable.bind(this));
             $(".woocommerce").on("change keyup keydown input", "input.qty", this.updatePriceAdjustmentTable.bind(this));
             $('input[name="variation_id"]').on("change", this.updatePriceAdjustmentTable.bind(this));
+            $(document).on('input', '.exprdawc-extra-fields input[type="color"]', this.handleColorPickerInput.bind(this));
+            $(document).on('input', '.exprdawc-extra-fields input[type="text"]', this.handleColorHexInput.bind(this));
+            $(document).on('blur', '.exprdawc-extra-fields input[type="text"]', this.handleColorHexBlur.bind(this));
 
             // Inits.
+            this.initColorHexFields();
             this.updatePriceAdjustmentTable();
         }
 
@@ -62,7 +66,101 @@ jQuery(document).ready(function ($) {
         }
 
         sanitizeValue(value) {
-            return value.replace(/[^\p{L}\p{N}]/gu, ' ').replace(/\s+/g, ' ').trim();
+            return value.replace(/[^\p{L}\p{N}#]/gu, ' ').replace(/\s+/g, ' ').trim();
+        }
+
+        normalizeColorHex(value) {
+            let normalized = (value || '').toString().trim();
+
+            if (!normalized) {
+                return '';
+            }
+
+            if (!normalized.startsWith('#')) {
+                normalized = `#${normalized}`;
+            }
+
+            if (/^#([0-9a-f]{3})$/i.test(normalized)) {
+                normalized = `#${normalized.slice(1).split('').map((char) => `${char}${char}`).join('')}`;
+            }
+
+            return normalized.toLowerCase();
+        }
+
+        isValidColorHex(value) {
+            return /^#([0-9a-f]{6})$/i.test(value || '');
+        }
+
+        getColorFieldPair($element) {
+            const $wrapper = $element.closest('span');
+            const $colorInput = $wrapper.find('input[type="color"]').first();
+            const $hexInput = $wrapper.find('input[type="text"]').first();
+
+            if (!$colorInput.length || !$hexInput.length) {
+                return { $colorInput: $(), $hexInput: $() };
+            }
+
+            const colorName = ($colorInput.attr('name') || '').toString();
+            const hexName = ($hexInput.attr('name') || '').toString();
+
+            if (!hexName || hexName === colorName || !hexName.includes('color_hex')) {
+                return { $colorInput: $(), $hexInput: $() };
+            }
+
+            return { $colorInput, $hexInput };
+        }
+
+        initColorHexFields() {
+            $('.exprdawc-extra-fields input[type="color"]').each((index, element) => {
+                const { $colorInput, $hexInput } = this.getColorFieldPair($(element));
+
+                if (!$colorInput.length || !$hexInput.length) {
+                    return;
+                }
+
+                const normalizedHex = this.normalizeColorHex($hexInput.val()) || this.normalizeColorHex($colorInput.val()) || '#000000';
+                const validHex = this.isValidColorHex(normalizedHex) ? normalizedHex : '#000000';
+
+                $colorInput.val(validHex);
+                $hexInput.val(validHex);
+            });
+        }
+
+        handleColorPickerInput(e) {
+            const { $colorInput, $hexInput } = this.getColorFieldPair($(e.currentTarget));
+            if (!$colorInput.length || !$hexInput.length) {
+                return;
+            }
+
+            $hexInput.val(this.normalizeColorHex($colorInput.val()));
+        }
+
+        handleColorHexInput(e) {
+            const { $colorInput, $hexInput } = this.getColorFieldPair($(e.currentTarget));
+
+            if (!$colorInput.length || !$hexInput.length) {
+                return;
+            }
+
+            const normalizedHex = this.normalizeColorHex($hexInput.val());
+            if (this.isValidColorHex(normalizedHex)) {
+                $colorInput.val(normalizedHex);
+            }
+        }
+
+        handleColorHexBlur(e) {
+            const { $colorInput, $hexInput } = this.getColorFieldPair($(e.currentTarget));
+
+            if (!$colorInput.length || !$hexInput.length) {
+                return;
+            }
+
+            const normalizedHex = this.normalizeColorHex($hexInput.val());
+            const fallbackHex = this.normalizeColorHex($colorInput.val()) || '#000000';
+            const validHex = this.isValidColorHex(normalizedHex) ? normalizedHex : fallbackHex;
+
+            $colorInput.val(validHex);
+            $hexInput.val(validHex);
         }
 
         /**
@@ -162,6 +260,11 @@ jQuery(document).ready(function ($) {
                     const isFieldSelected = $(this).is(":selected");
                     const isFieldDisabled = $(this).prop("disabled");
                     const isSelectDisabled = $(this).closest("select").prop("disabled");
+                    const isPairedColorPicker = fieldType === 'color' && $(this).closest('span').find('input[type="text"]').length > 0;
+
+                    if (isPairedColorPicker) {
+                        return;
+                    }
 
                     // By checkbox, radio, option, select return if not checked or selected
                     if ((isCheckboxOrRadio && !isFieldChecked) || (isOption && (!isFieldSelected || isSelectDisabled))) {

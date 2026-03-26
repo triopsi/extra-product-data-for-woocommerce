@@ -385,7 +385,7 @@ class BaseOrder {
 			$item->update_meta_data( $field_label, $new_value );
 		}
 
-		$item->update_meta_data( EXPRDAWC_META_EXTRA_PRODUCT_DATA, OrderHelper::buildFieldMetadataArray( $field_payloads ) );
+		$item->update_meta_data( EXPRDAWC_ORDER_META_EXTRA_PRODUCT_DATA, OrderHelper::buildFieldMetadataArray( $field_payloads ) );
 		$item->update_meta_data( esc_html__( 'Original item price', 'extra-product-data-for-woocommerce' ), OrderHelper::formatPlainPrice( $base_price ) );
 	}
 

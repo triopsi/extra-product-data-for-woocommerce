@@ -307,7 +307,7 @@ class TestExprdawcUserOrder extends WP_UnitTestCase {
 		$item_id = $order->add_product( $product, 1 );
 		$item    = $order->get_item( $item_id );
 		$item->add_meta_data(
-			EXPRDAWC_META_EXTRA_PRODUCT_DATA,
+			EXPRDAWC_ORDER_META_EXTRA_PRODUCT_DATA,
 			array(
 				array(
 					'label'     => 'Custom Field',
@@ -377,7 +377,7 @@ class TestExprdawcUserOrder extends WP_UnitTestCase {
 		$item_id = $order->add_product( $product, 1 );
 		$item    = $order->get_item( $item_id );
 		$item->add_meta_data(
-			EXPRDAWC_META_EXTRA_PRODUCT_DATA,
+			EXPRDAWC_ORDER_META_EXTRA_PRODUCT_DATA,
 			array(
 				array(
 					'label'     => 'Custom Field',
@@ -440,7 +440,7 @@ class TestExprdawcUserOrder extends WP_UnitTestCase {
 		$item_id = $order->add_product( $product, 1 );
 		$item    = $order->get_item( $item_id );
 		$item->add_meta_data(
-			EXPRDAWC_META_EXTRA_PRODUCT_DATA,
+			EXPRDAWC_ORDER_META_EXTRA_PRODUCT_DATA,
 			array(
 				array(
 					'label'     => 'Custom Field',
@@ -513,7 +513,7 @@ class TestExprdawcUserOrder extends WP_UnitTestCase {
 		$item_id = $order->add_product( $variation, 1 );
 		$item    = $order->get_item( $item_id );
 		$item->add_meta_data(
-			EXPRDAWC_META_EXTRA_PRODUCT_DATA,
+			EXPRDAWC_ORDER_META_EXTRA_PRODUCT_DATA,
 			array(
 				array(
 					'label'     => 'Custom Field',

@@ -119,7 +119,7 @@ class OrderHelper {
 	 * @return array Array of field data indexed by field key.
 	 */
 	public static function getItemFieldMetadata( WC_Order_Item $item ): array {
-		$item_meta_data = $item->get_meta( EXPRDAWC_META_EXTRA_PRODUCT_DATA, true );
+		$item_meta_data = $item->get_meta( EXPRDAWC_ORDER_META_EXTRA_PRODUCT_DATA, true );
 
 		if ( ! is_array( $item_meta_data ) || empty( $item_meta_data ) ) {
 			return array();
