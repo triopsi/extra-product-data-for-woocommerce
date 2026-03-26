@@ -42,6 +42,7 @@ The following field types are currently implemented:
 * Select/options
 * Radio Boxes
 * Checboxes 
+* Color Picker
 
 == Installation ==
 
