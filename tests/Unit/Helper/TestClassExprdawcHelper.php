@@ -316,8 +316,8 @@ class TestClassExprdawcHelper extends WP_UnitTestCase {
 		$fields = json_decode( $json_export_string, true );
 
 		ob_start();
-		foreach ( $fields as $field ) {
-			Helper::generateInputField( $field );
+		foreach ( $fields as $index => $field ) {
+			Helper::generateInputField( (int) $index, $field );
 		}
 		$output = ob_get_clean();
 

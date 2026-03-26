@@ -413,10 +413,14 @@ table.exprdawc_options_table {
     border-bottom: none;
 
     &::before {
-        font-family: "Dashicons";
-        content: "\f163";
-        font-size: 70px;
-        color: #6c6c6c;
+        content: "";
+        width: 100px;
+        height: 100px;
+        background-image: url('../img/LogoSW.svg');
+        color: #5b5b5b;
+        background-repeat: no-repeat;
+        background-position: center;
+        background-size: 70% 70%;
         position: absolute;
         top: 0px;
         left: 50%;

@@ -44,6 +44,7 @@ jQuery(function ($) {
             this.bindFormValidation();
             this.validateUniqueLabels();
             this.validateUniqueOptionValues();
+            this.initColorHexFields();
         }
 
         /**
@@ -71,6 +72,9 @@ jQuery(function ($) {
             $(document).on('click', '.exprdawc_copy_custom_field', this.exprdawc_copy_custom_field.bind(this));
             $(document).on('change keyup keydown input', 'input.field_name', this.updateConditionalFieldOptions.bind(this));
             $(document).on('input', '.exprdawc_label', this.validateUniqueLabels.bind(this));
+            $(document).on('input', '.exprdawc_color_default', this.handleColorPickerInput.bind(this));
+            $(document).on('input', '.exprdawc_color_hex', this.handleColorHexInput.bind(this));
+            $(document).on('blur', '.exprdawc_color_hex', this.handleColorHexBlur.bind(this));
 
             // Inits
             this.toggleConditionalValueFieldAll();
@@ -161,6 +165,7 @@ jQuery(function ($) {
             // Trigger change event to show the options.
             const $newField = $('#exprdawc_field_body tr.exprdawc_fields_wrapper').last();
             $newField.find('.exprdawc_attribute_type').trigger('change');
+            this.initColorHexFields($newField);
             this.togglePriceAdjustmentTableAll();
             this.validateUniqueLabels();
             this.validateUniqueOptionValues();
@@ -666,6 +671,83 @@ jQuery(function ($) {
             });
         }
 
+        normalizeColorHex(value) {
+            let normalized = (value || '').toString().trim();
+
+            if (!normalized) {
+                return '';
+            }
+
+            if (!normalized.startsWith('#')) {
+                normalized = `#${normalized}`;
+            }
+
+            if (/^#([0-9a-f]{3})$/i.test(normalized)) {
+                normalized = `#${normalized.slice(1).split('').map((char) => `${char}${char}`).join('')}`;
+            }
+
+            return normalized.toLowerCase();
+        }
+
+        isValidColorHex(value) {
+            return /^#([0-9a-f]{6})$/i.test(value || '');
+        }
+
+        getColorFieldPair($element) {
+            const $container = $element.closest('td');
+
+            return {
+                $colorInput: $container.find('.exprdawc_color_default').first(),
+                $hexInput: $container.find('.exprdawc_color_hex').first(),
+            };
+        }
+
+        initColorHexFields($scope = $(document)) {
+            $scope.find('.exprdawc_color_table td').each((index, element) => {
+                const $cell = $(element);
+                const $colorInput = $cell.find('.exprdawc_color_default').first();
+                const $hexInput = $cell.find('.exprdawc_color_hex').first();
+
+                if (!$colorInput.length || !$hexInput.length) {
+                    return;
+                }
+
+                const normalizedHex = this.normalizeColorHex($hexInput.val()) || this.normalizeColorHex($colorInput.val()) || '#1d2327';
+                const validHex = this.isValidColorHex(normalizedHex) ? normalizedHex : '#1d2327';
+
+                $colorInput.val(validHex);
+                $hexInput.val(validHex);
+            });
+        }
+
+        handleColorPickerInput(e) {
+            const { $colorInput, $hexInput } = this.getColorFieldPair($(e.currentTarget));
+
+            if (!$colorInput.length || !$hexInput.length) {
+                return;
+            }
+
+            $hexInput.val(this.normalizeColorHex($colorInput.val()));
+        }
+
+        handleColorHexInput(e) {
+            const { $colorInput, $hexInput } = this.getColorFieldPair($(e.currentTarget));
+            const normalizedHex = this.normalizeColorHex($hexInput.val());
+
+            if (this.isValidColorHex(normalizedHex)) {
+                $colorInput.val(normalizedHex);
+            }
+        }
+
+        handleColorHexBlur(e) {
+            const { $colorInput, $hexInput } = this.getColorFieldPair($(e.currentTarget));
+            const normalizedHex = this.normalizeColorHex($hexInput.val());
+            const fallbackHex = this.normalizeColorHex($colorInput.val()) || '#1d2327';
+
+            $hexInput.val(this.isValidColorHex(normalizedHex) ? normalizedHex : fallbackHex);
+            $colorInput.val(fallbackHex);
+        }
+
         /**
          * Copies a custom field row.
          *
@@ -683,6 +765,7 @@ jQuery(function ($) {
             this.updateConditionalFieldOptions();
 
             $clone.find('.exprdawc_attribute_type').trigger('change');
+            this.initColorHexFields($clone);
 
             $clone.find('.field_option_table_value_td input').each((index, element) => {
                 this.syncOptionValueToDefault({ currentTarget: element });
@@ -913,7 +996,7 @@ jQuery(function ($) {
                 const $row = $(element);
                 $row.find('.exprdawc_fields_table').attr('data-index', index);
                 $row.find('.exprdawc_attribute_index').val(index);
-                $(element).find('input, select').each(function () {
+                $(element).find('input, select, textarea').each(function () {
                     const $input = $(this);
 
                     // Update the name attribute with the new index

@@ -80,7 +80,7 @@ class CustomerOrder extends BaseOrder implements Hookable {
 		}
 
 		// Read stored values from _meta_extra_product_data, same approach as AdminOrder.
-		$stored_field_map = $this->extractOrderItemMetaData( $item->get_meta( EXPRDAWC_META_EXTRA_PRODUCT_DATA, true ) );
+		$stored_field_map = $this->extractOrderItemMetaData( $item->get_meta( EXPRDAWC_ORDER_META_EXTRA_PRODUCT_DATA, true ) );
 		$has_user_inputs  = ! empty( $stored_field_map );
 
 		if ( is_wc_endpoint_url( 'view-order' ) && $has_user_inputs && Helper::is_order_editable( $order ) ) {
@@ -88,10 +88,10 @@ class CustomerOrder extends BaseOrder implements Hookable {
 			echo '<div class="exprdawc-order-item-fields" id="exprdawc-order-item-fields-' . esc_attr( $item_id ) . '" style="display:none;">';
 			echo '<form action="" method="post" class="exprdawc-order-item-form">';
 			echo '<input type="hidden" name="order_id" value="' . esc_attr( $order->get_id() ) . '">';
-			foreach ( $custom_fields as $field ) {
+			foreach ( $custom_fields as $index => $field ) {
 				$field_key = Helper::getFieldKey( $field );
 				$value     = $stored_field_map[ $field_key ]['raw_value'] ?? '';
-				Helper::generateInputField( $field, $value );
+				Helper::generateInputField( $index, $field, $value );
 			}
 			echo '</form>';
 			echo '<button style="margin-top: 1em;" type="button" class="button alt wp-element-button exprdawc-save-order-item" data-item-id="' . esc_attr( $item_id ) . '"><span class="dashicons dashicons-yes"></span> ' . esc_html__( 'Save', 'extra-product-data-for-woocommerce' ) . '</button>';

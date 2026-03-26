@@ -59,6 +59,7 @@ $field_template_defaults = array(
 	'maxlength'             => '255',
 	'options'               => array(),
 	'conditional_rules'     => array(),
+
 );
 ?>
 <input type="hidden" id="exprdawc_export_string" name="exprdawc_export_string" value="<?php echo $args['custom_fields'] ? wc_esc_json( json_encode( $args['custom_fields'] ) ) : ''; // phpcs:ignore ?>" />

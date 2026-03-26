@@ -59,6 +59,7 @@ class Helper {
 	/**
 	 * Generate and render an input field.
 	 *
+	 * @param int          $index               The field index.
 	 * @param array        $field               The field arguments.
 	 * @param string|array $value               The field value.
 	 * @param bool         $skipRequiredCheck   Whether to skip the required check.
@@ -66,8 +67,8 @@ class Helper {
 	 *
 	 * @return void
 	 */
-	public static function generateInputField( array $field, $value = '', bool $skipRequiredCheck = false, bool $cartPage = false ): void {
-		$fieldArgs = self::prepareFieldArgs( $field, $value, $skipRequiredCheck, $cartPage );
+	public static function generateInputField( int $index, array $field, $value = '', bool $skipRequiredCheck = false, bool $cartPage = false ): void {
+		$fieldArgs = self::prepareFieldArgs( $field, $value, $skipRequiredCheck, $cartPage, $index );
 
 		if ( ! self::validateFieldArgs( $fieldArgs ) ) {
 			return;
@@ -83,12 +84,14 @@ class Helper {
 	 * @param string|array $value               The field value.
 	 * @param bool         $skipRequiredCheck   Whether to skip required check.
 	 * @param bool         $cartPage            Whether rendered on cart page.
+	 * @param int          $index               The field index for unique ID generation.
 	 *
 	 * @return array Processed field arguments.
 	 */
-	private static function prepareFieldArgs( array $field, $value, bool $skipRequiredCheck, bool $cartPage ): array {
+	private static function prepareFieldArgs( array $field, $value, bool $skipRequiredCheck, bool $cartPage, int $index = 0 ): array {
 		$fieldArgs = wp_parse_args( $field, self::getDefaultFieldArgs() );
 
+		$fieldArgs['index']           = $index;
 		$fieldArgs                    = self::normalizeFieldProperties( $fieldArgs, $skipRequiredCheck, $cartPage );
 		$fieldArgs                    = self::generateFieldIdAndName( $fieldArgs );
 		$fieldArgs['value']           = self::getFieldValue( $fieldArgs, $value );
@@ -150,6 +153,7 @@ class Helper {
 			'step'                  => '',
 			'min'                   => '',
 			'max'                   => '',
+			'color_default'         => '',
 		);
 	}
 
@@ -224,7 +228,12 @@ class Helper {
 			return wc_clean( wp_unslash( $_REQUEST[ $selectedKey ] ) ); // phpcs:ignore
 		}
 
-		return $fieldArgs['default'];
+		$default = '';
+		switch ( $fieldArgs['type'] ) {
+			default:
+				$default = $fieldArgs['default'];
+		}
+		return $default;
 	}
 
 	/**
@@ -682,7 +691,7 @@ class Helper {
 	 * @return array Field definition array, or empty array when none are configured.
 	 */
 	public static function getExtraProductFields( WC_Product $product ): array {
-		$fields = $product->get_meta( '_extra_product_fields', true );
+		$fields = $product->get_meta( EXPRDAWC_PRODUCT_META_EXTRA_PRODUCT_DATA, true );
 		return is_array( $fields ) ? $fields : array();
 	}
 

@@ -256,7 +256,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 							</td>
 							<td rowspan="2">
 								<label class="exprdawc_label" for="exprdawc_long_text_default_<?php echo esc_html( $index ); ?>"><?php esc_html_e( 'Default Value', 'extra-product-data-for-woocommerce' ); ?></label>
-								<textarea style="height: auto;" id="exprdawc_long_text_default_<?php echo esc_html( $index ); ?>" class="exprdawc_textarea exprdawc_input exprdawc_long_text_cols" rows="5" cols="30" placeholder="<?php esc_html_e( 'Enter a default text', 'extra-product-data-for-woocommerce' ); ?>" name="extra_product_fields[<?php echo esc_html( $index ); ?>][long_text_default]"><?php echo esc_attr( $field['long_text_default'] ?? '' ); ?></textarea>
+								<textarea style="height: auto;" id="exprdawc_long_text_default_<?php echo esc_html( $index ); ?>" class="exprdawc_textarea exprdawc_input exprdawc_long_text_default_value" rows="5" cols="30" placeholder="<?php esc_html_e( 'Enter a default text', 'extra-product-data-for-woocommerce' ); ?>" name="extra_product_fields[<?php echo esc_html( $index ); ?>][long_text_default]"><?php echo esc_attr( $field['long_text_default'] ?? '' ); ?></textarea>
 							</td>
 						</tr>
 						<tr>
@@ -286,7 +286,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 							</td>
 							<td>
 								<label class="exprdawc_label" for="exprdawc_text_default_<?php echo esc_html( $index ); ?>"><?php esc_html_e( 'Default Value', 'extra-product-data-for-woocommerce' ); ?></label>
-								<input type="text" id="exprdawc_text_default_<?php echo esc_html( $index ); ?>" class="exprdawc_input exprdawc_text_max_length" placeholder="<?php esc_html_e( 'Enter a default text', 'extra-product-data-for-woocommerce' ); ?>" name="extra_product_fields[<?php echo esc_html( $index ); ?>][default]" value="<?php echo esc_attr( $field['default'] ?? '' ); ?>" />
+								<input type="text" id="exprdawc_text_default_<?php echo esc_html( $index ); ?>" class="exprdawc_input exprdawc_text_default" placeholder="<?php esc_html_e( 'Enter a default text', 'extra-product-data-for-woocommerce' ); ?>" name="extra_product_fields[<?php echo esc_html( $index ); ?>][default]" value="<?php echo esc_attr( $field['default'] ?? '' ); ?>" />
 							</td>
 						</tr>
 					</tbody>
@@ -310,7 +310,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 							</td>
 							<td>
 								<label class="exprdawc_label" for="exprdawc_number_default_<?php echo esc_html( $index ); ?>"><?php esc_html_e( 'Default Value', 'extra-product-data-for-woocommerce' ); ?></label>
-								<input type="number" id="exprdawc_number_default_<?php echo esc_html( $index ); ?>" class="exprdawc_input exprdawc_number_default" placeholder="<?php esc_html_e( 'Enter a default number', 'extra-product-data-for-woocommerce' ); ?>" name="extra_product_fields[<?php echo esc_html( $index ); ?>][default]" value="<?php echo esc_attr( $field['default'] ?? '' ); ?>" />
+								<input type="number" id="exprdawc_number_default_<?php echo esc_html( $index ); ?>" class="exprdawc_input exprdawc_number_default" placeholder="<?php esc_html_e( 'Enter a default number', 'extra-product-data-for-woocommerce' ); ?>" name="extra_product_fields[<?php echo esc_html( $index ); ?>][number_default]" value="<?php echo esc_attr( $field['number_default'] ?? '' ); ?>" />
 							</td>
 						</tr>
 					</tbody>
@@ -333,8 +333,17 @@ if ( ! defined( 'ABSPATH' ) ) {
 					<tbody>
 						<tr>
 							<td>
+								<label class="exprdawc_label" for="exprdawc_color_enable_frontend_input_<?php echo esc_html( $index ); ?>">
+									<input type="checkbox" id="exprdawc_color_enable_frontend_input_<?php echo esc_html( $index ); ?>" class="exprdawc_input exprdawc_checkbox exprdawc_color_enable_frontend_input_field checkbox" name="extra_product_fields[<?php echo esc_html( $index ); ?>][color_enable_frontend_input]" value="1" <?php echo checked( 1, $field['color_enable_frontend_input'] ?? 0, false ); ?> />
+									<?php esc_html_e( 'User can input a custom color with a input field', 'extra-product-data-for-woocommerce' ); ?>
+								</label>
+							</td>
+						</tr>
+						<tr>
+							<td>
 								<label class="exprdawc_label" for="exprdawc_color_default_<?php echo esc_html( $index ); ?>"><?php esc_html_e( 'Default Value', 'extra-product-data-for-woocommerce' ); ?></label>
-								<input type="color" id="exprdawc_color_default_<?php echo esc_html( $index ); ?>" class="exprdawc_input exprdawc_color_default" placeholder="<?php esc_html_e( 'Select a default color', 'extra-product-data-for-woocommerce' ); ?>" name="extra_product_fields[<?php echo esc_html( $index ); ?>][default]" value="<?php echo esc_attr( $field['default'] ?? '#000000' ); ?>" />
+								<input type="color" id="exprdawc_color_default_<?php echo esc_html( $index ); ?>" class="exprdawc_input exprdawc_color_default" placeholder="<?php esc_html_e( 'Select a default color', 'extra-product-data-for-woocommerce' ); ?>" name="extra_product_fields[<?php echo esc_html( $index ); ?>][color_default]" value="<?php echo esc_attr( $field['color_default'] ?? '#1d2327' ); ?>" />
+								<input style="width:150px;" type="text" id="exprdawc_color_hex_<?php echo esc_html( $index ); ?>" class="exprdawc_input exprdawc_color_hex" placeholder="#1d2327" name="extra_product_fields[<?php echo esc_html( $index ); ?>][color_hex]" value="<?php echo esc_attr( $field['color_hex'] ?? $field['color_default'] ?? '#1d2327' ); ?>" maxlength="7" pattern="^#[0-9A-Fa-f]{6}$" />
 							</td>
 						</tr>
 					</tbody>

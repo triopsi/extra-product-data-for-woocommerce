@@ -196,7 +196,7 @@ class ProductFrontend implements Hookable {
 			echo '<div class="exprdawc-extra-fields">';
 			wp_nonce_field( 'exprdawc_save_custom_field', 'exprdawc_nonce' );
 			foreach ( $custom_fields as $index => $field ) {
-				Helper::generateInputField( $field, '', false, true );
+				Helper::generateInputField( $index, $field, '', false, true );
 			}
 			echo '</div>';
 
@@ -617,7 +617,7 @@ class ProductFrontend implements Hookable {
 		$field_meta = OrderHelper::buildFieldMetadataArray( $values[ EXPRDAWC_CART_ITEM_CUSTOM_FIELDS_KEY ] );
 
 		if ( ! empty( $field_meta ) ) {
-			$item->add_meta_data( EXPRDAWC_META_EXTRA_PRODUCT_DATA, $field_meta );
+			$item->add_meta_data( EXPRDAWC_ORDER_META_EXTRA_PRODUCT_DATA, $field_meta );
 		}
 	}
 

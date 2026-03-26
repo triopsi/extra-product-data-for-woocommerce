@@ -291,7 +291,7 @@ class TestExprdawcProductPageBackend extends WP_UnitTestCase {
 		$product->save();
 		$post_id = $product->get_id();
 
-		$_POST['extra_product_fields'] = array(
+		$_POST[ EXPRDAWC_POST_KEY_EXTRA_PRODUCT_FIELDS ] = array(
 			array(
 				'label'                 => 'Test Field',
 				'type'                  => 'text',
@@ -315,7 +315,7 @@ class TestExprdawcProductPageBackend extends WP_UnitTestCase {
 		$this->assertEquals( 'text', $custom_fields[0]['type'], 'Field type should match.' );
 
 		// Clean up.
-		unset( $_POST['extra_product_fields'] );
+		unset( $_POST[ EXPRDAWC_POST_KEY_EXTRA_PRODUCT_FIELDS ] );
 		$product->delete();
 	}
 
@@ -331,7 +331,7 @@ class TestExprdawcProductPageBackend extends WP_UnitTestCase {
 		$product->save();
 		$post_id = $product->get_id();
 
-		$_POST['extra_product_fields'] = array(
+		$_POST[ EXPRDAWC_POST_KEY_EXTRA_PRODUCT_FIELDS ] = array(
 			array(
 				'label'                 => '<script>alert("xss")</script>Test Field',
 				'type'                  => 'text',
@@ -353,7 +353,7 @@ class TestExprdawcProductPageBackend extends WP_UnitTestCase {
 		$this->assertStringNotContainsString( '<b>', $custom_fields[0]['placeholder_text'], 'HTML tags should be removed.' );
 
 		// Clean up.
-		unset( $_POST['extra_product_fields'] );
+		unset( $_POST[ EXPRDAWC_POST_KEY_EXTRA_PRODUCT_FIELDS ] );
 		$product->delete();
 	}
 
@@ -369,7 +369,7 @@ class TestExprdawcProductPageBackend extends WP_UnitTestCase {
 		$product->save();
 		$post_id = $product->get_id();
 
-		$_POST['extra_product_fields'] = array(
+		$_POST[ EXPRDAWC_POST_KEY_EXTRA_PRODUCT_FIELDS ] = array(
 			array(
 				'label'                 => 'Select Field',
 				'type'                  => 'select',
@@ -404,7 +404,7 @@ class TestExprdawcProductPageBackend extends WP_UnitTestCase {
 		$this->assertEquals( 'opt1', $custom_fields[0]['options'][0]['value'], 'Option value should match.' );
 
 		// Clean up.
-		unset( $_POST['extra_product_fields'] );
+		unset( $_POST[ EXPRDAWC_POST_KEY_EXTRA_PRODUCT_FIELDS ] );
 		$product->delete();
 	}
 
@@ -430,7 +430,7 @@ class TestExprdawcProductPageBackend extends WP_UnitTestCase {
 		$product->update_meta_data( '_extra_product_fields', $existing_fields );
 		$product->save();
 
-		$_POST['extra_product_fields'] = array(
+		$_POST[ EXPRDAWC_POST_KEY_EXTRA_PRODUCT_FIELDS ] = array(
 			array(
 				'label'                 => 'Select Field',
 				'type'                  => 'select',
@@ -460,7 +460,7 @@ class TestExprdawcProductPageBackend extends WP_UnitTestCase {
 
 		$this->assertEquals( $existing_fields, $custom_fields, 'Duplicate option values should prevent saving new field data.' );
 
-		unset( $_POST['extra_product_fields'] );
+		unset( $_POST[ EXPRDAWC_POST_KEY_EXTRA_PRODUCT_FIELDS ] );
 		$product->delete();
 	}
 
@@ -476,7 +476,7 @@ class TestExprdawcProductPageBackend extends WP_UnitTestCase {
 		$product->save();
 		$post_id = $product->get_id();
 
-		$_POST['extra_product_fields'] = array(
+		$_POST[ EXPRDAWC_POST_KEY_EXTRA_PRODUCT_FIELDS ] = array(
 			array(
 				'label'                 => 'Select Field One',
 				'type'                  => 'select',
@@ -529,7 +529,7 @@ class TestExprdawcProductPageBackend extends WP_UnitTestCase {
 		$this->assertEquals( 'same', $custom_fields[0]['options'][0]['value'] );
 		$this->assertEquals( 'same', $custom_fields[1]['options'][0]['value'] );
 
-		unset( $_POST['extra_product_fields'] );
+		unset( $_POST[ EXPRDAWC_POST_KEY_EXTRA_PRODUCT_FIELDS ] );
 		$product->delete();
 	}
 
@@ -550,7 +550,7 @@ class TestExprdawcProductPageBackend extends WP_UnitTestCase {
 		$product->save();
 
 		// Now save without POST data.
-		unset( $_POST['extra_product_fields'] );
+		unset( $_POST[ EXPRDAWC_POST_KEY_EXTRA_PRODUCT_FIELDS ] );
 		$this->product_page_backend->exprdawcSaveExtraProductFields( $post_id );
 
 		$product       = wc_get_product( $post_id );
@@ -688,7 +688,7 @@ class TestExprdawcProductPageBackend extends WP_UnitTestCase {
 		$product->save();
 		$post_id = $product->get_id();
 
-		$_POST['extra_product_fields'] = array(
+		$_POST[ EXPRDAWC_POST_KEY_EXTRA_PRODUCT_FIELDS ] = array(
 			array(
 				'label'                 => 'Conditional Field',
 				'type'                  => 'text',
@@ -720,7 +720,7 @@ class TestExprdawcProductPageBackend extends WP_UnitTestCase {
 		$this->assertIsArray( $custom_fields[0]['conditional_rules'], 'Conditional rules should be an array.' );
 
 		// Clean up.
-		unset( $_POST['extra_product_fields'] );
+		unset( $_POST[ EXPRDAWC_POST_KEY_EXTRA_PRODUCT_FIELDS ] );
 		$product->delete();
 	}
 }

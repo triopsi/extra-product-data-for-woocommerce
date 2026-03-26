@@ -66,11 +66,13 @@ test.describe('@P0 @CHECKOUT', () => {
 
         await expect(page.getByRole('heading', { name: 'Cap' })).toBeVisible();
 
-        await expect(page.locator('[id="6855645623-wrapper-field"]')).toContainText('Color *');
-        await expect(page.getByRole('textbox', { name: 'Color  *' })).toHaveValue('#ff0000');
-        await expect(page.locator('#exprdawc-custom-field-input-6855645623-description')).toContainText('Color?');
+
         await page.getByRole('textbox', { name: 'Color  *' }).click();
-        await page.getByRole('textbox', { name: 'Color  *' }).fill('#0008f5');
+        await page.getByRole('textbox', { name: 'Color  *' }).fill('#0062ff');
+        await page.getByRole('textbox', { name: 'Color 2  (Optional)' }).click();
+        await page.getByRole('textbox', { name: 'Color 2  (Optional)' }).fill('#00ff40');
+        await expect(page.getByRole('textbox', { name: 'Color  *' })).toHaveValue('#0062ff');
+        await expect(page.getByTestId('color_hex_field_1')).toHaveValue('#00ff40');
         await page.getByRole('button', { name: 'Add to cart', exact: true }).click();
 
         // Check Banner
@@ -80,7 +82,9 @@ test.describe('@P0 @CHECKOUT', () => {
         await cartPage.goToCartPage();
 
         // Checks Cart and Cart Total
-        await expect(page.locator('tbody')).toContainText('This is a simple product. Original item price: €16.00 / Color: #0008f5');
+
+        await expect(page.locator('tbody')).toContainText('Original item price: €16.00 / Color: #0062ff / Color 2: #00ff40');
+
         await expect(cartPage.getCartTotal()).toContainText('€16.00');
 
         // Checkout
@@ -110,6 +114,6 @@ test.describe('@P0 @CHECKOUT', () => {
         // Verify order confirmation
         await expect(page.getByText('Thank you. Your order has')).toBeVisible();
         await expect(page.getByText('Total: €16.00', { exact: true })).toBeVisible();
-        await expect(page.locator('tbody')).toContainText('Color: #0008f5');
+        await expect(page.locator('tbody')).toContainText('Cap × 1Original item price: €16.00Color: #0062ffColor 2: #00ff40');
     });
 });

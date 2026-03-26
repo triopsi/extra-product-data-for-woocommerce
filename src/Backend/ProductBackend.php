@@ -137,9 +137,9 @@ class ProductBackend implements Hookable {
 	 * @param int $post_id The ID of the product being saved.
 	 */
 	public function exprdawcSaveExtraProductFields( $post_id ) {
-		if ( isset( $_POST['extra_product_fields'] ) ) { // phpcs:ignore
+		if ( isset( $_POST[EXPRDAWC_POST_KEY_EXTRA_PRODUCT_FIELDS] ) ) { // phpcs:ignore
 			$product              = wc_get_product( $post_id );
-			$extra_product_fields = wp_unslash( $_POST['extra_product_fields'] ); // phpcs:ignore
+			$extra_product_fields = wp_unslash( $_POST[EXPRDAWC_POST_KEY_EXTRA_PRODUCT_FIELDS] ); // phpcs:ignore
 
 			$custom_fields = array_map(
 				function ( $field ) {
@@ -186,21 +186,37 @@ class ProductBackend implements Hookable {
 					}
 
 					// Set default value, ensuring it's properly sanitized and of the correct type.
-					$default_source = $field['default'] ?? '';
-					if ( is_array( $default_source ) ) {
-						$default = array_map( 'sanitize_text_field', $default_source );
-					} else {
-						$default = sanitize_text_field( $default_source );
-					}
-
-					$long_text_default = isset( $field['long_text_default'] ) ? sanitize_textarea_field( $field['long_text_default'] ) : '';
-					if ( ! empty( $long_text_default ) ) {
-						$default = $long_text_default;
-					}
-
-					$email_default = isset( $field['email_default'] ) ? sanitize_email( $field['email_default'] ) : '';
-					if ( ! empty( $email_default ) ) {
-						$default = $email_default;
+					$email_default     = '';
+					$color_default     = '';
+					$long_text_default = '';
+					$number_default    = '';
+					switch ( $type ) {
+						case 'long_text':
+							$long_text_default = isset( $field['long_text_default'] ) ? sanitize_textarea_field( $field['long_text_default'] ) : '';
+							$default           = $long_text_default;
+							break;
+						case 'email':
+							$email_default = isset( $field['email_default'] ) ? sanitize_email( $field['email_default'] ) : '';
+							$default       = $email_default;
+							break;
+						case 'color':
+							$color_default = isset( $field['color_default'] ) ? sanitize_text_field( $field['color_default'] ) : '';
+							$default       = $color_default;
+							break;
+						case 'checkbox':
+						case 'radio':
+						case 'select':
+							$default_source = $field['default'] ?? '';
+							$default        = is_array( $default_source ) ? array_map( 'sanitize_text_field', $default_source ) : sanitize_text_field( $default_source );
+							break;
+						case 'number':
+							$number_default = isset( $field['number_default'] ) ? sanitize_text_field( $field['number_default'] ) : '';
+							$default        = $number_default;
+							break;
+						default:
+							$default_source = $field['default'] ?? '';
+							$default        = sanitize_text_field( is_array( $default_source ) ? '' : $default_source );
+							break;
 					}
 
 					if ( 'long_text' === $type ) {
@@ -218,6 +234,8 @@ class ProductBackend implements Hookable {
 					$min  = isset( $field['min'] ) ? sanitize_text_field( $field['min'] ) : '';
 					$max  = isset( $field['max'] ) ? sanitize_text_field( $field['max'] ) : '';
 
+					$color_enable_frontend_input = isset( $field['color_enable_frontend_input'] ) ? 1 : 0;
+
 					if ( empty( $label ) || ! is_string( $label ) ) {
 						return;
 					}
@@ -231,32 +249,35 @@ class ProductBackend implements Hookable {
 						$help_text = '';
 					}
 					return array(
-						'id'                    => $id,
-						'label'                 => $label,
-						'type'                  => $type,
-						'required'              => $required,
-						'conditional_logic'     => $conditional_logic,
-						'placeholder_text'      => $placeholder_text,
-						'help_text'             => $help_text,
-						'options'               => $options,
-						'default'               => $default,
-						'long_text_default'     => $long_text_default,
-						'minlength'             => $minlength,
-						'maxlength'             => $maxlength,
-						'rows'                  => $rows,
-						'cols'                  => $cols,
-						'autocomplete'          => $autocomplete,
-						'autofocus'             => $autofocus,
-						'conditional_rules'     => $conditional_logic_rules,
-						'index'                 => $index,
-						'editable'              => $editable,
-						'adjust_price'          => $adjust_price,
-						'price_adjustment_type' => $price_adjustment_type,
-						'priceAdjustmentValue'  => $priceAdjustmentValue,
-						'step'                  => $step,
-						'min'                   => $min,
-						'max'                   => $max,
-						'email_default'         => $email_default,
+						'id'                          => $id,
+						'label'                       => $label,
+						'type'                        => $type,
+						'required'                    => $required,
+						'conditional_logic'           => $conditional_logic,
+						'placeholder_text'            => $placeholder_text,
+						'help_text'                   => $help_text,
+						'options'                     => $options,
+						'minlength'                   => $minlength,
+						'maxlength'                   => $maxlength,
+						'rows'                        => $rows,
+						'cols'                        => $cols,
+						'autocomplete'                => $autocomplete,
+						'autofocus'                   => $autofocus,
+						'conditional_rules'           => $conditional_logic_rules,
+						'index'                       => $index,
+						'editable'                    => $editable,
+						'adjust_price'                => $adjust_price,
+						'price_adjustment_type'       => $price_adjustment_type,
+						'priceAdjustmentValue'        => $priceAdjustmentValue,
+						'step'                        => $step,
+						'min'                         => $min,
+						'max'                         => $max,
+						'default'                     => $default,
+						'long_text_default'           => $long_text_default,
+						'email_default'               => $email_default,
+						'color_default'               => $color_default,
+						'number_default'              => $number_default,
+						'color_enable_frontend_input' => $color_enable_frontend_input,
 					);
 				},
 				$extra_product_fields
@@ -264,6 +285,7 @@ class ProductBackend implements Hookable {
 
 			$custom_fields = array_filter( $custom_fields );
 
+			// Checks for duplicate labels and option values before saving. If duplicates are found, an error message is added and saving is aborted.
 			if ( $this->hasDuplicateLabels( $custom_fields ) ) {
 				if ( class_exists( 'WC_Admin_Meta_Boxes' ) ) {
 					\WC_Admin_Meta_Boxes::add_error( esc_html__( 'Label names must be unique. Please use different label names before saving.', 'extra-product-data-for-woocommerce' ) );
@@ -278,10 +300,11 @@ class ProductBackend implements Hookable {
 				return;
 			}
 
-			$product->update_meta_data( '_extra_product_fields', $custom_fields );
+			// Save custom fields to product meta. If no custom fields are provided, delete the meta to keep the database clean.
+			$product->update_meta_data( EXPRDAWC_PRODUCT_META_EXTRA_PRODUCT_DATA, $custom_fields );
 		} else {
 			$product = wc_get_product( $post_id );
-			$product->delete_meta_data( '_extra_product_fields' );
+			$product->delete_meta_data( EXPRDAWC_PRODUCT_META_EXTRA_PRODUCT_DATA );
 		}
 
 		$product->save();
@@ -391,7 +414,7 @@ class ProductBackend implements Hookable {
 			wp_send_json_error( 'Invalid JSON string.' );
 		}
 
-		$product->update_meta_data( '_extra_product_fields', $custom_fields );
+		$product->update_meta_data( EXPRDAWC_PRODUCT_META_EXTRA_PRODUCT_DATA, $custom_fields );
 		$product->save();
 
 		wp_send_json_success();
