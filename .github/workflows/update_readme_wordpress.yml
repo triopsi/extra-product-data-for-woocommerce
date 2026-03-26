@@ -2,6 +2,7 @@
 name: Plugin asset/readme update
 on:
   workflow_dispatch:
+  workflow_dispatch:
 jobs:
   trunk:
     if: github.repository == 'triopsi/extra-product-data-for-woocommerce'
