@@ -1,4 +1,4 @@
-# This workflow updates the plugin assets and readme on the WordPress.org repository when changes are pushed to the update-readme branch.
+# This workflow updates the plugin assets and readme on WordPress.org when manually triggered.
 name: Plugin asset/readme update
 on:
   workflow_dispatch:
@@ -9,27 +9,6 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v6
-        with:
-          fetch-depth: 0
-      - name: Setup Node.js
-        uses: actions/setup-node@v6
-        with:
-          node-version: "20"
-          cache: "npm"
-          cache-dependency-path: package-lock.json
-      - name: Cache Composer dependencies
-        uses: actions/cache@v5
-        with:
-          path: ~/.composer/cache/files
-          key: ${{ runner.os }}-composer-${{ hashFiles('**/composer.lock') }}
-          restore-keys: |
-            ${{ runner.os }}-composer-
-      - name: Install Composer dependencies (no dev)
-        run: composer install --no-dev --prefer-dist --no-interaction --no-progress
-      - name: Optimize Composer autoload
-        run: composer dump-autoload -o
-      - name: Install npm dependencies
-        run: npm ci
       - name: WordPress.org plugin asset/readme update
         uses: 10up/action-wordpress-plugin-asset-update@stable
         env:
