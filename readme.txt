@@ -1,21 +1,19 @@
 === Extra Product Data for WooCommerce ===
 Contributors: triopsi
 Tags: WooCommerce Product Addons, WooCommerce product options, WooCommerce custom fields, WooCommerce product fields
-Requires at least: 5.0
 Tested up to: 6.9
-Requires PHP: 8.2
 Stable tag: 3.1.0
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
-A WooCommerce plugin that collects additional user data for products and displays it in the order summary.
+Add custom product fields in WooCommerce to collect buyer details. Show data in cart, checkout, and orders with conditional logic support.
 
 == Description ==
 
 = Extra Product Data for WooCommerce =
 Extra Product Data for WooCommerce is a WooCommerce plugin developed to gather additional user information for products. Once installed, this plugin adds custom input fields to WooCommerce product pages, allowing users to enter extra information during the checkout process. These additional data fields are then displayed in the cart, the order summary, and within the backend for easy access.
 
-The plugin was developed by @triopsi using the latest stable PHP version (8.2) and has been tested with the latest WordPress release. Extra Product Data for WooCommerce is free and can be easily extended to fit specific needs with just a few clicks.
+Extra Product Data for WooCommerce is free and can be easily extended to fit specific needs with just a few clicks.
 
 == Features ==
 
@@ -49,12 +47,6 @@ The following field types are currently implemented:
 1. Upload the plugin files to the `/wp-content/plugins/extra-product-data-for-woocommerce` directory, or install the plugin directly through the WordPress plugins screen.
 2. Activate the plugin through the 'Plugins' screen in WordPress.
 3. Go to any WooCommerce product page to see the additional input fields.
-
-== Development ==
-
-This plugin uses Composer autoloading for its PHP classes.
-
-1. Run `composer install` in the plugin directory.
 
 == Frequently Asked Questions ==
 
@@ -193,3 +185,8 @@ Yes, the plugin has been tested with the latest WordPress release and PHP 8.2.
 
 = 1.0.0 ((2024-11-20)) =
 * Initial release.
+
+== Upgrade Notice ==
+
+= 3.0.0 =
+*Important:* This is a major update. Some fields have been re-indexed internally. Due to this change, it may be necessary to recreate or re/save your existing fields manually. Unfortunately, there is no automatic upgrade or migration tool available at this time. Please review your configured fields after updating and recreate them if needed.
