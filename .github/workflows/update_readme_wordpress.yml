@@ -15,4 +15,4 @@ jobs:
           SLUG: extra-product-data-for-woocommerce
           SVN_PASSWORD: ${{ secrets.SVN_PASSWORD }}
           SVN_USERNAME: ${{ secrets.SVN_USERNAME }}
-          IGNORE_OTHER_FILES: "true"
+          IGNORE_OTHER_FILES: true
