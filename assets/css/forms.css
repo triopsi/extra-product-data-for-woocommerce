@@ -1,1 +1,110 @@
-.exprdawc-label{font-weight:bold;display:block}.exprdawc-input-wrapper .input-text{width:100%;max-width:none;padding:5px;vertical-align:middle;margin:2px 0 0}.exprdawc-input-wrapper .input-color{width:50px;height:50px;padding:0;cursor:pointer}.exprdawc-input-wrapper .color_hex_field{width:80px}.exprdawc-field-input-select,.exprdawc-field-wrapper-select select,.exprdawc-field-input-yes-no,.exprdawc-field-wrapper-yes-no select{width:100%;max-width:none;padding:5px;vertical-align:middle;margin:2px 0 0;text-overflow:ellipsis}.exprdawc-description{font-style:italic;font-size:smaller}.exprdawc-field-wrapper{margin-bottom:15px}/*# sourceMappingURL=forms.css.map */
+/*
+* Form styles
+* Plugin: Extra Product Data for WooCommerce
+* Author: Triopsi
+*/
+.exprdawc-label {
+  font-weight: bold;
+  display: block;
+}
+
+.exprdawc-input-wrapper .input-text {
+  width: 100%;
+  max-width: none;
+  padding: 5px;
+  vertical-align: middle;
+  margin: 2px 0 0;
+}
+
+.exprdawc-input-wrapper .input-color {
+  width: 50px;
+  height: 50px;
+  padding: 0;
+  cursor: pointer;
+}
+
+.exprdawc-input-wrapper .color_hex_field {
+  width: 80px;
+}
+
+.exprdawc-field-input-select,
+.exprdawc-field-wrapper-select select,
+.exprdawc-field-input-yes-no,
+.exprdawc-field-wrapper-yes-no select {
+  width: 100%;
+  max-width: none;
+  padding: 5px;
+  vertical-align: middle;
+  margin: 2px 0 0;
+  text-overflow: ellipsis;
+}
+
+.exprdawc-description {
+  font-style: italic;
+  font-size: smaller;
+}
+
+.exprdawc-field-wrapper {
+  margin-bottom: 15px;
+}
+
+/* Multi Color Radio */
+.exprdawc-color-radio-options {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  justify-content: flex-start;
+  margin: 10px 0;
+}
+
+.exprdawc-color-radio-options input[type=radio] {
+  display: none;
+}
+
+.exprdawc-color-radio-options input[type=radio]:checked + label .exprdawc-color-swatch-square {
+  border-color: #323232;
+}
+
+.exprdawc-color-radio-options input[type=radio]:checked + label .exprdawc-color-swatch-circle {
+  border-color: #323232;
+}
+
+.exprdawc-color-radio-options input[type=radio]:checked + label .exprdawc-color-swatch-badget {
+  border-color: #323232;
+}
+
+.exprdawc-label-color-radio {
+  text-align: center;
+}
+
+.exprdawc-color-radio-options label .exprdawc-color-swatch-square {
+  cursor: pointer;
+  border: 3px solid rgba(255, 255, 255, 0);
+  display: block;
+  width: 75px;
+  height: 75px;
+  border-radius: 4px;
+  margin: 0 auto;
+}
+
+.exprdawc-color-radio-options label .exprdawc-color-swatch-circle {
+  cursor: pointer;
+  border: 3px solid rgba(255, 255, 255, 0);
+  display: block;
+  width: 75px;
+  height: 75px;
+  border-radius: 50%;
+  margin: 0 auto;
+}
+
+.exprdawc-color-radio-options label .exprdawc-color-swatch-badget {
+  cursor: pointer;
+  border: 3px solid rgba(255, 255, 255, 0);
+  display: block;
+  width: 100px;
+  height: 75px;
+  border-radius: 4px;
+  margin: 0 auto;
+}
+
+/*# sourceMappingURL=forms.css.map */

@@ -38,7 +38,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 				<input type="hidden" name="extra_product_fields[<?php echo esc_html( $index ); ?>][id]" value="<?php echo esc_attr( $field['id'] ?? wp_rand() ); ?>" />
 			</td>
 			<td>
-				<select id="exprdawc_attribute_type_<?php echo esc_html( $index ); ?>" name="extra_product_fields[<?php echo esc_html( $index ); ?>][type]" class="exprdawc_input exprdawc_attribute_type">
+				<select id="exprdawc_attribute_type_<?php echo esc_html( $index ); ?>" name="extra_product_fields[<?php echo esc_html( $index ); ?>][type]" class="exprdawc_input exprdawc_attribute_type" <?php echo ( isset( $field['blocked'] ) && $field['blocked'] ) ? 'disabled' : ''; ?>>
 					<option value="text" <?php selected( $field['type'], 'text' ); ?>><?php esc_html_e( 'Short Text', 'extra-product-data-for-woocommerce' ); ?></option>
 					<option value="long_text" <?php selected( $field['type'], 'long_text' ); ?>><?php esc_html_e( 'Long Text', 'extra-product-data-for-woocommerce' ); ?></option>
 					<option value="email" <?php selected( $field['type'], 'email' ); ?>><?php esc_html_e( 'Email', 'extra-product-data-for-woocommerce' ); ?></option>
@@ -49,6 +49,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 					<option value="radio" <?php selected( $field['type'], 'radio' ); ?>><?php esc_html_e( 'Radio Button', 'extra-product-data-for-woocommerce' ); ?></option>
 					<option value="checkbox" <?php selected( $field['type'], 'checkbox' ); ?>><?php esc_html_e( 'Checkbox', 'extra-product-data-for-woocommerce' ); ?></option>
 					<option value="select" <?php selected( $field['type'], 'select' ); ?>><?php esc_html_e( 'Select', 'extra-product-data-for-woocommerce' ); ?></option>
+					<option value="color_radio" <?php selected( $field['type'], 'color_radio' ); ?>><?php esc_html_e( 'Color Radio', 'extra-product-data-for-woocommerce' ); ?></option>
 				</select>
 			</td>
 			<td class="exprdawc_actions">
@@ -349,6 +350,75 @@ if ( ! defined( 'ABSPATH' ) ) {
 					</tbody>
 				</table>
 
+				<!-- Color Radio Option/Settings -->
+				<table class="exprdawc_settings_table exprdawc_color_radio_table" style="display:<?php echo 'color_radio' === $field['type'] ? 'table' : 'none'; ?>">
+					<tbody>
+						<tr>
+							<td>
+								<label class="exprdawc_label"><?php esc_html_e( 'Frontend Style', 'extra-product-data-for-woocommerce' ); ?></label>
+								<label class="exprdawc_label" for="exprdawc_color_radio_style_circle_<?php echo esc_html( $index ); ?>">
+									<input
+										type="radio"
+										id="exprdawc_color_radio_style_circle_<?php echo esc_html( $index ); ?>"
+										class="exprdawc_input exprdawc_radio exprdawc_color_radio_style"
+										name="extra_product_fields[<?php echo esc_html( $index ); ?>][color_radio_style]"
+										value="circle"
+										<?php checked( 'circle', $field['color_radio_style'] ?? 'circle' ); ?>
+									/>
+									<?php esc_html_e( 'Circle', 'extra-product-data-for-woocommerce' ); ?>
+								</label>
+								<label class="exprdawc_label" for="exprdawc_color_radio_style_square_<?php echo esc_html( $index ); ?>">
+									<input
+										type="radio"
+										id="exprdawc_color_radio_style_square_<?php echo esc_html( $index ); ?>"
+										class="exprdawc_input exprdawc_radio exprdawc_color_radio_style"
+										name="extra_product_fields[<?php echo esc_html( $index ); ?>][color_radio_style]"
+										value="square"
+										<?php checked( 'square', $field['color_radio_style'] ?? 'circle' ); ?>
+									/>
+									<?php esc_html_e( 'Quadrat (Square)', 'extra-product-data-for-woocommerce' ); ?>
+								</label>
+								<label class="exprdawc_label" for="exprdawc_color_radio_style_badget_<?php echo esc_html( $index ); ?>">
+									<input
+										type="radio"
+										id="exprdawc_color_radio_style_badget_<?php echo esc_html( $index ); ?>"
+										class="exprdawc_input exprdawc_radio exprdawc_color_radio_style"
+										name="extra_product_fields[<?php echo esc_html( $index ); ?>][color_radio_style]"
+										value="badget"
+										<?php checked( 'badget', $field['color_radio_style'] ?? 'circle' ); ?>
+									/>
+									<?php esc_html_e( 'Badget', 'extra-product-data-for-woocommerce' ); ?>
+								</label>
+							</td>
+							<td>
+								<label class="exprdawc_label" for="exprdawc_color_radio_size_<?php echo esc_html( $index ); ?>">
+									<?php esc_html_e( 'Size (e.g. 75px)', 'extra-product-data-for-woocommerce' ); ?>
+									<span class="dashicons dashicons-editor-help" title="<?php esc_html_e( 'Set the size of the color radio buttons. Use CSS units like px, em, rem, etc.', 'extra-product-data-for-woocommerce' ); ?>"></span>
+								</label>
+								<input type="text" id="exprdawc_color_radio_size_<?php echo esc_html( $index ); ?>" class="exprdawc_input exprdawc_color_radio_size" name="extra_product_fields[<?php echo esc_html( $index ); ?>][color_radio_size]" value="<?php echo esc_attr( $field['color_radio_size'] ?? '75px' ); ?>" placeholder="75px" />	
+
+							</td>
+						</tr>
+						<tr>
+							<td>
+								<label class="exprdawc_label" for="exprdawc_color_radio_show_label_<?php echo esc_html( $index ); ?>">
+									<input
+										type="checkbox"
+										id="exprdawc_color_radio_show_label_<?php echo esc_html( $index ); ?>"
+										class="exprdawc_input exprdawc_checkbox exprdawc_color_radio_show_label checkbox"
+										name="extra_product_fields[<?php echo esc_html( $index ); ?>][color_radio_show_label]"
+										value="1"
+										<?php echo checked( 1, $field['color_radio_show_label'] ?? 1, false ); ?>
+									/>
+									<?php esc_html_e( 'Show label name under the options', 'extra-product-data-for-woocommerce' ); ?>
+								</label>
+							</td>
+							<td>
+							</td>
+						</tr>
+					</tbody>
+				</table>
+
 				<!-- Checkbox, Radio, Select Area Option/Settings -->
 				<table class="exprdawc_options_table" style="display:<?php echo empty( $field['options'] ) ? 'none' : 'table'; ?>">
 					<thead>
@@ -387,10 +457,14 @@ if ( ! defined( 'ABSPATH' ) ) {
 											<input type="text" class="exprdawc_input exprdawc_option_label" name="extra_product_fields[<?php echo esc_html( $index ); ?>][options][<?php echo esc_html( $option_index ); ?>][label]" value="<?php echo esc_attr( $option['label'] ); ?>" placeholder="<?php esc_html_e( 'Enter option label', 'extra-product-data-for-woocommerce' ); ?>" />
 										</td>
 										<td class="field_option_table_value_td">
-											<input type="text" class="exprdawc_input exprdawc_option_value" name="extra_product_fields[<?php echo esc_html( $index ); ?>][options][<?php echo esc_html( $option_index ); ?>][value]" value="<?php echo esc_attr( $option['value'] ); ?>" placeholder="<?php esc_html_e( 'Enter option value', 'extra-product-data-for-woocommerce' ); ?>" />
+											<?php if ( in_array( $field['type'], array( 'color_radio' ), true ) ) : ?>
+												<input type="color" class="exprdawc_input exprdawc_option_value exprdawc_option_color_radio_value" name="extra_product_fields[<?php echo esc_html( $index ); ?>][options][<?php echo esc_html( $option_index ); ?>][value]" value="<?php echo esc_attr( $option['value'] ?? '#1d2327' ); ?>" placeholder="<?php esc_html_e( 'Select a color', 'extra-product-data-for-woocommerce' ); ?>" />
+											<?php else : ?>
+												<input type="text" class="exprdawc_input exprdawc_option_value" name="extra_product_fields[<?php echo esc_html( $index ); ?>][options][<?php echo esc_html( $option_index ); ?>][value]" value="<?php echo esc_attr( $option['value'] ); ?>" placeholder="<?php esc_html_e( 'Enter option value', 'extra-product-data-for-woocommerce' ); ?>" />
+											<?php endif; ?>
 										</td>
 										<td class="field_option_table_selected_td">
-											<?php if ( 'checkbox' === $field['type'] ) : ?>
+											<?php if ( in_array( $field['type'], array( 'checkbox' ), true ) ) : ?>
 												<input type="checkbox" class="exprdawc_input exprdawc_checkbox exprdawc_option_default" name="extra_product_fields[<?php echo esc_html( $index ); ?>][default][]" value="<?php echo esc_attr( $option['value'] ); ?>" <?php checked( in_array( (string) $option['value'], (array) $field['default'], true ) ); ?> />
 											<?php else : ?>
 												<input type="radio" class="exprdawc_input exprdawc_radio exprdawc_option_default" name="extra_product_fields[<?php echo esc_html( $index ); ?>][default]" value="<?php echo esc_attr( $option['value'] ); ?>" <?php checked( isset( $field['default'] ) && $field['default'] === $option['value'] ); ?> />

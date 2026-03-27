@@ -42,6 +42,7 @@ $field_template_defaults = array(
 	'label'                 => '',
 	'type'                  => 'text',
 	'index'                 => '__INDEX__',
+	'blocked'               => 0,
 	'required'              => 0,
 	'autofocus'             => 0,
 	'editable'              => 0,
@@ -59,7 +60,8 @@ $field_template_defaults = array(
 	'maxlength'             => '255',
 	'options'               => array(),
 	'conditional_rules'     => array(),
-
+	'color_radio_style'     => 'circle',
+	'color_radio_size'      => '75px',
 );
 ?>
 <input type="hidden" id="exprdawc_export_string" name="exprdawc_export_string" value="<?php echo $args['custom_fields'] ? wc_esc_json( json_encode( $args['custom_fields'] ) ) : ''; // phpcs:ignore ?>" />
@@ -117,6 +119,17 @@ require EXPRDAWC_TEMPLATES . 'modal-import-export.php';
 	</div>
 </div>
 
+<div class="exprdawc_rate_plugin" style="margin-top:12px;">
+	<p>
+	<?php esc_html_e( 'Developed with ❤️ - We love OpenSource Code', 'extra-product-data-for-woocommerce' ); ?>
+	<br />
+	<?php esc_html_e( 'If you like this plugin, please rate us', 'extra-product-data-for-woocommerce' ); ?>
+		<a href="<?php echo esc_url( 'https://wordpress.org/support/plugin/extra-product-data-for-woocommerce/reviews/#new-post' ); ?>" target="_blank" rel="noopener noreferrer">
+			<?php esc_html_e( 'on WordPress.org - ★★★★★', 'extra-product-data-for-woocommerce' ); ?>
+		</a>.
+	</p>
+</div>
+
 <template id="exprdawc-field-template">
 	<tr class="exprdawc_fields_wrapper">
 		<td colspan="5">
@@ -169,6 +182,35 @@ require EXPRDAWC_TEMPLATES . 'modal-import-export.php';
 		</td>
 		<td class="field_option_table_selected_td">
 			<input type="checkbox" class="exprdawc_input exprdawc_checkbox exprdawc_option_default" name="extra_product_fields[__FIELD_INDEX__][default][]" value="" />
+		</td>
+		<td class="fieldPriceAdjustment_type" style="display:none;">
+			<select name="extra_product_fields[__FIELD_INDEX__][options][__OPTION_INDEX__][price_adjustment_type]" class="exprdawc_input exprdawcPriceAdjustment_type">
+				<option value="fixed"><?php esc_html_e( 'Fixed Price +/-', 'extra-product-data-for-woocommerce' ); ?></option>
+				<option value="percentage"><?php esc_html_e( 'Percentage Price +/- (%)', 'extra-product-data-for-woocommerce' ); ?></option>
+				<option value="fixed_quantity"><?php esc_html_e( 'Fixed Price per Quantity +/-', 'extra-product-data-for-woocommerce' ); ?></option>
+				<option value="percentage_quantity"><?php esc_html_e( 'Percentage Price per Quantity +/- (%)', 'extra-product-data-for-woocommerce' ); ?></option>
+			</select>
+		</td>
+		<td class="field_priceAdjustmentValue" style="display:none;">
+			<input type="number" class="exprdawc_input exprdawc_priceAdjustmentValue" name="extra_product_fields[__FIELD_INDEX__][options][__OPTION_INDEX__][priceAdjustmentValue]" placeholder="0.00" value="" step="0.01" />
+		</td>
+		<td class="field_option_table_action_td">
+			<button type="button" class="button remove_option"><?php esc_html_e( 'Remove', 'extra-product-data-for-woocommerce' ); ?></button>
+		</td>
+	</tr>
+</template>
+
+<template id="exprdawc-option-template-color-radio">
+	<tr>
+		<td class="move"><i class="dashicons dashicons-move"></i></td>
+		<td class="field_option_table_label_td">
+			<input type="text" class="exprdawc_input exprdawc_option_label" name="extra_product_fields[__FIELD_INDEX__][options][__OPTION_INDEX__][label]" value="" placeholder="<?php esc_attr_e( 'Enter option label', 'extra-product-data-for-woocommerce' ); ?>" />
+		</td>
+		<td class="field_option_table_value_td">
+			<input type="color" class="exprdawc_input exprdawc_option_value exprdawc_option_color_radio_value" name="extra_product_fields[__FIELD_INDEX__][options][__OPTION_INDEX__][value]" value="" placeholder="<?php esc_attr_e( 'Select a color', 'extra-product-data-for-woocommerce' ); ?>" />
+		</td>
+		<td class="field_option_table_selected_td">
+			<input type="radio" class="exprdawc_input exprdawc_radio exprdawc_option_default" name="extra_product_fields[__FIELD_INDEX__][default]" value="" />
 		</td>
 		<td class="fieldPriceAdjustment_type" style="display:none;">
 			<select name="extra_product_fields[__FIELD_INDEX__][options][__OPTION_INDEX__][price_adjustment_type]" class="exprdawc_input exprdawcPriceAdjustment_type">

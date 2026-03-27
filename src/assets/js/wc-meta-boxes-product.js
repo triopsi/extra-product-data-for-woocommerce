@@ -211,7 +211,7 @@ jQuery(function ($) {
             const $placeholderText = $optionsRow.find('.exprdawc_placeholder');
             const $adjustPriceCheckbox = $optionsRow.find('.exprdawc_adjust_price_field');
 
-            if ($type === 'radio' || $type === 'checkbox' || $type === 'select') {
+            if ($type === 'radio' || $type === 'checkbox' || $type === 'select' || $type === 'color_radio') {
                 $placeholderText.prop('disabled', true);
                 $optionsTable.show();
                 // Hide Placeholder.
@@ -251,6 +251,12 @@ jQuery(function ($) {
                 $optionsRow.find('.exprdawc_color_table').show();
             } else {
                 $optionsRow.find('.exprdawc_color_table').hide();
+            }
+
+            if ($(e.currentTarget).val() === 'color_radio') {
+                $optionsRow.find('.exprdawc_color_radio_table').show();
+            } else {
+                $optionsRow.find('.exprdawc_color_radio_table').hide();
             }
 
             if ($adjustPriceCheckbox.length) {
@@ -302,8 +308,14 @@ jQuery(function ($) {
 
             const optionIndex = $optionsTable.find('tbody tr').length;
             const fieldType = $optionsTable.closest('.exprdawc_fields_table').find('.exprdawc_attribute_type').val();
-            const isMulti = fieldType === 'checkbox';
-            const templateId = isMulti ? '#exprdawc-option-template-multi' : '#exprdawc-option-template-single';
+
+            const templateByFieldType = {
+                checkbox: '#exprdawc-option-template-multi',
+                color_radio: '#exprdawc-option-template-color-radio',
+            };
+
+            const templateId = templateByFieldType[fieldType] || '#exprdawc-option-template-single';
+
             const optionTemplate = $(templateId).html();
 
             if (!optionTemplate) {
@@ -317,7 +329,7 @@ jQuery(function ($) {
 
             $optionsTable.find('tbody').append(optionHtml);
 
-            const isOptionBased = fieldType === 'radio' || fieldType === 'checkbox' || fieldType === 'select';
+            const isOptionBased = fieldType === 'radio' || fieldType === 'checkbox' || fieldType === 'select' || fieldType === 'color_radio';
             const isPriceAdjustmentEnabled = $optionsTable.closest('.exprdawc_options').find('.exprdawc_adjust_price_field').is(':checked');
             this.updateOptionPriceAdjustmentColumns($optionsTable, isOptionBased && isPriceAdjustmentEnabled);
             this.updateFieldIndices();
@@ -378,7 +390,7 @@ jQuery(function ($) {
             const fieldType = $optionsTable.closest('.exprdawc_fields_table').find('.exprdawc_attribute_type').val();
 
             // For radio/select types the default is a single value input (radio)
-            if (fieldType === 'radio' || fieldType === 'select' || fieldType === 'checkbox') {
+            if (fieldType === 'radio' || fieldType === 'select' || fieldType === 'checkbox' || fieldType === 'color_radio') {
                 const $targetRadioOrCheckbox = $optionsTable.find('tbody tr').eq(optionIndex).find('input[type="radio"], input[type="checkbox"]').first();
                 if ($targetRadioOrCheckbox.length) {
                     $targetRadioOrCheckbox.val(newValue);
@@ -616,7 +628,7 @@ jQuery(function ($) {
             const $tableSetting = $optionsRow.find('.exprdawcPriceAdjustment_table, .exprdawc_price_adjustment_table');
             const $optionsTable = $optionsRow.find('.exprdawc_options_table');
             const fieldType = checkbox.closest('.exprdawc_fields_table').find('.exprdawc_attribute_type').val();
-            const isOptionBased = fieldType === 'radio' || fieldType === 'checkbox' || fieldType === 'select';
+            const isOptionBased = fieldType === 'radio' || fieldType === 'checkbox' || fieldType === 'select' || fieldType === 'color_radio';
             const isEnabled = checkbox.is(':checked');
 
             if (isOptionBased) {
@@ -663,7 +675,7 @@ jQuery(function ($) {
                 // By exprdawc_attribute_type checkbox, radio and select hide placeholder text and show options.
                 const fieldType = $(element).find('.exprdawc_attribute_type').val() || 'text';
                 const $placeholderText = $(element).find('.exprdawc_attribute_placeholder_text');
-                if (fieldType === 'radio' || fieldType === 'checkbox' || fieldType === 'select' || fieldType === 'color') {
+                if (fieldType === 'radio' || fieldType === 'checkbox' || fieldType === 'select' || fieldType === 'color' || fieldType === 'color_radio') {
                     $placeholderText.hide();
                 } else {
                     $placeholderText.show();
@@ -996,7 +1008,7 @@ jQuery(function ($) {
                 const $row = $(element);
                 $row.find('.exprdawc_fields_table').attr('data-index', index);
                 $row.find('.exprdawc_attribute_index').val(index);
-                $(element).find('input, select, textarea').each(function () {
+                $(element).find('input, select, textarea, label').each(function () {
                     const $input = $(this);
 
                     // Update the name attribute with the new index
@@ -1009,6 +1021,12 @@ jQuery(function ($) {
                     const id = $input.attr('id');
                     if (id) {
                         $input.attr('id', id.replace(/_\d+$/, `_${index}`));
+                    }
+
+                    // For the label attribute for
+                    const labelFor = $input.attr('for');
+                    if (labelFor) {
+                        $input.attr('for', labelFor.replace(/_\d+$/, `_${index}`));
                     }
                 });
 
