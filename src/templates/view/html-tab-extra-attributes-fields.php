@@ -30,14 +30,15 @@ if ( ! defined( 'ABSPATH' ) ) {
 ?>
 <table class="exprdawc_fields_table" data-index="<?php echo esc_html( $index ); ?>">
 	<tbody>
-		<tr class="exprdawc_attribute">
-			<td class="move"><i class="dashicons dashicons-move"></i></td>
-			<td class="cl-arr"><i class="dashicons dashicons-arrow-up toggle-options"></i></td>
-			<td class="exprdawc_attribute_input_name">								
+		<tr class="exprdawc_attribute exprdawc_attribute_row" style="<?php echo ( isset( $field['disabled'] ) && $field['disabled'] ) ? 'background-color: #ffdeab;' : ''; ?>">
+			<td class="move exprdawc_move_col"><i class="dashicons dashicons-move"></i></td>
+			<td class="cl-arr exprdawc_collapse_icon_col"><i class="dashicons dashicons-arrow-up toggle-options"></i></td>
+			<td class="exprdawc_attribute_input_name_col" colspan="<?php echo ( isset( $field['blocked'] ) && $field['blocked'] ) ? '2' : '1'; ?>">								
 				<input type="text" class="exprdawc_input exprdawc_textinput exprdawc_label field_name" name="extra_product_fields[<?php echo esc_html( $index ); ?>][label]" value="<?php echo esc_attr( $field['label'] ); ?>" placeholder="<?php esc_html_e( 'Name of the label', 'extra-product-data-for-woocommerce' ); ?>" />
 				<input type="hidden" name="extra_product_fields[<?php echo esc_html( $index ); ?>][id]" value="<?php echo esc_attr( $field['id'] ?? wp_rand() ); ?>" />
 			</td>
-			<td>
+			<td class="exprdawc_attribute_input_type_col" style="<?php echo ( isset( $field['blocked'] ) && $field['blocked'] ) ? 'display:none;' : ''; ?>">
+				<input type="hidden" name="extra_product_fields[<?php echo esc_html( $index ); ?>][type]" value="<?php echo esc_attr( $field['type'] ); ?>" />
 				<select id="exprdawc_attribute_type_<?php echo esc_html( $index ); ?>" name="extra_product_fields[<?php echo esc_html( $index ); ?>][type]" class="exprdawc_input exprdawc_attribute_type" <?php echo ( isset( $field['blocked'] ) && $field['blocked'] ) ? 'disabled' : ''; ?>>
 					<option value="text" <?php selected( $field['type'], 'text' ); ?>><?php esc_html_e( 'Short Text', 'extra-product-data-for-woocommerce' ); ?></option>
 					<option value="long_text" <?php selected( $field['type'], 'long_text' ); ?>><?php esc_html_e( 'Long Text', 'extra-product-data-for-woocommerce' ); ?></option>
@@ -52,13 +53,13 @@ if ( ! defined( 'ABSPATH' ) ) {
 					<option value="color_radio" <?php selected( $field['type'], 'color_radio' ); ?>><?php esc_html_e( 'Color Radio', 'extra-product-data-for-woocommerce' ); ?></option>
 				</select>
 			</td>
-			<td class="exprdawc_actions">
+			<td class="exprdawc_actions exprdawc_actions_col">
 				<button type="button" class="button exprdawc_remove_custom_field"><i class="dashicons dashicons-trash"></i></button>
 				<button type="button" class="button exprdawc_copy_custom_field"><i class="dashicons dashicons-admin-page"></i></button>
 				<input type="hidden" class="exprdawc_attribute_index" name="extra_product_fields[<?php echo esc_html( $index ); ?>][index]" value="<?php echo esc_attr( $field['index'] ?? $index ); ?>"/>
 			</td>
 		</tr>
-		<tr class="exprdawc_options" style="display: none;">
+		<tr class="exprdawc_options exprdawc_options_row" style="display: none;">
 			<td colspan="5">
 
 				<!-- General Option/Settings -->
@@ -87,6 +88,13 @@ if ( ! defined( 'ABSPATH' ) ) {
 								<label class="exprdawc_label" for="exprdawc_text_adjust_price_<?php echo esc_html( $index ); ?>">
 									<input type="checkbox" id="exprdawc_text_adjust_price_<?php echo esc_html( $index ); ?>" class="exprdawc_input exprdawc_checkbox exprdawc_adjust_price_field checkbox" name="extra_product_fields[<?php echo esc_html( $index ); ?>][adjust_price]" value="1" <?php echo checked( 1, $field['adjust_price'] ?? 0, false ); ?> />
 									<?php esc_html_e( 'Enable price adjustment', 'extra-product-data-for-woocommerce' ); ?>
+								</label>
+
+								<!-- Disable field type changes for this field -->
+								<input type="hidden" name="extra_product_fields[<?php echo esc_html( $index ); ?>][disabled]" value="0" />
+								<label class="exprdawc_label" for="exprdawc_text_disabled_<?php echo esc_html( $index ); ?>" title="<?php esc_attr_e( 'Disable field type changes for this field', 'extra-product-data-for-woocommerce' ); ?>">
+									<input type="checkbox" id="exprdawc_text_disabled_<?php echo esc_html( $index ); ?>" class="exprdawc_input exprdawc_checkbox exprdawc_disabled_field checkbox" name="extra_product_fields[<?php echo esc_html( $index ); ?>][disabled]" value="1" <?php checked( 1, (int) ( $field['disabled'] ?? 0 ) ); ?> />
+									<?php esc_html_e( 'Disable this field on front-end', 'extra-product-data-for-woocommerce' ); ?>
 								</label>
 							</td>
 							<td class="exprdawc_attribute_placeholder_text">

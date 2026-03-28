@@ -61,6 +61,14 @@
     display: none;
 }
 
+.exprdawc-color-radio-options input[type="radio"]:disabled + label .exprdawc-color-swatch-square,
+.exprdawc-color-radio-options input[type="radio"]:disabled + label .exprdawc-color-swatch-circle,
+.exprdawc-color-radio-options input[type="radio"]:disabled + label .exprdawc-color-swatch-badget {
+    // filter: grayscale(100%);
+    opacity: 0.5;
+    cursor: not-allowed;
+}
+
 .exprdawc-color-radio-options input[type="radio"]:checked + label .exprdawc-color-swatch-square{
     border-color: #323232;
 }

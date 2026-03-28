@@ -75,6 +75,7 @@ jQuery(function ($) {
             $(document).on('input', '.exprdawc_color_default', this.handleColorPickerInput.bind(this));
             $(document).on('input', '.exprdawc_color_hex', this.handleColorHexInput.bind(this));
             $(document).on('blur', '.exprdawc_color_hex', this.handleColorHexBlur.bind(this));
+            $(document).on('change', '.exprdawc_disabled_field', this.toggleDisabledFieldBackgroundColor.bind(this));
 
             // Inits
             this.toggleConditionalValueFieldAll();
@@ -1175,6 +1176,20 @@ jQuery(function ($) {
             }
 
             return true;
+        }
+
+        /**
+         * Toggle disabled field background color.
+         * @param {Event} e - The change event from the checkbox
+         */
+        toggleDisabledFieldBackgroundColor(e) {
+            const $checkbox = $(e.currentTarget);
+            const $attributeRow = $checkbox.closest('.exprdawc_fields_table').find('tr.exprdawc_attribute_row');
+            if ($checkbox.is(':checked')) {
+                $attributeRow.css('background-color', '#ffdeab');
+            } else {
+                $attributeRow.css('background-color', '');
+            }
         }
 
     }

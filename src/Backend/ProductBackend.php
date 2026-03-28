@@ -159,6 +159,7 @@ class ProductBackend implements Hookable {
 					$price_adjustment_type = sanitize_text_field( $field['price_adjustment_type'] );
 					$priceAdjustmentValue  = sanitize_text_field( $field['priceAdjustmentValue'] );
 					$blocked               = true;
+					$disabled               = isset( $field['disabled'] ) ? absint( $field['disabled'] ) : 0;
 
 					if ( isset( $field['conditional_rules'] ) ) {
 						foreach ( $field['conditional_rules'] as $rule_group ) {
@@ -291,6 +292,7 @@ class ProductBackend implements Hookable {
 						'color_radio_size'            => $color_radio_size,
 						'color_radio_show_label'      => $color_radio_show_label,
 						'blocked'                     => $blocked,
+						'disabled'                    => $disabled,
 					);
 				},
 				$extra_product_fields
