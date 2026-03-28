@@ -67,90 +67,102 @@ if ( ! defined( 'ABSPATH' ) ) {
 					<tbody>
 						<tr>
 							<td class="exprdawc_attribute_require_checkbox">
-								<label class="exprdawc_label" for="exprdawc_text_required_<?php echo esc_html( $index ); ?>">
-									<input type="checkbox" id="exprdawc_text_required_<?php echo esc_html( $index ); ?>" class="exprdawc_input exprdawc_checkbox checkbox" name="extra_product_fields[<?php echo esc_html( $index ); ?>][required]" value="1" <?php echo checked( 1, $field['required'], false ); ?> />
-									<?php esc_html_e( 'Require input', 'extra-product-data-for-woocommerce' ); ?>
-								</label>
-								<label class="exprdawc_label" for="exprdawc_text_autofocus_<?php echo esc_html( $index ); ?>">
-									<input type="checkbox" id="exprdawc_text_autofocus_<?php echo esc_html( $index ); ?>" class="exprdawc_input exprdawc_checkbox exprdawc_autocomplete_field checkbox" name="extra_product_fields[<?php echo esc_html( $index ); ?>][autofocus]" value="1" <?php echo checked( 1, $field['autofocus'] ?? 0, false ); ?> />
-									<?php esc_html_e( 'Autofocus this field on product page', 'extra-product-data-for-woocommerce' ); ?>
-								</label>
-								<label class="exprdawc_label" for="exprdawc_text_editable_<?php echo esc_html( $index ); ?>">
-									<input type="checkbox" id="exprdawc_text_editable_<?php echo esc_html( $index ); ?>" class="exprdawc_input exprdawc_checkbox exprdawc_editable_field checkbox" name="extra_product_fields[<?php echo esc_html( $index ); ?>][editable]" value="1" <?php echo checked( 1, $field['editable'] ?? 0, false ); ?> />
-									<?php esc_html_e( 'User can edit the field afterwards', 'extra-product-data-for-woocommerce' ); ?>
-								</label>
-								<!-- Enable Conditional Logic and show table -->
-								<label class="exprdawc_label" for="exprdawc_text_conditional_logic_<?php echo esc_html( $index ); ?>">
-									<input type="checkbox" id="exprdawc_text_conditional_logic_<?php echo esc_html( $index ); ?>" class="exprdawc_input exprdawc_checkbox exprdawc_conditional_logic_field checkbox" name="extra_product_fields[<?php echo esc_html( $index ); ?>][conditional_logic]" value="1" <?php echo checked( 1, $field['conditional_logic'] ?? 0, false ); ?> />
-									<?php esc_html_e( 'Enable conditional logic', 'extra-product-data-for-woocommerce' ); ?>
-								</label>
-								<!-- Enable adjust price and show table -->
-								<label class="exprdawc_label" for="exprdawc_text_adjust_price_<?php echo esc_html( $index ); ?>">
-									<input type="checkbox" id="exprdawc_text_adjust_price_<?php echo esc_html( $index ); ?>" class="exprdawc_input exprdawc_checkbox exprdawc_adjust_price_field checkbox" name="extra_product_fields[<?php echo esc_html( $index ); ?>][adjust_price]" value="1" <?php echo checked( 1, $field['adjust_price'] ?? 0, false ); ?> />
-									<?php esc_html_e( 'Enable price adjustment', 'extra-product-data-for-woocommerce' ); ?>
-								</label>
+								<div class="exprdawc_input_wrapper">
+									<label class="exprdawc_label" for="exprdawc_text_required_<?php echo esc_html( $index ); ?>">
+										<input type="checkbox" id="exprdawc_text_required_<?php echo esc_html( $index ); ?>" class="exprdawc_input exprdawc_checkbox checkbox" name="extra_product_fields[<?php echo esc_html( $index ); ?>][required]" value="1" <?php echo checked( 1, $field['required'], false ); ?> />
+										<?php esc_html_e( 'Require input', 'extra-product-data-for-woocommerce' ); ?>
+									</label>
+									<label class="exprdawc_label" for="exprdawc_text_autofocus_<?php echo esc_html( $index ); ?>">
+										<input type="checkbox" id="exprdawc_text_autofocus_<?php echo esc_html( $index ); ?>" class="exprdawc_input exprdawc_checkbox exprdawc_autocomplete_field checkbox" name="extra_product_fields[<?php echo esc_html( $index ); ?>][autofocus]" value="1" <?php echo checked( 1, $field['autofocus'] ?? 0, false ); ?> />
+										<?php esc_html_e( 'Autofocus this field on product page', 'extra-product-data-for-woocommerce' ); ?>
+									</label>
+									<label class="exprdawc_label" for="exprdawc_text_editable_<?php echo esc_html( $index ); ?>">
+										<input type="checkbox" id="exprdawc_text_editable_<?php echo esc_html( $index ); ?>" class="exprdawc_input exprdawc_checkbox exprdawc_editable_field checkbox" name="extra_product_fields[<?php echo esc_html( $index ); ?>][editable]" value="1" <?php echo checked( 1, $field['editable'] ?? 0, false ); ?> />
+										<?php esc_html_e( 'User can edit the field afterwards', 'extra-product-data-for-woocommerce' ); ?>
+									</label>
+									<!-- Enable Conditional Logic and show table -->
+									<label class="exprdawc_label" for="exprdawc_text_conditional_logic_<?php echo esc_html( $index ); ?>">
+										<input type="checkbox" id="exprdawc_text_conditional_logic_<?php echo esc_html( $index ); ?>" class="exprdawc_input exprdawc_checkbox exprdawc_conditional_logic_field checkbox" name="extra_product_fields[<?php echo esc_html( $index ); ?>][conditional_logic]" value="1" <?php echo checked( 1, $field['conditional_logic'] ?? 0, false ); ?> />
+										<?php esc_html_e( 'Enable conditional logic', 'extra-product-data-for-woocommerce' ); ?>
+									</label>
+									<!-- Enable adjust price and show table -->
+									<label class="exprdawc_label" for="exprdawc_text_adjust_price_<?php echo esc_html( $index ); ?>">
+										<input type="checkbox" id="exprdawc_text_adjust_price_<?php echo esc_html( $index ); ?>" class="exprdawc_input exprdawc_checkbox exprdawc_adjust_price_field checkbox" name="extra_product_fields[<?php echo esc_html( $index ); ?>][adjust_price]" value="1" <?php echo checked( 1, $field['adjust_price'] ?? 0, false ); ?> />
+										<?php esc_html_e( 'Enable price adjustment', 'extra-product-data-for-woocommerce' ); ?>
+									</label>
 
-								<!-- Disable field type changes for this field -->
-								<input type="hidden" name="extra_product_fields[<?php echo esc_html( $index ); ?>][disabled]" value="0" />
-								<label class="exprdawc_label" for="exprdawc_text_disabled_<?php echo esc_html( $index ); ?>" title="<?php esc_attr_e( 'Disable field type changes for this field', 'extra-product-data-for-woocommerce' ); ?>">
-									<input type="checkbox" id="exprdawc_text_disabled_<?php echo esc_html( $index ); ?>" class="exprdawc_input exprdawc_checkbox exprdawc_disabled_field checkbox" name="extra_product_fields[<?php echo esc_html( $index ); ?>][disabled]" value="1" <?php checked( 1, (int) ( $field['disabled'] ?? 0 ) ); ?> />
-									<?php esc_html_e( 'Disable this field on front-end', 'extra-product-data-for-woocommerce' ); ?>
-								</label>
+									<!-- Disable field type changes for this field -->
+									<input type="hidden" name="extra_product_fields[<?php echo esc_html( $index ); ?>][disabled]" value="0" />
+									<label class="exprdawc_label" for="exprdawc_text_disabled_<?php echo esc_html( $index ); ?>" title="<?php esc_attr_e( 'Disable field type changes for this field', 'extra-product-data-for-woocommerce' ); ?>">
+										<input type="checkbox" id="exprdawc_text_disabled_<?php echo esc_html( $index ); ?>" class="exprdawc_input exprdawc_checkbox exprdawc_disabled_field checkbox" name="extra_product_fields[<?php echo esc_html( $index ); ?>][disabled]" value="1" <?php checked( 1, (int) ( $field['disabled'] ?? 0 ) ); ?> />
+										<?php esc_html_e( 'Disable this field on front-end', 'extra-product-data-for-woocommerce' ); ?>
+									</label>
+								</div>
 							</td>
 							<td class="exprdawc_attribute_placeholder_text">
-								<label class="exprdawc_label" for="exprdawc_text_placeholder_text_<?php echo esc_html( $index ); ?>"><?php esc_html_e( 'Placeholder Text', 'extra-product-data-for-woocommerce' ); ?></label>
-								<input type="text" id="exprdawc_text_placeholder_text_<?php echo esc_html( $index ); ?>" class="exprdawc_input exprdawc_textinput exprdawc_placeholder" name="extra_product_fields[<?php echo esc_html( $index ); ?>][placeholder_text]" value="<?php echo esc_attr( $field['placeholder_text'] ?? '' ); ?>" placeholder="<?php esc_html_e( 'Placeholder Text', 'extra-product-data-for-woocommerce' ); ?>" <?php echo in_array( $field['type'], array( 'radio', 'checkbox' ), true ) ? 'disabled' : ''; ?> />
+								<div class="exprdawc_input_wrapper">
+									<label class="exprdawc_label" for="exprdawc_text_placeholder_text_<?php echo esc_html( $index ); ?>"><?php esc_html_e( 'Placeholder Text', 'extra-product-data-for-woocommerce' ); ?></label>
+									<input type="text" id="exprdawc_text_placeholder_text_<?php echo esc_html( $index ); ?>" class="exprdawc_input exprdawc_textinput exprdawc_placeholder" name="extra_product_fields[<?php echo esc_html( $index ); ?>][placeholder_text]" value="<?php echo esc_attr( $field['placeholder_text'] ?? '' ); ?>" placeholder="<?php esc_html_e( 'Placeholder Text', 'extra-product-data-for-woocommerce' ); ?>" <?php echo in_array( $field['type'], array( 'radio', 'checkbox' ), true ) ? 'disabled' : ''; ?> />
+								</div>
 							</td>
 							<td class="exprdawc_attribute_help_text">
-								<label class="exprdawc_label" for="exprdawc_text_help_text_<?php echo esc_html( $index ); ?>"><?php esc_html_e( 'Help Text', 'extra-product-data-for-woocommerce' ); ?></label>
-								<input type="text" id="exprdawc_text_help_text_<?php echo esc_html( $index ); ?>" class="exprdawc_input exprdawc_textinput exprdawc_helptext" name="extra_product_fields[<?php echo esc_html( $index ); ?>][help_text]" value="<?php echo esc_attr( $field['help_text'] ); ?>" placeholder="<?php esc_html_e( 'Help Text', 'extra-product-data-for-woocommerce' ); ?>" />
+								<div class="exprdawc_input_wrapper">
+									<label class="exprdawc_label" for="exprdawc_text_help_text_<?php echo esc_html( $index ); ?>"><?php esc_html_e( 'Help Text', 'extra-product-data-for-woocommerce' ); ?></label>
+									<input type="text" id="exprdawc_text_help_text_<?php echo esc_html( $index ); ?>" class="exprdawc_input exprdawc_textinput exprdawc_helptext" name="extra_product_fields[<?php echo esc_html( $index ); ?>][help_text]" value="<?php echo esc_attr( $field['help_text'] ); ?>" placeholder="<?php esc_html_e( 'Help Text', 'extra-product-data-for-woocommerce' ); ?>" />
+								</div>
+								<div class="exprdawc_input_wrapper">
+									<label class="exprdawc_label" for="exprdawc_text_css_class_<?php echo esc_html( $index ); ?>"><?php esc_html_e( 'CSS Class', 'extra-product-data-for-woocommerce' ); ?></label>
+									<input type="text" id="exprdawc_text_css_class_<?php echo esc_html( $index ); ?>" class="exprdawc_input exprdawc_textinput exprdawc_css_class" name="extra_product_fields[<?php echo esc_html( $index ); ?>][css_class]" value="<?php echo esc_attr( $field['css_class'] ?? '' ); ?>" placeholder="<?php esc_html_e( 'CSS Class', 'extra-product-data-for-woocommerce' ); ?>" />
+								</div>
 							</td>
 							<td>
-								<label class="exprdawc_label" for="exprdawc_autocomplete_function_<?php echo esc_html( $index ); ?>"><?php esc_html_e( 'Autocomplete Function', 'extra-product-data-for-woocommerce' ); ?></label>
-								<select id="exprdawc_autocomplete_function_<?php echo esc_html( $index ); ?>" name="extra_product_fields[<?php echo esc_html( $index ); ?>][autocomplete]" class="exprdawc_input exprdawc_attribute_autocomplete_type">
-									<option value="on" <?php selected( $field['autocomplete'], 'on' ); ?>><?php esc_html_e( 'On (default)', 'extra-product-data-for-woocommerce' ); ?></option>	
-									<option value="off" <?php selected( $field['autocomplete'], 'off' ); ?>><?php esc_html_e( 'Off', 'extra-product-data-for-woocommerce' ); ?></option>
-									<option value="address-level1" <?php selected( $field['autocomplete'], 'address-level1' ); ?>><?php esc_html_e( 'Address Level 1', 'extra-product-data-for-woocommerce' ); ?></option>
-									<option value="address-level2" <?php selected( $field['autocomplete'], 'address-level2' ); ?>><?php esc_html_e( 'Address Level 2', 'extra-product-data-for-woocommerce' ); ?></option>
-									<option value="address-level3" <?php selected( $field['autocomplete'], 'address-level3' ); ?>><?php esc_html_e( 'Address Level 3', 'extra-product-data-for-woocommerce' ); ?></option>
-									<option value="address-level4" <?php selected( $field['autocomplete'], 'address-level4' ); ?>><?php esc_html_e( 'Address Level 4', 'extra-product-data-for-woocommerce' ); ?></option>
-									<option value="address-line1" <?php selected( $field['autocomplete'], 'address-line1' ); ?>><?php esc_html_e( 'Address Line 1', 'extra-product-data-for-woocommerce' ); ?></option>
-									<option value="address-line2" <?php selected( $field['autocomplete'], 'address-line2' ); ?>><?php esc_html_e( 'Address Line 2', 'extra-product-data-for-woocommerce' ); ?></option>
-									<option value="address-line3" <?php selected( $field['autocomplete'], 'address-line3' ); ?>><?php esc_html_e( 'Address Line 3', 'extra-product-data-for-woocommerce' ); ?></option>
-									<option value="bday" <?php selected( $field['autocomplete'], 'bday' ); ?>><?php esc_html_e( 'Birthday', 'extra-product-data-for-woocommerce' ); ?></option>
-									<option value="bday-day" <?php selected( $field['autocomplete'], 'bday-day' ); ?>><?php esc_html_e( 'Birthday Day', 'extra-product-data-for-woocommerce' ); ?></option>
-									<option value="bday-month" <?php selected( $field['autocomplete'], 'bday-month' ); ?>><?php esc_html_e( 'Birthday Month', 'extra-product-data-for-woocommerce' ); ?></option>
-									<option value="bday-year" <?php selected( $field['autocomplete'], 'bday-year' ); ?>><?php esc_html_e( 'Birthday Year', 'extra-product-data-for-woocommerce' ); ?></option>
-									<option value="cc-additional-name" <?php selected( $field['autocomplete'], 'cc-additional-name' ); ?>><?php esc_html_e( 'Credit Card Additional Name', 'extra-product-data-for-woocommerce' ); ?></option>
-									<option value="cc-csc" <?php selected( $field['autocomplete'], 'cc-csc' ); ?>><?php esc_html_e( 'Credit Card CSC', 'extra-product-data-for-woocommerce' ); ?></option>
-									<option value="cc-exp" <?php selected( $field['autocomplete'], 'cc-exp' ); ?>><?php esc_html_e( 'Credit Card Expiry', 'extra-product-data-for-woocommerce' ); ?></option>
-									<option value="cc-exp-month" <?php selected( $field['autocomplete'], 'cc-exp-month' ); ?>><?php esc_html_e( 'Credit Card Expiry Month', 'extra-product-data-for-woocommerce' ); ?></option>
-									<option value="cc-exp-year" <?php selected( $field['autocomplete'], 'cc-exp-year' ); ?>><?php esc_html_e( 'Credit Card Expiry Year', 'extra-product-data-for-woocommerce' ); ?></option>
-									<option value="cc-family-name" <?php selected( $field['autocomplete'], 'cc-family-name' ); ?>><?php esc_html_e( 'Credit Card Family Name', 'extra-product-data-for-woocommerce' ); ?></option>
-									<option value="cc-given-name" <?php selected( $field['autocomplete'], 'cc-given-name' ); ?>><?php esc_html_e( 'Credit Card Given Name', 'extra-product-data-for-woocommerce' ); ?></option>
-									<option value="cc-name" <?php selected( $field['autocomplete'], 'cc-name' ); ?>><?php esc_html_e( 'Credit Card Name', 'extra-product-data-for-woocommerce' ); ?></option>
-									<option value="cc-number" <?php selected( $field['autocomplete'], 'cc-number' ); ?>><?php esc_html_e( 'Credit Card Number', 'extra-product-data-for-woocommerce' ); ?></option>
-									<option value="cc-type" <?php selected( $field['autocomplete'], 'cc-type' ); ?>><?php esc_html_e( 'Credit Card Type', 'extra-product-data-for-woocommerce' ); ?></option>
-									<option value="country" <?php selected( $field['autocomplete'], 'country' ); ?>><?php esc_html_e( 'Country', 'extra-product-data-for-woocommerce' ); ?></option>
-									<option value="country-name" <?php selected( $field['autocomplete'], 'country-name' ); ?>><?php esc_html_e( 'Country Name', 'extra-product-data-for-woocommerce' ); ?></option>
-									<option value="email" <?php selected( $field['autocomplete'], 'email' ); ?>><?php esc_html_e( 'Email', 'extra-product-data-for-woocommerce' ); ?></option>
-									<option value="language" <?php selected( $field['autocomplete'], 'language' ); ?>><?php esc_html_e( 'Language', 'extra-product-data-for-woocommerce' ); ?></option>
-									<option value="photo" <?php selected( $field['autocomplete'], 'photo' ); ?>><?php esc_html_e( 'Photo', 'extra-product-data-for-woocommerce' ); ?></option>
-									<option value="postal-code" <?php selected( $field['autocomplete'], 'postal-code' ); ?>><?php esc_html_e( 'Postal Code', 'extra-product-data-for-woocommerce' ); ?></option>
-									<option value="sex" <?php selected( $field['autocomplete'], 'sex' ); ?>><?php esc_html_e( 'Sex', 'extra-product-data-for-woocommerce' ); ?></option>
-									<option value="street-address" <?php selected( $field['autocomplete'], 'street-address' ); ?>><?php esc_html_e( 'Street Address', 'extra-product-data-for-woocommerce' ); ?></option>
-									<option value="tel" <?php selected( $field['autocomplete'], 'tel' ); ?>><?php esc_html_e( 'Telephone', 'extra-product-data-for-woocommerce' ); ?></option>
-									<option value="tel-area-code" <?php selected( $field['autocomplete'], 'tel-area-code' ); ?>><?php esc_html_e( 'Telephone Area Code', 'extra-product-data-for-woocommerce' ); ?></option>
-									<option value="tel-country-code" <?php selected( $field['autocomplete'], 'tel-country-code' ); ?>><?php esc_html_e( 'Telephone Country Code', 'extra-product-data-for-woocommerce' ); ?></option>
-									<option value="tel-extension" <?php selected( $field['autocomplete'], 'tel-extension' ); ?>><?php esc_html_e( 'Telephone Extension', 'extra-product-data-for-woocommerce' ); ?></option>
-									<option value="tel-local" <?php selected( $field['autocomplete'], 'tel-local' ); ?>><?php esc_html_e( 'Telephone Local', 'extra-product-data-for-woocommerce' ); ?></option>
-									<option value="tel-local-prefix" <?php selected( $field['autocomplete'], 'tel-local-prefix' ); ?>><?php esc_html_e( 'Telephone Local Prefix', 'extra-product-data-for-woocommerce' ); ?></option>
-									<option value="tel-local-suffix" <?php selected( $field['autocomplete'], 'tel-local-suffix' ); ?>><?php esc_html_e( 'Telephone Local Suffix', 'extra-product-data-for-woocommerce' ); ?></option>
-									<option value="tel-national" <?php selected( $field['autocomplete'], 'tel-national' ); ?>><?php esc_html_e( 'Telephone National', 'extra-product-data-for-woocommerce' ); ?></option>
-									<option value="transaction-amount" <?php selected( $field['autocomplete'], 'transaction-amount' ); ?>><?php esc_html_e( 'Transaction Amount', 'extra-product-data-for-woocommerce' ); ?></option>
-									<option value="transaction-currency" <?php selected( $field['autocomplete'], 'transaction-currency' ); ?>><?php esc_html_e( 'Transaction Currency', 'extra-product-data-for-woocommerce' ); ?></option>
-									<option value="url" <?php selected( $field['autocomplete'], 'url' ); ?>><?php esc_html_e( 'URL', 'extra-product-data-for-woocommerce' ); ?></option>
-								</select>
+								<div class="exprdawc_input_wrapper">
+									<label class="exprdawc_label" for="exprdawc_autocomplete_function_<?php echo esc_html( $index ); ?>"><?php esc_html_e( 'Autocomplete Function', 'extra-product-data-for-woocommerce' ); ?></label>
+									<select id="exprdawc_autocomplete_function_<?php echo esc_html( $index ); ?>" name="extra_product_fields[<?php echo esc_html( $index ); ?>][autocomplete]" class="exprdawc_input exprdawc_attribute_autocomplete_type">
+										<option value="on" <?php selected( $field['autocomplete'], 'on' ); ?>><?php esc_html_e( 'On (default)', 'extra-product-data-for-woocommerce' ); ?></option>	
+										<option value="off" <?php selected( $field['autocomplete'], 'off' ); ?>><?php esc_html_e( 'Off', 'extra-product-data-for-woocommerce' ); ?></option>
+										<option value="address-level1" <?php selected( $field['autocomplete'], 'address-level1' ); ?>><?php esc_html_e( 'Address Level 1', 'extra-product-data-for-woocommerce' ); ?></option>
+										<option value="address-level2" <?php selected( $field['autocomplete'], 'address-level2' ); ?>><?php esc_html_e( 'Address Level 2', 'extra-product-data-for-woocommerce' ); ?></option>
+										<option value="address-level3" <?php selected( $field['autocomplete'], 'address-level3' ); ?>><?php esc_html_e( 'Address Level 3', 'extra-product-data-for-woocommerce' ); ?></option>
+										<option value="address-level4" <?php selected( $field['autocomplete'], 'address-level4' ); ?>><?php esc_html_e( 'Address Level 4', 'extra-product-data-for-woocommerce' ); ?></option>
+										<option value="address-line1" <?php selected( $field['autocomplete'], 'address-line1' ); ?>><?php esc_html_e( 'Address Line 1', 'extra-product-data-for-woocommerce' ); ?></option>
+										<option value="address-line2" <?php selected( $field['autocomplete'], 'address-line2' ); ?>><?php esc_html_e( 'Address Line 2', 'extra-product-data-for-woocommerce' ); ?></option>
+										<option value="address-line3" <?php selected( $field['autocomplete'], 'address-line3' ); ?>><?php esc_html_e( 'Address Line 3', 'extra-product-data-for-woocommerce' ); ?></option>
+										<option value="bday" <?php selected( $field['autocomplete'], 'bday' ); ?>><?php esc_html_e( 'Birthday', 'extra-product-data-for-woocommerce' ); ?></option>
+										<option value="bday-day" <?php selected( $field['autocomplete'], 'bday-day' ); ?>><?php esc_html_e( 'Birthday Day', 'extra-product-data-for-woocommerce' ); ?></option>
+										<option value="bday-month" <?php selected( $field['autocomplete'], 'bday-month' ); ?>><?php esc_html_e( 'Birthday Month', 'extra-product-data-for-woocommerce' ); ?></option>
+										<option value="bday-year" <?php selected( $field['autocomplete'], 'bday-year' ); ?>><?php esc_html_e( 'Birthday Year', 'extra-product-data-for-woocommerce' ); ?></option>
+										<option value="cc-additional-name" <?php selected( $field['autocomplete'], 'cc-additional-name' ); ?>><?php esc_html_e( 'Credit Card Additional Name', 'extra-product-data-for-woocommerce' ); ?></option>
+										<option value="cc-csc" <?php selected( $field['autocomplete'], 'cc-csc' ); ?>><?php esc_html_e( 'Credit Card CSC', 'extra-product-data-for-woocommerce' ); ?></option>
+										<option value="cc-exp" <?php selected( $field['autocomplete'], 'cc-exp' ); ?>><?php esc_html_e( 'Credit Card Expiry', 'extra-product-data-for-woocommerce' ); ?></option>
+										<option value="cc-exp-month" <?php selected( $field['autocomplete'], 'cc-exp-month' ); ?>><?php esc_html_e( 'Credit Card Expiry Month', 'extra-product-data-for-woocommerce' ); ?></option>
+										<option value="cc-exp-year" <?php selected( $field['autocomplete'], 'cc-exp-year' ); ?>><?php esc_html_e( 'Credit Card Expiry Year', 'extra-product-data-for-woocommerce' ); ?></option>
+										<option value="cc-family-name" <?php selected( $field['autocomplete'], 'cc-family-name' ); ?>><?php esc_html_e( 'Credit Card Family Name', 'extra-product-data-for-woocommerce' ); ?></option>
+										<option value="cc-given-name" <?php selected( $field['autocomplete'], 'cc-given-name' ); ?>><?php esc_html_e( 'Credit Card Given Name', 'extra-product-data-for-woocommerce' ); ?></option>
+										<option value="cc-name" <?php selected( $field['autocomplete'], 'cc-name' ); ?>><?php esc_html_e( 'Credit Card Name', 'extra-product-data-for-woocommerce' ); ?></option>
+										<option value="cc-number" <?php selected( $field['autocomplete'], 'cc-number' ); ?>><?php esc_html_e( 'Credit Card Number', 'extra-product-data-for-woocommerce' ); ?></option>
+										<option value="cc-type" <?php selected( $field['autocomplete'], 'cc-type' ); ?>><?php esc_html_e( 'Credit Card Type', 'extra-product-data-for-woocommerce' ); ?></option>
+										<option value="country" <?php selected( $field['autocomplete'], 'country' ); ?>><?php esc_html_e( 'Country', 'extra-product-data-for-woocommerce' ); ?></option>
+										<option value="country-name" <?php selected( $field['autocomplete'], 'country-name' ); ?>><?php esc_html_e( 'Country Name', 'extra-product-data-for-woocommerce' ); ?></option>
+										<option value="email" <?php selected( $field['autocomplete'], 'email' ); ?>><?php esc_html_e( 'Email', 'extra-product-data-for-woocommerce' ); ?></option>
+										<option value="language" <?php selected( $field['autocomplete'], 'language' ); ?>><?php esc_html_e( 'Language', 'extra-product-data-for-woocommerce' ); ?></option>
+										<option value="photo" <?php selected( $field['autocomplete'], 'photo' ); ?>><?php esc_html_e( 'Photo', 'extra-product-data-for-woocommerce' ); ?></option>
+										<option value="postal-code" <?php selected( $field['autocomplete'], 'postal-code' ); ?>><?php esc_html_e( 'Postal Code', 'extra-product-data-for-woocommerce' ); ?></option>
+										<option value="sex" <?php selected( $field['autocomplete'], 'sex' ); ?>><?php esc_html_e( 'Sex', 'extra-product-data-for-woocommerce' ); ?></option>
+										<option value="street-address" <?php selected( $field['autocomplete'], 'street-address' ); ?>><?php esc_html_e( 'Street Address', 'extra-product-data-for-woocommerce' ); ?></option>
+										<option value="tel" <?php selected( $field['autocomplete'], 'tel' ); ?>><?php esc_html_e( 'Telephone', 'extra-product-data-for-woocommerce' ); ?></option>
+										<option value="tel-area-code" <?php selected( $field['autocomplete'], 'tel-area-code' ); ?>><?php esc_html_e( 'Telephone Area Code', 'extra-product-data-for-woocommerce' ); ?></option>
+										<option value="tel-country-code" <?php selected( $field['autocomplete'], 'tel-country-code' ); ?>><?php esc_html_e( 'Telephone Country Code', 'extra-product-data-for-woocommerce' ); ?></option>
+										<option value="tel-extension" <?php selected( $field['autocomplete'], 'tel-extension' ); ?>><?php esc_html_e( 'Telephone Extension', 'extra-product-data-for-woocommerce' ); ?></option>
+										<option value="tel-local" <?php selected( $field['autocomplete'], 'tel-local' ); ?>><?php esc_html_e( 'Telephone Local', 'extra-product-data-for-woocommerce' ); ?></option>
+										<option value="tel-local-prefix" <?php selected( $field['autocomplete'], 'tel-local-prefix' ); ?>><?php esc_html_e( 'Telephone Local Prefix', 'extra-product-data-for-woocommerce' ); ?></option>
+										<option value="tel-local-suffix" <?php selected( $field['autocomplete'], 'tel-local-suffix' ); ?>><?php esc_html_e( 'Telephone Local Suffix', 'extra-product-data-for-woocommerce' ); ?></option>
+										<option value="tel-national" <?php selected( $field['autocomplete'], 'tel-national' ); ?>><?php esc_html_e( 'Telephone National', 'extra-product-data-for-woocommerce' ); ?></option>
+										<option value="transaction-amount" <?php selected( $field['autocomplete'], 'transaction-amount' ); ?>><?php esc_html_e( 'Transaction Amount', 'extra-product-data-for-woocommerce' ); ?></option>
+										<option value="transaction-currency" <?php selected( $field['autocomplete'], 'transaction-currency' ); ?>><?php esc_html_e( 'Transaction Currency', 'extra-product-data-for-woocommerce' ); ?></option>
+										<option value="url" <?php selected( $field['autocomplete'], 'url' ); ?>><?php esc_html_e( 'URL', 'extra-product-data-for-woocommerce' ); ?></option>
+									</select>
+								</div>
 							</td>
 						</tr>
 					</tbody>

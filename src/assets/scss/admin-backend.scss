@@ -168,6 +168,10 @@ table.exprdawc_fields_table {
 table.exprdawc_settings_table {
     width: 100%;
 
+    .exprdawc_input_wrapper {
+        margin: 1em 0;
+    }
+    
     label.exprdawc_label {
         float: none;
         padding: 0px;
