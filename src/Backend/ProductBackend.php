@@ -126,6 +126,7 @@ class ProductBackend implements Hookable {
 				'validation_unique_warning_inline'           => esc_html__( 'Label must be unique.', 'extra-product-data-for-woocommerce' ),
 				'validation_option_unique_warning'           => esc_html__( 'Warning! Option values within one field must be unique. Please use different option values before saving.', 'extra-product-data-for-woocommerce' ),
 				'validation_option_unique_warning_inline'    => esc_html__( 'Option value must be unique.', 'extra-product-data-for-woocommerce' ),
+				'confirm_change_type_delete_options'         => esc_html__( 'Changing the field type will delete all options for this field. Do you want to proceed?', 'extra-product-data-for-woocommerce' ),
 			)
 			// phpcs:enable WordPress.Arrays.MultipleStatementAlignment.DoubleArrowNotAligned
 		);

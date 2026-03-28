@@ -99,7 +99,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 							</td>
 							<td>
 								<label class="exprdawc_label" for="exprdawc_autocomplete_function_<?php echo esc_html( $index ); ?>"><?php esc_html_e( 'Autocomplete Function', 'extra-product-data-for-woocommerce' ); ?></label>
-								<select id="exprdawc_autocomplete_function_<?php echo esc_html( $index ); ?>" name="extra_product_fields[<?php echo esc_html( $index ); ?>][autocomplete]" class="exprdawc_input exprdawc_attribute_type">
+								<select id="exprdawc_autocomplete_function_<?php echo esc_html( $index ); ?>" name="extra_product_fields[<?php echo esc_html( $index ); ?>][autocomplete]" class="exprdawc_input exprdawc_attribute_autocomplete_type">
 									<option value="on" <?php selected( $field['autocomplete'], 'on' ); ?>><?php esc_html_e( 'On (default)', 'extra-product-data-for-woocommerce' ); ?></option>	
 									<option value="off" <?php selected( $field['autocomplete'], 'off' ); ?>><?php esc_html_e( 'Off', 'extra-product-data-for-woocommerce' ); ?></option>
 									<option value="address-level1" <?php selected( $field['autocomplete'], 'address-level1' ); ?>><?php esc_html_e( 'Address Level 1', 'extra-product-data-for-woocommerce' ); ?></option>

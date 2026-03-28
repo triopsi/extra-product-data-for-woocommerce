@@ -206,10 +206,20 @@ jQuery(function ($) {
             this.setDirty();
             const $row = $(e.currentTarget).closest('tr');
             const $type = $(e.currentTarget).val();
+            const previousType = $(e.currentTarget).data('previous') || $type; // Fallback to current type if previous is not set (e.g., on page load)
             const $optionsRow = $row.next('.exprdawc_options');
             const $optionsTable = $optionsRow.find('.exprdawc_options_table');
             const $placeholderText = $optionsRow.find('.exprdawc_placeholder');
             const $adjustPriceCheckbox = $optionsRow.find('.exprdawc_adjust_price_field');
+
+            if (previousType !== $type && $optionsTable.find('tbody tr').length > 0) {
+                if (confirm(exprdawc_admin_meta_boxes.confirm_change_type_delete_options)) {
+                    $optionsTable.find('tbody').empty();
+                } else {                    // Revert to previous type if user cancels
+                    $(e.currentTarget).val(previousType);
+                    return;
+                }
+            }
 
             if ($type === 'radio' || $type === 'checkbox' || $type === 'select' || $type === 'color_radio') {
                 $placeholderText.prop('disabled', true);
@@ -264,6 +274,7 @@ jQuery(function ($) {
             }
 
             this.validateUniqueOptionValues();
+            $(e.currentTarget).data('previous', $(e.currentTarget).val());
         }
 
         /**
