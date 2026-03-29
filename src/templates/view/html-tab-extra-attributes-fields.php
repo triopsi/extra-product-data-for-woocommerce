@@ -101,23 +101,35 @@ if ( ! defined( 'ABSPATH' ) ) {
 							</td>
 							<td class="exprdawc_attribute_placeholder_text">
 								<div class="exprdawc_input_wrapper">
-									<label class="exprdawc_label" for="exprdawc_text_placeholder_text_<?php echo esc_html( $index ); ?>"><?php esc_html_e( 'Placeholder Text', 'extra-product-data-for-woocommerce' ); ?></label>
+									<label class="exprdawc_label" for="exprdawc_text_placeholder_text_<?php echo esc_html( $index ); ?>">
+										<?php esc_html_e( 'Placeholder Text', 'extra-product-data-for-woocommerce' ); ?>
+										<span class="dashicons dashicons-editor-help" title="<?php esc_html_e( 'Set the placeholder text for the field. This will be displayed inside the input field when it is empty.', 'extra-product-data-for-woocommerce' ); ?>"></span>
+									</label>
 									<input type="text" id="exprdawc_text_placeholder_text_<?php echo esc_html( $index ); ?>" class="exprdawc_input exprdawc_textinput exprdawc_placeholder" name="extra_product_fields[<?php echo esc_html( $index ); ?>][placeholder_text]" value="<?php echo esc_attr( $field['placeholder_text'] ?? '' ); ?>" placeholder="<?php esc_html_e( 'Placeholder Text', 'extra-product-data-for-woocommerce' ); ?>" <?php echo in_array( $field['type'], array( 'radio', 'checkbox' ), true ) ? 'disabled' : ''; ?> />
 								</div>
 							</td>
 							<td class="exprdawc_attribute_help_text">
 								<div class="exprdawc_input_wrapper">
-									<label class="exprdawc_label" for="exprdawc_text_help_text_<?php echo esc_html( $index ); ?>"><?php esc_html_e( 'Help Text', 'extra-product-data-for-woocommerce' ); ?></label>
+									<label class="exprdawc_label" for="exprdawc_text_help_text_<?php echo esc_html( $index ); ?>">
+										<?php esc_html_e( 'Help Text', 'extra-product-data-for-woocommerce' ); ?>
+										<span class="dashicons dashicons-editor-help" title="<?php esc_html_e( 'Set the help text for the field. This will be displayed under the field on the front-end.', 'extra-product-data-for-woocommerce' ); ?>"></span>
+									</label>
 									<input type="text" id="exprdawc_text_help_text_<?php echo esc_html( $index ); ?>" class="exprdawc_input exprdawc_textinput exprdawc_helptext" name="extra_product_fields[<?php echo esc_html( $index ); ?>][help_text]" value="<?php echo esc_attr( $field['help_text'] ); ?>" placeholder="<?php esc_html_e( 'Help Text', 'extra-product-data-for-woocommerce' ); ?>" />
 								</div>
 								<div class="exprdawc_input_wrapper">
-									<label class="exprdawc_label" for="exprdawc_text_css_class_<?php echo esc_html( $index ); ?>"><?php esc_html_e( 'CSS Class', 'extra-product-data-for-woocommerce' ); ?></label>
+									<label class="exprdawc_label" for="exprdawc_text_css_class_<?php echo esc_html( $index ); ?>">
+										<?php esc_html_e( 'CSS Class', 'extra-product-data-for-woocommerce' ); ?>
+										<span class="dashicons dashicons-editor-help" title="<?php esc_html_e( 'Set the CSS class for the field. This will be applied to the input, wrapper, label, and description elements. All whitespace, commas, and hash symbols will be removed.', 'extra-product-data-for-woocommerce' ); ?>"></span>
+								</label>
 									<input type="text" id="exprdawc_text_css_class_<?php echo esc_html( $index ); ?>" class="exprdawc_input exprdawc_textinput exprdawc_css_class" name="extra_product_fields[<?php echo esc_html( $index ); ?>][css_class]" value="<?php echo esc_attr( $field['css_class'] ?? '' ); ?>" placeholder="<?php esc_html_e( 'CSS Class', 'extra-product-data-for-woocommerce' ); ?>" />
 								</div>
 							</td>
 							<td>
 								<div class="exprdawc_input_wrapper">
-									<label class="exprdawc_label" for="exprdawc_autocomplete_function_<?php echo esc_html( $index ); ?>"><?php esc_html_e( 'Autocomplete Function', 'extra-product-data-for-woocommerce' ); ?></label>
+									<label class="exprdawc_label" for="exprdawc_autocomplete_function_<?php echo esc_html( $index ); ?>">
+										<?php esc_html_e( 'Autocomplete Function', 'extra-product-data-for-woocommerce' ); ?>
+										<span class="dashicons dashicons-editor-help" title="<?php esc_html_e( 'Set the autocomplete function for the field. This will be used to provide autocomplete suggestions based on the specified function.', 'extra-product-data-for-woocommerce' ); ?>"></span>
+									</label>
 									<select id="exprdawc_autocomplete_function_<?php echo esc_html( $index ); ?>" name="extra_product_fields[<?php echo esc_html( $index ); ?>][autocomplete]" class="exprdawc_input exprdawc_attribute_autocomplete_type">
 										<option value="on" <?php selected( $field['autocomplete'], 'on' ); ?>><?php esc_html_e( 'On (default)', 'extra-product-data-for-woocommerce' ); ?></option>	
 										<option value="off" <?php selected( $field['autocomplete'], 'off' ); ?>><?php esc_html_e( 'Off', 'extra-product-data-for-woocommerce' ); ?></option>
@@ -375,7 +387,10 @@ if ( ! defined( 'ABSPATH' ) ) {
 					<tbody>
 						<tr>
 							<td>
-								<label class="exprdawc_label"><?php esc_html_e( 'Frontend Style', 'extra-product-data-for-woocommerce' ); ?></label>
+								<label class="exprdawc_label">
+									<?php esc_html_e( 'Frontend Style', 'extra-product-data-for-woocommerce' ); ?>
+									<span class="dashicons dashicons-editor-help" title="<?php esc_html_e( 'Set the frontend style for the color radio buttons. This will determine how the color options are displayed to the user.', 'extra-product-data-for-woocommerce' ); ?>"></span>
+								</label>
 								<label class="exprdawc_label" for="exprdawc_color_radio_style_circle_<?php echo esc_html( $index ); ?>">
 									<input
 										type="radio"

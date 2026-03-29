@@ -248,6 +248,7 @@ class Helper {
 		$isRequired = $fieldArgs['required'] && ! $skipRequiredCheck;
 		$typeSlug   = str_replace( '_', '-', $fieldArgs['type'] );
 
+		// Field Wrapper Classes.
 		$fieldArgs['wrapper_class'][] = 'exprdawc-field-wrapper';
 		$fieldArgs['wrapper_class'][] = $fieldArgs['css_id'] . '-wrapper';
 		$fieldArgs['wrapper_class'][] = 'exprdawc-field-wrapper-' . $typeSlug;
@@ -255,30 +256,35 @@ class Helper {
 			$fieldArgs['wrapper_class'][] = 'exprdawc-field-wrapper-required';
 		}
 
+		// Input Classes.
 		$fieldArgs['input_class'][] = $fieldArgs['css_id'] . '-input';
 		$fieldArgs['input_class'][] = 'exprdawc-field-input-' . $typeSlug;
 		if ( $isRequired ) {
 			$fieldArgs['input_class'][] = 'exprdawc-field-input-required';
 		}
 
+		// Label Classes.
 		$fieldArgs['label_class'][] = $fieldArgs['css_id'] . '-label';
 		$fieldArgs['label_class'][] = 'exprdawc-field-label-' . $typeSlug;
 		if ( $isRequired ) {
 			$fieldArgs['label_class'][] = 'exprdawc-field-label-required';
 		}
 
+		// Description Classes.
 		$fieldArgs['description_class'][] = $fieldArgs['css_id'] . '-description';
 		$fieldArgs['description_class'][] = 'exprdawc-field-description-' . $typeSlug;
 		if ( $isRequired ) {
 			$fieldArgs['description_class'][] = 'exprdawc-field-description-required';
 		}
 
+		// Input Wrapper Classes.
 		$fieldArgs['input_wrapper_class'][] = $fieldArgs['css_id'] . '-input-wrapper';
 		$fieldArgs['input_wrapper_class'][] = 'exprdawc-field-input-wrapper-' . $typeSlug;
 		if ( $isRequired ) {
 			$fieldArgs['input_wrapper_class'][] = 'exprdawc-field-input-wrapper-required';
 		}
 
+		// Extends CSS Classes.
 		if ( in_array( $fieldArgs['type'], self::TEXT_FIELD_TYPES, true ) ) {
 			$fieldArgs['input_class'][] = 'input-text';
 		}
@@ -291,6 +297,16 @@ class Helper {
 			foreach ( $fieldArgs['validate'] as $validate ) {
 				$fieldArgs['input_class'][] = 'validate-' . sanitize_html_class( $validate );
 			}
+		}
+
+		if ( ! empty( $fieldArgs['css_class'] ) ) {
+			$fieldArgs['css_class']             = preg_replace( '/[\s,#]+/', '', (string) $fieldArgs['css_class'] );
+			$fieldArgs['input_class'][]         = $fieldArgs['css_class'] . '-input';
+			$fieldArgs['input_class'][]         = $fieldArgs['css_class'];
+			$fieldArgs['wrapper_class'][]       = $fieldArgs['css_class'] . '-wrapper';
+			$fieldArgs['label_class'][]         = $fieldArgs['css_class'] . '-label';
+			$fieldArgs['description_class'][]   = $fieldArgs['css_class'] . '-description';
+			$fieldArgs['input_wrapper_class'][] = $fieldArgs['css_class'] . '-input-wrapper';
 		}
 
 		return $fieldArgs;
