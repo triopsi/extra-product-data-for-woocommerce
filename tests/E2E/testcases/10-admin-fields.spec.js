@@ -300,4 +300,83 @@ test.describe('@P10 @ADMIN', () => {
 
     });
 
+    test('ADM-05 Add Multi Color field on product page', async ({ page }) => {
+        const adminUrl = env.wpAdminURL;
+        const username = env.adminUser;
+        const password = env.adminPass;
+
+        const adminLogin = new AdminLoginPage(page);
+        const productAdminPage = new ProductAdminPage(page);
+        const productPage = new ProductPage(page);
+
+        await adminLogin.goto(adminUrl);
+        await adminLogin.login(username, password);
+        await productAdminPage.goToProductPage('Single');
+        await productAdminPage.goToExtraProductDataTab();
+
+        // Add Color Picker field
+        await productAdminPage.clickAddOptionButton();
+        await productAdminPage.fillExtraField('Multi Color', 0, 'color_radio', false);
+
+        await page.locator('#exprdawc_text_required_0').check();
+        await page.locator('#exprdawc_text_editable_0').check();
+
+        await page.getByRole('textbox', { name: 'Help Text ' }).click();
+        await page.getByRole('textbox', { name: 'Help Text ' }).fill('Help Text');
+        await page.getByRole('textbox', { name: 'CSS Class ' }).click();
+        await page.getByRole('textbox', { name: 'CSS Class ' }).fill('css-class-custom');
+        await page.getByRole('radio', { name: 'Badget' }).check();
+        await page.getByRole('textbox', { name: 'Size (e.g. 75px) ' }).click();
+        await page.getByRole('textbox', { name: 'Size (e.g. 75px) ' }).fill('100px');
+        await page.getByRole('button', { name: 'Add Option' }).click();
+        await page.getByRole('textbox', { name: 'Enter option label' }).click();
+        await page.getByRole('textbox', { name: 'Enter option label' }).fill('Option A');
+        await page.getByPlaceholder('Select a color').click();
+        await page.getByPlaceholder('Select a color').fill('#f50000');
+        await page.getByRole('button', { name: 'Add Option' }).click();
+        await page.getByRole('row', { name: ' #000000 Remove', exact: true }).getByPlaceholder('Enter option label').click();
+        await page.getByRole('row', { name: ' #000000 Remove', exact: true }).getByPlaceholder('Enter option label').fill('Option B');
+        await page.getByRole('cell', { name: '#000000', exact: true }).getByPlaceholder('Select a color').click();
+        await page.getByRole('cell', { name: '#000000', exact: true }).getByPlaceholder('Select a color').fill('#0400ff');
+        await page.getByRole('row', { name: ' Option B #0400ff Remove', exact: true }).getByRole('radio').check();
+        
+        // Save changes
+        await page.getByRole('button', { name: 'Update' }).click();
+
+        // Verify that the fields are saved correctly
+        await productAdminPage.goToExtraProductDataTab();
+
+        await page.locator('.dashicons.dashicons-arrow-up').click();
+        await expect(page.getByRole('textbox', { name: 'Help Text ' })).toHaveValue('Help Text');
+        await expect(page.getByRole('textbox', { name: 'CSS Class ' })).toHaveValue('css-class-custom');
+        await expect(page.getByRole('radio', { name: 'Badget' })).toBeChecked();
+        await expect(page.getByRole('textbox', { name: 'Size (e.g. 75px) ' })).toHaveValue('100px');
+        await expect(page.getByRole('cell', { name: 'Option A', exact: true }).getByPlaceholder('Enter option label')).toHaveValue('Option A');
+        await expect(page.getByRole('cell', { name: '#f50000', exact: true }).getByPlaceholder('Select a color')).toHaveValue('#f50000');
+        await expect(page.getByRole('row', { name: ' Option A #f50000 Remove', exact: true }).getByRole('radio')).not.toBeChecked();
+        await expect(page.getByRole('cell', { name: 'Option B', exact: true }).getByPlaceholder('Enter option label')).toHaveValue('Option B');
+        await expect(page.getByRole('cell', { name: '#0400ff', exact: true }).getByPlaceholder('Select a color')).toHaveValue('#0400ff');
+        await expect(page.getByRole('row', { name: ' Option B #0400ff Remove', exact: true }).getByRole('radio')).toBeChecked();
+        await expect(page.getByRole('checkbox', { name: 'Show label name under the' })).toBeChecked();
+        await expect(page.getByRole('checkbox', { name: 'Require input' })).toBeChecked();
+        await expect(page.getByRole('checkbox', { name: 'User can edit the field' })).toBeChecked();
+        await expect(page.getByRole('textbox', { name: 'Name of the label' })).toHaveValue('Multi Color');
+
+        // Frontend Check
+        await productPage.goToProductPage('Single');
+
+        // Check if the color swatch badge is visible and has the correct size
+        await expect(page.locator('label:nth-child(4) > .exprdawc-color-swatch-badget')).toBeVisible();
+        await expect(page.locator('.exprdawc-color-swatch-badget').first()).toBeVisible();
+        await expect(page.getByText('Help Text')).toBeVisible();
+        await page.locator('.exprdawc-color-swatch-badget').first().click();
+
+        // Add to cart and check if the selected color is displayed in the cart and checkout page
+        await page.getByRole('button', { name: 'Add to cart', exact: true }).click();
+        await expect(page.getByRole('alert')).toContainText('“Single” has been added to your cart. View cart');
+        await page.locator('#content').getByRole('link', { name: 'View cart ' }).click();
+        await expect(page.locator('tbody')).toContainText('This is a simple, virtual product. Original item price: €2.00 / Multi Color: #f50000');
+
+    });
+
 });
