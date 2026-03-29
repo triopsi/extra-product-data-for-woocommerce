@@ -688,6 +688,7 @@ class TestClassExprdawcHelper extends WP_UnitTestCase {
 			'input_class'           => array(),
 			'custom_attributes'     => array(),
 			'required_string'       => ' <span class="optional">(Optional)</span>',
+			'adjust_price'          => 1,
 			'price_adjustment_type' => 'fixed',
 			'priceAdjustmentValue'  => 10.50,
 		);
@@ -729,6 +730,7 @@ class TestClassExprdawcHelper extends WP_UnitTestCase {
 			'input_class'           => array(),
 			'custom_attributes'     => array(),
 			'required_string'       => '',
+			'adjust_price'          => 1,
 			'price_adjustment_type' => 'percentage',
 			'priceAdjustmentValue'  => 15,
 		);
@@ -763,6 +765,7 @@ class TestClassExprdawcHelper extends WP_UnitTestCase {
 			'input_class'           => array(),
 			'custom_attributes'     => array(),
 			'required_string'       => '',
+			'adjust_price'          => 1,
 			'price_adjustment_type' => 'fixed',
 			'priceAdjustmentValue'  => -5.00,
 		);
@@ -832,6 +835,7 @@ class TestClassExprdawcHelper extends WP_UnitTestCase {
 			'input_class'           => array(),
 			'custom_attributes'     => array(),
 			'required_string'       => '',
+			'adjust_price'          => 1,
 			'price_adjustment_type' => 'fixed',
 			'priceAdjustmentValue'  => 10,
 		);
@@ -866,6 +870,7 @@ class TestClassExprdawcHelper extends WP_UnitTestCase {
 			'input_class'           => array(),
 			'custom_attributes'     => array(),
 			'required_string'       => '',
+			'adjust_price'          => 1,
 			'price_adjustment_type' => 'fixed',
 			'priceAdjustmentValue'  => 20,
 		);
@@ -890,6 +895,7 @@ class TestClassExprdawcHelper extends WP_UnitTestCase {
 			'input_class'           => array(),
 			'custom_attributes'     => array(),
 			'required_string'       => '',
+			'adjust_price'          => 1,
 			'price_adjustment_type' => 'percentage',
 			'priceAdjustmentValue'  => 10,
 		);
@@ -949,6 +955,7 @@ class TestClassExprdawcHelper extends WP_UnitTestCase {
 			'input_class'           => array(),
 			'custom_attributes'     => array(),
 			'required_string'       => '',
+			'adjust_price'          => 1,
 			'price_adjustment_type' => 'fixed',
 			'priceAdjustmentValue'  => 999.99,
 		);
@@ -973,6 +980,7 @@ class TestClassExprdawcHelper extends WP_UnitTestCase {
 			'input_class'           => array(),
 			'custom_attributes'     => array(),
 			'required_string'       => '',
+			'adjust_price'          => 1,
 			'price_adjustment_type' => 'percentage',
 			'priceAdjustmentValue'  => -25,
 		);
