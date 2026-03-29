@@ -69,6 +69,7 @@ class ProductAdminPage {
      * @returns {Promise<void>}
      */
     async fillExtraField(fieldName, index, type, required = true) {
+        console.log(`Filling field: ${fieldName}, Index: ${index}, Type: ${type}, Required: ${required}`);
         await this.page.locator(`#exprdawc_attribute_type_${index}`).click();
         await this.page.locator(`input[name="extra_product_fields[${index}][label]"]`).fill(fieldName);
         await this.page.locator(`#exprdawc_attribute_type_${index}`).selectOption(type);
