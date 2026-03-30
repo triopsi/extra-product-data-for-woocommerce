@@ -43,16 +43,43 @@ test.describe('@P10 @IMPORT @EXPORT', () => {
         await expect(page.locator('.exprdawc_no_entry_message')).not.toBeVisible();
 
 
-        await page.locator('tr:nth-child(8) > td > .exprdawc_fields_table > tbody > .exprdawc_attribute > .cl-arr > .dashicons').click();
-        await expect(page.getByRole('row', { name: ' Check B Check B Remove', exact: true }).locator('input[name="extra_product_fields[7][default][]"]')).toBeChecked();
-
-        await expect(page.getByRole('textbox', { name: 'Help Text' })).toHaveValue('Help Text');
-        await expect(page.locator('input[name="extra_product_fields[6][label]"]')).toHaveValue('Radio Field');
-        await expect(page.getByRole('cell', { name: '  E-Mail Field Email  ' }).getByPlaceholder('Name of the label')).toHaveValue('E-Mail Field');
+        await page.locator('tr:nth-child(7) > td > .exprdawc_fields_table > tbody > .exprdawc_attribute > .cl-arr > .dashicons').click();
+        await page.locator('tr:nth-child(6) > td > .exprdawc_fields_table > tbody > .exprdawc_attribute > .cl-arr > .dashicons').click();
+        await page.locator('tr:nth-child(5) > td > .exprdawc_fields_table > tbody > .exprdawc_attribute > .cl-arr > .dashicons').click();
+        await page.locator('tr:nth-child(4) > td > .exprdawc_fields_table > tbody > .exprdawc_attribute > .cl-arr > .dashicons').click();
         await page.locator('tr:nth-child(3) > td > .exprdawc_fields_table > tbody > .exprdawc_attribute > .cl-arr > .dashicons').click();
-        await expect(page.getByRole('textbox', { name: 'Default Value' })).toHaveValue('example@company.org');
-        await page.locator('tr:nth-child(9) > td > .exprdawc_fields_table > tbody > .exprdawc_attribute > .cl-arr > .dashicons').click();
-        await expect(page.locator('input[name="extra_product_fields[8][options][2][label]"]')).toHaveValue('Select C');
+        await page.locator('tr:nth-child(2) > td > .exprdawc_fields_table > tbody > .exprdawc_attribute > .cl-arr > .dashicons').click();
+        await page.locator('.dashicons.dashicons-arrow-up').click();
+        await expect(page.getByRole('row', { name: '  Short Text   Require' }).getByPlaceholder('Name of the label')).toHaveValue('Short Text');
+        await expect(page.getByRole('row', { name: '  Short Text   Require' }).getByLabel('User can edit the field')).toBeChecked();
+        await expect(page.getByRole('row', { name: '  Short Text   Require' }).getByLabel('Require input')).toBeChecked();
+        await expect(page.getByRole('row', { name: '  Short Text   Require' }).getByPlaceholder('Placeholder Text')).toHaveValue('Placeholder Text');
+        await expect(page.getByRole('row', { name: '  Short Text   Require' }).getByPlaceholder('Help Text')).toHaveValue('Help Text Short Text');
+        await expect(page.getByRole('cell', { name: 'Max length 20', exact: true }).getByLabel('Max length')).toHaveValue('20');
+        await expect(page.getByRole('cell', { name: 'Min length 5', exact: true }).getByLabel('Min length')).toHaveValue('5');
+        await expect(page.getByRole('cell', { name: 'Default Value Default Text', exact: true }).getByPlaceholder('Enter a default text')).toHaveValue('Default Text');
+        await expect(page.getByRole('row', { name: '  Short Text   Require' }).getByLabel('Autocomplete Function')).toHaveValue('on');
+        await expect(page.getByRole('cell', { name: '  Long Text   Require' }).getByPlaceholder('Placeholder Text')).toHaveValue('PlaceHolder');
+        await expect(page.getByText('Hier steht ein Default Text')).toHaveValue('Hier steht ein\nDefault Text');
+        await expect(page.getByRole('cell', { name: '  Long Text   Require' }).getByPlaceholder('Help Text')).toHaveValue('HelpText');
+        await expect(page.getByRole('cell', { name: 'Max length 1000', exact: true }).getByLabel('Max length')).toHaveValue('1000');
+        await expect(page.getByRole('spinbutton', { name: 'Rows' })).toHaveValue('2');
+        await expect(page.getByRole('cell', { name: '  Email   Require input' }).getByLabel('Price Adjustment Type')).toHaveValue('fixed');
+        await expect(page.getByRole('spinbutton', { name: 'Price Adjustment Value' })).toHaveValue('4.97');
+        await expect(page.getByRole('cell', { name: '  Email   Require input' }).getByLabel('Enable price adjustment')).toBeChecked();
+        await expect(page.getByRole('cell', { name: '  Email   Require input' }).getByLabel('Autofocus this field on')).toBeChecked();
+        await expect(page.getByRole('spinbutton', { name: 'Max value' })).toHaveValue('25');
+        await expect(page.getByRole('cell', { name: '  Number   Require input' }).getByLabel('User can edit the field')).toBeChecked();
+        await expect(page.getByRole('spinbutton', { name: 'Default Value' })).toHaveValue('10');
+        await expect(page.getByRole('cell', { name: '  Number   Require input' }).getByPlaceholder('Placeholder Text')).toHaveValue('PlaceHolder Text');
+        await expect(page.getByRole('cell', { name: '  Radio   Require input' }).getByLabel('Require input')).toBeChecked();
+        await expect(page.getByRole('row', { name: ' Option C Option C Remove', exact: true }).getByRole('radio')).toBeChecked();
+        await expect(page.getByRole('cell', { name: '  Color   Require input' }).getByLabel('Require input')).toBeChecked();
+        await expect(page.getByRole('cell', { name: '  Color   Require input' }).getByPlaceholder('Help Text')).toHaveValue('Color?');
+        await expect(page.getByRole('textbox', { name: '#1d2327' })).toHaveValue('#ff0000');
+        await expect(page.locator('#exprdawc_text_css_class_6')).toHaveValue('class_radio_multi');
+        await expect(page.locator('#exprdawc_text_required_6')).toBeChecked();
+        await expect(page.getByRole('cell', { name: '#ffae00', exact: true }).getByPlaceholder('Select a color')).toHaveValue('#ffae00');
     });
 
     test('EXPORT-01 Export JSON data', async ({ page, context }) => {
