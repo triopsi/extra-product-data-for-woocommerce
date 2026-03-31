@@ -97,6 +97,7 @@ table.exprdawc_fields_table tbody td.exprdawc_actions {
   width: 80px;
   max-width: 80px;
   text-align: center;
+  vertical-align: middle;
 }
 table.exprdawc_fields_table tbody td input[type=text],
 table.exprdawc_fields_table tbody td input[type=number],
@@ -132,6 +133,9 @@ table.exprdawc_fields_table tbody td.cl-arr i {
 
 table.exprdawc_settings_table {
   width: 100%;
+}
+table.exprdawc_settings_table .exprdawc_input_wrapper {
+  margin: 1em 0;
 }
 table.exprdawc_settings_table label.exprdawc_label {
   float: none;

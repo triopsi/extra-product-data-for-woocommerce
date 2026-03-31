@@ -126,6 +126,7 @@ class ProductBackend implements Hookable {
 				'validation_unique_warning_inline'           => esc_html__( 'Label must be unique.', 'extra-product-data-for-woocommerce' ),
 				'validation_option_unique_warning'           => esc_html__( 'Warning! Option values within one field must be unique. Please use different option values before saving.', 'extra-product-data-for-woocommerce' ),
 				'validation_option_unique_warning_inline'    => esc_html__( 'Option value must be unique.', 'extra-product-data-for-woocommerce' ),
+				'confirm_change_type_delete_options'         => esc_html__( 'Changing the field type will delete all options for this field. Do you want to proceed?', 'extra-product-data-for-woocommerce' ),
 			)
 			// phpcs:enable WordPress.Arrays.MultipleStatementAlignment.DoubleArrowNotAligned
 		);
@@ -157,6 +158,9 @@ class ProductBackend implements Hookable {
 					$adjust_price          = isset( $field['adjust_price'] ) ? true : false;
 					$price_adjustment_type = sanitize_text_field( $field['price_adjustment_type'] );
 					$priceAdjustmentValue  = sanitize_text_field( $field['priceAdjustmentValue'] );
+					$blocked               = true;
+					$disabled              = isset( $field['disabled'] ) ? absint( $field['disabled'] ) : 0;
+					$css_class             = isset( $field['css_class'] ) ? sanitize_text_field( $field['css_class'] ) : '';
 
 					if ( isset( $field['conditional_rules'] ) ) {
 						foreach ( $field['conditional_rules'] as $rule_group ) {
@@ -206,6 +210,7 @@ class ProductBackend implements Hookable {
 						case 'checkbox':
 						case 'radio':
 						case 'select':
+						case 'color_radio':
 							$default_source = $field['default'] ?? '';
 							$default        = is_array( $default_source ) ? array_map( 'sanitize_text_field', $default_source ) : sanitize_text_field( $default_source );
 							break;
@@ -234,7 +239,13 @@ class ProductBackend implements Hookable {
 					$min  = isset( $field['min'] ) ? sanitize_text_field( $field['min'] ) : '';
 					$max  = isset( $field['max'] ) ? sanitize_text_field( $field['max'] ) : '';
 
+					// Ensure color_enable_frontend_input is set to a boolean value (1 or 0) for consistent storage and retrieval.
 					$color_enable_frontend_input = isset( $field['color_enable_frontend_input'] ) ? 1 : 0;
+
+					// Set default values for color radio specific settings.
+					$color_radio_style      = isset( $field['color_radio_style'] ) ? sanitize_text_field( $field['color_radio_style'] ) : 'circle';
+					$color_radio_show_label = isset( $field['color_radio_show_label'] ) ? 1 : 0;
+					$color_radio_size       = isset( $field['color_radio_size'] ) ? sanitize_text_field( $field['color_radio_size'] ) : '75px';
 
 					if ( empty( $label ) || ! is_string( $label ) ) {
 						return;
@@ -278,6 +289,12 @@ class ProductBackend implements Hookable {
 						'color_default'               => $color_default,
 						'number_default'              => $number_default,
 						'color_enable_frontend_input' => $color_enable_frontend_input,
+						'color_radio_style'           => $color_radio_style,
+						'color_radio_size'            => $color_radio_size,
+						'color_radio_show_label'      => $color_radio_show_label,
+						'blocked'                     => $blocked,
+						'disabled'                    => $disabled,
+						'css_class'                   => $css_class,
 					);
 				},
 				$extra_product_fields

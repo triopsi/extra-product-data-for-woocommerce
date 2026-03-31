@@ -75,6 +75,7 @@ jQuery(function ($) {
             $(document).on('input', '.exprdawc_color_default', this.handleColorPickerInput.bind(this));
             $(document).on('input', '.exprdawc_color_hex', this.handleColorHexInput.bind(this));
             $(document).on('blur', '.exprdawc_color_hex', this.handleColorHexBlur.bind(this));
+            $(document).on('change', '.exprdawc_disabled_field', this.toggleDisabledFieldBackgroundColor.bind(this));
 
             // Inits
             this.toggleConditionalValueFieldAll();
@@ -206,12 +207,22 @@ jQuery(function ($) {
             this.setDirty();
             const $row = $(e.currentTarget).closest('tr');
             const $type = $(e.currentTarget).val();
+            const previousType = $(e.currentTarget).data('previous') || $type; // Fallback to current type if previous is not set (e.g., on page load)
             const $optionsRow = $row.next('.exprdawc_options');
             const $optionsTable = $optionsRow.find('.exprdawc_options_table');
             const $placeholderText = $optionsRow.find('.exprdawc_placeholder');
             const $adjustPriceCheckbox = $optionsRow.find('.exprdawc_adjust_price_field');
 
-            if ($type === 'radio' || $type === 'checkbox' || $type === 'select') {
+            if (previousType !== $type && $optionsTable.find('tbody tr').length > 0) {
+                if (confirm(exprdawc_admin_meta_boxes.confirm_change_type_delete_options)) {
+                    $optionsTable.find('tbody').empty();
+                } else {                    // Revert to previous type if user cancels
+                    $(e.currentTarget).val(previousType);
+                    return;
+                }
+            }
+
+            if ($type === 'radio' || $type === 'checkbox' || $type === 'select' || $type === 'color_radio') {
                 $placeholderText.prop('disabled', true);
                 $optionsTable.show();
                 // Hide Placeholder.
@@ -253,11 +264,18 @@ jQuery(function ($) {
                 $optionsRow.find('.exprdawc_color_table').hide();
             }
 
+            if ($(e.currentTarget).val() === 'color_radio') {
+                $optionsRow.find('.exprdawc_color_radio_table').show();
+            } else {
+                $optionsRow.find('.exprdawc_color_radio_table').hide();
+            }
+
             if ($adjustPriceCheckbox.length) {
                 this.togglePriceAdjustmentTable({ currentTarget: $adjustPriceCheckbox.get(0) });
             }
 
             this.validateUniqueOptionValues();
+            $(e.currentTarget).data('previous', $(e.currentTarget).val());
         }
 
         /**
@@ -302,8 +320,14 @@ jQuery(function ($) {
 
             const optionIndex = $optionsTable.find('tbody tr').length;
             const fieldType = $optionsTable.closest('.exprdawc_fields_table').find('.exprdawc_attribute_type').val();
-            const isMulti = fieldType === 'checkbox';
-            const templateId = isMulti ? '#exprdawc-option-template-multi' : '#exprdawc-option-template-single';
+
+            const templateByFieldType = {
+                checkbox: '#exprdawc-option-template-multi',
+                color_radio: '#exprdawc-option-template-color-radio',
+            };
+
+            const templateId = templateByFieldType[fieldType] || '#exprdawc-option-template-single';
+
             const optionTemplate = $(templateId).html();
 
             if (!optionTemplate) {
@@ -317,7 +341,7 @@ jQuery(function ($) {
 
             $optionsTable.find('tbody').append(optionHtml);
 
-            const isOptionBased = fieldType === 'radio' || fieldType === 'checkbox' || fieldType === 'select';
+            const isOptionBased = fieldType === 'radio' || fieldType === 'checkbox' || fieldType === 'select' || fieldType === 'color_radio';
             const isPriceAdjustmentEnabled = $optionsTable.closest('.exprdawc_options').find('.exprdawc_adjust_price_field').is(':checked');
             this.updateOptionPriceAdjustmentColumns($optionsTable, isOptionBased && isPriceAdjustmentEnabled);
             this.updateFieldIndices();
@@ -378,7 +402,7 @@ jQuery(function ($) {
             const fieldType = $optionsTable.closest('.exprdawc_fields_table').find('.exprdawc_attribute_type').val();
 
             // For radio/select types the default is a single value input (radio)
-            if (fieldType === 'radio' || fieldType === 'select' || fieldType === 'checkbox') {
+            if (fieldType === 'radio' || fieldType === 'select' || fieldType === 'checkbox' || fieldType === 'color_radio') {
                 const $targetRadioOrCheckbox = $optionsTable.find('tbody tr').eq(optionIndex).find('input[type="radio"], input[type="checkbox"]').first();
                 if ($targetRadioOrCheckbox.length) {
                     $targetRadioOrCheckbox.val(newValue);
@@ -616,7 +640,7 @@ jQuery(function ($) {
             const $tableSetting = $optionsRow.find('.exprdawcPriceAdjustment_table, .exprdawc_price_adjustment_table');
             const $optionsTable = $optionsRow.find('.exprdawc_options_table');
             const fieldType = checkbox.closest('.exprdawc_fields_table').find('.exprdawc_attribute_type').val();
-            const isOptionBased = fieldType === 'radio' || fieldType === 'checkbox' || fieldType === 'select';
+            const isOptionBased = fieldType === 'radio' || fieldType === 'checkbox' || fieldType === 'select' || fieldType === 'color_radio';
             const isEnabled = checkbox.is(':checked');
 
             if (isOptionBased) {
@@ -663,7 +687,7 @@ jQuery(function ($) {
                 // By exprdawc_attribute_type checkbox, radio and select hide placeholder text and show options.
                 const fieldType = $(element).find('.exprdawc_attribute_type').val() || 'text';
                 const $placeholderText = $(element).find('.exprdawc_attribute_placeholder_text');
-                if (fieldType === 'radio' || fieldType === 'checkbox' || fieldType === 'select' || fieldType === 'color') {
+                if (fieldType === 'radio' || fieldType === 'checkbox' || fieldType === 'select' || fieldType === 'color' || fieldType === 'color_radio') {
                     $placeholderText.hide();
                 } else {
                     $placeholderText.show();
@@ -996,7 +1020,7 @@ jQuery(function ($) {
                 const $row = $(element);
                 $row.find('.exprdawc_fields_table').attr('data-index', index);
                 $row.find('.exprdawc_attribute_index').val(index);
-                $(element).find('input, select, textarea').each(function () {
+                $(element).find('input, select, textarea, label').each(function () {
                     const $input = $(this);
 
                     // Update the name attribute with the new index
@@ -1009,6 +1033,12 @@ jQuery(function ($) {
                     const id = $input.attr('id');
                     if (id) {
                         $input.attr('id', id.replace(/_\d+$/, `_${index}`));
+                    }
+
+                    // For the label attribute for
+                    const labelFor = $input.attr('for');
+                    if (labelFor) {
+                        $input.attr('for', labelFor.replace(/_\d+$/, `_${index}`));
                     }
                 });
 
@@ -1146,6 +1176,20 @@ jQuery(function ($) {
             }
 
             return true;
+        }
+
+        /**
+         * Toggle disabled field background color.
+         * @param {Event} e - The change event from the checkbox
+         */
+        toggleDisabledFieldBackgroundColor(e) {
+            const $checkbox = $(e.currentTarget);
+            const $attributeRow = $checkbox.closest('.exprdawc_fields_table').find('tr.exprdawc_attribute_row');
+            if ($checkbox.is(':checked')) {
+                $attributeRow.css('background-color', '#ffdeab');
+            } else {
+                $attributeRow.css('background-color', '');
+            }
         }
 
     }

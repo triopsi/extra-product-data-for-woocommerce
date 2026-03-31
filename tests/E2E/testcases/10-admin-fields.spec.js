@@ -31,8 +31,8 @@ test.describe('@P10 @ADMIN', () => {
         await page.locator('#exprdawc_text_max_length_0').click();
         await page.locator('#exprdawc_text_max_length_0').click();
         await page.locator('#exprdawc_text_max_length_0').fill('20');
-        await page.getByRole('textbox', { name: 'Enter a default text' }).click();
-        await page.getByRole('textbox', { name: 'Enter a default text' }).fill('Default Text');
+        await page.getByRole('textbox', { name: 'Default Value' }).click();
+        await page.getByRole('textbox', { name: 'Default Value' }).fill('Default Text');
 
         // 2. Add Long Text field
         await productAdminPage.clickAddOptionButton();
@@ -44,11 +44,11 @@ test.describe('@P10 @ADMIN', () => {
         await page.getByRole('cell', { name: '  Long Text Long Text  ' }).getByPlaceholder('Help Text').fill('HelpText');
         await page.getByRole('cell', { name: 'Default Value', exact: true }).getByPlaceholder('Enter a default text').click();
         await page.getByRole('cell', { name: 'Default Value', exact: true }).getByPlaceholder('Enter a default text').fill('Hier steht ein\nDefault Text');
-        await page.getByRole('spinbutton', { name: 'Min length' }).click();
-        await page.getByRole('spinbutton', { name: 'Min length' }).fill('6');
-        await page.getByRole('spinbutton', { name: 'Max length' }).dblclick();
-        await page.getByRole('spinbutton', { name: 'Max length' }).fill('1000');
-        await page.getByRole('checkbox', { name: 'Require input', exact: true }).check();
+        await page.getByRole('row', { name: 'Min length 0 Max length 255', exact: true }).getByLabel('Min length').click();
+        await page.getByRole('row', { name: 'Min length 0 Max length 255', exact: true }).getByLabel('Min length').fill('6');
+        await page.getByRole('row', { name: 'Min length 0 Max length 255', exact: true }).getByLabel('Max length').click();
+        await page.getByRole('row', { name: 'Min length 0 Max length 255', exact: true }).getByLabel('Max length').fill('1000');
+        await page.getByRole('cell', { name: '  Long Text Long Text  ' }).getByLabel('Require input').check();
 
         // 3. Add Email field
         await productAdminPage.clickAddOptionButton();
@@ -103,6 +103,24 @@ test.describe('@P10 @ADMIN', () => {
         await page.getByRole('cell', { name: '  Color Color   Require' }).getByPlaceholder('Help Text').fill('Color?');
         await page.getByRole('cell', { name: '  Color Color   Require' }).getByLabel('User can edit the field').check();
 
+        // 7. Add Multi Color Radio
+        await productAdminPage.clickAddOptionButton();
+        await productAdminPage.fillExtraField('Multi', 6, 'color_radio', true);
+
+        await page.locator('#exprdawc_text_help_text_6').click();
+        await page.locator('#exprdawc_text_help_text_6').fill('Help Multi');
+        await page.locator('#exprdawc_text_css_class_6').click();
+        await page.locator('#exprdawc_text_css_class_6').fill('class_radio_multi');
+        await page.getByRole('radio', { name: 'Quadrat (Square)' }).check();
+        await page.getByRole('button', { name: 'Add Option' }).nth(1).click(); await page.getByRole('cell', { name: '  Multi Color Radio  ' }).getByPlaceholder('Enter option label').click();
+        await page.getByRole('cell', { name: '  Multi Color Radio  ' }).getByPlaceholder('Enter option label').fill('Black');
+        await page.getByRole('button', { name: 'Add Option' }).nth(1).click();
+        await page.getByRole('row', { name: ' #000000 Remove', exact: true }).getByPlaceholder('Enter option label').click();
+        await page.getByRole('row', { name: ' #000000 Remove', exact: true }).getByPlaceholder('Enter option label').fill('Orange');
+        await page.getByRole('row', { name: ' Orange #000000 Remove', exact: true }).getByPlaceholder('Select a color').click();
+        await page.getByRole('row', { name: ' Orange #000000 Remove', exact: true }).getByPlaceholder('Select a color').fill('#ffae00');
+        await page.getByRole('row', { name: ' Orange #ffae00 Remove', exact: true }).locator('input[name="extra_product_fields[6][default]"]').check();
+
         // Save changes
         await page.getByRole('button', { name: 'Update' }).click();
         await expect(page.locator('#wpbody-content')).toContainText('Product updated. View ProductDismiss this notice.');
@@ -123,12 +141,14 @@ test.describe('@P10 @ADMIN', () => {
         await productAdminPage.goToExtraProductDataTab();
 
         // Collapse all fields to check if the correct fields are present and in the correct order
-        await page.locator('tr:nth-child(5) > td > .exprdawc_fields_table > tbody > .exprdawc_attribute > .cl-arr > .dashicons').click();
-        await page.locator('tr:nth-child(4) > td > .exprdawc_fields_table > tbody > .exprdawc_attribute > .cl-arr > .dashicons').click();
-        await page.locator('tr:nth-child(3) > td > .exprdawc_fields_table > tbody > .exprdawc_attribute > .cl-arr > .dashicons').click();
+        await page.locator('tr:nth-child(1) > td > .exprdawc_fields_table > tbody > .exprdawc_attribute > .cl-arr > .dashicons').click();
         await page.locator('tr:nth-child(2) > td > .exprdawc_fields_table > tbody > .exprdawc_attribute > .cl-arr > .dashicons').click();
+        await page.locator('tr:nth-child(3) > td > .exprdawc_fields_table > tbody > .exprdawc_attribute > .cl-arr > .dashicons').click();
+        await page.locator('tr:nth-child(4) > td > .exprdawc_fields_table > tbody > .exprdawc_attribute > .cl-arr > .dashicons').click();
+        await page.locator('tr:nth-child(5) > td > .exprdawc_fields_table > tbody > .exprdawc_attribute > .cl-arr > .dashicons').click();
         await page.locator('tr:nth-child(6) > td > .exprdawc_fields_table > tbody > .exprdawc_attribute > .cl-arr > .dashicons').click();
-        await page.locator('.dashicons.dashicons-arrow-up').click();
+        await page.locator('tr:nth-child(7) > td > .exprdawc_fields_table > tbody > .exprdawc_attribute > .cl-arr > .dashicons').click();
+
 
         // 1. Validate Short Text field
         await expect(page.locator('#exprdawc_attribute_type_0')).toHaveValue('text');
@@ -136,66 +156,115 @@ test.describe('@P10 @ADMIN', () => {
         await expect(page.getByRole('cell', { name: 'Default Value Default Text', exact: true }).getByPlaceholder('Enter a default text')).toHaveValue('Default Text');
         await expect(page.getByRole('cell', { name: 'Min length 5', exact: true }).getByLabel('Min length')).toHaveValue('5');
         await expect(page.getByRole('cell', { name: 'Max length 20', exact: true }).getByLabel('Max length')).toHaveValue('20');
-        await expect(page.getByRole('cell', { name: '  Short Text Short Text' }).getByPlaceholder('Placeholder Text')).toHaveValue('Placeholder Text');
-        await expect(page.getByRole('cell', { name: '  Short Text Short Text' }).getByPlaceholder('Help Text')).toHaveValue('Help Text Short Text');
-        await expect(page.getByRole('cell', { name: '  Short Text Short Text' }).getByLabel('Require input')).toBeChecked();
-        await expect(page.getByRole('cell', { name: '  Short Text Short Text' }).getByLabel('User can edit the field')).toBeChecked();
-        await expect(page.getByRole('cell', { name: '  Short Text Short Text' }).getByLabel('Autofocus this field on')).not.toBeChecked();
+        await expect(page.getByRole('row', { name: '  Short Text   Require' }).getByPlaceholder('Placeholder Text')).toHaveValue('Placeholder Text');
+        await expect(page.getByRole('cell', { name: 'Default Value Default Text', exact: true }).getByPlaceholder('Enter a default text')).toHaveValue('Default Text');
+        await expect(page.getByRole('row', { name: '  Short Text   Require' }).getByLabel('Require input')).toBeChecked();
+        await expect(page.getByRole('row', { name: '  Short Text   Require' }).getByLabel('User can edit the field')).toBeChecked();
+        await expect(page.getByRole('row', { name: '  Short Text   Require' }).getByPlaceholder('Help Text')).toHaveValue('Help Text Short Text');
+        await expect(page.getByRole('row', { name: '  Short Text   Require' }).getByLabel('Autofocus this field on')).not.toBeChecked();
 
         // 2. Validate Long Text field
         await expect(page.locator('#exprdawc_attribute_type_1')).toHaveValue('long_text');
-        await expect(page.getByRole('cell', { name: '  Long Text Long Text  ' }).getByPlaceholder('Name of the label')).toHaveValue('Long Text');
-        await expect(page.getByRole('cell', { name: '  Long Text Long Text  ' }).getByLabel('Require input')).toBeChecked();
+        await expect(page.getByRole('cell', { name: '  Long Text   Require' }).getByPlaceholder('Name of the label')).toHaveValue('Long Text');
+        await expect(page.getByRole('cell', { name: '  Long Text   Require' }).getByLabel('Require input')).toBeChecked();
         await expect(page.getByRole('spinbutton', { name: 'Rows' })).toHaveValue('2');
         await expect(page.getByRole('spinbutton', { name: 'Columns' })).toHaveValue('5');
         await expect(page.getByRole('cell', { name: 'Min length 6', exact: true }).getByLabel('Min length')).toHaveValue('6');
         await expect(page.getByRole('cell', { name: 'Max length 1000', exact: true }).getByLabel('Max length')).toHaveValue('1000');
         await expect(page.getByText('Hier steht ein Default Text')).toHaveValue('Hier steht ein\nDefault Text');
-        await expect(page.getByRole('cell', { name: '  Long Text Long Text  ' }).getByPlaceholder('Placeholder Text')).toHaveValue('PlaceHolder');
-        await expect(page.getByRole('cell', { name: '  Long Text Long Text  ' }).getByPlaceholder('Help Text')).toHaveValue('HelpText');
+        await expect(page.getByRole('cell', { name: '  Long Text   Require' }).getByPlaceholder('Placeholder Text')).toHaveValue('PlaceHolder');
+        await expect(page.getByRole('cell', { name: '  Long Text   Require' }).getByPlaceholder('Help Text')).toHaveValue('HelpText');
 
         // 3. Validate Email field
-        await expect(page.getByRole('cell', { name: '  Email Email   Require' }).getByPlaceholder('Name of the label')).toHaveValue('Email');
-        await expect(page.locator('#exprdawc_attribute_type_2')).toHaveValue('email');
-        await expect(page.getByRole('cell', { name: '  Email Email   Require' }).getByPlaceholder('Enter a default email')).toHaveValue('examle@example.org');
-        await expect(page.getByRole('cell', { name: '  Email Email   Require' }).getByLabel('Autofocus this field on')).toBeChecked();
-        await expect(page.getByRole('cell', { name: '  Email Email   Require' }).getByLabel('Enable price adjustment')).toBeChecked();
-        await expect(page.getByRole('cell', { name: '  Email Email   Require' }).getByLabel('Price Adjustment Type')).toHaveValue('fixed');
+        await expect(page.getByRole('cell', { name: '  Email   Require input' }).getByPlaceholder('Name of the label')).toHaveValue('Email');
+        await expect(page.getByRole('cell', { name: '  Email   Require input' }).getByLabel('Require input')).not.toBeChecked();
+        await expect(page.getByRole('cell', { name: '  Email   Require input' }).getByLabel('Autofocus this field on')).toBeChecked();
+        await expect(page.getByRole('cell', { name: '  Email   Require input' }).getByLabel('User can edit the field')).not.toBeChecked();
+        await expect(page.getByRole('cell', { name: '  Email   Require input' }).getByLabel('Enable conditional logic')).not.toBeChecked();
+        await expect(page.getByRole('cell', { name: '  Email   Require input' }).getByLabel('Enable price adjustment')).toBeChecked();
+        await expect(page.getByRole('cell', { name: '  Email   Require input' }).getByLabel('Disable this field on front-')).not.toBeChecked();
+        await expect(page.getByRole('cell', { name: '  Email   Require input' }).getByPlaceholder('Placeholder Text')).toHaveValue('Place Text');
+        await expect(page.getByRole('cell', { name: '  Email   Require input' }).getByPlaceholder('Help Text')).toHaveValue('Help Text');
+        await expect(page.getByRole('cell', { name: '  Email   Require input' }).getByPlaceholder('CSS Class')).toBeEmpty();
+        await expect(page.getByRole('cell', { name: '  Email   Require input' }).getByLabel('Autocomplete Function')).toHaveValue('on');
+        await expect(page.getByRole('cell', { name: '  Email   Require input' }).getByLabel('Price Adjustment Type')).toHaveValue('fixed');
         await expect(page.getByRole('spinbutton', { name: 'Price Adjustment Value' })).toHaveValue('4.97');
-        await expect(page.getByRole('cell', { name: '  Email Email   Require' }).getByPlaceholder('Placeholder Text')).toHaveValue('Place Text');
-        await expect(page.getByRole('cell', { name: '  Email Email   Require' }).getByPlaceholder('Help Text')).toHaveValue('Help Text');
-        await expect(page.getByRole('cell', { name: '  Email Email   Require' }).getByLabel('User can edit the field')).not.toBeChecked();
-        await expect(page.getByRole('cell', { name: '  Email Email   Require' }).getByLabel('Require input')).not.toBeChecked();
+        await expect(page.getByRole('cell', { name: '  Email   Require input' }).getByPlaceholder('Enter a default email')).toHaveValue('examle@example.org');
 
         // 4. Validate Number field
-        await expect(page.locator('#exprdawc_attribute_type_3')).toHaveValue('number');
-        await expect(page.getByRole('cell', { name: '  Number Number   Require' }).getByPlaceholder('Name of the label')).toHaveValue('Number');
+        await expect(page.getByRole('cell', { name: '  Number   Require input' }).getByPlaceholder('Name of the label')).toHaveValue('Number');
+        await expect(page.getByRole('cell', { name: '  Number   Require input' }).getByLabel('Require input')).toBeChecked();
+        await expect(page.getByRole('cell', { name: '  Number   Require input' }).getByLabel('Autofocus this field on')).not.toBeChecked();
+        await expect(page.getByRole('cell', { name: '  Number   Require input' }).getByLabel('User can edit the field')).toBeChecked();
+        await expect(page.getByRole('cell', { name: '  Number   Require input' }).getByLabel('Enable conditional logic')).not.toBeChecked();
+        await expect(page.getByRole('cell', { name: '  Number   Require input' }).getByLabel('Disable this field on front-')).not.toBeChecked();
+        await expect(page.getByRole('cell', { name: '  Number   Require input' }).getByPlaceholder('Placeholder Text')).toHaveValue('PlaceHolder Text');
+        await expect(page.getByRole('cell', { name: '  Number   Require input' }).getByPlaceholder('Help Text')).toHaveValue('Help Text');
+        await expect(page.getByRole('cell', { name: '  Number   Require input' }).getByPlaceholder('CSS Class')).toBeEmpty();
+        await expect(page.getByRole('cell', { name: '  Number   Require input' }).getByLabel('Autocomplete Function')).toHaveValue('on');
         await expect(page.getByRole('spinbutton', { name: 'Min value' })).toHaveValue('5');
         await expect(page.getByRole('spinbutton', { name: 'Max value' })).toHaveValue('25');
         await expect(page.getByRole('spinbutton', { name: 'Step' })).toHaveValue('5');
         await expect(page.getByRole('spinbutton', { name: 'Default Value' })).toHaveValue('10');
-        await expect(page.getByRole('cell', { name: '  Number Number   Require' }).getByPlaceholder('Placeholder Text')).toHaveValue('PlaceHolder Text');
-        await expect(page.getByRole('cell', { name: '  Number Number   Require' }).getByPlaceholder('Help Text')).toHaveValue('Help Text');
-        await expect(page.getByRole('cell', { name: '  Number Number   Require' }).getByLabel('User can edit the field')).toBeChecked();
-        await expect(page.getByRole('cell', { name: '  Number Number   Require' }).getByLabel('Require input')).toBeChecked();
-        await expect(page.getByRole('cell', { name: '  Number Number   Require' }).getByLabel('Autofocus this field on')).not.toBeChecked();
 
         // 5. Validate Radio Button field
-        await expect(page.locator('#exprdawc_attribute_type_4')).toHaveValue('radio');
-        await expect(page.getByRole('cell', { name: '  Radio Radio Button  ' }).getByPlaceholder('Name of the label')).toHaveValue('Radio');
-        await expect(page.getByRole('row', { name: ' Option C Option C Remove', exact: true }).getByRole('radio')).toBeChecked();
+        await expect(page.getByRole('cell', { name: '  Radio   Require input' }).getByPlaceholder('Name of the label')).toHaveValue('Radio');
+        await expect(page.getByRole('cell', { name: '  Radio   Require input' }).getByLabel('Require input')).toBeChecked();
+        await expect(page.getByRole('cell', { name: '  Radio   Require input' }).getByLabel('Autofocus this field on')).not.toBeChecked();
+        await expect(page.getByRole('cell', { name: '  Radio   Require input' }).getByLabel('User can edit the field')).not.toBeChecked();
+        await expect(page.getByRole('cell', { name: '  Radio   Require input' }).getByLabel('Enable conditional logic')).not.toBeChecked();
+        await expect(page.getByRole('cell', { name: '  Radio   Require input' }).getByLabel('Enable price adjustment')).not.toBeChecked();
+        await expect(page.getByRole('cell', { name: '  Radio   Require input' }).getByLabel('Disable this field on front-')).not.toBeChecked();
+        await expect(page.getByRole('cell', { name: '  Radio   Require input' }).getByPlaceholder('Help Text')).toHaveValue('Help Text');
+        await expect(page.getByRole('cell', { name: '  Radio   Require input' }).getByPlaceholder('CSS Class')).toBeEmpty();
+        await expect(page.getByRole('cell', { name: '  Radio   Require input' }).getByLabel('Autocomplete Function')).toHaveValue('on');
+        await expect(page.getByRole('row', { name: ' Option A Option A Remove', exact: true }).getByPlaceholder('Enter option label')).toHaveValue('Option A');
+        await expect(page.getByRole('row', { name: ' Option A Option A Remove', exact: true }).getByPlaceholder('Enter option value')).toHaveValue('Option A');
+        await expect(page.getByRole('row', { name: ' Option A Option A Remove', exact: true }).getByRole('radio')).not.toBeChecked();
+        await expect(page.getByRole('row', { name: ' Option B Option B Remove', exact: true }).getByPlaceholder('Enter option label')).toHaveValue('Option B');
+        await expect(page.getByRole('row', { name: ' Option B Option B Remove', exact: true }).getByPlaceholder('Enter option value')).toHaveValue('Option B');
+        await expect(page.getByRole('row', { name: ' Option B Option B Remove', exact: true }).getByRole('radio')).not.toBeChecked();
         await expect(page.getByRole('row', { name: ' Option C Option C Remove', exact: true }).getByPlaceholder('Enter option label')).toHaveValue('Option C');
         await expect(page.getByRole('row', { name: ' Option C Option C Remove', exact: true }).getByRole('radio')).toBeChecked();
-        await expect(page.getByRole('cell', { name: '  Radio Radio Button  ' }).getByPlaceholder('Help Text')).toHaveValue('Help Text');
-        await expect(page.getByRole('cell', { name: '  Radio Radio Button  ' }).getByLabel('Require input')).toBeChecked();
+        await expect(page.getByRole('row', { name: ' Option D Option D Remove', exact: true }).getByPlaceholder('Enter option label')).toHaveValue('Option D');
+        await expect(page.getByRole('row', { name: ' Option D Option D Remove', exact: true }).getByPlaceholder('Enter option value')).toHaveValue('Option D');
+        await expect(page.getByRole('row', { name: ' Option D Option D Remove', exact: true }).getByRole('radio')).not.toBeChecked();
 
         // 6. Validate Color Picker field
-        await expect(page.locator('#exprdawc_attribute_type_5')).toHaveValue('color');
-        await expect(page.getByRole('cell', { name: '  Color Color   Require' }).getByLabel('User can edit the field')).toBeChecked();
-        await expect(page.getByRole('cell', { name: '  Color Color   Require' }).getByLabel('Require input')).toBeChecked();
-        await expect(page.getByRole('cell', { name: '  Color Color   Require' }).getByPlaceholder('Help Text')).toHaveValue('Color?');
-        await expect(page.getByRole('cell', { name: '  Color Color   Require' }).getByPlaceholder('Select a default color')).toHaveValue('#ff0000');
+        await expect(page.getByRole('cell', { name: '  Color   Require input' }).getByPlaceholder('Name of the label')).toHaveValue('Color');
+        await expect(page.getByRole('cell', { name: '  Color   Require input' }).getByLabel('Require input')).toBeChecked();
+        await expect(page.getByRole('cell', { name: '  Color   Require input' }).getByLabel('Autofocus this field on')).not.toBeChecked();
+        await expect(page.getByRole('cell', { name: '  Color   Require input' }).getByLabel('User can edit the field')).toBeChecked();
+        await expect(page.getByRole('cell', { name: '  Color   Require input' }).getByLabel('Enable conditional logic')).not.toBeChecked();
+        await expect(page.getByRole('cell', { name: '  Color   Require input' }).getByLabel('Enable price adjustment')).not.toBeChecked();
+        await expect(page.getByRole('cell', { name: '  Color   Require input' }).getByLabel('Disable this field on front-')).not.toBeChecked();
+        await expect(page.getByRole('cell', { name: '  Color   Require input' }).getByPlaceholder('Help Text')).toHaveValue('Color?');
+        await expect(page.getByRole('cell', { name: '  Color   Require input' }).getByPlaceholder('CSS Class')).toBeEmpty();
+        await expect(page.getByRole('cell', { name: '  Color   Require input' }).getByLabel('Autocomplete Function')).toHaveValue('on');
         await expect(page.getByRole('checkbox', { name: 'User can input a custom color' })).not.toBeChecked();
+        await expect(page.getByRole('cell', { name: '  Color   Require input' }).getByPlaceholder('Select a default color')).toHaveValue('#ff0000');
+        await expect(page.getByRole('textbox', { name: '#1d2327' })).toHaveValue('#ff0000');
+
+        // 7. Validate Multi Color Radio field
+        await expect(page.locator('input[name="extra_product_fields[6][label]"]')).toHaveValue('Multi');
+        await expect(page.locator('#exprdawc_text_required_6')).toBeChecked();
+        await expect(page.locator('#exprdawc_text_autofocus_6')).not.toBeChecked();
+        await expect(page.locator('#exprdawc_text_editable_6')).not.toBeChecked();
+        await expect(page.locator('#exprdawc_text_conditional_logic_6')).not.toBeChecked();
+        await expect(page.locator('#exprdawc_text_adjust_price_6')).not.toBeChecked();
+        await expect(page.locator('#exprdawc_text_disabled_6')).not.toBeChecked();
+        await expect(page.locator('#exprdawc_text_help_text_6')).toHaveValue('Help Multi');
+        await expect(page.locator('#exprdawc_text_css_class_6')).toHaveValue('class_radio_multi');
+        await expect(page.locator('#exprdawc_autocomplete_function_6')).toHaveValue('on');
+        await expect(page.getByRole('radio', { name: 'Quadrat (Square)' })).toBeChecked();
+        await expect(page.getByRole('textbox', { name: 'Size (e.g. 75px) ' })).toHaveValue('75px');
+        await expect(page.getByRole('checkbox', { name: 'Show label name under the' })).toBeChecked();
+        await expect(page.getByRole('cell', { name: 'Black', exact: true }).getByPlaceholder('Enter option label')).toHaveValue('Black');
+        await expect(page.getByRole('cell', { name: '#000000', exact: true }).getByPlaceholder('Select a color')).toHaveValue('#000000');
+        await expect(page.getByRole('row', { name: ' Black #000000 Remove', exact: true }).locator('input[name="extra_product_fields[6][default]"]')).not.toBeChecked();
+        await expect(page.getByRole('cell', { name: 'Orange', exact: true }).getByPlaceholder('Enter option label')).toHaveValue('Orange');
+        await expect(page.getByRole('cell', { name: '#ffae00', exact: true }).getByPlaceholder('Select a color')).toHaveValue('#ffae00');
+        await expect(page.getByRole('row', { name: ' Orange #ffae00 Remove', exact: true }).locator('input[name="extra_product_fields[6][default]"]')).toBeChecked();
 
     });
 
@@ -212,7 +281,7 @@ test.describe('@P10 @ADMIN', () => {
         await productAdminPage.goToProductPage('Polo');
         await productAdminPage.goToExtraProductDataTab();
 
-        for (let i = 0; i < 7; i++) {
+        for (let i = 0; i < 8; i++) {
             await page.locator(`tr > td > .exprdawc_fields_table > tbody > .exprdawc_attribute > td:nth-child(5) > .button.exprdawc_remove_custom_field`).first().click();
             page.once('dialog', dialog => {
                 dialog.accept().catch(() => { });
@@ -256,9 +325,9 @@ test.describe('@P10 @ADMIN', () => {
         // Add Color Picker field 2
         await productAdminPage.clickAddOptionButton();
         await productAdminPage.fillExtraField('Color 2', 1, 'color', false);
-        await page.getByLabel('Help Text').click();
-        await page.getByLabel('Help Text').fill('Help Text');
-        await page.getByRole('checkbox', { name: 'User can input a custom color' }).check();
+        await page.getByRole('cell', { name: '  Color 2 Color   Require' }).getByPlaceholder('Help Text').click();
+        await page.getByRole('cell', { name: '  Color 2 Color   Require' }).getByPlaceholder('Help Text').fill('Help Text');
+        await page.getByRole('cell', { name: '  Color 2 Color   Require' }).getByLabel('User can input a custom color').check();
         await page.getByRole('cell', { name: '  Color 2 Color   Require' }).getByPlaceholder('#1d2327').click();
         await page.getByRole('cell', { name: '  Color 2 Color   Require' }).getByPlaceholder('#1d2327').fill('#ededed');
 
@@ -270,24 +339,35 @@ test.describe('@P10 @ADMIN', () => {
 
 
         await page.locator('.dashicons.dashicons-arrow-up').first().click();
-        await expect(page.getByRole('cell', { name: '  Color Color   Require' }).getByPlaceholder('Name of the label')).toHaveValue('Color');
-        await expect(page.getByRole('textbox', { name: 'Help Text' })).toHaveValue('Color?');
+
+
+        await expect(page.getByRole('cell', { name: '  Color   Require input' }).getByPlaceholder('Name of the label')).toHaveValue('Color');
         await expect(page.getByRole('checkbox', { name: 'Require input' })).toBeChecked();
+        await expect(page.getByRole('checkbox', { name: 'Autofocus this field on' })).not.toBeChecked();
         await expect(page.getByRole('checkbox', { name: 'User can edit the field' })).toBeChecked();
+        await expect(page.getByRole('checkbox', { name: 'Enable conditional logic' })).not.toBeChecked();
+        await expect(page.getByRole('checkbox', { name: 'Enable price adjustment' })).not.toBeChecked();
+        await expect(page.getByRole('checkbox', { name: 'Disable this field on front-' })).not.toBeChecked();
+        await expect(page.getByRole('textbox', { name: 'Help Text ' })).toHaveValue('Color?');
+        await expect(page.getByRole('textbox', { name: 'CSS Class ' })).toBeEmpty();
+        await expect(page.getByRole('cell', { name: '  Color   Require input' }).getByLabel('Autocomplete Function')).toHaveValue('on');
+        await expect(page.getByRole('checkbox', { name: 'User can input a custom color' })).not.toBeChecked();
         await expect(page.getByRole('textbox', { name: 'Default Value' })).toHaveValue('#ff0000');
         await expect(page.getByRole('textbox', { name: '#1d2327' })).toHaveValue('#ff0000');
-        await expect(page.getByRole('checkbox', { name: 'User can input a custom color' })).not.toBeChecked();
         await page.locator('.dashicons.dashicons-arrow-up').click();
-        await expect(page.getByRole('cell', { name: '  Color 2 Color   Require' }).getByPlaceholder('Name of the label')).toHaveValue('Color 2');
-        await expect(page.getByRole('cell', { name: '  Color 2 Color   Require' }).getByPlaceholder('Help Text')).toHaveValue('Help Text');
-        await expect(page.getByRole('cell', { name: '  Color 2 Color   Require' }).getByLabel('User can input a custom color')).toBeChecked();
-        await expect(page.getByRole('cell', { name: '  Color 2 Color   Require' }).getByPlaceholder('Select a default color')).toHaveValue('#ededed');
-        await expect(page.getByRole('cell', { name: '  Color 2 Color   Require' }).getByPlaceholder('#1d2327')).toHaveValue('#ededed');
-        await expect(page.getByRole('cell', { name: '  Color 2 Color   Require' }).getByLabel('Require input')).not.toBeChecked();
-        await expect(page.getByRole('cell', { name: '  Color 2 Color   Require' }).getByLabel('Autofocus this field on')).not.toBeChecked();
-        await expect(page.getByRole('cell', { name: '  Color 2 Color   Require' }).getByLabel('User can edit the field')).not.toBeChecked();
-        await expect(page.getByRole('cell', { name: '  Color 2 Color   Require' }).getByLabel('Enable conditional logic')).not.toBeChecked();
-        await expect(page.getByRole('cell', { name: '  Color 2 Color   Require' }).getByLabel('Enable price adjustment')).not.toBeChecked();
+        await expect(page.getByRole('cell', { name: '  Color 2   Require input' }).getByPlaceholder('Name of the label')).toHaveValue('Color 2');
+        await expect(page.getByRole('cell', { name: '  Color 2   Require input' }).getByLabel('Require input')).not.toBeChecked();
+        await expect(page.getByRole('cell', { name: '  Color 2   Require input' }).getByLabel('Autofocus this field on')).not.toBeChecked();
+        await expect(page.getByRole('cell', { name: '  Color 2   Require input' }).getByLabel('User can edit the field')).not.toBeChecked();
+        await expect(page.getByRole('cell', { name: '  Color 2   Require input' }).getByLabel('Enable conditional logic')).not.toBeChecked();
+        await expect(page.getByRole('cell', { name: '  Color 2   Require input' }).getByLabel('Enable price adjustment')).not.toBeChecked();
+        await expect(page.getByRole('cell', { name: '  Color 2   Require input' }).getByLabel('Disable this field on front-')).not.toBeChecked();
+        await expect(page.getByRole('cell', { name: '  Color 2   Require input' }).getByPlaceholder('Help Text')).toHaveValue('Help Text');
+        await expect(page.getByRole('cell', { name: '  Color 2   Require input' }).getByPlaceholder('CSS Class')).toBeEmpty();
+        await expect(page.getByRole('cell', { name: '  Color 2   Require input' }).getByLabel('Autocomplete Function')).toHaveValue('on');
+        await expect(page.getByRole('cell', { name: '  Color 2   Require input' }).getByLabel('User can input a custom color')).toBeChecked();
+        await expect(page.getByRole('cell', { name: '  Color 2   Require input' }).getByPlaceholder('Select a default color')).toHaveValue('#ededed');
+        await expect(page.getByRole('cell', { name: '  Color 2   Require input' }).getByPlaceholder('#1d2327')).toHaveValue('#ededed');
 
         // Frontend Check
         await productPage.goToProductPage('Cap');
@@ -297,6 +377,85 @@ test.describe('@P10 @ADMIN', () => {
         await expect(page.getByTestId('color_hex_field_1')).toHaveValue('#ededed');
         await expect(page.getByText('Color?')).toBeVisible();
         await expect(page.getByText('Help Text')).toBeVisible();
+
+    });
+
+    test('ADM-05 Add Multi Color field on product page', async ({ page }) => {
+        const adminUrl = env.wpAdminURL;
+        const username = env.adminUser;
+        const password = env.adminPass;
+
+        const adminLogin = new AdminLoginPage(page);
+        const productAdminPage = new ProductAdminPage(page);
+        const productPage = new ProductPage(page);
+
+        await adminLogin.goto(adminUrl);
+        await adminLogin.login(username, password);
+        await productAdminPage.goToProductPage('Single');
+        await productAdminPage.goToExtraProductDataTab();
+
+        // Add Color Picker field
+        await productAdminPage.clickAddOptionButton();
+        await productAdminPage.fillExtraField('Multi Color', 0, 'color_radio', false);
+
+        await page.locator('#exprdawc_text_required_0').check();
+        await page.locator('#exprdawc_text_editable_0').check();
+
+        await page.getByRole('textbox', { name: 'Help Text ' }).click();
+        await page.getByRole('textbox', { name: 'Help Text ' }).fill('Help Text');
+        await page.getByRole('textbox', { name: 'CSS Class ' }).click();
+        await page.getByRole('textbox', { name: 'CSS Class ' }).fill('css-class-custom');
+        await page.getByRole('radio', { name: 'Badget' }).check();
+        await page.getByRole('textbox', { name: 'Size (e.g. 75px) ' }).click();
+        await page.getByRole('textbox', { name: 'Size (e.g. 75px) ' }).fill('100px');
+        await page.getByRole('button', { name: 'Add Option' }).click();
+        await page.getByRole('textbox', { name: 'Enter option label' }).click();
+        await page.getByRole('textbox', { name: 'Enter option label' }).fill('Option A');
+        await page.getByPlaceholder('Select a color').click();
+        await page.getByPlaceholder('Select a color').fill('#f50000');
+        await page.getByRole('button', { name: 'Add Option' }).click();
+        await page.getByRole('row', { name: ' #000000 Remove', exact: true }).getByPlaceholder('Enter option label').click();
+        await page.getByRole('row', { name: ' #000000 Remove', exact: true }).getByPlaceholder('Enter option label').fill('Option B');
+        await page.getByRole('cell', { name: '#000000', exact: true }).getByPlaceholder('Select a color').click();
+        await page.getByRole('cell', { name: '#000000', exact: true }).getByPlaceholder('Select a color').fill('#0400ff');
+        await page.getByRole('row', { name: ' Option B #0400ff Remove', exact: true }).getByRole('radio').check();
+
+        // Save changes
+        await page.getByRole('button', { name: 'Update' }).click();
+
+        // Verify that the fields are saved correctly
+        await productAdminPage.goToExtraProductDataTab();
+
+        await page.locator('.dashicons.dashicons-arrow-up').click();
+        await expect(page.getByRole('textbox', { name: 'Help Text ' })).toHaveValue('Help Text');
+        await expect(page.getByRole('textbox', { name: 'CSS Class ' })).toHaveValue('css-class-custom');
+        await expect(page.getByRole('radio', { name: 'Badget' })).toBeChecked();
+        await expect(page.getByRole('textbox', { name: 'Size (e.g. 75px) ' })).toHaveValue('100px');
+        await expect(page.getByRole('cell', { name: 'Option A', exact: true }).getByPlaceholder('Enter option label')).toHaveValue('Option A');
+        await expect(page.getByRole('cell', { name: '#f50000', exact: true }).getByPlaceholder('Select a color')).toHaveValue('#f50000');
+        await expect(page.getByRole('row', { name: ' Option A #f50000 Remove', exact: true }).getByRole('radio')).not.toBeChecked();
+        await expect(page.getByRole('cell', { name: 'Option B', exact: true }).getByPlaceholder('Enter option label')).toHaveValue('Option B');
+        await expect(page.getByRole('cell', { name: '#0400ff', exact: true }).getByPlaceholder('Select a color')).toHaveValue('#0400ff');
+        await expect(page.getByRole('row', { name: ' Option B #0400ff Remove', exact: true }).getByRole('radio')).toBeChecked();
+        await expect(page.getByRole('checkbox', { name: 'Show label name under the' })).toBeChecked();
+        await expect(page.getByRole('checkbox', { name: 'Require input' })).toBeChecked();
+        await expect(page.getByRole('checkbox', { name: 'User can edit the field' })).toBeChecked();
+        await expect(page.getByRole('textbox', { name: 'Name of the label' })).toHaveValue('Multi Color');
+
+        // Frontend Check
+        await productPage.goToProductPage('Single');
+
+        // Check if the color swatch badge is visible and has the correct size
+        await expect(page.locator('label:nth-child(4) > .exprdawc-color-swatch-badget')).toBeVisible();
+        await expect(page.locator('.exprdawc-color-swatch-badget').first()).toBeVisible();
+        await expect(page.getByText('Help Text')).toBeVisible();
+        await page.locator('.exprdawc-color-swatch-badget').first().click();
+
+        // Add to cart and check if the selected color is displayed in the cart and checkout page
+        await page.getByRole('button', { name: 'Add to cart', exact: true }).click();
+        await expect(page.getByRole('alert')).toContainText('“Single” has been added to your cart. View cart');
+        await page.locator('#content').getByRole('link', { name: 'View cart ' }).click();
+        await expect(page.locator('tbody')).toContainText('This is a simple, virtual product. Original item price: €2.00 / Multi Color: #f50000');
 
     });
 

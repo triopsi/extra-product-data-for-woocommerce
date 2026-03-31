@@ -16,7 +16,6 @@ declare(strict_types=1);
 
 namespace Triopsi\Exprdawc\Frontend;
 
-use Automattic\WooCommerce\Admin\Overrides\Order;
 use Automattic\WooCommerce\Enums\ProductType;
 use Triopsi\Exprdawc\Helpers\Helper;
 use Triopsi\Exprdawc\Helpers\OrderHelper;

@@ -34,7 +34,7 @@ Project:             | Woocommerce Extra Product Data
 | Requires at least |  5.0 |
 | Tested up to |  6.x |
 | Requires PHP |  > 8.2 |
-| Stable tag | 3.1.0 |
+| Stable tag | 3.2.0 |
 | License |  GPLv2 or later |
 | License URI |  https://www.gnu.org/licenses/gpl-2.0.html |
 | Wordpress Plugin Site | https://wordpress.org/plugins/extra-product-data-for-woocommerce/ |
@@ -130,4 +130,6 @@ Yes, the plugin has been tested with the latest WordPress release and PHP > 8.2 
   <img src=".wordpress-org/screenshot-7.png" alt="Screenshot" />
   <img src=".wordpress-org/screenshot-8.png" alt="Screenshot" />
   <img src=".wordpress-org/screenshot-9.png" alt="Screenshot" />
+  <img src=".wordpress-org/screenshot-10.png" alt="Screenshot" />
+  <img src=".wordpress-org/screenshot-11.png" alt="Screenshot" />
 </p>

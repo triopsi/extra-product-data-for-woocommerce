@@ -56,7 +56,7 @@ $field = $field_args ?? array();
 					<?php echo H::dataAttrs( $dataAttrs ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped ?>
 				/>
 				<label for="<?php echo H::attr( $option_id ); ?>" class="exprdawc-label-radio">
-					<?php echo H::e( $option_label ); ?>
+					<?php echo $option_label; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped ?>
 				</label>
 			</div>
 

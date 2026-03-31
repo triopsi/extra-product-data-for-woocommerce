@@ -45,7 +45,7 @@ class Helper {
 	 *
 	 * @var array
 	 */
-	private const PRICE_ADJUSTMENT_TYPES = array( 'checkbox', 'radio', 'select' );
+	private const PRICE_ADJUSTMENT_TYPES = array( 'checkbox', 'radio', 'select', 'color_radio' );
 
 	/**
 	 * Check if WooCommerce is active.
@@ -248,6 +248,7 @@ class Helper {
 		$isRequired = $fieldArgs['required'] && ! $skipRequiredCheck;
 		$typeSlug   = str_replace( '_', '-', $fieldArgs['type'] );
 
+		// Field Wrapper Classes.
 		$fieldArgs['wrapper_class'][] = 'exprdawc-field-wrapper';
 		$fieldArgs['wrapper_class'][] = $fieldArgs['css_id'] . '-wrapper';
 		$fieldArgs['wrapper_class'][] = 'exprdawc-field-wrapper-' . $typeSlug;
@@ -255,30 +256,35 @@ class Helper {
 			$fieldArgs['wrapper_class'][] = 'exprdawc-field-wrapper-required';
 		}
 
+		// Input Classes.
 		$fieldArgs['input_class'][] = $fieldArgs['css_id'] . '-input';
 		$fieldArgs['input_class'][] = 'exprdawc-field-input-' . $typeSlug;
 		if ( $isRequired ) {
 			$fieldArgs['input_class'][] = 'exprdawc-field-input-required';
 		}
 
+		// Label Classes.
 		$fieldArgs['label_class'][] = $fieldArgs['css_id'] . '-label';
 		$fieldArgs['label_class'][] = 'exprdawc-field-label-' . $typeSlug;
 		if ( $isRequired ) {
 			$fieldArgs['label_class'][] = 'exprdawc-field-label-required';
 		}
 
+		// Description Classes.
 		$fieldArgs['description_class'][] = $fieldArgs['css_id'] . '-description';
 		$fieldArgs['description_class'][] = 'exprdawc-field-description-' . $typeSlug;
 		if ( $isRequired ) {
 			$fieldArgs['description_class'][] = 'exprdawc-field-description-required';
 		}
 
+		// Input Wrapper Classes.
 		$fieldArgs['input_wrapper_class'][] = $fieldArgs['css_id'] . '-input-wrapper';
 		$fieldArgs['input_wrapper_class'][] = 'exprdawc-field-input-wrapper-' . $typeSlug;
 		if ( $isRequired ) {
 			$fieldArgs['input_wrapper_class'][] = 'exprdawc-field-input-wrapper-required';
 		}
 
+		// Extends CSS Classes.
 		if ( in_array( $fieldArgs['type'], self::TEXT_FIELD_TYPES, true ) ) {
 			$fieldArgs['input_class'][] = 'input-text';
 		}
@@ -291,6 +297,16 @@ class Helper {
 			foreach ( $fieldArgs['validate'] as $validate ) {
 				$fieldArgs['input_class'][] = 'validate-' . sanitize_html_class( $validate );
 			}
+		}
+
+		if ( ! empty( $fieldArgs['css_class'] ) ) {
+			$fieldArgs['css_class']             = preg_replace( '/[\s,#]+/', '', (string) $fieldArgs['css_class'] );
+			$fieldArgs['input_class'][]         = $fieldArgs['css_class'] . '-input';
+			$fieldArgs['input_class'][]         = $fieldArgs['css_class'];
+			$fieldArgs['wrapper_class'][]       = $fieldArgs['css_class'] . '-wrapper';
+			$fieldArgs['label_class'][]         = $fieldArgs['css_class'] . '-label';
+			$fieldArgs['description_class'][]   = $fieldArgs['css_class'] . '-description';
+			$fieldArgs['input_wrapper_class'][] = $fieldArgs['css_class'] . '-input-wrapper';
 		}
 
 		return $fieldArgs;
@@ -415,9 +431,10 @@ class Helper {
 	 * @return array Field arguments with price adjustment data.
 	 */
 	private static function preparePriceAdjustment( array $fieldArgs, bool $skipRequiredCheck ): array { // phpcs:ignore
-		$adjustmentValue = (float) ( $fieldArgs['priceAdjustmentValue'] ?? 0 );
+		$priceAdjust = $fieldArgs['adjust_price'] ?? false;
 
-		if ( 0.0 !== $adjustmentValue ) {
+		if ( $priceAdjust ) {
+			$adjustmentValue            = (float) ( $fieldArgs['priceAdjustmentValue'] ?? 0 );
 			$fieldArgs['input_class'][] = 'exprdawc-price-adjustment-field';
 
 			if ( ! in_array( $fieldArgs['type'], self::PRICE_ADJUSTMENT_TYPES, true ) ) {
@@ -638,6 +655,20 @@ class Helper {
 
 		if ( ! file_exists( $path ) ) {
 			return;
+		}
+
+		if ( isset( $args['custom_fields'] ) && is_array( $args['custom_fields'] ) ) {
+			$args['custom_fields'] = array_map(
+				static function ( $field ) {
+					if ( ! is_array( $field ) ) {
+						return $field;
+					}
+
+					$field['blocked'] = true;
+					return $field;
+				},
+				$args['custom_fields']
+			);
 		}
 
 		// Extract args to make them available as variables in the template.
