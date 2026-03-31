@@ -2,7 +2,7 @@
 Contributors: triopsi
 Tags: WooCommerce Product Addons, WooCommerce product options, WooCommerce custom fields, WooCommerce product fields
 Tested up to: 6.9
-Stable tag: 3.1.0
+Stable tag: 3.2.0
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
@@ -41,6 +41,7 @@ The following field types are currently implemented:
 * Radio Boxes
 * Checboxes 
 * Color Picker
+* Multi Color Choice (Color Radio Fields)
 
 == Installation ==
 
@@ -66,8 +67,17 @@ Yes, the plugin has been tested with the latest WordPress release and PHP 8.2.
 7. Order Edit Custom Field (Admin View)
 8. Order Edit Customer View
 9. Settings
+10. Multi Choice of Color on Product page with price addjustments
+11. Product Editor - Edit the Multi Choice Field
 
 == Changelog ==
+
+= 3.2.0 (31.03.2026) =
+* Feat: Add Multi Color Radio Field
+* Feat: Add custom css class field
+* Feat: Changing the type after saving the field is now disabled
+* Fix: Update Readme Update Workflow 
+* Feat: Add Rate Us Banner
 
 = 3.1.0 (26.03.2026) =
 * Add new Field (Color Picker)
