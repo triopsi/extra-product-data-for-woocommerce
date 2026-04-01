@@ -10,10 +10,14 @@ Add custom product fields in WooCommerce to collect buyer details. Show data in 
 
 == Description ==
 
-= Extra Product Data for WooCommerce =
 Extra Product Data for WooCommerce is a WooCommerce plugin developed to gather additional user information for products. Once installed, this plugin adds custom input fields to WooCommerce product pages, allowing users to enter extra information during the checkout process. These additional data fields are then displayed in the cart, the order summary, and within the backend for easy access.
 
 Extra Product Data for WooCommerce is free and can be easily extended to fit specific needs with just a few clicks.
+
+**100% Free and Open Source**
+
+This plugin is truly 100% free to use. There is no Pro version, no premium upgrade, and no paid feature lock.  
+We build and maintain this plugin to support the open source community and to keep useful WooCommerce tools accessible to everyone.
 
 == Features ==
 
@@ -42,6 +46,18 @@ The following field types are currently implemented:
 * Checboxes 
 * Color Picker
 * Multi Color Choice (Color Radio Fields)
+
+== Open Source Lover == 
+
+If you love this plugin or would like to support its development, please consider leaving us a 5-star review on WordPress.org [Rate us](https://wordpress.org/support/plugin/extra-product-data-for-woocommerce/reviews/#new-post). We do not earn anything from this plugin, so your review is a meaningful sign of appreciation and support for our work. It is a small but valuable way to show love for the open source community.
+
+== Contribute ==
+
+If you would like to contribute, feel free to help by adding your language to the plugin. Contribute via [translate.wordpress.org](https://translate.wordpress.org/projects/wp-plugins/extra-product-data-for-woocommerce/).
+
+== Have you Questions? ==
+
+If you have any questions or run into any issues, please feel free to reach out via the [WordPress support forum](https://wordpress.org/support/plugin/extra-product-data-for-woocommerce/). We are always happy to help.
 
 == Installation ==
 
