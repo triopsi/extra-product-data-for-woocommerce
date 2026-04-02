@@ -247,6 +247,9 @@ class ProductBackend implements Hookable {
 					$color_radio_show_label = isset( $field['color_radio_show_label'] ) ? 1 : 0;
 					$color_radio_size       = isset( $field['color_radio_size'] ) ? sanitize_text_field( $field['color_radio_size'] ) : '75px';
 
+					// Set default values for date specific settings.
+					$date_default_today = isset( $field['date_default_today'] ) ? 1 : 0;
+
 					if ( empty( $label ) || ! is_string( $label ) ) {
 						return;
 					}
@@ -292,6 +295,7 @@ class ProductBackend implements Hookable {
 						'color_radio_style'           => $color_radio_style,
 						'color_radio_size'            => $color_radio_size,
 						'color_radio_show_label'      => $color_radio_show_label,
+						'date_default_today'          => $date_default_today,
 						'blocked'                     => $blocked,
 						'disabled'                    => $disabled,
 						'css_class'                   => $css_class,

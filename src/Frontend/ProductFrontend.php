@@ -342,6 +342,33 @@ class ProductFrontend implements Hookable {
 						),
 					);
 				}
+
+				$min_date = isset( $input_field_array['min'] ) ? sanitize_text_field( (string) $input_field_array['min'] ) : '';
+				$max_date = isset( $input_field_array['max'] ) ? sanitize_text_field( (string) $input_field_array['max'] ) : '';
+
+				if ( ! empty( $min_date ) && strtotime( $field_value ) < strtotime( $min_date ) ) {
+					return array(
+						'valid'   => false,
+						'message' => sprintf(
+							/* translators: %1$s is the field label, %2$s is the minimum date */
+							esc_html__( '%1$s cannot be earlier than %2$s.', 'extra-product-data-for-woocommerce' ),
+							esc_html( $field_label ),
+							esc_html( $min_date )
+						),
+					);
+				}
+
+				if ( ! empty( $max_date ) && strtotime( $field_value ) > strtotime( $max_date ) ) {
+					return array(
+						'valid'   => false,
+						'message' => sprintf(
+							/* translators: %1$s is the field label, %2$s is the maximum date */
+							esc_html__( '%1$s cannot be later than %2$s.', 'extra-product-data-for-woocommerce' ),
+							esc_html( $field_label ),
+							esc_html( $max_date )
+						),
+					);
+				}
 				break;
 
 			case 'time':

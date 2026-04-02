@@ -370,6 +370,30 @@ if ( ! defined( 'ABSPATH' ) ) {
 					</tbody>
 				</table>
 
+				<!-- Date Option/Settings -->
+				<table class="exprdawc_settings_table exprdawc_date_table" style="display:<?php echo 'date' === $field['type'] ? 'table' : 'none'; ?>">
+					<tbody>
+						<tr>
+							<td>
+								<label class="exprdawc_label" for="exprdawc_date_min_<?php echo esc_html( $index ); ?>"><?php esc_html_e( 'Min date', 'extra-product-data-for-woocommerce' ); ?></label>
+								<input type="date" id="exprdawc_date_min_<?php echo esc_html( $index ); ?>" class="exprdawc_input exprdawc_date_min" name="extra_product_fields[<?php echo esc_html( $index ); ?>][min]" value="<?php echo esc_attr( $field['min'] ?? '' ); ?>" />
+							</td>
+							<td>
+								<label class="exprdawc_label" for="exprdawc_date_max_<?php echo esc_html( $index ); ?>"><?php esc_html_e( 'Max date', 'extra-product-data-for-woocommerce' ); ?></label>
+								<input type="date" id="exprdawc_date_max_<?php echo esc_html( $index ); ?>" class="exprdawc_input exprdawc_date_max" name="extra_product_fields[<?php echo esc_html( $index ); ?>][max]" value="<?php echo esc_attr( $field['max'] ?? '' ); ?>" />
+							</td>
+							<td>
+								<label class="exprdawc_label" for="exprdawc_date_default_today_<?php echo esc_html( $index ); ?>">
+									<input type="checkbox" id="exprdawc_date_default_today_<?php echo esc_html( $index ); ?>" class="exprdawc_input exprdawc_checkbox exprdawc_date_default_today checkbox" name="extra_product_fields[<?php echo esc_html( $index ); ?>][date_default_today]" value="1" <?php echo checked( 1, $field['date_default_today'] ?? 0, false ); ?> />
+									<?php esc_html_e( 'Set default to today', 'extra-product-data-for-woocommerce' ); ?>
+								</label>
+								<label class="exprdawc_label" for="exprdawc_date_default_<?php echo esc_html( $index ); ?>"><?php esc_html_e( 'Default Value', 'extra-product-data-for-woocommerce' ); ?></label>
+								<input type="date" id="exprdawc_date_default_<?php echo esc_html( $index ); ?>" class="exprdawc_input exprdawc_date_default" name="extra_product_fields[<?php echo esc_html( $index ); ?>][default]" value="<?php echo esc_attr( $field['default'] ?? '' ); ?>" <?php echo ( isset( $field['date_default_today'] ) && $field['date_default_today'] ) ? 'disabled' : ''; ?> />
+							</td>
+						</tr>
+					</tbody>
+				</table>
+
 				<!-- E-Mail Option/Settings -->
 				<table class="exprdawc_settings_table exprdawc_email_table" style="display:<?php echo 'email' === $field['type'] ? 'table' : 'none'; ?>">
 					<tbody>

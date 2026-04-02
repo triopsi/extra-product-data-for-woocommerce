@@ -230,6 +230,15 @@ class Helper {
 
 		$default = '';
 		switch ( $fieldArgs['type'] ) {
+			case 'date':
+				// Use today's date if date_default_today is enabled.
+				if ( isset( $fieldArgs['date_default_today'] ) && $fieldArgs['date_default_today'] ) {
+					$default = gmdate( 'Y-m-d' );
+				} else {
+					$default = $fieldArgs['default'];
+				}
+				break;
+
 			default:
 				$default = $fieldArgs['default'];
 		}
@@ -831,6 +840,23 @@ class Helper {
 					return array(
 						'valid'   => false,
 						'message' => __( 'Please enter a valid date.', 'extra-product-data-for-woocommerce' ),
+					);
+				}
+
+				$min_date = isset( $fieldOptions['min'] ) ? sanitize_text_field( (string) $fieldOptions['min'] ) : '';
+				$max_date = isset( $fieldOptions['max'] ) ? sanitize_text_field( (string) $fieldOptions['max'] ) : '';
+
+				if ( ! empty( $min_date ) && strtotime( (string) $fieldValue ) < strtotime( $min_date ) ) {
+					return array(
+						'valid'   => false,
+						'message' => __( 'Please select a date after the minimum date.', 'extra-product-data-for-woocommerce' ),
+					);
+				}
+
+				if ( ! empty( $max_date ) && strtotime( (string) $fieldValue ) > strtotime( $max_date ) ) {
+					return array(
+						'valid'   => false,
+						'message' => __( 'Please select a date before the maximum date.', 'extra-product-data-for-woocommerce' ),
 					);
 				}
 				break;
