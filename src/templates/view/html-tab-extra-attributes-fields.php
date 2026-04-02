@@ -45,6 +45,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 					<option value="email" <?php selected( $field['type'], 'email' ); ?>><?php esc_html_e( 'Email', 'extra-product-data-for-woocommerce' ); ?></option>
 					<option value="number" <?php selected( $field['type'], 'number' ); ?>><?php esc_html_e( 'Number', 'extra-product-data-for-woocommerce' ); ?></option>
 					<option value="date" <?php selected( $field['type'], 'date' ); ?>><?php esc_html_e( 'Date', 'extra-product-data-for-woocommerce' ); ?></option>
+					<option value="time" <?php selected( $field['type'], 'time' ); ?>><?php esc_html_e( 'Time', 'extra-product-data-for-woocommerce' ); ?></option>
 					<option value="color" <?php selected( $field['type'], 'color' ); ?>><?php esc_html_e( 'Color', 'extra-product-data-for-woocommerce' ); ?></option>
 					<option value="yes-no" <?php selected( $field['type'], 'yes-no' ); ?>><?php esc_html_e( 'Yes/No', 'extra-product-data-for-woocommerce' ); ?></option>
 					<option value="radio" <?php selected( $field['type'], 'radio' ); ?>><?php esc_html_e( 'Radio Button', 'extra-product-data-for-woocommerce' ); ?></option>
@@ -105,7 +106,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 										<?php esc_html_e( 'Placeholder Text', 'extra-product-data-for-woocommerce' ); ?>
 										<span class="dashicons dashicons-editor-help" title="<?php esc_html_e( 'Set the placeholder text for the field. This will be displayed inside the input field when it is empty.', 'extra-product-data-for-woocommerce' ); ?>"></span>
 									</label>
-									<input type="text" id="exprdawc_text_placeholder_text_<?php echo esc_html( $index ); ?>" class="exprdawc_input exprdawc_textinput exprdawc_placeholder" name="extra_product_fields[<?php echo esc_html( $index ); ?>][placeholder_text]" value="<?php echo esc_attr( $field['placeholder_text'] ?? '' ); ?>" placeholder="<?php esc_html_e( 'Placeholder Text', 'extra-product-data-for-woocommerce' ); ?>" <?php echo in_array( $field['type'], array( 'radio', 'checkbox' ), true ) ? 'disabled' : ''; ?> />
+									<input type="text" id="exprdawc_text_placeholder_text_<?php echo esc_html( $index ); ?>" class="exprdawc_input exprdawc_textinput exprdawc_placeholder" name="extra_product_fields[<?php echo esc_html( $index ); ?>][placeholder_text]" value="<?php echo esc_attr( $field['placeholder_text'] ?? '' ); ?>" placeholder="<?php esc_html_e( 'Placeholder Text', 'extra-product-data-for-woocommerce' ); ?>" <?php echo in_array( $field['type'], array( 'radio', 'checkbox', 'time' ), true ) ? 'disabled' : ''; ?> />
 								</div>
 							</td>
 							<td class="exprdawc_attribute_help_text">
@@ -344,6 +345,26 @@ if ( ! defined( 'ABSPATH' ) ) {
 							<td>
 								<label class="exprdawc_label" for="exprdawc_number_default_<?php echo esc_html( $index ); ?>"><?php esc_html_e( 'Default Value', 'extra-product-data-for-woocommerce' ); ?></label>
 								<input type="number" id="exprdawc_number_default_<?php echo esc_html( $index ); ?>" class="exprdawc_input exprdawc_number_default" placeholder="<?php esc_html_e( 'Enter a default number', 'extra-product-data-for-woocommerce' ); ?>" name="extra_product_fields[<?php echo esc_html( $index ); ?>][number_default]" value="<?php echo esc_attr( $field['number_default'] ?? '' ); ?>" />
+							</td>
+						</tr>
+					</tbody>
+				</table>
+
+				<!-- Time Option/Settings -->
+				<table class="exprdawc_settings_table exprdawc_time_table" style="display:<?php echo 'time' === $field['type'] ? 'table' : 'none'; ?>">
+					<tbody>
+						<tr>
+							<td>
+								<label class="exprdawc_label" for="exprdawc_time_min_<?php echo esc_html( $index ); ?>"><?php esc_html_e( 'Min time', 'extra-product-data-for-woocommerce' ); ?></label>
+								<input type="time" id="exprdawc_time_min_<?php echo esc_html( $index ); ?>" class="exprdawc_input exprdawc_time_min" name="extra_product_fields[<?php echo esc_html( $index ); ?>][min]" value="<?php echo esc_attr( $field['min'] ?? '' ); ?>" step="60" />
+							</td>
+							<td>
+								<label class="exprdawc_label" for="exprdawc_time_max_<?php echo esc_html( $index ); ?>"><?php esc_html_e( 'Max time', 'extra-product-data-for-woocommerce' ); ?></label>
+								<input type="time" id="exprdawc_time_max_<?php echo esc_html( $index ); ?>" class="exprdawc_input exprdawc_time_max" name="extra_product_fields[<?php echo esc_html( $index ); ?>][max]" value="<?php echo esc_attr( $field['max'] ?? '' ); ?>" step="60" />
+							</td>
+							<td>
+								<label class="exprdawc_label" for="exprdawc_time_default_<?php echo esc_html( $index ); ?>"><?php esc_html_e( 'Default Value', 'extra-product-data-for-woocommerce' ); ?></label>
+								<input type="time" id="exprdawc_time_default_<?php echo esc_html( $index ); ?>" class="exprdawc_input exprdawc_time_default" name="extra_product_fields[<?php echo esc_html( $index ); ?>][default]" value="<?php echo esc_attr( $field['default'] ?? '' ); ?>" step="60" />
 							</td>
 						</tr>
 					</tbody>

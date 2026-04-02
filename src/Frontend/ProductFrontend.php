@@ -344,6 +344,47 @@ class ProductFrontend implements Hookable {
 				}
 				break;
 
+			case 'time':
+				$normalized_time = is_string( $field_value ) ? $this->normalizeTimeToMinute( $field_value ) : null;
+				if ( null === $normalized_time ) {
+					return array(
+						'valid'   => false,
+						'message' => sprintf(
+							/* translators: %s is the field label */
+							esc_html__( '%s is not a valid time.', 'extra-product-data-for-woocommerce' ),
+							esc_html( $field_label )
+						),
+					);
+				}
+
+				$min_time = isset( $input_field_array['min'] ) ? sanitize_text_field( (string) $input_field_array['min'] ) : '';
+				$max_time = isset( $input_field_array['max'] ) ? sanitize_text_field( (string) $input_field_array['max'] ) : '';
+				$min_time = '' !== $min_time ? $this->normalizeTimeToMinute( $min_time ) : null;
+				$max_time = '' !== $max_time ? $this->normalizeTimeToMinute( $max_time ) : null;
+
+				if ( null !== $min_time && $normalized_time < $min_time ) {
+					return array(
+						'valid'   => false,
+						'message' => sprintf(
+							/* translators: %s is the field label */
+							esc_html__( '%s is earlier than the minimum allowed time.', 'extra-product-data-for-woocommerce' ),
+							esc_html( $field_label )
+						),
+					);
+				}
+
+				if ( null !== $max_time && $normalized_time > $max_time ) {
+					return array(
+						'valid'   => false,
+						'message' => sprintf(
+							/* translators: %s is the field label */
+							esc_html__( '%s is later than the maximum allowed time.', 'extra-product-data-for-woocommerce' ),
+							esc_html( $field_label )
+						),
+					);
+				}
+				break;
+
 			case 'color':
 				// Validate hex color format (#RRGGBB or #RGB).
 				if ( ! preg_match( '/^#([A-Fa-f0-9]{6}|[A-Fa-f0-9]{3})$/', $field_value ) ) {
@@ -425,6 +466,33 @@ class ProductFrontend implements Hookable {
 		$intersect = array_intersect( $field_values, $valid_options );
 
 		return ! empty( $intersect ) && count( $intersect ) === count( $field_values );
+	}
+
+	/**
+	 * Normalize a time string to HH:MM.
+	 *
+	 * Accepts HH:MM or HH:MM:SS. When seconds are provided,
+	 * only :00 is accepted for minute precision.
+	 *
+	 * @param string $value Raw time value.
+	 * @return string|null Normalized HH:MM value or null if invalid.
+	 */
+	private function normalizeTimeToMinute( string $value ): ?string {
+		$value = trim( $value );
+
+		if ( preg_match( '/^([01]\d|2[0-3]):([0-5]\d)$/', $value ) ) {
+			return $value;
+		}
+
+		if ( preg_match( '/^([01]\d|2[0-3]):([0-5]\d):([0-5]\d)$/', $value, $matches ) ) {
+			if ( '00' !== $matches[3] ) {
+				return null;
+			}
+
+			return $matches[1] . ':' . $matches[2];
+		}
+
+		return null;
 	}
 
 	/**

@@ -222,7 +222,7 @@ jQuery(function ($) {
                 }
             }
 
-            if ($type === 'radio' || $type === 'checkbox' || $type === 'select' || $type === 'color_radio') {
+            if ($type === 'radio' || $type === 'checkbox' || $type === 'select' || $type === 'color_radio' || $type === 'time') {
                 $placeholderText.prop('disabled', true);
                 $optionsTable.show();
                 // Hide Placeholder.
@@ -250,6 +250,12 @@ jQuery(function ($) {
                 $optionsRow.find('.exprdawc_number_table').show();
             } else {
                 $optionsRow.find('.exprdawc_number_table').hide();
+            }
+
+            if ($(e.currentTarget).val() === 'time') {
+                $optionsRow.find('.exprdawc_time_table').show();
+            } else {
+                $optionsRow.find('.exprdawc_time_table').hide();
             }
 
             if ($(e.currentTarget).val() === 'email') {
@@ -687,7 +693,7 @@ jQuery(function ($) {
                 // By exprdawc_attribute_type checkbox, radio and select hide placeholder text and show options.
                 const fieldType = $(element).find('.exprdawc_attribute_type').val() || 'text';
                 const $placeholderText = $(element).find('.exprdawc_attribute_placeholder_text');
-                if (fieldType === 'radio' || fieldType === 'checkbox' || fieldType === 'select' || fieldType === 'color' || fieldType === 'color_radio') {
+                if (fieldType === 'radio' || fieldType === 'checkbox' || fieldType === 'select' || fieldType === 'color' || fieldType === 'color_radio' || fieldType === 'time') {
                     $placeholderText.hide();
                 } else {
                     $placeholderText.show();

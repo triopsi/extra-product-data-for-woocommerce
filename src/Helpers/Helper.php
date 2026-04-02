@@ -38,7 +38,7 @@ class Helper {
 	 *
 	 * @var array
 	 */
-	private const TEXT_FIELD_TYPES = array( 'text', 'date', 'url', 'email', 'tel', 'number', 'textarea', 'color' );
+	private const TEXT_FIELD_TYPES = array( 'text', 'date', 'time', 'url', 'email', 'tel', 'number', 'textarea', 'color' );
 
 	/**
 	 * Price adjustment field types.
@@ -835,6 +835,16 @@ class Helper {
 				}
 				break;
 
+			case 'time':
+				$normalized_time = is_string( $fieldValue ) ? self::normalizeTimeToMinute( $fieldValue ) : null;
+				if ( null === $normalized_time ) {
+					return array(
+						'valid'   => false,
+						'message' => __( 'Please enter a valid time.', 'extra-product-data-for-woocommerce' ),
+					);
+				}
+				break;
+
 			case 'radio':
 			case 'checkbox':
 			case 'select':
@@ -861,6 +871,33 @@ class Helper {
 			'valid'   => true,
 			'message' => '',
 		);
+	}
+
+	/**
+	 * Normalize a time string to HH:MM.
+	 *
+	 * Accepts HH:MM or HH:MM:SS. When seconds are provided,
+	 * only :00 is accepted for minute precision.
+	 *
+	 * @param string $value Raw time value.
+	 * @return string|null Normalized HH:MM value or null if invalid.
+	 */
+	private static function normalizeTimeToMinute( string $value ): ?string {
+		$value = trim( $value );
+
+		if ( preg_match( '/^([01]\d|2[0-3]):([0-5]\d)$/', $value ) ) {
+			return $value;
+		}
+
+		if ( preg_match( '/^([01]\d|2[0-3]):([0-5]\d):([0-5]\d)$/', $value, $matches ) ) {
+			if ( '00' !== $matches[3] ) {
+				return null;
+			}
+
+			return $matches[1] . ':' . $matches[2];
+		}
+
+		return null;
 	}
 
 	/**
