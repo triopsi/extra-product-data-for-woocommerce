@@ -826,6 +826,88 @@ class TestClassExprdawcProductPageFrontend extends WP_UnitTestCase {
 	}
 
 	/**
+	 * Test exprdawc_validate_custom_fields validates datetime field.
+	 *
+	 * Test Goal:
+	 * Verifies that datetime validation fails when an invalid value is entered.
+	 */
+	public function test_exprdawc_validate_custom_fields_invalid_datetime() {
+		$custom_fields = array(
+			array(
+				'label' => 'Date Time Field',
+				'type'  => 'datetime',
+			),
+		);
+		$this->product->update_meta_data( '_extra_product_fields', $custom_fields );
+		$this->product->save();
+
+		$_POST['exprdawc_custom_field_input'] = array(
+			'date_time_field' => 'not-a-datetime',
+		);
+
+		$result = $this->instance->exprdawcValidateCustomFields( true, $this->product_id, 1 );
+		$this->assertFalse( $result );
+	}
+
+	/**
+	 * Test exprdawc_validate_custom_fields validates datetime field.
+	 *
+	 * Test Goal:
+	 * Verifies that datetime validation succeeds when a valid value is entered.
+	 */
+	public function test_exprdawc_validate_custom_fields_valid_datetime() {
+		$custom_fields = array(
+			array(
+				'label' => 'Date Time Field',
+				'type'  => 'datetime',
+			),
+		);
+		$this->product->update_meta_data( '_extra_product_fields', $custom_fields );
+		$this->product->save();
+
+		$_POST['exprdawc_custom_field_input'] = array(
+			'date_time_field' => '2026-04-06T14:30',
+		);
+
+		$result = $this->instance->exprdawcValidateCustomFields( true, $this->product_id, 1 );
+		$this->assertTrue( $result );
+	}
+
+	/**
+	 * Test exprdawc_validate_custom_fields validates datetime min/max ranges.
+	 *
+	 * Test Goal:
+	 * Verifies that datetime validation fails outside min/max range and passes inside range.
+	 */
+	public function test_exprdawc_validate_custom_fields_datetime_min_max_range() {
+		$custom_fields = array(
+			array(
+				'label' => 'Date Time Field',
+				'type'  => 'datetime',
+				'min'   => '2026-04-06T09:00',
+				'max'   => '2026-04-06T18:00',
+			),
+		);
+		$this->product->update_meta_data( '_extra_product_fields', $custom_fields );
+		$this->product->save();
+
+		$_POST['exprdawc_custom_field_input'] = array(
+			'date_time_field' => '2026-04-06T08:59',
+		);
+		$this->assertFalse( $this->instance->exprdawcValidateCustomFields( true, $this->product_id, 1 ) );
+
+		$_POST['exprdawc_custom_field_input'] = array(
+			'date_time_field' => '2026-04-06T18:01',
+		);
+		$this->assertFalse( $this->instance->exprdawcValidateCustomFields( true, $this->product_id, 1 ) );
+
+		$_POST['exprdawc_custom_field_input'] = array(
+			'date_time_field' => '2026-04-06T12:00',
+		);
+		$this->assertTrue( $this->instance->exprdawcValidateCustomFields( true, $this->product_id, 1 ) );
+	}
+
+	/**
 	 * Test exprdawc_validate_custom_fields validates radio field.
 	 *
 	 * Test Goal:

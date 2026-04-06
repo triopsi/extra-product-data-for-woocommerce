@@ -394,6 +394,51 @@ class TestClassExprdawcHelper extends WP_UnitTestCase {
 	}
 
 	/**
+	 * Test validate_field_by_type for datetime values and range checks.
+	 */
+	public function test_validate_field_by_type_datetime() {
+		$invalid = Helper::validateFieldByType( 'not-a-datetime', 'datetime' );
+		$this->assertFalse( $invalid['valid'] );
+
+		$valid = Helper::validateFieldByType( '2026-02-20T10:30', 'datetime' );
+		$this->assertTrue( $valid['valid'] );
+
+		$valid_with_zero_seconds = Helper::validateFieldByType( '2026-02-20T10:30:00', 'datetime' );
+		$this->assertTrue( $valid_with_zero_seconds['valid'] );
+
+		$invalid_with_seconds = Helper::validateFieldByType( '2026-02-20T10:30:15', 'datetime' );
+		$this->assertFalse( $invalid_with_seconds['valid'] );
+
+		$before_min = Helper::validateFieldByType(
+			'2026-02-20T09:59',
+			'datetime',
+			array(
+				'min' => '2026-02-20T10:00',
+			)
+		);
+		$this->assertFalse( $before_min['valid'] );
+
+		$after_max = Helper::validateFieldByType(
+			'2026-02-20T18:01',
+			'datetime',
+			array(
+				'max' => '2026-02-20T18:00',
+			)
+		);
+		$this->assertFalse( $after_max['valid'] );
+
+		$within_range = Helper::validateFieldByType(
+			'2026-02-20T12:00',
+			'datetime',
+			array(
+				'min' => '2026-02-20T10:00',
+				'max' => '2026-02-20T18:00',
+			)
+		);
+		$this->assertTrue( $within_range['valid'] );
+	}
+
+	/**
 	 * Test validate_field_by_type for URL values.
 	 */
 	public function test_validate_field_by_type_url() {
@@ -993,6 +1038,68 @@ class TestClassExprdawcHelper extends WP_UnitTestCase {
 
 		$this->assertContains( 'exprdawc-price-adjustment-field', $result['input_class'] );
 		$this->assertStringContainsString( '-25%', $result['required_string'] );
+	}
+
+	/**
+	 * Test generateInputField for date_default_today behavior.
+	 */
+	public function test_generateInputField_date_default_today_uses_current_date() {
+		$field = array(
+			'label'              => 'Date Today Field',
+			'type'               => 'date',
+			'required'           => 0,
+			'date_default_today' => 1,
+			'default'            => '',
+		);
+
+		ob_start();
+		Helper::generateInputField( 0, $field );
+		$output = (string) ob_get_clean();
+
+		$this->assertStringContainsString( 'type="date"', $output );
+		$this->assertStringContainsString( 'value="' . gmdate( 'Y-m-d' ) . '"', $output );
+	}
+
+	/**
+	 * Test generateInputField for datetime_default_now behavior.
+	 */
+	public function test_generateInputField_datetime_default_now_uses_current_datetime() {
+		$field = array(
+			'label'                => 'Date Time Now Field',
+			'type'                 => 'datetime',
+			'required'             => 0,
+			'datetime_default_now' => 1,
+			'default'              => '',
+		);
+
+		$expected = current_time( 'Y-m-d\\TH:i' );
+
+		ob_start();
+		Helper::generateInputField( 0, $field );
+		$output = (string) ob_get_clean();
+
+		$this->assertStringContainsString( 'type="datetime-local"', $output );
+		$this->assertStringContainsString( 'value="' . $expected . '"', $output );
+	}
+
+	/**
+	 * Test generateInputField uses configured datetime default when default-now is off.
+	 */
+	public function test_generateInputField_datetime_uses_configured_default_when_default_now_off() {
+		$field = array(
+			'label'                => 'Date Time Default Field',
+			'type'                 => 'datetime',
+			'required'             => 0,
+			'datetime_default_now' => 0,
+			'default'              => '2026-04-06T10:15',
+		);
+
+		ob_start();
+		Helper::generateInputField( 0, $field );
+		$output = (string) ob_get_clean();
+
+		$this->assertStringContainsString( 'type="datetime-local"', $output );
+		$this->assertStringContainsString( 'value="2026-04-06T10:15"', $output );
 	}
 
 	/**

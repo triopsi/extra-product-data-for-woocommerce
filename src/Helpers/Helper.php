@@ -38,7 +38,7 @@ class Helper {
 	 *
 	 * @var array
 	 */
-	private const TEXT_FIELD_TYPES = array( 'text', 'date', 'time', 'url', 'email', 'tel', 'number', 'textarea', 'color' );
+	private const TEXT_FIELD_TYPES = array( 'text', 'date', 'time', 'datetime', 'url', 'email', 'tel', 'number', 'textarea', 'color' );
 
 	/**
 	 * Price adjustment field types.
@@ -234,6 +234,14 @@ class Helper {
 				// Use today's date if date_default_today is enabled.
 				if ( isset( $fieldArgs['date_default_today'] ) && $fieldArgs['date_default_today'] ) {
 					$default = gmdate( 'Y-m-d' );
+				} else {
+					$default = $fieldArgs['default'];
+				}
+				break;
+
+			case 'datetime':
+				if ( isset( $fieldArgs['datetime_default_now'] ) && $fieldArgs['datetime_default_now'] ) {
+					$default = current_time( 'Y-m-d\TH:i' );
 				} else {
 					$default = $fieldArgs['default'];
 				}
@@ -861,6 +869,35 @@ class Helper {
 				}
 				break;
 
+			case 'datetime':
+				$normalized_datetime = is_string( $fieldValue ) ? self::normalizeDateTimeToMinute( $fieldValue ) : null;
+				if ( null === $normalized_datetime ) {
+					return array(
+						'valid'   => false,
+						'message' => __( 'Please enter a valid date and time.', 'extra-product-data-for-woocommerce' ),
+					);
+				}
+
+				$min_datetime = isset( $fieldOptions['min'] ) ? sanitize_text_field( (string) $fieldOptions['min'] ) : '';
+				$max_datetime = isset( $fieldOptions['max'] ) ? sanitize_text_field( (string) $fieldOptions['max'] ) : '';
+				$min_datetime = '' !== $min_datetime ? self::normalizeDateTimeToMinute( $min_datetime ) : null;
+				$max_datetime = '' !== $max_datetime ? self::normalizeDateTimeToMinute( $max_datetime ) : null;
+
+				if ( null !== $min_datetime && $normalized_datetime < $min_datetime ) {
+					return array(
+						'valid'   => false,
+						'message' => __( 'Please select a date and time after the minimum value.', 'extra-product-data-for-woocommerce' ),
+					);
+				}
+
+				if ( null !== $max_datetime && $normalized_datetime > $max_datetime ) {
+					return array(
+						'valid'   => false,
+						'message' => __( 'Please select a date and time before the maximum value.', 'extra-product-data-for-woocommerce' ),
+					);
+				}
+				break;
+
 			case 'time':
 				$normalized_time = is_string( $fieldValue ) ? self::normalizeTimeToMinute( $fieldValue ) : null;
 				if ( null === $normalized_time ) {
@@ -921,6 +958,33 @@ class Helper {
 			}
 
 			return $matches[1] . ':' . $matches[2];
+		}
+
+		return null;
+	}
+
+	/**
+	 * Normalize a datetime-local string to YYYY-MM-DDTHH:MM.
+	 *
+	 * Accepts YYYY-MM-DDTHH:MM or YYYY-MM-DDTHH:MM:SS.
+	 * When seconds are provided, only :00 is accepted.
+	 *
+	 * @param string $value Raw datetime-local value.
+	 * @return string|null Normalized value or null if invalid.
+	 */
+	private static function normalizeDateTimeToMinute( string $value ): ?string {
+		$value = trim( $value );
+
+		if ( preg_match( '/^\d{4}-\d{2}-\d{2}T([01]\d|2[0-3]):([0-5]\d)$/', $value ) ) {
+			return $value;
+		}
+
+		if ( preg_match( '/^(\d{4}-\d{2}-\d{2}T([01]\d|2[0-3]):([0-5]\d)):([0-5]\d)$/', $value, $matches ) ) {
+			if ( '00' !== $matches[4] ) {
+				return null;
+			}
+
+			return $matches[1];
 		}
 
 		return null;

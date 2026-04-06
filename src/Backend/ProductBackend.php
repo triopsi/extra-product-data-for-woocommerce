@@ -250,6 +250,9 @@ class ProductBackend implements Hookable {
 					// Set default values for date specific settings.
 					$date_default_today = isset( $field['date_default_today'] ) ? 1 : 0;
 
+					// Set default values for datetime specific settings.
+					$datetime_default_now = isset( $field['datetime_default_now'] ) ? 1 : 0;
+
 					if ( empty( $label ) || ! is_string( $label ) ) {
 						return;
 					}
@@ -296,6 +299,7 @@ class ProductBackend implements Hookable {
 						'color_radio_size'            => $color_radio_size,
 						'color_radio_show_label'      => $color_radio_show_label,
 						'date_default_today'          => $date_default_today,
+						'datetime_default_now'        => $datetime_default_now,
 						'blocked'                     => $blocked,
 						'disabled'                    => $disabled,
 						'css_class'                   => $css_class,

@@ -320,6 +320,54 @@ class TestExprdawcProductPageBackend extends WP_UnitTestCase {
 	}
 
 	/**
+	 * Tests that exprdawc_save_extra_product_fields persists datetime_default_now.
+	 *
+	 * Expects: datetime_default_now is stored as 1 for datetime fields.
+	 */
+	public function test_exprdawc_save_extra_product_fields_saves_datetime_default_now() {
+		$product = new WC_Product_Simple();
+		$product->set_name( 'Datetime Product' );
+		$product->set_regular_price( '10' );
+		$product->save();
+		$post_id = $product->get_id();
+
+		$_POST[ EXPRDAWC_POST_KEY_EXTRA_PRODUCT_FIELDS ] = array(
+			array(
+				'label'                => 'Appointment',
+				'type'                 => 'datetime',
+				'required'             => '0',
+				'conditional_logic'    => '0',
+				'placeholder_text'     => '',
+				'help_text'            => '',
+				'autocomplete'         => 'on',
+				'index'                => '0',
+				'price_adjustment_type' => '',
+				'priceAdjustmentValue' => '',
+				'datetime_default_now' => '1',
+				'min'                  => '2026-02-20T09:00',
+				'max'                  => '2026-02-20T18:00',
+				'step'                 => '300',
+			),
+		);
+
+		$this->product_page_backend->exprdawcSaveExtraProductFields( $post_id );
+
+		$product       = wc_get_product( $post_id );
+		$custom_fields = $product->get_meta( '_extra_product_fields', true );
+
+		$this->assertIsArray( $custom_fields );
+		$this->assertCount( 1, $custom_fields );
+		$this->assertEquals( 'datetime', $custom_fields[0]['type'] );
+		$this->assertEquals( 1, (int) $custom_fields[0]['datetime_default_now'] );
+		$this->assertEquals( '2026-02-20T09:00', $custom_fields[0]['min'] );
+		$this->assertEquals( '2026-02-20T18:00', $custom_fields[0]['max'] );
+		$this->assertEquals( '300', $custom_fields[0]['step'] );
+
+		unset( $_POST[ EXPRDAWC_POST_KEY_EXTRA_PRODUCT_FIELDS ] );
+		$product->delete();
+	}
+
+	/**
 	 * Tests that exprdawc_save_extra_product_fields sanitizes field data correctly.
 	 *
 	 * Expects: HTML tags and malicious content are stripped from field values.

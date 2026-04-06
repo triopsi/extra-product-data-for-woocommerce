@@ -412,6 +412,49 @@ class ProductFrontend implements Hookable {
 				}
 				break;
 
+			case 'datetime':
+				$normalized_datetime = is_string( $field_value ) ? $this->normalizeDateTimeToMinute( $field_value ) : null;
+				if ( null === $normalized_datetime ) {
+					return array(
+						'valid'   => false,
+						'message' => sprintf(
+							/* translators: %s is the field label */
+							esc_html__( '%s is not a valid date and time.', 'extra-product-data-for-woocommerce' ),
+							esc_html( $field_label )
+						),
+					);
+				}
+
+				$min_datetime = isset( $input_field_array['min'] ) ? sanitize_text_field( (string) $input_field_array['min'] ) : '';
+				$max_datetime = isset( $input_field_array['max'] ) ? sanitize_text_field( (string) $input_field_array['max'] ) : '';
+				$min_datetime = '' !== $min_datetime ? $this->normalizeDateTimeToMinute( $min_datetime ) : null;
+				$max_datetime = '' !== $max_datetime ? $this->normalizeDateTimeToMinute( $max_datetime ) : null;
+
+				if ( null !== $min_datetime && $normalized_datetime < $min_datetime ) {
+					return array(
+						'valid'   => false,
+						'message' => sprintf(
+							/* translators: %1$s is the field label, %2$s is the minimum datetime */
+							esc_html__( '%1$s cannot be earlier than %2$s.', 'extra-product-data-for-woocommerce' ),
+							esc_html( $field_label ),
+							esc_html( str_replace( 'T', ' ', $min_datetime ) )
+						),
+					);
+				}
+
+				if ( null !== $max_datetime && $normalized_datetime > $max_datetime ) {
+					return array(
+						'valid'   => false,
+						'message' => sprintf(
+							/* translators: %1$s is the field label, %2$s is the maximum datetime */
+							esc_html__( '%1$s cannot be later than %2$s.', 'extra-product-data-for-woocommerce' ),
+							esc_html( $field_label ),
+							esc_html( str_replace( 'T', ' ', $max_datetime ) )
+						),
+					);
+				}
+				break;
+
 			case 'color':
 				// Validate hex color format (#RRGGBB or #RGB).
 				if ( ! preg_match( '/^#([A-Fa-f0-9]{6}|[A-Fa-f0-9]{3})$/', $field_value ) ) {
@@ -517,6 +560,33 @@ class ProductFrontend implements Hookable {
 			}
 
 			return $matches[1] . ':' . $matches[2];
+		}
+
+		return null;
+	}
+
+	/**
+	 * Normalize a datetime-local string to YYYY-MM-DDTHH:MM.
+	 *
+	 * Accepts YYYY-MM-DDTHH:MM or YYYY-MM-DDTHH:MM:SS.
+	 * When seconds are provided, only :00 is accepted.
+	 *
+	 * @param string $value Raw datetime-local value.
+	 * @return string|null Normalized value or null if invalid.
+	 */
+	private function normalizeDateTimeToMinute( string $value ): ?string {
+		$value = trim( $value );
+
+		if ( preg_match( '/^\d{4}-\d{2}-\d{2}T([01]\d|2[0-3]):([0-5]\d)$/', $value ) ) {
+			return $value;
+		}
+
+		if ( preg_match( '/^(\d{4}-\d{2}-\d{2}T([01]\d|2[0-3]):([0-5]\d)):([0-5]\d)$/', $value, $matches ) ) {
+			if ( '00' !== $matches[4] ) {
+				return null;
+			}
+
+			return $matches[1];
 		}
 
 		return null;
