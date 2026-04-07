@@ -2,7 +2,7 @@
 Contributors: triopsi
 Tags: WooCommerce Product Addons, WooCommerce product options, WooCommerce custom fields, WooCommerce product fields
 Tested up to: 6.9
-Stable tag: 3.2.0
+Stable tag: 3.3.0
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
@@ -41,6 +41,8 @@ The following field types are currently implemented:
 * Email
 * Yes/No Field
 * Date
+* Time
+* Datetime
 * Select/options
 * Radio Boxes
 * Checboxes 
@@ -87,6 +89,12 @@ Yes, the plugin has been tested with the latest WordPress release and PHP 8.2.
 11. Product Editor - Edit the Multi Choice Field
 
 == Changelog ==
+
+= 3.3.0 (07.04.2026) =
+* Feat: Add min, max options for the date field
+* Feat: Add time field with options
+* Feat: Add datetime field with otpions
+* Maintenance: Sort E2E Tests in directories
 
 = 3.2.0 (31.03.2026) =
 * Feat: Add Multi Color Radio Field
