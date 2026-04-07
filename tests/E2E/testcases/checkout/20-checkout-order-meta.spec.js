@@ -1,7 +1,7 @@
 const { test, expect } = require('@playwright/test');
-import { ProductPage } from '../pages/shop/ProductPage.js';
-import { CartPage } from '../pages/shop/CartPage.js';
-import { CheckoutPage } from '../pages/shop/CheckoutPage.js';
+import { ProductPage } from '../../pages/shop/ProductPage.js';
+import { CartPage } from '../../pages/shop/CartPage.js';
+import { CheckoutPage } from '../../pages/shop/CheckoutPage.js';
 
 
 test.describe('@P0 @CHECKOUT', () => {

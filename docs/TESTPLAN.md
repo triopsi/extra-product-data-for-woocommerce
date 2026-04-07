@@ -126,6 +126,30 @@ Each test case references:
 
 ## 10. Test Cases and Suite Structure (Playwright)
 
+### Current Directory Layout
+
+The Playwright suite is organized by functional area under `tests/E2E/testcases`.
+
+| Folder | Purpose |
+|--------|---------|
+| `setup/` | Pre-test environment preparation |
+| `smoke/` | Fast PR-gate smoke coverage |
+| `fields/` | Product field configuration and validation |
+| `checkout/` | Cart, checkout, and order persistence |
+| `backend/import-export/` | Admin-side import/export workflows |
+
+### Current NPM Commands
+
+| Command | Scope |
+|---------|-------|
+| `npm run e2e` | Full Playwright suite |
+| `npm run e2e:setup` | Setup specs only |
+| `npm run e2e:smoke` | Smoke suite only |
+| `npm run e2e:fields` | Field-related specs |
+| `npm run e2e:checkout` | Checkout and order specs |
+| `npm run e2e:backend` | All backend specs |
+| `npm run e2e:import-export` | Import/export backend specs |
+
 ### Suite 0 – Smoke (P0, PR Gate)
 | Test ID | Description |
 |---------|-------------|
@@ -183,6 +207,13 @@ Each test case references:
 | **REQ-IMP-01** JSON Import | IMP-01..IMP-04 |
 
 ## 12. Test Execution, Reporting, Artifacts
+
+### Recommended Execution Order
+
+1. `npm run e2e:setup`
+2. `npm run e2e:smoke`
+3. Category suites as needed: `e2e:fields`, `e2e:checkout`, `e2e:backend`
+4. `npm run e2e` for full regression coverage
 
 ### Artifacts per CI Run
 - Playwright HTML Report

@@ -1,8 +1,8 @@
 const { test, expect } = require('@playwright/test');
-import { ProductAdminPage } from '../pages/shop/ProductAdminPage.js';
-import { AdminLoginPage } from '../pages/admin/AdminLoginPage.js';
-import { ProductPage } from '../pages/shop/ProductPage.js';
-import { env } from '../helpers/env.js';
+import { ProductAdminPage } from '../../pages/shop/ProductAdminPage.js';
+import { AdminLoginPage } from '../../pages/admin/AdminLoginPage.js';
+import { ProductPage } from '../../pages/shop/ProductPage.js';
+import { env } from '../../helpers/env.js';
 
 test.describe('@P10 @ADMIN', () => {
     test('ADM-01 Create extra product fields on product editor', async ({ page }) => {

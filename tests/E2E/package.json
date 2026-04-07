@@ -6,7 +6,12 @@
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "e2e": "playwright test",
-    "e2e:smoke": "playwright test tests/E2E/testcases/00-smoke.spec.js",
+    "e2e:setup": "playwright test tests/E2E/testcases/setup",
+    "e2e:smoke": "playwright test tests/E2E/testcases/smoke",
+    "e2e:fields": "playwright test tests/E2E/testcases/fields",
+    "e2e:checkout": "playwright test tests/E2E/testcases/checkout",
+    "e2e:backend": "playwright test tests/E2E/testcases/backend",
+    "e2e:import-export": "playwright test tests/E2E/testcases/backend/import-export",
     "e2e:headed": "playwright test --headed",
     "e2e:debug": "playwright test --debug",
     "e2e:ui": "playwright test --ui",
