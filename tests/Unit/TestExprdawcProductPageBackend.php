@@ -333,20 +333,20 @@ class TestExprdawcProductPageBackend extends WP_UnitTestCase {
 
 		$_POST[ EXPRDAWC_POST_KEY_EXTRA_PRODUCT_FIELDS ] = array(
 			array(
-				'label'                => 'Appointment',
-				'type'                 => 'datetime',
-				'required'             => '0',
-				'conditional_logic'    => '0',
-				'placeholder_text'     => '',
-				'help_text'            => '',
-				'autocomplete'         => 'on',
-				'index'                => '0',
+				'label'                 => 'Appointment',
+				'type'                  => 'datetime',
+				'required'              => '0',
+				'conditional_logic'     => '0',
+				'placeholder_text'      => '',
+				'help_text'             => '',
+				'autocomplete'          => 'on',
+				'index'                 => '0',
 				'price_adjustment_type' => '',
-				'priceAdjustmentValue' => '',
-				'datetime_default_now' => '1',
-				'min'                  => '2026-02-20T09:00',
-				'max'                  => '2026-02-20T18:00',
-				'step'                 => '300',
+				'priceAdjustmentValue'  => '',
+				'datetime_default_now'  => '1',
+				'min'                   => '2026-02-20T09:00',
+				'max'                   => '2026-02-20T18:00',
+				'step'                  => '300',
 			),
 		);
 
