@@ -1,6 +1,6 @@
 import { test, expect } from '@playwright/test';
-import { env } from '../helpers/env.js';
-import { AdminLoginPage } from '../pages/admin/AdminLoginPage.js';
+import { env } from '../../helpers/env.js';
+import { AdminLoginPage } from '../../pages/admin/AdminLoginPage.js';
 
 test('setup storefront starter pack', async ({ page }) => {
     const adminUrl = env.wpAdminURL;

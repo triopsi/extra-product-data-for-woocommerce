@@ -29,7 +29,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 }
 
 // Useful global constants.
-$version = '3.2.0';
+$version = '3.3.0';
 define( 'EXPRDAWC_VERSION', $version );
 define( 'EXPRDAWC_PLUGIN_MAIN_FILE', 'extra-product-data-for-woocommerce.php' );
 

@@ -1,7 +1,7 @@
 const { test, expect } = require('@playwright/test');
-import { env } from '../helpers/env.js';
-import { AdminLoginPage } from '../pages/admin/AdminLoginPage.js';
-import { ProductPage } from '../pages/shop/ProductPage.js';
+import { env } from '../../helpers/env.js';
+import { AdminLoginPage } from '../../pages/admin/AdminLoginPage.js';
+import { ProductPage } from '../../pages/shop/ProductPage.js';
 
 /**
  * @fileoverview Smoke tests for the Extra Product Data for WooCommerce plugin.

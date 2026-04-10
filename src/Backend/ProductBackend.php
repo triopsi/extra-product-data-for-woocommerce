@@ -138,169 +138,23 @@ class ProductBackend implements Hookable {
 	 * @param int $post_id The ID of the product being saved.
 	 */
 	public function exprdawcSaveExtraProductFields( $post_id ) {
+		$product = wc_get_product( $post_id );
+		if ( ! $product ) {
+			return;
+		}
+
 		if ( isset( $_POST[EXPRDAWC_POST_KEY_EXTRA_PRODUCT_FIELDS] ) ) { // phpcs:ignore
-			$product              = wc_get_product( $post_id );
 			$extra_product_fields = wp_unslash( $_POST[EXPRDAWC_POST_KEY_EXTRA_PRODUCT_FIELDS] ); // phpcs:ignore
 
-			$custom_fields = array_map(
-				function ( $field ) {
-					$id                    = sanitize_text_field( $field['id'] ?? '' );
-					$label                 = sanitize_text_field( $field['label'] );
-					$type                  = sanitize_text_field( $field['type'] );
-					$required              = isset( $field['required'] ) ? 1 : 0;
-					$conditional_logic     = isset( $field['conditional_logic'] ) ? 1 : 0;
-					$placeholder_text      = sanitize_text_field( $field['placeholder_text'] );
-					$help_text             = sanitize_text_field( $field['help_text'] );
-					$autocomplete          = isset( $field['autocomplete'] ) ? sanitize_text_field( $field['autocomplete'] ) : '';
-					$autofocus             = isset( $field['autofocus'] ) ? true : false;
-					$index                 = isset( $field['index'] ) ? absint( $field['index'] ) : 0;
-					$editable              = isset( $field['editable'] ) ? true : false;
-					$adjust_price          = isset( $field['adjust_price'] ) ? true : false;
-					$price_adjustment_type = sanitize_text_field( $field['price_adjustment_type'] );
-					$priceAdjustmentValue  = sanitize_text_field( $field['priceAdjustmentValue'] );
-					$blocked               = true;
-					$disabled              = isset( $field['disabled'] ) ? absint( $field['disabled'] ) : 0;
-					$css_class             = isset( $field['css_class'] ) ? sanitize_text_field( $field['css_class'] ) : '';
+			if ( ! is_array( $extra_product_fields ) ) {
+				$extra_product_fields = array();
+			}
 
-					if ( isset( $field['conditional_rules'] ) ) {
-						foreach ( $field['conditional_rules'] as $rule_group ) {
-							foreach ( $rule_group as $rule ) {
-								$rule['field']    = sanitize_text_field( $rule['field'] );
-								$rule['operator'] = sanitize_text_field( $rule['operator'] );
-								$rule['value']    = sanitize_text_field( $rule['value'] );
-							}
-						}
-						$conditional_logic_rules = $field['conditional_rules'];
-					} else {
-						$conditional_logic_rules = array();
-						$conditional_logic       = 0;
-					}
-
-					$options = array();
-					if ( isset( $field['options'] ) && is_array( $field['options'] ) ) {
-						foreach ( $field['options'] as $key => $option ) {
-							$options[] = array(
-								'label'                 => ! empty( $option['label'] ) ? sanitize_text_field( $option['label'] ) : 'Option ' . $key,
-								'value'                 => ! empty( $option['value'] ) ? sanitize_text_field( $option['value'] ) : sanitize_text_field( $option['label'] ),
-								'price_adjustment_type' => isset( $option['price_adjustment_type'] ) ? sanitize_text_field( $option['price_adjustment_type'] ) : '',
-								'priceAdjustmentValue'  => isset( $option['priceAdjustmentValue'] ) ? sanitize_text_field( $option['priceAdjustmentValue'] ) : '',
-								'default'               => isset( $option['default'] ) ? sanitize_text_field( $option['default'] ) : 0,
-							);
-						}
-					}
-
-					// Set default value, ensuring it's properly sanitized and of the correct type.
-					$email_default     = '';
-					$color_default     = '';
-					$long_text_default = '';
-					$number_default    = '';
-					switch ( $type ) {
-						case 'long_text':
-							$long_text_default = isset( $field['long_text_default'] ) ? sanitize_textarea_field( $field['long_text_default'] ) : '';
-							$default           = $long_text_default;
-							break;
-						case 'email':
-							$email_default = isset( $field['email_default'] ) ? sanitize_email( $field['email_default'] ) : '';
-							$default       = $email_default;
-							break;
-						case 'color':
-							$color_default = isset( $field['color_default'] ) ? sanitize_text_field( $field['color_default'] ) : '';
-							$default       = $color_default;
-							break;
-						case 'checkbox':
-						case 'radio':
-						case 'select':
-						case 'color_radio':
-							$default_source = $field['default'] ?? '';
-							$default        = is_array( $default_source ) ? array_map( 'sanitize_text_field', $default_source ) : sanitize_text_field( $default_source );
-							break;
-						case 'number':
-							$number_default = isset( $field['number_default'] ) ? sanitize_text_field( $field['number_default'] ) : '';
-							$default        = $number_default;
-							break;
-						default:
-							$default_source = $field['default'] ?? '';
-							$default        = sanitize_text_field( is_array( $default_source ) ? '' : $default_source );
-							break;
-					}
-
-					if ( 'long_text' === $type ) {
-						$minlength = isset( $field['min_length_longtext'] ) ? absint( $field['min_length_longtext'] ) : 0;
-						$maxlength = isset( $field['max_length_longtext'] ) ? absint( $field['max_length_longtext'] ) : 0;
-					} else {
-						$minlength = isset( $field['minlength'] ) ? absint( $field['minlength'] ) : 0;
-						$maxlength = isset( $field['maxlength'] ) ? absint( $field['maxlength'] ) : 0;
-					}
-
-					$rows = isset( $field['rows'] ) ? absint( $field['rows'] ) : 0;
-					$cols = isset( $field['cols'] ) ? absint( $field['cols'] ) : 0;
-
-					$step = isset( $field['step'] ) ? sanitize_text_field( $field['step'] ) : '';
-					$min  = isset( $field['min'] ) ? sanitize_text_field( $field['min'] ) : '';
-					$max  = isset( $field['max'] ) ? sanitize_text_field( $field['max'] ) : '';
-
-					// Ensure color_enable_frontend_input is set to a boolean value (1 or 0) for consistent storage and retrieval.
-					$color_enable_frontend_input = isset( $field['color_enable_frontend_input'] ) ? 1 : 0;
-
-					// Set default values for color radio specific settings.
-					$color_radio_style      = isset( $field['color_radio_style'] ) ? sanitize_text_field( $field['color_radio_style'] ) : 'circle';
-					$color_radio_show_label = isset( $field['color_radio_show_label'] ) ? 1 : 0;
-					$color_radio_size       = isset( $field['color_radio_size'] ) ? sanitize_text_field( $field['color_radio_size'] ) : '75px';
-
-					if ( empty( $label ) || ! is_string( $label ) ) {
-						return;
-					}
-					if ( ! is_numeric( $required ) ) {
-						$required = 0;
-					}
-					if ( ! is_string( $placeholder_text ) ) {
-						$placeholder_text = '';
-					}
-					if ( ! is_string( $help_text ) ) {
-						$help_text = '';
-					}
-					return array(
-						'id'                          => $id,
-						'label'                       => $label,
-						'type'                        => $type,
-						'required'                    => $required,
-						'conditional_logic'           => $conditional_logic,
-						'placeholder_text'            => $placeholder_text,
-						'help_text'                   => $help_text,
-						'options'                     => $options,
-						'minlength'                   => $minlength,
-						'maxlength'                   => $maxlength,
-						'rows'                        => $rows,
-						'cols'                        => $cols,
-						'autocomplete'                => $autocomplete,
-						'autofocus'                   => $autofocus,
-						'conditional_rules'           => $conditional_logic_rules,
-						'index'                       => $index,
-						'editable'                    => $editable,
-						'adjust_price'                => $adjust_price,
-						'price_adjustment_type'       => $price_adjustment_type,
-						'priceAdjustmentValue'        => $priceAdjustmentValue,
-						'step'                        => $step,
-						'min'                         => $min,
-						'max'                         => $max,
-						'default'                     => $default,
-						'long_text_default'           => $long_text_default,
-						'email_default'               => $email_default,
-						'color_default'               => $color_default,
-						'number_default'              => $number_default,
-						'color_enable_frontend_input' => $color_enable_frontend_input,
-						'color_radio_style'           => $color_radio_style,
-						'color_radio_size'            => $color_radio_size,
-						'color_radio_show_label'      => $color_radio_show_label,
-						'blocked'                     => $blocked,
-						'disabled'                    => $disabled,
-						'css_class'                   => $css_class,
-					);
-				},
-				$extra_product_fields
+			$custom_fields = array_values(
+				array_filter(
+					array_map( array( $this, 'sanitizeCustomFieldForSave' ), $extra_product_fields )
+				)
 			);
-
-			$custom_fields = array_filter( $custom_fields );
 
 			// Checks for duplicate labels and option values before saving. If duplicates are found, an error message is added and saving is aborted.
 			if ( $this->hasDuplicateLabels( $custom_fields ) ) {
@@ -320,11 +174,260 @@ class ProductBackend implements Hookable {
 			// Save custom fields to product meta. If no custom fields are provided, delete the meta to keep the database clean.
 			$product->update_meta_data( EXPRDAWC_PRODUCT_META_EXTRA_PRODUCT_DATA, $custom_fields );
 		} else {
-			$product = wc_get_product( $post_id );
 			$product->delete_meta_data( EXPRDAWC_PRODUCT_META_EXTRA_PRODUCT_DATA );
 		}
 
 		$product->save();
+	}
+
+	/**
+	 * Sanitize one custom field payload for storage.
+	 *
+	 * @param mixed $field Raw field payload from request.
+	 * @return array<string, mixed>|null
+	 */
+	private function sanitizeCustomFieldForSave( $field ): ?array {
+		if ( ! is_array( $field ) ) {
+			return null;
+		}
+
+		$id                    = sanitize_text_field( $field['id'] ?? '' );
+		$label                 = sanitize_text_field( $field['label'] ?? '' );
+		$type                  = sanitize_text_field( $field['type'] ?? '' );
+		$required              = isset( $field['required'] ) ? 1 : 0;
+		$conditional_logic     = isset( $field['conditional_logic'] ) ? 1 : 0;
+		$placeholder_text      = sanitize_text_field( $field['placeholder_text'] ?? '' );
+		$help_text             = sanitize_text_field( $field['help_text'] ?? '' );
+		$autocomplete          = isset( $field['autocomplete'] ) ? sanitize_text_field( $field['autocomplete'] ) : '';
+		$autofocus             = isset( $field['autofocus'] );
+		$index                 = isset( $field['index'] ) ? absint( $field['index'] ) : 0;
+		$editable              = isset( $field['editable'] );
+		$adjust_price          = isset( $field['adjust_price'] );
+		$price_adjustment_type = sanitize_text_field( $field['price_adjustment_type'] ?? '' );
+		$price_adjustment      = sanitize_text_field( $field['priceAdjustmentValue'] ?? '' );
+		$disabled              = isset( $field['disabled'] ) ? absint( $field['disabled'] ) : 0;
+		$css_class             = isset( $field['css_class'] ) ? sanitize_text_field( $field['css_class'] ) : '';
+
+		if ( '' === $label ) {
+			return null;
+		}
+
+		$conditional = $this->sanitizeConditionalRules( $field, $conditional_logic );
+		$type_data   = $this->sanitizeTypeSpecificValues( $field, $type );
+		$options     = $this->sanitizeOptions( $field );
+
+		if ( ! is_numeric( $required ) ) {
+			$required = 0;
+		}
+
+		$length_key = 'long_text' === $type ? 'min_length_longtext' : 'minlength';
+		$max_key    = 'long_text' === $type ? 'max_length_longtext' : 'maxlength';
+
+		// Keep specialized values for backward compatibility with previously saved data.
+		$date_min      = isset( $field['date_min'] ) ? sanitize_text_field( $field['date_min'] ) : '';
+		$date_max      = isset( $field['date_max'] ) ? sanitize_text_field( $field['date_max'] ) : '';
+		$time_min      = isset( $field['time_min'] ) ? sanitize_text_field( $field['time_min'] ) : '';
+		$time_max      = isset( $field['time_max'] ) ? sanitize_text_field( $field['time_max'] ) : '';
+		$datetime_min  = isset( $field['datetime_min'] ) ? sanitize_text_field( $field['datetime_min'] ) : '';
+		$datetime_max  = isset( $field['datetime_max'] ) ? sanitize_text_field( $field['datetime_max'] ) : '';
+		$datetime_step = isset( $field['datetime_step'] ) ? sanitize_text_field( $field['datetime_step'] ) : '';
+
+		return array(
+			'id'                          => $id,
+			'label'                       => $label,
+			'type'                        => $type,
+			'required'                    => $required,
+			'conditional_logic'           => $conditional['enabled'],
+			'placeholder_text'            => $placeholder_text,
+			'help_text'                   => $help_text,
+			'options'                     => $options,
+			'minlength'                   => isset( $field[ $length_key ] ) ? absint( $field[ $length_key ] ) : 0,
+			'maxlength'                   => isset( $field[ $max_key ] ) ? absint( $field[ $max_key ] ) : 0,
+			'rows'                        => isset( $field['rows'] ) ? absint( $field['rows'] ) : 0,
+			'cols'                        => isset( $field['cols'] ) ? absint( $field['cols'] ) : 0,
+			'autocomplete'                => $autocomplete,
+			'autofocus'                   => $autofocus,
+			'conditional_rules'           => $conditional['rules'],
+			'index'                       => $index,
+			'editable'                    => $editable,
+			'adjust_price'                => $adjust_price,
+			'price_adjustment_type'       => $price_adjustment_type,
+			'priceAdjustmentValue'        => $price_adjustment,
+			'step'                        => $type_data['step'],
+			'min'                         => $type_data['min'],
+			'max'                         => $type_data['max'],
+			'default'                     => $type_data['default'],
+			'long_text_default'           => $type_data['long_text_default'],
+			'email_default'               => $type_data['email_default'],
+			'color_default'               => $type_data['color_default'],
+			'number_default'              => $type_data['number_default'],
+			'color_enable_frontend_input' => isset( $field['color_enable_frontend_input'] ) ? 1 : 0,
+			'color_radio_style'           => isset( $field['color_radio_style'] ) ? sanitize_text_field( $field['color_radio_style'] ) : 'circle',
+			'color_radio_size'            => isset( $field['color_radio_size'] ) ? sanitize_text_field( $field['color_radio_size'] ) : '75px',
+			'color_radio_show_label'      => isset( $field['color_radio_show_label'] ) ? 1 : 0,
+			'date_default_today'          => isset( $field['date_default_today'] ) ? 1 : 0,
+			'datetime_default_now'        => isset( $field['datetime_default_now'] ) ? 1 : 0,
+			'blocked'                     => true,
+			'disabled'                    => $disabled,
+			'css_class'                   => $css_class,
+			'time_min'                    => $time_min,
+			'time_max'                    => $time_max,
+			'time_default'                => $type_data['time_default'],
+			'datetime_default'            => $type_data['datetime_default'],
+			'date_default'                => $type_data['date_default'],
+			'datetime_min'                => $datetime_min,
+			'datetime_max'                => $datetime_max,
+			'date_min'                    => $date_min,
+			'date_max'                    => $date_max,
+			'datetime_step'               => $datetime_step,
+		);
+	}
+
+	/**
+	 * Sanitize conditional rule payload.
+	 *
+	 * @param array<string, mixed> $field Field payload.
+	 * @param int                  $enabled Conditional flag.
+	 * @return array{enabled:int,rules:array<int, mixed>}
+	 */
+	private function sanitizeConditionalRules( array $field, int $enabled ): array {
+		if ( ! isset( $field['conditional_rules'] ) || ! is_array( $field['conditional_rules'] ) ) {
+			return array(
+				'enabled' => 0,
+				'rules'   => array(),
+			);
+		}
+
+		$sanitized_rules = array();
+		foreach ( $field['conditional_rules'] as $group_index => $rule_group ) {
+			if ( ! is_array( $rule_group ) ) {
+				continue;
+			}
+
+			$sanitized_group = array();
+			foreach ( $rule_group as $rule ) {
+				if ( ! is_array( $rule ) ) {
+					continue;
+				}
+
+				$sanitized_group[] = array(
+					'field'    => sanitize_text_field( $rule['field'] ?? '' ),
+					'operator' => sanitize_text_field( $rule['operator'] ?? '' ),
+					'value'    => sanitize_text_field( $rule['value'] ?? '' ),
+				);
+			}
+
+			$sanitized_rules[ $group_index ] = $sanitized_group;
+		}
+
+		return array(
+			'enabled' => $enabled,
+			'rules'   => $sanitized_rules,
+		);
+	}
+
+	/**
+	 * Sanitize selectable options.
+	 *
+	 * @param array<string, mixed> $field Field payload.
+	 * @return array<int, array<string, mixed>>
+	 */
+	private function sanitizeOptions( array $field ): array {
+		if ( ! isset( $field['options'] ) || ! is_array( $field['options'] ) ) {
+			return array();
+		}
+
+		$options = array();
+		foreach ( $field['options'] as $key => $option ) {
+			if ( ! is_array( $option ) ) {
+				continue;
+			}
+
+			$options[] = array(
+				'label'                 => ! empty( $option['label'] ) ? sanitize_text_field( $option['label'] ) : 'Option ' . $key,
+				'value'                 => ! empty( $option['value'] ) ? sanitize_text_field( $option['value'] ) : sanitize_text_field( $option['label'] ?? '' ),
+				'price_adjustment_type' => isset( $option['price_adjustment_type'] ) ? sanitize_text_field( $option['price_adjustment_type'] ) : '',
+				'priceAdjustmentValue'  => isset( $option['priceAdjustmentValue'] ) ? sanitize_text_field( $option['priceAdjustmentValue'] ) : '',
+				'default'               => isset( $option['default'] ) ? sanitize_text_field( $option['default'] ) : 0,
+			);
+		}
+
+		return $options;
+	}
+
+	/**
+	 * Sanitize type-specific default/min/max/step values.
+	 *
+	 * @param array<string, mixed> $field Field payload.
+	 * @param string               $type Field type.
+	 * @return array<string, mixed>
+	 */
+	private function sanitizeTypeSpecificValues( array $field, string $type ): array {
+		$result = array(
+			'default'           => '',
+			'long_text_default' => '',
+			'email_default'     => '',
+			'color_default'     => '',
+			'number_default'    => '',
+			'time_default'      => '',
+			'date_default'      => '',
+			'datetime_default'  => '',
+			'min'               => isset( $field['min'] ) ? sanitize_text_field( $field['min'] ) : '',
+			'max'               => isset( $field['max'] ) ? sanitize_text_field( $field['max'] ) : '',
+			'step'              => isset( $field['step'] ) ? sanitize_text_field( $field['step'] ) : '',
+		);
+
+		switch ( $type ) {
+			case 'long_text':
+				$result['long_text_default'] = isset( $field['long_text_default'] ) ? sanitize_textarea_field( $field['long_text_default'] ) : '';
+				$result['default']           = $result['long_text_default'];
+				break;
+			case 'email':
+				$result['email_default'] = isset( $field['email_default'] ) ? sanitize_email( $field['email_default'] ) : '';
+				$result['default']       = $result['email_default'];
+				break;
+			case 'color':
+				$result['color_default'] = isset( $field['color_default'] ) ? sanitize_text_field( $field['color_default'] ) : '';
+				$result['default']       = $result['color_default'];
+				break;
+			case 'checkbox':
+			case 'radio':
+			case 'select':
+			case 'color_radio':
+				$default_source    = $field['default'] ?? '';
+				$result['default'] = is_array( $default_source ) ? array_map( 'sanitize_text_field', $default_source ) : sanitize_text_field( $default_source );
+				break;
+			case 'number':
+				$result['number_default'] = isset( $field['number_default'] ) ? sanitize_text_field( $field['number_default'] ) : '';
+				$result['default']        = $result['number_default'];
+				break;
+			case 'datetime':
+				$result['datetime_default'] = isset( $field['datetime_default'] ) ? sanitize_text_field( $field['datetime_default'] ) : '';
+				$result['default']          = $result['datetime_default'];
+				$result['min']              = isset( $field['datetime_min'] ) ? sanitize_text_field( $field['datetime_min'] ) : $result['min'];
+				$result['max']              = isset( $field['datetime_max'] ) ? sanitize_text_field( $field['datetime_max'] ) : $result['max'];
+				$result['step']             = isset( $field['datetime_step'] ) ? sanitize_text_field( $field['datetime_step'] ) : $result['step'];
+				break;
+			case 'time':
+				$result['time_default'] = isset( $field['time_default'] ) ? sanitize_text_field( $field['time_default'] ) : '';
+				$result['default']      = $result['time_default'];
+				$result['min']          = isset( $field['time_min'] ) ? sanitize_text_field( $field['time_min'] ) : $result['min'];
+				$result['max']          = isset( $field['time_max'] ) ? sanitize_text_field( $field['time_max'] ) : $result['max'];
+				$result['step']         = '' !== $result['step'] ? $result['step'] : '60';
+				break;
+			case 'date':
+				$result['date_default'] = isset( $field['date_default'] ) ? sanitize_text_field( $field['date_default'] ) : '';
+				$result['default']      = $result['date_default'];
+				$result['min']          = isset( $field['date_min'] ) ? sanitize_text_field( $field['date_min'] ) : $result['min'];
+				$result['max']          = isset( $field['date_max'] ) ? sanitize_text_field( $field['date_max'] ) : $result['max'];
+				break;
+			default:
+				$default_source    = $field['default'] ?? '';
+				$result['default'] = sanitize_text_field( is_array( $default_source ) ? '' : $default_source );
+				break;
+		}
+
+		return $result;
 	}
 
 	/**
