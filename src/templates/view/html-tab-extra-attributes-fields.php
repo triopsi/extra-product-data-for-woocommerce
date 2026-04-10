@@ -357,15 +357,15 @@ if ( ! defined( 'ABSPATH' ) ) {
 						<tr>
 							<td>
 								<label class="exprdawc_label" for="exprdawc_time_min_<?php echo esc_html( $index ); ?>"><?php esc_html_e( 'Min time', 'extra-product-data-for-woocommerce' ); ?></label>
-								<input type="time" id="exprdawc_time_min_<?php echo esc_html( $index ); ?>" class="exprdawc_input exprdawc_time_min" name="extra_product_fields[<?php echo esc_html( $index ); ?>][min]" value="<?php echo esc_attr( $field['min'] ?? '' ); ?>" step="60" />
+								<input type="time" id="exprdawc_time_min_<?php echo esc_html( $index ); ?>" class="exprdawc_input exprdawc_time_min" name="extra_product_fields[<?php echo esc_html( $index ); ?>][time_min]" value="<?php echo esc_attr( $field['time_min'] ?? '' ); ?>" step="60" />
 							</td>
 							<td>
 								<label class="exprdawc_label" for="exprdawc_time_max_<?php echo esc_html( $index ); ?>"><?php esc_html_e( 'Max time', 'extra-product-data-for-woocommerce' ); ?></label>
-								<input type="time" id="exprdawc_time_max_<?php echo esc_html( $index ); ?>" class="exprdawc_input exprdawc_time_max" name="extra_product_fields[<?php echo esc_html( $index ); ?>][max]" value="<?php echo esc_attr( $field['max'] ?? '' ); ?>" step="60" />
+								<input type="time" id="exprdawc_time_max_<?php echo esc_html( $index ); ?>" class="exprdawc_input exprdawc_time_max" name="extra_product_fields[<?php echo esc_html( $index ); ?>][time_max]" value="<?php echo esc_attr( $field['time_max'] ?? '' ); ?>" step="60" />
 							</td>
 							<td>
 								<label class="exprdawc_label" for="exprdawc_time_default_<?php echo esc_html( $index ); ?>"><?php esc_html_e( 'Default Value', 'extra-product-data-for-woocommerce' ); ?></label>
-								<input type="time" id="exprdawc_time_default_<?php echo esc_html( $index ); ?>" class="exprdawc_input exprdawc_time_default" name="extra_product_fields[<?php echo esc_html( $index ); ?>][default]" value="<?php echo esc_attr( $field['default'] ?? '' ); ?>" step="60" />
+								<input type="time" id="exprdawc_time_default_<?php echo esc_html( $index ); ?>" class="exprdawc_input exprdawc_time_default" name="extra_product_fields[<?php echo esc_html( $index ); ?>][time_default]" value="<?php echo esc_attr( $field['time_default'] ?? '' ); ?>" step="60" />
 							</td>
 						</tr>
 					</tbody>
@@ -377,11 +377,11 @@ if ( ! defined( 'ABSPATH' ) ) {
 						<tr>
 							<td>
 								<label class="exprdawc_label" for="exprdawc_date_min_<?php echo esc_html( $index ); ?>"><?php esc_html_e( 'Min date', 'extra-product-data-for-woocommerce' ); ?></label>
-								<input type="date" id="exprdawc_date_min_<?php echo esc_html( $index ); ?>" class="exprdawc_input exprdawc_date_min" name="extra_product_fields[<?php echo esc_html( $index ); ?>][min]" value="<?php echo esc_attr( $field['min'] ?? '' ); ?>" />
+								<input type="date" id="exprdawc_date_min_<?php echo esc_html( $index ); ?>" class="exprdawc_input exprdawc_date_min" name="extra_product_fields[<?php echo esc_html( $index ); ?>][date_min]" value="<?php echo esc_attr( $field['date_min'] ?? '' ); ?>" />
 							</td>
 							<td>
 								<label class="exprdawc_label" for="exprdawc_date_max_<?php echo esc_html( $index ); ?>"><?php esc_html_e( 'Max date', 'extra-product-data-for-woocommerce' ); ?></label>
-								<input type="date" id="exprdawc_date_max_<?php echo esc_html( $index ); ?>" class="exprdawc_input exprdawc_date_max" name="extra_product_fields[<?php echo esc_html( $index ); ?>][max]" value="<?php echo esc_attr( $field['max'] ?? '' ); ?>" />
+								<input type="date" id="exprdawc_date_max_<?php echo esc_html( $index ); ?>" class="exprdawc_input exprdawc_date_max" name="extra_product_fields[<?php echo esc_html( $index ); ?>][date_max]" value="<?php echo esc_attr( $field['date_max'] ?? '' ); ?>" />
 							</td>
 							<td>
 								<label class="exprdawc_label" for="exprdawc_date_default_today_<?php echo esc_html( $index ); ?>">
@@ -389,7 +389,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 									<?php esc_html_e( 'Set default to today', 'extra-product-data-for-woocommerce' ); ?>
 								</label>
 								<label class="exprdawc_label" for="exprdawc_date_default_<?php echo esc_html( $index ); ?>"><?php esc_html_e( 'Default Value', 'extra-product-data-for-woocommerce' ); ?></label>
-								<input type="date" id="exprdawc_date_default_<?php echo esc_html( $index ); ?>" class="exprdawc_input exprdawc_date_default" name="extra_product_fields[<?php echo esc_html( $index ); ?>][default]" value="<?php echo esc_attr( $field['default'] ?? '' ); ?>" <?php echo ( isset( $field['date_default_today'] ) && $field['date_default_today'] ) ? 'disabled' : ''; ?> />
+								<input type="date" id="exprdawc_date_default_<?php echo esc_html( $index ); ?>" class="exprdawc_input exprdawc_date_default" name="extra_product_fields[<?php echo esc_html( $index ); ?>][date_default]" value="<?php echo esc_attr( $field['date_default'] ?? '' ); ?>" <?php echo ( isset( $field['date_default_today'] ) && $field['date_default_today'] ) ? 'disabled' : ''; ?> />
 							</td>
 						</tr>
 					</tbody>
@@ -401,20 +401,20 @@ if ( ! defined( 'ABSPATH' ) ) {
 						<tr>
 							<td>
 								<label class="exprdawc_label" for="exprdawc_datetime_min_<?php echo esc_html( $index ); ?>"><?php esc_html_e( 'Earliest date & time', 'extra-product-data-for-woocommerce' ); ?></label>
-								<input type="datetime-local" id="exprdawc_datetime_min_<?php echo esc_html( $index ); ?>" class="exprdawc_input exprdawc_datetime_min" name="extra_product_fields[<?php echo esc_html( $index ); ?>][min]" value="<?php echo esc_attr( $field['min'] ?? '' ); ?>" step="<?php echo esc_attr( $field['step'] ?? '300' ); ?>" />
+								<input type="datetime-local" id="exprdawc_datetime_min_<?php echo esc_html( $index ); ?>" class="exprdawc_input exprdawc_datetime_min" name="extra_product_fields[<?php echo esc_html( $index ); ?>][datetime_min]" value="<?php echo esc_attr( $field['datetime_min'] ?? '' ); ?>" step="<?php echo esc_attr( $field['step'] ?? '300' ); ?>" />
 							</td>
 							<td>
 								<label class="exprdawc_label" for="exprdawc_datetime_max_<?php echo esc_html( $index ); ?>"><?php esc_html_e( 'Latest date & time', 'extra-product-data-for-woocommerce' ); ?></label>
-								<input type="datetime-local" id="exprdawc_datetime_max_<?php echo esc_html( $index ); ?>" class="exprdawc_input exprdawc_datetime_max" name="extra_product_fields[<?php echo esc_html( $index ); ?>][max]" value="<?php echo esc_attr( $field['max'] ?? '' ); ?>" step="<?php echo esc_attr( $field['step'] ?? '300' ); ?>" />
+								<input type="datetime-local" id="exprdawc_datetime_max_<?php echo esc_html( $index ); ?>" class="exprdawc_input exprdawc_datetime_max" name="extra_product_fields[<?php echo esc_html( $index ); ?>][datetime_max]" value="<?php echo esc_attr( $field['datetime_max'] ?? '' ); ?>" step="<?php echo esc_attr( $field['step'] ?? '300' ); ?>" />
 							</td>
 							<td>
 								<label class="exprdawc_label" for="exprdawc_datetime_step_<?php echo esc_html( $index ); ?>"><?php esc_html_e( 'Time interval', 'extra-product-data-for-woocommerce' ); ?></label>
-								<select id="exprdawc_datetime_step_<?php echo esc_html( $index ); ?>" class="exprdawc_input exprdawc_datetime_step" name="extra_product_fields[<?php echo esc_html( $index ); ?>][step]">
-									<option value="60" <?php selected( (string) ( $field['step'] ?? '300' ), '60' ); ?>><?php esc_html_e( '1 minute', 'extra-product-data-for-woocommerce' ); ?></option>
-									<option value="300" <?php selected( (string) ( $field['step'] ?? '300' ), '300' ); ?>><?php esc_html_e( '5 minutes (recommended)', 'extra-product-data-for-woocommerce' ); ?></option>
-									<option value="900" <?php selected( (string) ( $field['step'] ?? '300' ), '900' ); ?>><?php esc_html_e( '15 minutes', 'extra-product-data-for-woocommerce' ); ?></option>
-									<option value="1800" <?php selected( (string) ( $field['step'] ?? '300' ), '1800' ); ?>><?php esc_html_e( '30 minutes', 'extra-product-data-for-woocommerce' ); ?></option>
-									<option value="3600" <?php selected( (string) ( $field['step'] ?? '300' ), '3600' ); ?>><?php esc_html_e( '1 hour', 'extra-product-data-for-woocommerce' ); ?></option>
+								<select id="exprdawc_datetime_step_<?php echo esc_html( $index ); ?>" class="exprdawc_input exprdawc_datetime_step" name="extra_product_fields[<?php echo esc_html( $index ); ?>][datetime_step]">
+									<option value="60" <?php selected( (string) ( $field['datetime_step'] ?? '300' ), '60' ); ?>><?php esc_html_e( '1 minute', 'extra-product-data-for-woocommerce' ); ?></option>
+									<option value="300" <?php selected( (string) ( $field['datetime_step'] ?? '300' ), '300' ); ?>><?php esc_html_e( '5 minutes (recommended)', 'extra-product-data-for-woocommerce' ); ?></option>
+									<option value="900" <?php selected( (string) ( $field['datetime_step'] ?? '300' ), '900' ); ?>><?php esc_html_e( '15 minutes', 'extra-product-data-for-woocommerce' ); ?></option>
+									<option value="1800" <?php selected( (string) ( $field['datetime_step'] ?? '300' ), '1800' ); ?>><?php esc_html_e( '30 minutes', 'extra-product-data-for-woocommerce' ); ?></option>
+									<option value="3600" <?php selected( (string) ( $field['datetime_step'] ?? '300' ), '3600' ); ?>><?php esc_html_e( '1 hour', 'extra-product-data-for-woocommerce' ); ?></option>
 								</select>
 							</td>
 						</tr>
@@ -427,7 +427,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 							</td>
 							<td>
 								<label class="exprdawc_label" for="exprdawc_datetime_default_<?php echo esc_html( $index ); ?>"><?php esc_html_e( 'Default Value', 'extra-product-data-for-woocommerce' ); ?></label>
-								<input type="datetime-local" id="exprdawc_datetime_default_<?php echo esc_html( $index ); ?>" class="exprdawc_input exprdawc_datetime_default" name="extra_product_fields[<?php echo esc_html( $index ); ?>][default]" value="<?php echo esc_attr( $field['default'] ?? '' ); ?>" step="<?php echo esc_attr( $field['step'] ?? '300' ); ?>" <?php echo ( isset( $field['datetime_default_now'] ) && $field['datetime_default_now'] ) ? 'disabled' : ''; ?> />
+								<input type="datetime-local" id="exprdawc_datetime_default_<?php echo esc_html( $index ); ?>" class="exprdawc_input exprdawc_datetime_default" name="extra_product_fields[<?php echo esc_html( $index ); ?>][datetime_default]" value="<?php echo esc_attr( $field['datetime_default'] ?? '' ); ?>" step="<?php echo esc_attr( $field['datetime_step'] ?? '300' ); ?>" <?php echo ( isset( $field['datetime_default_now'] ) && $field['datetime_default_now'] ) ? 'disabled' : ''; ?> />
 							</td>
 						</tr>
 					</tbody>

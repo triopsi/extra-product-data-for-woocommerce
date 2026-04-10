@@ -771,4 +771,195 @@ class TestExprdawcProductPageBackend extends WP_UnitTestCase {
 		unset( $_POST[ EXPRDAWC_POST_KEY_EXTRA_PRODUCT_FIELDS ] );
 		$product->delete();
 	}
+
+	/**
+	 * Tests that duplicate labels abort saving and keep existing metadata.
+	 *
+	 * Expects: Existing fields remain unchanged when duplicate labels are submitted.
+	 */
+	public function test_exprdawc_save_extra_product_fields_rejects_duplicate_labels() {
+		$product = new WC_Product_Simple();
+		$product->set_name( 'Duplicate Label Product' );
+		$product->set_regular_price( '10' );
+		$product->save();
+		$post_id = $product->get_id();
+
+		$existing_fields = array(
+			array(
+				'label' => 'Keep Me',
+				'type'  => 'text',
+			),
+		);
+
+		$product->update_meta_data( '_extra_product_fields', $existing_fields );
+		$product->save();
+
+		$_POST[ EXPRDAWC_POST_KEY_EXTRA_PRODUCT_FIELDS ] = array(
+			array(
+				'label'                 => 'Same Label',
+				'type'                  => 'text',
+				'placeholder_text'      => '',
+				'help_text'             => '',
+				'index'                 => '0',
+				'price_adjustment_type' => '',
+				'priceAdjustmentValue'  => '',
+			),
+			array(
+				'label'                 => 'same label',
+				'type'                  => 'text',
+				'placeholder_text'      => '',
+				'help_text'             => '',
+				'index'                 => '1',
+				'price_adjustment_type' => '',
+				'priceAdjustmentValue'  => '',
+			),
+		);
+
+		$this->product_page_backend->exprdawcSaveExtraProductFields( $post_id );
+
+		$product       = wc_get_product( $post_id );
+		$custom_fields = $product->get_meta( '_extra_product_fields', true );
+
+		$this->assertEquals( $existing_fields, $custom_fields, 'Duplicate labels should prevent overwriting saved meta.' );
+
+		unset( $_POST[ EXPRDAWC_POST_KEY_EXTRA_PRODUCT_FIELDS ] );
+		$product->delete();
+	}
+
+	/**
+	 * Tests that date/time/datetime specific min/max/step are mapped to generic keys.
+	 *
+	 * Expects: Generic min/max/step values reflect type-specific admin inputs.
+	 *
+	 * @param string                $type Field type.
+	 * @param array<string, string> $type_payload Type-specific payload.
+	 * @param string                $expected_min Expected mapped min value.
+	 * @param string                $expected_max Expected mapped max value.
+	 * @param string                $expected_step Expected mapped step value.
+	 * @dataProvider typeSpecificMappingProvider
+	 */
+	public function test_exprdawc_save_extra_product_fields_maps_type_specific_min_max_step( string $type, array $type_payload, string $expected_min, string $expected_max, string $expected_step ) {
+		$product = new WC_Product_Simple();
+		$product->set_name( 'Date Time Mapping Product' );
+		$product->set_regular_price( '10' );
+		$product->save();
+		$post_id = $product->get_id();
+
+		$field_payload = array_merge(
+			array(
+				'label'                 => 'Mapping Field',
+				'type'                  => $type,
+				'placeholder_text'      => '',
+				'help_text'             => '',
+				'index'                 => '0',
+				'price_adjustment_type' => '',
+				'priceAdjustmentValue'  => '',
+			),
+			$type_payload
+		);
+
+		$_POST[ EXPRDAWC_POST_KEY_EXTRA_PRODUCT_FIELDS ] = array(
+			$field_payload,
+		);
+
+		$this->product_page_backend->exprdawcSaveExtraProductFields( $post_id );
+
+		$product       = wc_get_product( $post_id );
+		$custom_fields = $product->get_meta( '_extra_product_fields', true );
+
+		$this->assertCount( 1, $custom_fields );
+		$this->assertEquals( $expected_min, $custom_fields[0]['min'] );
+		$this->assertEquals( $expected_max, $custom_fields[0]['max'] );
+		$this->assertEquals( $expected_step, $custom_fields[0]['step'] );
+
+		unset( $_POST[ EXPRDAWC_POST_KEY_EXTRA_PRODUCT_FIELDS ] );
+		$product->delete();
+	}
+
+	/**
+	 * Data provider for type-specific min/max/step mapping tests.
+	 *
+	 * @return array<string, array{0:string,1:array<string, string>,2:string,3:string,4:string}>
+	 */
+	public function typeSpecificMappingProvider(): array {
+		return array(
+			'date mapping'     => array(
+				'date',
+				array(
+					'date_min' => '2026-04-01',
+					'date_max' => '2026-04-30',
+				),
+				'2026-04-01',
+				'2026-04-30',
+				'',
+			),
+			'time mapping'     => array(
+				'time',
+				array(
+					'time_min' => '09:00',
+					'time_max' => '18:00',
+				),
+				'09:00',
+				'18:00',
+				'60',
+			),
+			'datetime mapping' => array(
+				'datetime',
+				array(
+					'datetime_min'  => '2026-04-10T09:00',
+					'datetime_max'  => '2026-04-10T18:00',
+					'datetime_step' => '300',
+				),
+				'2026-04-10T09:00',
+				'2026-04-10T18:00',
+				'300',
+			),
+		);
+	}
+
+	/**
+	 * Tests that malformed field payloads are ignored instead of breaking save.
+	 *
+	 * Expects: Non-array entries and entries without labels are filtered out.
+	 */
+	public function test_exprdawc_save_extra_product_fields_filters_invalid_payload_entries() {
+		$product = new WC_Product_Simple();
+		$product->set_name( 'Invalid Payload Product' );
+		$product->set_regular_price( '10' );
+		$product->save();
+		$post_id = $product->get_id();
+
+		$_POST[ EXPRDAWC_POST_KEY_EXTRA_PRODUCT_FIELDS ] = array(
+			'not-an-array-field',
+			array(
+				'label'                 => '',
+				'type'                  => 'text',
+				'placeholder_text'      => '',
+				'help_text'             => '',
+				'price_adjustment_type' => '',
+				'priceAdjustmentValue'  => '',
+			),
+			array(
+				'label'                 => 'Valid Field',
+				'type'                  => 'text',
+				'placeholder_text'      => 'ok',
+				'help_text'             => 'ok',
+				'index'                 => '2',
+				'price_adjustment_type' => '',
+				'priceAdjustmentValue'  => '',
+			),
+		);
+
+		$this->product_page_backend->exprdawcSaveExtraProductFields( $post_id );
+
+		$product       = wc_get_product( $post_id );
+		$custom_fields = $product->get_meta( '_extra_product_fields', true );
+
+		$this->assertIsArray( $custom_fields );
+		$this->assertCount( 1, $custom_fields );
+		$this->assertEquals( 'Valid Field', $custom_fields[0]['label'] );
+
+		unset( $_POST[ EXPRDAWC_POST_KEY_EXTRA_PRODUCT_FIELDS ] );
+		$product->delete();
+	}
 }
