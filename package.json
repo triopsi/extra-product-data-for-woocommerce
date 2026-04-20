@@ -25,10 +25,10 @@
   "author": "triopsi",
   "license": "ISC",
   "devDependencies": {
-    "@wordpress/env": "^11.3.0",
-    "eslint": "^10.1.0",
-    "sass": "^1.98.0",
+    "@wordpress/env": "^11.4.0",
+    "eslint": "^10.2.1",
+    "sass": "^1.99.0",
     "terser": "^5.46.1",
-    "vite": "^8.0.3"
+    "vite": "^8.0.9"
   }
 }

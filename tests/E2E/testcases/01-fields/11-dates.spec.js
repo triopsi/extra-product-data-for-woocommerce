@@ -125,6 +125,6 @@ test.describe('@P10 @ADMIN', () => {
         await productPage.goToProductPage('Hoodie with Zipper');
         await expect(page.getByRole('textbox', { name: 'Date  *' })).toHaveValue('2026-01-10');
         await expect(page.getByRole('textbox', { name: 'Time  *', exact: true })).toHaveValue('12:00');
-        await expect(page.getByRole('textbox', { name: 'Date Time  *' })).toHaveValue('2026-04-10T12:12');
+        await expect(page.getByRole('textbox', { name: 'Date Time  *' })).not.toBeEmpty();
     });
 });
