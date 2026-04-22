@@ -1,6 +1,7 @@
 <?php
 declare( strict_types=1 );
 
+use PHPUnit\Framework\Attributes\DataProvider;
 use Triopsi\Exprdawc\Backend\ProductBackend;
 
 /**
@@ -713,7 +714,6 @@ class TestExprdawcProductPageBackend extends WP_UnitTestCase {
 		} catch ( Exception $e ) { // phpcs:ignore
 			// Error expected.
 		}
-		restore_error_handler();
 		$output = ob_get_clean();
 
 		// Check that error response is returned.
@@ -838,6 +838,7 @@ class TestExprdawcProductPageBackend extends WP_UnitTestCase {
 	 * @param string                $expected_step Expected mapped step value.
 	 * @dataProvider typeSpecificMappingProvider
 	 */
+	#[DataProvider( 'typeSpecificMappingProvider' )]
 	public function test_exprdawc_save_extra_product_fields_maps_type_specific_min_max_step( string $type, array $type_payload, string $expected_min, string $expected_max, string $expected_step ) {
 		$product = new WC_Product_Simple();
 		$product->set_name( 'Date Time Mapping Product' );
@@ -881,7 +882,7 @@ class TestExprdawcProductPageBackend extends WP_UnitTestCase {
 	 *
 	 * @return array<string, array{0:string,1:array<string, string>,2:string,3:string,4:string}>
 	 */
-	public function typeSpecificMappingProvider(): array {
+	public static function typeSpecificMappingProvider(): array {
 		return array(
 			'date mapping'     => array(
 				'date',
