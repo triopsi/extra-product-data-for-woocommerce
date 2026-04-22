@@ -125,11 +125,11 @@ tests_add_filter(
 function _patch_wp_test_lib_for_phpunit13( string $tests_dir ): void {
 	$abstract_testcase_file = $tests_dir . '/includes/abstract-testcase.php';
 
-	if ( ! is_readable( $abstract_testcase_file ) || ! is_writable( $abstract_testcase_file ) ) {
+	if ( ! is_readable( $abstract_testcase_file ) || ! is_writable( $abstract_testcase_file ) ) { // phpcs:ignore WordPress.WP.AlternativeFunctions.file_system_operations_is_writable
 		return;
 	}
 
-	$contents = file_get_contents( $abstract_testcase_file );
+	$contents = file_get_contents( $abstract_testcase_file ); // phpcs:ignore WordPress.WP.AlternativeFunctions.file_get_contents_file_get_contents
 
 	if ( false === $contents || false === strpos( $contents, 'parseTestMethodAnnotations' ) ) {
 		return;
@@ -202,7 +202,7 @@ function _patch_wp_test_lib_for_phpunit13( string $tests_dir ): void {
 		return;
 	}
 
-	file_put_contents( $abstract_testcase_file, $contents );
+	file_put_contents( $abstract_testcase_file, $contents ); // phpcs:ignore WordPress.WP.AlternativeFunctions.file_system_operations_file_put_contents
 }
 
 _patch_wp_test_lib_for_phpunit13( $_tests_dir );
