@@ -90,7 +90,7 @@ Yes, the plugin has been tested with the latest WordPress release and PHP 8.2.
 
 == Changelog ==
 
-= 3.3.0 (07.04.2026) =
+= 3.3.0 (23.04.2026) =
 * Feat: Add min, max options for the date field
 * Feat: Add time field with options
 * Feat: Add datetime field with otpions
