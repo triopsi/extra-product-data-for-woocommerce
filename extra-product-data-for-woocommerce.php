@@ -2,7 +2,7 @@
 /**
  * Plugin Name: Extra Product Data for WooCommerce
  * Description: Adds customizable input fields per product in WooCommerce, allowing users to enter extra details on the frontend.
- * Version: 3.2.0
+ * Version: 3.3.0
  * Author: Triopsi
  * Author URI: https://triopsi.dev
  * License: GPLv2 or later

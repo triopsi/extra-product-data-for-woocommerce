@@ -76,6 +76,8 @@ jQuery(function ($) {
             $(document).on('input', '.exprdawc_color_hex', this.handleColorHexInput.bind(this));
             $(document).on('blur', '.exprdawc_color_hex', this.handleColorHexBlur.bind(this));
             $(document).on('change', '.exprdawc_disabled_field', this.toggleDisabledFieldBackgroundColor.bind(this));
+            $(document).on('change', '.exprdawc_date_default_today', this.toggleDateDefaultToday.bind(this));
+            $(document).on('change', '.exprdawc_datetime_default_now', this.toggleDateTimeDefaultNow.bind(this));
 
             // Inits
             this.toggleConditionalValueFieldAll();
@@ -222,14 +224,21 @@ jQuery(function ($) {
                 }
             }
 
-            if ($type === 'radio' || $type === 'checkbox' || $type === 'select' || $type === 'color_radio') {
-                $placeholderText.prop('disabled', true);
+            const isOptionBasedType = $type === 'radio' || $type === 'checkbox' || $type === 'select' || $type === 'color_radio';
+            const shouldHidePlaceholder = isOptionBasedType || $type === 'time' || $type === 'date' || $type === 'datetime';
+
+            if (isOptionBasedType) {
                 $optionsTable.show();
+            } else {
+                $optionsTable.hide();
+            }
+
+            if (shouldHidePlaceholder) {
+                $placeholderText.prop('disabled', true);
                 // Hide Placeholder.
                 $optionsRow.find('.exprdawc_attribute_placeholder_text').hide();
             } else {
                 $placeholderText.prop('disabled', false);
-                $optionsTable.hide();
                 // Show Placeholder.
                 $optionsRow.find('.exprdawc_attribute_placeholder_text').show();
             }
@@ -250,6 +259,24 @@ jQuery(function ($) {
                 $optionsRow.find('.exprdawc_number_table').show();
             } else {
                 $optionsRow.find('.exprdawc_number_table').hide();
+            }
+
+            if ($(e.currentTarget).val() === 'time') {
+                $optionsRow.find('.exprdawc_time_table').show();
+            } else {
+                $optionsRow.find('.exprdawc_time_table').hide();
+            }
+
+            if ($(e.currentTarget).val() === 'date') {
+                $optionsRow.find('.exprdawc_date_table').show();
+            } else {
+                $optionsRow.find('.exprdawc_date_table').hide();
+            }
+
+            if ($(e.currentTarget).val() === 'datetime') {
+                $optionsRow.find('.exprdawc_datetime_table').show();
+            } else {
+                $optionsRow.find('.exprdawc_datetime_table').hide();
             }
 
             if ($(e.currentTarget).val() === 'email') {
@@ -687,10 +714,20 @@ jQuery(function ($) {
                 // By exprdawc_attribute_type checkbox, radio and select hide placeholder text and show options.
                 const fieldType = $(element).find('.exprdawc_attribute_type').val() || 'text';
                 const $placeholderText = $(element).find('.exprdawc_attribute_placeholder_text');
-                if (fieldType === 'radio' || fieldType === 'checkbox' || fieldType === 'select' || fieldType === 'color' || fieldType === 'color_radio') {
+                if (fieldType === 'radio' || fieldType === 'checkbox' || fieldType === 'select' || fieldType === 'color' || fieldType === 'color_radio' || fieldType === 'time' || fieldType === 'date' || fieldType === 'datetime') {
                     $placeholderText.hide();
                 } else {
                     $placeholderText.show();
+                }
+
+                const $dateDefaultToday = $(element).find('.exprdawc_date_default_today');
+                if ($dateDefaultToday.length) {
+                    this.toggleDateDefaultToday({ currentTarget: $dateDefaultToday.get(0) });
+                }
+
+                const $datetimeDefaultNow = $(element).find('.exprdawc_datetime_default_now');
+                if ($datetimeDefaultNow.length) {
+                    this.toggleDateTimeDefaultNow({ currentTarget: $datetimeDefaultNow.get(0) });
                 }
             });
         }
@@ -1189,6 +1226,42 @@ jQuery(function ($) {
                 $attributeRow.css('background-color', '#ffdeab');
             } else {
                 $attributeRow.css('background-color', '');
+            }
+        }
+
+        /**
+         * Toggle date default to today checkbox.
+         * Enables/disables the default date input field based on checkbox state.
+         * @param {Event} e - The change event from the checkbox
+         */
+        toggleDateDefaultToday(e) {
+            const $checkbox = $(e.currentTarget);
+            const $row = $checkbox.closest('tr');
+            const $dateDefaultInput = $row.closest('table').find('.exprdawc_date_default');
+            
+            if ($checkbox.is(':checked')) {
+                $dateDefaultInput.prop('disabled', true);
+                $dateDefaultInput.val(''); // Clear the default date input when "default to today" is checked
+            } else {
+                $dateDefaultInput.prop('disabled', false);
+            }
+        }
+
+        /**
+         * Toggle datetime default to now checkbox.
+         * Enables/disables the default datetime input field based on checkbox state.
+         * @param {Event} e - The change event from the checkbox
+         */
+        toggleDateTimeDefaultNow(e) {
+            const $checkbox = $(e.currentTarget);
+            const $row = $checkbox.closest('tr');
+            const $datetimeDefaultInput = $row.closest('table').find('.exprdawc_datetime_default');
+
+            if ($checkbox.is(':checked')) {
+                $datetimeDefaultInput.prop('disabled', true);
+                $datetimeDefaultInput.val('');
+            } else {
+                $datetimeDefaultInput.prop('disabled', false);
             }
         }
 

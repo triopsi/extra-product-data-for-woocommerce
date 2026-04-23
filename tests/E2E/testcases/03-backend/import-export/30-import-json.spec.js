@@ -1,8 +1,8 @@
 const { test, expect } = require('@playwright/test');
 const fs = require('fs');
-import { ProductAdminPage } from '../pages/shop/ProductAdminPage.js';
-import { AdminLoginPage } from '../pages/admin/AdminLoginPage.js';
-import { env } from '../helpers/env.js';
+import { ProductAdminPage } from '../../../pages/shop/ProductAdminPage.js';
+import { AdminLoginPage } from '../../../pages/admin/AdminLoginPage.js';
+import { env } from '../../../helpers/env.js';
 import { exit } from 'process';
 
 test.describe('@P10 @IMPORT @EXPORT', () => {

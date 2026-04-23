@@ -342,6 +342,117 @@ class ProductFrontend implements Hookable {
 						),
 					);
 				}
+
+				$min_date = isset( $input_field_array['min'] ) ? sanitize_text_field( (string) $input_field_array['min'] ) : '';
+				$max_date = isset( $input_field_array['max'] ) ? sanitize_text_field( (string) $input_field_array['max'] ) : '';
+
+				if ( ! empty( $min_date ) && strtotime( $field_value ) < strtotime( $min_date ) ) {
+					return array(
+						'valid'   => false,
+						'message' => sprintf(
+							/* translators: %1$s is the field label, %2$s is the minimum date */
+							esc_html__( '%1$s cannot be earlier than %2$s.', 'extra-product-data-for-woocommerce' ),
+							esc_html( $field_label ),
+							esc_html( $min_date )
+						),
+					);
+				}
+
+				if ( ! empty( $max_date ) && strtotime( $field_value ) > strtotime( $max_date ) ) {
+					return array(
+						'valid'   => false,
+						'message' => sprintf(
+							/* translators: %1$s is the field label, %2$s is the maximum date */
+							esc_html__( '%1$s cannot be later than %2$s.', 'extra-product-data-for-woocommerce' ),
+							esc_html( $field_label ),
+							esc_html( $max_date )
+						),
+					);
+				}
+				break;
+
+			case 'time':
+				$normalized_time = is_string( $field_value ) ? $this->normalizeTimeToMinute( $field_value ) : null;
+				if ( null === $normalized_time ) {
+					return array(
+						'valid'   => false,
+						'message' => sprintf(
+							/* translators: %s is the field label */
+							esc_html__( '%s is not a valid time.', 'extra-product-data-for-woocommerce' ),
+							esc_html( $field_label )
+						),
+					);
+				}
+
+				$min_time = isset( $input_field_array['min'] ) ? sanitize_text_field( (string) $input_field_array['min'] ) : '';
+				$max_time = isset( $input_field_array['max'] ) ? sanitize_text_field( (string) $input_field_array['max'] ) : '';
+				$min_time = '' !== $min_time ? $this->normalizeTimeToMinute( $min_time ) : null;
+				$max_time = '' !== $max_time ? $this->normalizeTimeToMinute( $max_time ) : null;
+
+				if ( null !== $min_time && $normalized_time < $min_time ) {
+					return array(
+						'valid'   => false,
+						'message' => sprintf(
+							/* translators: %s is the field label */
+							esc_html__( '%s is earlier than the minimum allowed time.', 'extra-product-data-for-woocommerce' ),
+							esc_html( $field_label )
+						),
+					);
+				}
+
+				if ( null !== $max_time && $normalized_time > $max_time ) {
+					return array(
+						'valid'   => false,
+						'message' => sprintf(
+							/* translators: %s is the field label */
+							esc_html__( '%s is later than the maximum allowed time.', 'extra-product-data-for-woocommerce' ),
+							esc_html( $field_label )
+						),
+					);
+				}
+				break;
+
+			case 'datetime':
+				$normalized_datetime = is_string( $field_value ) ? $this->normalizeDateTimeToMinute( $field_value ) : null;
+				if ( null === $normalized_datetime ) {
+					return array(
+						'valid'   => false,
+						'message' => sprintf(
+							/* translators: %s is the field label */
+							esc_html__( '%s is not a valid date and time.', 'extra-product-data-for-woocommerce' ),
+							esc_html( $field_label )
+						),
+					);
+				}
+
+				$min_datetime = isset( $input_field_array['min'] ) ? sanitize_text_field( (string) $input_field_array['min'] ) : '';
+				$max_datetime = isset( $input_field_array['max'] ) ? sanitize_text_field( (string) $input_field_array['max'] ) : '';
+				$min_datetime = '' !== $min_datetime ? $this->normalizeDateTimeToMinute( $min_datetime ) : null;
+				$max_datetime = '' !== $max_datetime ? $this->normalizeDateTimeToMinute( $max_datetime ) : null;
+
+				if ( null !== $min_datetime && $normalized_datetime < $min_datetime ) {
+					return array(
+						'valid'   => false,
+						'message' => sprintf(
+							/* translators: %1$s is the field label, %2$s is the minimum datetime */
+							esc_html__( '%1$s cannot be earlier than %2$s.', 'extra-product-data-for-woocommerce' ),
+							esc_html( $field_label ),
+							esc_html( str_replace( 'T', ' ', $min_datetime ) )
+						),
+					);
+				}
+
+				if ( null !== $max_datetime && $normalized_datetime > $max_datetime ) {
+					return array(
+						'valid'   => false,
+						'message' => sprintf(
+							/* translators: %1$s is the field label, %2$s is the maximum datetime */
+							esc_html__( '%1$s cannot be later than %2$s.', 'extra-product-data-for-woocommerce' ),
+							esc_html( $field_label ),
+							esc_html( str_replace( 'T', ' ', $max_datetime ) )
+						),
+					);
+				}
 				break;
 
 			case 'color':
@@ -425,6 +536,60 @@ class ProductFrontend implements Hookable {
 		$intersect = array_intersect( $field_values, $valid_options );
 
 		return ! empty( $intersect ) && count( $intersect ) === count( $field_values );
+	}
+
+	/**
+	 * Normalize a time string to HH:MM.
+	 *
+	 * Accepts HH:MM or HH:MM:SS. When seconds are provided,
+	 * only :00 is accepted for minute precision.
+	 *
+	 * @param string $value Raw time value.
+	 * @return string|null Normalized HH:MM value or null if invalid.
+	 */
+	private function normalizeTimeToMinute( string $value ): ?string {
+		$value = trim( $value );
+
+		if ( preg_match( '/^([01]\d|2[0-3]):([0-5]\d)$/', $value ) ) {
+			return $value;
+		}
+
+		if ( preg_match( '/^([01]\d|2[0-3]):([0-5]\d):([0-5]\d)$/', $value, $matches ) ) {
+			if ( '00' !== $matches[3] ) {
+				return null;
+			}
+
+			return $matches[1] . ':' . $matches[2];
+		}
+
+		return null;
+	}
+
+	/**
+	 * Normalize a datetime-local string to YYYY-MM-DDTHH:MM.
+	 *
+	 * Accepts YYYY-MM-DDTHH:MM or YYYY-MM-DDTHH:MM:SS.
+	 * When seconds are provided, only :00 is accepted.
+	 *
+	 * @param string $value Raw datetime-local value.
+	 * @return string|null Normalized value or null if invalid.
+	 */
+	private function normalizeDateTimeToMinute( string $value ): ?string {
+		$value = trim( $value );
+
+		if ( preg_match( '/^\d{4}-\d{2}-\d{2}T([01]\d|2[0-3]):([0-5]\d)$/', $value ) ) {
+			return $value;
+		}
+
+		if ( preg_match( '/^(\d{4}-\d{2}-\d{2}T([01]\d|2[0-3]):([0-5]\d)):([0-5]\d)$/', $value, $matches ) ) {
+			if ( '00' !== $matches[4] ) {
+				return null;
+			}
+
+			return $matches[1];
+		}
+
+		return null;
 	}
 
 	/**
